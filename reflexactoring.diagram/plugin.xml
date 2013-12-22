@@ -147,6 +147,12 @@
             category="reflexactoring.diagram.general"
             class="reflexactoring.diagram.preferences.DiagramRulersAndGridPreferencePage">
       </page>
+      <page
+            category="reflexactoring.diagram.general"
+            class="reflexactoring.diagram.preferences.ProjectInfoPage"
+            id="reflexactoring.diagram.projectInfo"
+            name="Project Information">
+      </page>
    </extension>
 
    <extension point="org.eclipse.ui.views.properties.tabbed.propertyContributor" id="prop-contrib">
@@ -572,6 +578,31 @@
 
    <extension point="org.eclipse.ui.handlers" id="menu-handlers">
       <?gmfgen generated="true"?>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="reflexactoring.diagram.actionSet"
+            label="Reflexactoring"
+            visible="true">
+         <menu
+               id="reflexactoring.diagram.menu"
+               label="Reflexactoring">
+            <groupMarker
+                  name="preliminary">
+            </groupMarker>
+         </menu>
+         <action
+               class="reflexactoring.diagram.action.DecideScopeAction"
+               icon="icons/menu/scope.gif"
+               id="reflexactoring.diagram.action.decideScope"
+               label="Decide Scope"
+               menubarPath="reflexactoring.diagram.menu/preliminary"
+               style="push"
+               toolbarPath="preliminary"
+               tooltip="Decide the scope of refactoring">
+         </action>
+      </actionSet>
    </extension>
 
    <!-- optionally, specify keybindings -->
