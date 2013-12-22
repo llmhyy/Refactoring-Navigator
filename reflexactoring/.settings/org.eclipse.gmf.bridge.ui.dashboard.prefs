@@ -1,0 +1,7 @@
+eclipse.preferences.version=1
+gmf_dashboard/domainGenerationModel=platform\:/resource/reflexactoring/model/reflexactoring.genmodel
+gmf_dashboard/domainModel=platform\:/resource/reflexactoring/model/reflexactoring.ecore
+gmf_dashboard/generationModel=platform\:/resource/reflexactoring/model/reflexactoring.gmfgen
+gmf_dashboard/graphicalDefinitionModel=platform\:/resource/reflexactoring/model/reflexactoring.gmfgraph
+gmf_dashboard/mappingModel=platform\:/resource/reflexactoring/model/reflexactoring.gmfmap
+gmf_dashboard/toolingDefinitionModel=platform\:/resource/reflexactoring/model/reflexactoring.gmftool

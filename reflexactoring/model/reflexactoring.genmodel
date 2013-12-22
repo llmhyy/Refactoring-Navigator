@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/reflexactoring/src" modelPluginID="reflexactoring"
+    modelName="Reflexactoring" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="7.0" copyrightFields="false"
+    operationReflection="true" importOrganizing="true">
+  <foreignModel>reflexactoring.ecore</foreignModel>
+  <genPackages prefix="Reflexactoring" disposableProviderFactory="true" ecorePackage="reflexactoring.ecore#/">
+    <genClasses ecoreClass="reflexactoring.ecore#//Reflexactoring">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//Reflexactoring/modules"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//Reflexactoring/types"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//Reflexactoring/moduleDenpencies"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//Reflexactoring/implements"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//Reflexactoring/typeDependencies"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//Reflexactoring/classExtends"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//Reflexactoring/interfaceExtends"/>
+    </genClasses>
+    <genClasses ecoreClass="reflexactoring.ecore#//Module">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reflexactoring.ecore#//Module/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reflexactoring.ecore#//Module/stereotype"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reflexactoring.ecore#//Module/description"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//Module/mappingTypes"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="reflexactoring.ecore#//Type">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reflexactoring.ecore#//Type/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reflexactoring.ecore#//Type/packageName"/>
+    </genClasses>
+    <genClasses ecoreClass="reflexactoring.ecore#//Class"/>
+    <genClasses ecoreClass="reflexactoring.ecore#//Interface"/>
+    <genClasses ecoreClass="reflexactoring.ecore#//ModuleDependency">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//ModuleDependency/origin"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//ModuleDependency/destination"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reflexactoring.ecore#//ModuleDependency/name"/>
+    </genClasses>
+    <genClasses ecoreClass="reflexactoring.ecore#//TypeDependency">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//TypeDependency/origin"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//TypeDependency/destination"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reflexactoring.ecore#//TypeDependency/name"/>
+    </genClasses>
+    <genClasses ecoreClass="reflexactoring.ecore#//Implement">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//Implement/class"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//Implement/interface"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reflexactoring.ecore#//Implement/name"/>
+    </genClasses>
+    <genClasses ecoreClass="reflexactoring.ecore#//ClassExtend">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//ClassExtend/subClass"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//ClassExtend/superClass"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reflexactoring.ecore#//ClassExtend/name"/>
+    </genClasses>
+    <genClasses ecoreClass="reflexactoring.ecore#//InterfaceExtend">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute reflexactoring.ecore#//InterfaceExtend/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//InterfaceExtend/subInterface"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference reflexactoring.ecore#//InterfaceExtend/superInterface"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

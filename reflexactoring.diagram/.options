@@ -1,0 +1,7 @@
+# Tracing options for the reflexactoring.diagram plug-in
+
+# Common issues
+reflexactoring.diagram/debug=false
+
+# Visual IDs
+reflexactoring.diagram/debug/visualID=false
