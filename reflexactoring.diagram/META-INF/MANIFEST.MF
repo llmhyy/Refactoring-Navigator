@@ -39,6 +39,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.gef;visibility:=reexport,
  org.eclipse.jdt.core;bundle-version="3.9.1",
  org.eclipse.jdt.ui,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.eclipse.equinox.registry,
+ org.eclipse.gmf.runtime.notation
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
