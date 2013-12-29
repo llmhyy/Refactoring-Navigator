@@ -55,7 +55,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		if(this.previousSelections != null){
 			scopeDialog.setExpandedElements(previousSelections);
 			//scopeDialog.setInitialSelections(previousSelections);
-			scopeDialog.setInitialElementSelections(Settings.scopeCompilationUnitList);			
+			scopeDialog.setInitialElementSelections(Settings.scope.getScopeCompilationUnitList());			
 		}
 		//scopeDialog.setExpandedElements(projects);
 		//scopeDialog.setInitialElementSelections(Settings.scopeCompilationUnitList);
@@ -64,13 +64,13 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		if(scopeDialog.open() == scopeDialog.OK){
 			
 			
-			Settings.scopeCompilationUnitList.clear();
+			Settings.scope.getScopeCompilationUnitList().clear();
 			
 			Object[] selectedObjects = scopeDialog.getResult();
 			this.previousSelections = selectedObjects;
 			for(int i=0; i<selectedObjects.length; i++){
 				if(selectedObjects[i] instanceof ICompilationUnit){
-					Settings.scopeCompilationUnitList.add((ICompilationUnit)selectedObjects[i]);
+					Settings.scope.getScopeCompilationUnitList().add((ICompilationUnit)selectedObjects[i]);
 				}
 				//Settings.scopeCompilationUnitList.add(selectedObjects[i]);
 			}
