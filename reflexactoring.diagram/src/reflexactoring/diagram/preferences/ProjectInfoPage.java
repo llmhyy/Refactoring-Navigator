@@ -24,6 +24,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.osgi.service.prefs.Preferences;
 
 import reflexactoring.Activator;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun
@@ -86,7 +87,7 @@ public class ProjectInfoPage extends PreferencePage implements
 		
 		projectCombo = new Combo(composite, SWT.BORDER);
 		projectCombo.setItems(getProjectsInWorkspace());
-		projectCombo.setText(Activator.getDefault().getPreferenceStore().getString(ProjectInfoPage.TARGET_PORJECT));
+		projectCombo.setText(ReflexactoringUtil.getTargetProjectName());
 		GridData comboData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		comboData.horizontalSpan = 2;
 		projectCombo.setLayoutData(comboData);
@@ -120,8 +121,8 @@ public class ProjectInfoPage extends PreferencePage implements
 		Preferences preferences = ConfigurationScope.INSTANCE.getNode("Reflexactoring");
 		preferences.put(TARGET_PORJECT, this.projectCombo.getText());
 		
-		Activator.getDefault().getPreferenceStore().putValue(TARGET_PORJECT, this.projectCombo.getText());
-		
+		//Activator.getDefault().getPreferenceStore().putValue(TARGET_PORJECT, this.projectCombo.getText());
+		ReflexactoringUtil.setTargetProjectName(this.projectCombo.getText());
 		return true;
 	}
 }

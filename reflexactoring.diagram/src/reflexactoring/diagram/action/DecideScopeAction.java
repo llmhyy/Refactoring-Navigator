@@ -31,6 +31,7 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Activator;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -108,7 +109,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 	
 	private IJavaProject getSpecificJavaProjectInWorkspace(){
 		
-		String targetProject = Activator.getDefault().getPreferenceStore().getString(ProjectInfoPage.TARGET_PORJECT);
+		String targetProject = ReflexactoringUtil.getTargetProjectName();
 		
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root = workspace.getRoot();
