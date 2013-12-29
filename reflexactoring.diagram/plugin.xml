@@ -591,6 +591,12 @@
             <groupMarker
                   name="preliminary">
             </groupMarker>
+            <separator
+                  name="separator">
+            </separator>
+            <groupMarker
+                  name="process">
+            </groupMarker>
          </menu>
          <action
                class="reflexactoring.diagram.action.DecideScopeAction"
@@ -601,6 +607,25 @@
                style="push"
                toolbarPath="preliminary"
                tooltip="Decide the scope of refactoring">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.RecommendRefactoringAction"
+               icon="icons/menu/recommend.gif"
+               id="reflexactoring.diagram.action.recommendRefacotring"
+               label="Recommend Refactoring"
+               menubarPath="reflexactoring.diagram.menu/process"
+               style="push"
+               toolbarPath="process">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.AutoMappingAction"
+               icon="icons/menu/mapping.gif"
+               id="reflexactoring.diagram.action.autoMapping"
+               label="Automatic Mapping"
+               menubarPath="reflexactoring.diagram.menu/process"
+               style="push"
+               toolbarPath="process"
+               tooltip="Automatically map java classes/interfaces to modules">
          </action>
       </actionSet>
    </extension>
