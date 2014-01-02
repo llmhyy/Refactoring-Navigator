@@ -3,7 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: reflexactoring.diagram; singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ lib/edu.mit.jwi_2.1.5.jar,
+ lib/intt.jar
 Bundle-Activator: reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

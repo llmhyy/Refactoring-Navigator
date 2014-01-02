@@ -12,7 +12,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.emf.core.GMFEditingDomainFactory;
-import org.eclipse.gmf.runtime.notation.impl.DiagramImpl;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -22,7 +21,8 @@ import org.eclipse.ui.PartInitException;
 
 import reflexactoring.Module;
 import reflexactoring.Reflexactoring;
-import reflexactoring.diagram.part.ReflexactoringDiagramEditorUtil;
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -33,8 +33,13 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 	@Override
 	public void run(IAction action) {
 		try {
-			ArrayList<Module> moduleList = getModuleList();
-			ArrayList<ICompilationUnit> compilationUnit = Settings.scope.getScopeCompilationUnitList();
+			ArrayList<ModuleWrapper> moduleList = getModuleList();
+			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList = new ArrayList<>();
+			for(ICompilationUnit unit: Settings.scope.getScopeCompilationUnitList()){
+				compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
+			}
+			
+			generateMappingRelation(moduleList, compilationUnitWrapperList);
 			
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
@@ -43,7 +48,81 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		
 	}
 	
-	private ArrayList<Module> getModuleList() throws PartInitException{
+	/**
+	 * The result should be that: for each module in moduleList, the module wrapper class
+	 * will have a list of mapping compilationUnit; in contrast, for each compilationUnit
+	 * in compilationUnit, the compilation unit wrapper will have a corresponding mapped module.
+	 * 
+	 * @param moduleList
+	 * @param compilationUnitList
+	 */
+	private void generateMappingRelation(ArrayList<ModuleWrapper> moduleList,
+			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
+		double[][] overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
+		
+		/**
+		 * should take care that one compilation unit can be mapped to only one module,
+		 * on the contrary, one module can be mapped to many compilation unit.
+		 */
+		
+	}
+	
+	/**
+	 * generate the overall similarity table in which the overall similarity bewteen
+	 * each module and each compilation unit is computed. 
+	 * @param moduleList
+	 * @param compilationUnitList
+	 * @return
+	 */
+	private double[][] initializeOverallSimilarityTable(ArrayList<ModuleWrapper> moduleList,
+			ArrayList<ICompilationUnitWrapper> compilationUnitList){
+		double[][] semanticSimilarityTable = generateSemanticSimilarityTable(moduleList, compilationUnitList);
+		double[][] structuralSimilarityTable = generateStructuralSimilarityTable(semanticSimilarityTable, moduleList, compilationUnitList);
+		
+		/**
+		 * after the above calculation, the dimensions of both semantic similarity table and
+		 * structural similarity table should be the same.
+		 */
+		int m = moduleList.size();
+		int n = compilationUnitList.size();
+		double[][] overallSimilarity = new double[m][n];
+		for(int i=0; i<m; i++){
+			for(int j=0; j<n; j++){
+				overallSimilarity[i][j] = (semanticSimilarityTable[i][j] + structuralSimilarityTable[i][j])/2;
+			}
+		}
+		
+		return overallSimilarity;
+	}
+	
+	/**
+	 * calculate the semantic (lexical) similarities between modules and compilation units.
+	 * @param moduleList
+	 * @param compilationUnitList
+	 * @return
+	 */
+	private double[][] generateSemanticSimilarityTable(ArrayList<ModuleWrapper> moduleList,
+			ArrayList<ICompilationUnitWrapper> compilationUnitList){
+		double[][] similarityTable = new double[moduleList.size()][compilationUnitList.size()];
+		
+		return similarityTable;
+	}
+	
+	/**
+	 * transmit the semantic similarity with page ranking algorithm.
+	 * @param semanticSimilarityTable
+	 * @param moduleList
+	 * @param compilationUnitList
+	 * @return
+	 */
+	private double[][] generateStructuralSimilarityTable(double[][] semanticSimilarityTable, 
+			ArrayList<ModuleWrapper> moduleList, ArrayList<ICompilationUnitWrapper> compilationUnitList){
+		double[][] similarityTable = new double[moduleList.size()][compilationUnitList.size()];
+		
+		return similarityTable;
+	}
+
+	private ArrayList<ModuleWrapper> getModuleList() throws PartInitException{
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
 		
@@ -59,10 +138,12 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 				
 				Reflexactoring reflexactoring = (Reflexactoring)diagramResource.getContents().get(0);
 				
-				ArrayList<Module> moduleList = new ArrayList<>();
+				ArrayList<ModuleWrapper> moduleList = new ArrayList<>();
 				for(Module module: reflexactoring.getModules()){
-					moduleList.add(module);
+					moduleList.add(new ModuleWrapper(module));
 				}
+				
+				return moduleList;
 			}
 		}
 		
