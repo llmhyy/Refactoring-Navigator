@@ -34,7 +34,9 @@ public class ICompilationUnitWrapper {
 		this.setDescription(content);
 	}
 	
-	
+	public String toString(){
+		return this.compilationUnit.getElementName();
+	}
 	
 	/**
 	 * @return the compilationUnit

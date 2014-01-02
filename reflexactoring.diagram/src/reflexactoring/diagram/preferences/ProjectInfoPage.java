@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.osgi.service.prefs.Preferences;
@@ -34,8 +35,10 @@ public class ProjectInfoPage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
 	public static final String TARGET_PORJECT = "projectName";
+	public static final String MAPPING_THRESHOLD = "mappingThreshold";
 	
 	private Combo projectCombo;
+	private Text mappingThresholdText;
 	
 	//private String defaultTargetProject;
 	/**
@@ -99,6 +102,13 @@ public class ProjectInfoPage extends PreferencePage implements
 				
 			}
 		});*/
+		Label mappingThresholdLabel = new Label(composite, SWT.NONE);
+		mappingThresholdLabel.setText("Mapping Threshold");
+		mappingThresholdText = new Text(composite, SWT.BORDER);
+		mappingThresholdText.setText(ReflexactoringUtil.getMappingThreshold());
+		GridData mappingThresholdData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		mappingThresholdData.horizontalSpan = 2;
+		mappingThresholdText.setLayoutData(mappingThresholdData);
 		
 		return composite;
 	}
@@ -120,9 +130,11 @@ public class ProjectInfoPage extends PreferencePage implements
 	public boolean performOk(){
 		Preferences preferences = ConfigurationScope.INSTANCE.getNode("Reflexactoring");
 		preferences.put(TARGET_PORJECT, this.projectCombo.getText());
+		preferences.put(MAPPING_THRESHOLD, this.mappingThresholdText.getText());
 		
 		//Activator.getDefault().getPreferenceStore().putValue(TARGET_PORJECT, this.projectCombo.getText());
 		ReflexactoringUtil.setTargetProjectName(this.projectCombo.getText());
+		ReflexactoringUtil.setMappingThreshold(this.mappingThresholdText.getText());
 		return true;
 	}
 }

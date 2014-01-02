@@ -26,6 +26,14 @@ public class ReflexactoringUtil {
 		Activator.getDefault().getPreferenceStore().putValue(ProjectInfoPage.TARGET_PORJECT, targetProjectName);
 	}
 	
+	public static String getMappingThreshold(){
+		return Activator.getDefault().getPreferenceStore().getString(ProjectInfoPage.MAPPING_THRESHOLD);
+	}
+	
+	public static void setMappingThreshold(String mappingThreshold){
+		Activator.getDefault().getPreferenceStore().putValue(ProjectInfoPage.MAPPING_THRESHOLD, mappingThreshold);
+	}
+	
 	public static String[] splitString(int splittingStype, String string){
 		if(splittingStype == CamelSplitting){
 			return splitCamelString(string);

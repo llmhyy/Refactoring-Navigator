@@ -43,6 +43,8 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			
 			generateMappingRelation(moduleList, compilationUnitWrapperList);
 			
+			//System.out.println();
+			
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -66,7 +68,24 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		 * should take care that one compilation unit can be mapped to only one module,
 		 * on the contrary, one module can be mapped to many compilation unit.
 		 */
-		
+		for(int j=0; j<compilationUnitList.size(); j++){
+			int index = 0;
+			double maxValue = -1.0;
+			for(int i=0; i<moduleList.size();i++){
+				if(overallSimilarityTable[i][j] >= Double.valueOf(ReflexactoringUtil.getMappingThreshold())
+						&& overallSimilarityTable[i][j] >= maxValue){
+					index = i;
+					maxValue = overallSimilarityTable[i][j];
+				}
+			}
+			
+			if(maxValue != -1.0){
+				ICompilationUnitWrapper unit = compilationUnitList.get(j);
+				ModuleWrapper module = moduleList.get(index);
+				unit.setMappingModule(module);
+				module.getMappingList().add(unit);
+			}
+		}
 	}
 	
 	/**
