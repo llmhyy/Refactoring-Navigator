@@ -47,5 +47,7 @@ public class ModuleWrapper {
 		this.mappingList = mappingList;
 	}
 	
-	
+	public String getDescription(){
+		return this.module.getDescription();
+	}
 }

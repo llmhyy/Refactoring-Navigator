@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.SimpleName;
 
+import reflexactoring.diagram.action.semantic.TokenExtractor;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
@@ -19,6 +20,7 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
 public class ICompilationUnitWrapper {
 	private ICompilationUnit compilationUnit;
 	private ModuleWrapper mappingModule;
+	private CompilationUnit javaUnit;
 	private String description;
 	
 	/**
@@ -27,29 +29,9 @@ public class ICompilationUnitWrapper {
 	public ICompilationUnitWrapper(ICompilationUnit compilationUnit) {
 		super();
 		this.compilationUnit = compilationUnit;
-		
-		CompilationUnit unit = AST.parseCompilationUnit(compilationUnit, false);
-		
-		final StringBuffer buffer = new StringBuffer();
-		unit.accept(new ASTVisitor() {
-			public boolean visit(SimpleName name){				
-				String identifier = name.getIdentifier();
-				String[] tokens = ReflexactoringUtil.mixedSplitting(identifier);
-				
-				for(String token: tokens){
-					if(token.length() > 1){
-						token = token.toLowerCase();
-						buffer.append(token + ";");											
-					}
-				}
-				
-				return false;
-			}
-		});
-		
-		String content = buffer.toString();
-		content = content.substring(0, content.length()-1);
-		this.description = content;
+		setJavaUnit(AST.parseCompilationUnit(compilationUnit, false));
+		String content = new TokenExtractor().extractTokens(compilationUnit);
+		this.setDescription(content);
 	}
 	
 	
@@ -77,6 +59,42 @@ public class ICompilationUnitWrapper {
 	 */
 	public void setMappingModule(ModuleWrapper mappingModule) {
 		this.mappingModule = mappingModule;
+	}
+
+
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+
+
+	/**
+	 * @return the javaUnit
+	 */
+	public CompilationUnit getJavaUnit() {
+		return javaUnit;
+	}
+
+
+
+	/**
+	 * @param javaUnit the javaUnit to set
+	 */
+	public void setJavaUnit(CompilationUnit javaUnit) {
+		this.javaUnit = javaUnit;
 	}
 	
 	

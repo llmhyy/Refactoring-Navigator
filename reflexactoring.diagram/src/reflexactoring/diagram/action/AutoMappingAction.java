@@ -1,6 +1,7 @@
 package reflexactoring.diagram.action;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -21,6 +22,7 @@ import org.eclipse.ui.PartInitException;
 
 import reflexactoring.Module;
 import reflexactoring.Reflexactoring;
+import reflexactoring.diagram.action.semantic.TFIDF;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -105,7 +107,43 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			ArrayList<ICompilationUnitWrapper> compilationUnitList){
 		double[][] similarityTable = new double[moduleList.size()][compilationUnitList.size()];
 		
+		for(int i=0; i<moduleList.size(); i++){
+			ModuleWrapper module = moduleList.get(i);
+			/**
+			 * The first vector represents module description while the following vectors represent
+			 * compilation unit description.
+			 */
+			List<double[]> vectorList = generateTFIDFTable(module, compilationUnitList);
+			double[] moduleVector = vectorList.get(0);
+			for(int k=1; k<vectorList.size(); k++){
+				double[] compilationUnitVector = vectorList.get(k);
+				double similarity = ReflexactoringUtil.computeEuclideanSimilarity(moduleVector, compilationUnitVector);
+				similarityTable[i][k-1] = similarity;
+			}
+		}
+		
 		return similarityTable;
+	}
+	
+	/**
+	 * The first vector represents module description while the following vectors represent
+	 * compilation unit description.
+	 * @param module
+	 * @param compilationUnitList
+	 * @return
+	 */
+	private List<double[]> generateTFIDFTable(ModuleWrapper module,
+			ArrayList<ICompilationUnitWrapper> compilationUnitList){
+		TFIDF tfidf = new TFIDF(false);
+		
+		ArrayList<String> documentList = new ArrayList<>();
+		documentList.add(ReflexactoringUtil.performStemming(module.getDescription().toLowerCase()));
+		
+		for(ICompilationUnitWrapper compiltionUnit: compilationUnitList){
+			documentList.add(compiltionUnit.getDescription());
+		}
+		
+		return tfidf.getTFIDFfromString(documentList);
 	}
 	
 	/**
