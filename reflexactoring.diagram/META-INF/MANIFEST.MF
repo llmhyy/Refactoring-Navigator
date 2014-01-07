@@ -43,6 +43,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.ui,
  org.eclipse.ui.workbench,
  org.eclipse.equinox.registry,
- org.eclipse.gmf.runtime.notation
+ org.eclipse.gmf.runtime.notation,
+ org.eclipse.gmf.runtime.emf.type.core,
+ org.eclipse.emf.transaction
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
