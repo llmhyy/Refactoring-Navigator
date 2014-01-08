@@ -27,6 +27,7 @@ import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
 import org.eclipse.gmf.runtime.emf.type.core.commands.SetValueCommand;
 import org.eclipse.gmf.runtime.emf.type.core.requests.CreateElementRequest;
+import org.eclipse.gmf.runtime.emf.type.core.requests.CreateRelationshipRequest;
 import org.eclipse.gmf.runtime.emf.type.core.requests.SetRequest;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -39,12 +40,15 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.Module;
 import reflexactoring.Reflexactoring;
 import reflexactoring.ReflexactoringPackage;
+import reflexactoring.Type;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.edit.commands.Class2CreateCommand;
 import reflexactoring.diagram.edit.commands.ClassCreateCommand;
 import reflexactoring.diagram.edit.commands.Interface2CreateCommand;
 import reflexactoring.diagram.edit.commands.InterfaceCreateCommand;
+import reflexactoring.diagram.edit.commands.ModuleDependencyCreateCommand;
+import reflexactoring.diagram.edit.commands.TypeDependencyCreateCommand;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
@@ -139,9 +143,13 @@ public class DiagramUpdater {
 	}
 	
 	private void setTypeValue(EObject targetObject, ICompilationUnitWrapper unitWrapper, IDiagramEditDomain diagramEditDomain){
-		SetRequest setReq = new SetRequest(targetObject, ReflexactoringPackage.eINSTANCE.getType_Name(), unitWrapper.getUniqueName());
-		SetValueCommand setClassNameCommand = new SetValueCommand(setReq);
-		diagramEditDomain.getDiagramCommandStack().execute(new ICommandProxy(setClassNameCommand));
+		SetRequest setNameReq = new SetRequest(targetObject, ReflexactoringPackage.eINSTANCE.getType_Name(), unitWrapper.getSimpleName());
+		SetValueCommand setNameCommand = new SetValueCommand(setNameReq);
+		diagramEditDomain.getDiagramCommandStack().execute(new ICommandProxy(setNameCommand));
+		
+		SetRequest setPackageReq = new SetRequest(targetObject, ReflexactoringPackage.eINSTANCE.getType_PackageName(), unitWrapper.getPackageName());
+		SetValueCommand setPackageCommand = new SetValueCommand(setPackageReq);
+		diagramEditDomain.getDiagramCommandStack().execute(new ICommandProxy(setPackageCommand));
 	}
 
 	/**
@@ -150,7 +158,20 @@ public class DiagramUpdater {
 	 */
 	private void generateLowLevelConnection(DiagramRootEditPart diagramRoot,
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList) {
-		// TODO Auto-generated method stub
+		for(ICompilationUnitWrapper callerWrapper: compilationUnitWrapperList){
+			for(ICompilationUnitWrapper calleeWrapper: compilationUnitWrapperList){
+				if(callerWrapper != calleeWrapper && callerWrapper.getCalleeCompilationUnitList().containsKey(calleeWrapper)){
+					Type callerType = findType(diagramRoot, callerWrapper);
+					Type calleeType = findType(diagramRoot, calleeWrapper);
+					
+					IElementType relationType = ReflexactoringElementTypes.TypeDependency_4003;
+					CreateRelationshipRequest req = new CreateRelationshipRequest(callerType, calleeType, relationType);
+					
+					TypeDependencyCreateCommand createCommand = new TypeDependencyCreateCommand(req, callerType, calleeType);
+					getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createCommand));	
+				}
+			}
+		}
 		
 	}
 
@@ -211,6 +232,39 @@ public class DiagramUpdater {
 					}
 				}
 			}
+		}
+		
+		return null;
+	}
+	
+	private Type findType(DiagramRootEditPart diagramRoot, ICompilationUnitWrapper unit){
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
+				List views = ((View)rootEditPart.getModel()).getChildren();
+				for(Object objView: views){
+					View view = (View)objView;
+					EObject eObj = view.getElement();
+					if(eObj instanceof Type){
+						Type type = (Type)obj;
+						
+						String fullName = type.getPackageName() + "." + type.getName();
+						if(unit.getFullQualifiedName().equals(fullName)){
+							return type;
+						}
+					}
+					else if(eObj instanceof Module){
+						Module module = (Module)eObj;
+						for(Type type: module.getMappingTypes()){
+							String fullName = type.getPackageName() + "." + type.getName();
+							if(unit.getFullQualifiedName().equals(fullName)){
+								return type;
+							}
+						}
+					}
+				}
+			}
+			
 		}
 		
 		return null;

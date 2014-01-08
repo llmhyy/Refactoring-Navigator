@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -44,18 +45,35 @@ public class ICompilationUnitWrapper {
 		return this.compilationUnit.getElementName();
 	}
 	
-	public String getUniqueName(){
-		return this.compilationUnit.getElementName();
+	public String getSimpleName(){
+		String uniqueName = this.compilationUnit.getElementName();
+		uniqueName = uniqueName.substring(0, uniqueName.indexOf(".java"));
+		return uniqueName;
+	}
+	
+	public String getPackageName(){
+		try {
+			return this.compilationUnit.getPackageDeclarations()[0].getElementName();
+		} catch (JavaModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "";
+	}
+	
+	public String getFullQualifiedName(){
+		return getPackageName() + "." + getSimpleName();
 	}
 	
 	public int hashCode(){
-		return getUniqueName().hashCode();
+		return getSimpleName().hashCode();
 	}
 	
 	public boolean equals(Object obj){
 		if(obj instanceof ICompilationUnitWrapper){
 			ICompilationUnitWrapper unit = (ICompilationUnitWrapper)obj;
-			return getUniqueName().equals(unit.getUniqueName());
+			return getSimpleName().equals(unit.getSimpleName());
 		}
 		
 		return false;
