@@ -4,6 +4,8 @@
 package reflexactoring.diagram.action;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -36,12 +38,15 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.junit.internal.RealSystem;
 
 import reflexactoring.Module;
+import reflexactoring.ModuleDependency;
 import reflexactoring.Reflexactoring;
 import reflexactoring.ReflexactoringPackage;
 import reflexactoring.Type;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ModuleConnectionWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.edit.commands.Class2CreateCommand;
 import reflexactoring.diagram.edit.commands.ClassCreateCommand;
@@ -94,7 +99,7 @@ public class DiagramUpdater {
 	 * @param compilationUnitWrapperList
 	 * @throws JavaModelException 
 	 */
-	private void generateLowLevelModel(DiagramRootEditPart diagramRoot,
+	protected void generateLowLevelModel(DiagramRootEditPart diagramRoot,
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList) throws JavaModelException {
 		for(ICompilationUnitWrapper unitWrapper: compilationUnitWrapperList){
 			ModuleWrapper mappingModuleWrapper = unitWrapper.getMappingModule();
@@ -142,21 +147,11 @@ public class DiagramUpdater {
 		}
 	}
 	
-	private void setTypeValue(EObject targetObject, ICompilationUnitWrapper unitWrapper, IDiagramEditDomain diagramEditDomain){
-		SetRequest setNameReq = new SetRequest(targetObject, ReflexactoringPackage.eINSTANCE.getType_Name(), unitWrapper.getSimpleName());
-		SetValueCommand setNameCommand = new SetValueCommand(setNameReq);
-		diagramEditDomain.getDiagramCommandStack().execute(new ICommandProxy(setNameCommand));
-		
-		SetRequest setPackageReq = new SetRequest(targetObject, ReflexactoringPackage.eINSTANCE.getType_PackageName(), unitWrapper.getPackageName());
-		SetValueCommand setPackageCommand = new SetValueCommand(setPackageReq);
-		diagramEditDomain.getDiagramCommandStack().execute(new ICommandProxy(setPackageCommand));
-	}
-
 	/**
 	 * @param diagramRoot
 	 * @param compilationUnitWrapperList
 	 */
-	private void generateLowLevelConnection(DiagramRootEditPart diagramRoot,
+	protected void generateLowLevelConnection(DiagramRootEditPart diagramRoot,
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList) {
 		for(ICompilationUnitWrapper callerWrapper: compilationUnitWrapperList){
 			for(ICompilationUnitWrapper calleeWrapper: compilationUnitWrapperList){
@@ -180,13 +175,86 @@ public class DiagramUpdater {
 	 * @param moduleList
 	 * @param compilationUnitWrapperList
 	 */
-	private void showModelConformance(DiagramRootEditPart diagramRoot,
+	protected void showModelConformance(DiagramRootEditPart diagramRoot,
 			ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList) {
-		// TODO Auto-generated method stub
+		/**
+		 * Prepare the comparing material -- two sets of connections, one for conceived connections while the 
+		 * other one for realistic connections.
+		 */
+		Reflexactoring root = findReflexactoring(diagramRoot);
+		HashSet<ModuleConnectionWrapper> conceivedConnectionList = new HashSet<>();
+		for(ModuleDependency connection: root.getModuleDenpencies()){
+			ModuleWrapper sourceModule = new ModuleWrapper(connection.getOrigin());
+			ModuleWrapper targetModule = new ModuleWrapper(connection.getDestination());
+			ModuleConnectionWrapper connectionWrapper = new ModuleConnectionWrapper(sourceModule, targetModule);
+			
+			conceivedConnectionList.add(connectionWrapper);
+		}
 		
+		HashSet<ModuleConnectionWrapper> realisticConnectionList = recoverRealisticConnectionList(compilationUnitWrapperList);
+		
+		/**
+		 * Start comparing the module conformance between high and low level module.
+		 */
+		
+		/**
+		 * First, identify matched connections from two sets.
+		 */
+		Iterator<ModuleConnectionWrapper> iterator = conceivedConnectionList.iterator();
+		while(iterator.hasNext()){
+			ModuleConnectionWrapper connection = iterator.next();
+			if(realisticConnectionList.contains(connection)){
+				iterator.remove();
+				realisticConnectionList.remove(connection);
+				
+				
+			}
+		}
+		
+		/**
+		 * Second, deal with missing dependency, i.e., the dependencies expected by user 
+		 * while not exist in code.
+		 * 
+		 */
+		for(ModuleConnectionWrapper connection: conceivedConnectionList){
+			
+		}
+		
+		/**
+		 * Third, deal with wrong dependencies, i.e., the dependencies unexpected by user
+		 * while exist in code.
+		 */
 	}
 	
+	private HashSet<ModuleConnectionWrapper> recoverRealisticConnectionList(
+			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList){
+		HashSet<ModuleConnectionWrapper> realisticConnectionList = new HashSet<>();
+		for(ICompilationUnitWrapper callerUnit: compilationUnitWrapperList){
+			for(ICompilationUnitWrapper calleeUnit: compilationUnitWrapperList){
+				ModuleWrapper callerModule = callerUnit.getMappingModule();
+				ModuleWrapper calleeModule = calleeUnit.getMappingModule();
+				
+				if(callerModule != null && calleeModule != null && !callerModule.equals(calleeModule)){
+					ModuleConnectionWrapper connection = new ModuleConnectionWrapper(callerModule, calleeModule);
+					realisticConnectionList.add(connection);
+				}
+			}
+		}
+		
+		return realisticConnectionList;
+	}
+	
+	private void setTypeValue(EObject targetObject, ICompilationUnitWrapper unitWrapper, IDiagramEditDomain diagramEditDomain){
+		SetRequest setNameReq = new SetRequest(targetObject, ReflexactoringPackage.eINSTANCE.getType_Name(), unitWrapper.getSimpleName());
+		SetValueCommand setNameCommand = new SetValueCommand(setNameReq);
+		diagramEditDomain.getDiagramCommandStack().execute(new ICommandProxy(setNameCommand));
+		
+		SetRequest setPackageReq = new SetRequest(targetObject, ReflexactoringPackage.eINSTANCE.getType_PackageName(), unitWrapper.getPackageName());
+		SetValueCommand setPackageCommand = new SetValueCommand(setPackageReq);
+		diagramEditDomain.getDiagramCommandStack().execute(new ICommandProxy(setPackageCommand));
+	}
+
 	private ReflexactoringEditPart getRootEditPart(DiagramRootEditPart diagramRoot){
 		for(Object obj: diagramRoot.getChildren()){
 			if(obj instanceof ReflexactoringEditPart){

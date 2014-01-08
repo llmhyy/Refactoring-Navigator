@@ -22,6 +22,19 @@ public class ModuleWrapper {
 		super();
 		this.module = module;
 	}
+	
+	public boolean equals(Object obj){
+		if(obj instanceof ModuleWrapper){
+			ModuleWrapper moduleWrapper = (ModuleWrapper)obj;
+			if(moduleWrapper.getName().equals(getName()) && moduleWrapper.getDescription().equals(getDescription())){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
 	/**
 	 * @return the module
 	 */
@@ -49,5 +62,9 @@ public class ModuleWrapper {
 	
 	public String getDescription(){
 		return this.module.getDescription();
+	}
+	
+	public String getName(){
+		return this.module.getName();
 	}
 }
