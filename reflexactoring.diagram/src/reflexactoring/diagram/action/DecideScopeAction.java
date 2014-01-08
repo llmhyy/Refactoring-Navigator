@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jdt.internal.core.PackageFragmentRoot;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.action.IAction;
@@ -157,7 +158,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 				try {
 					IPackageFragmentRoot[] roots = project.getPackageFragmentRoots();
 					for(int i=0; i<roots.length; i++){
-						if(roots[i] instanceof PackageFragmentRoot){
+						if(roots[i] instanceof PackageFragmentRoot && !(roots[i] instanceof JarPackageFragmentRoot)){
 							PackageFragmentRoot root = (PackageFragmentRoot)roots[i];
 							return root.getChildren();
 						}
