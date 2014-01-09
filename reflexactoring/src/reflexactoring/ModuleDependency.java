@@ -77,6 +77,7 @@ public interface ModuleDependency extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>Name</b></em>' attribute.
+	 * The default value is <code>"origin"</code>.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Name</em>' attribute isn't clear,
@@ -86,7 +87,7 @@ public interface ModuleDependency extends EObject {
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
 	 * @see reflexactoring.ReflexactoringPackage#getModuleDependency_Name()
-	 * @model required="true"
+	 * @model default="origin" required="true"
 	 * @generated
 	 */
 	String getName();

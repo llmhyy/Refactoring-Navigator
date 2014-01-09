@@ -82,20 +82,25 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 			df.setLineWidth(2);
 			return df;
 		}
+		
+		public void setOriginStyle(){
+			this.setLineStyle(SWT.LINE_SOLID);
+			this.setForegroundColor(THIS_FORE);
+		}
 
 		public void setConformanceStyle(){
 			this.setLineStyle(SWT.LINE_SOLID);
-			this.setForegroundColor(new Color(null, 85, 138, 37));
+			this.setForegroundColor(COMFORMANCE);
 		}
 		
 		public void setAbsenceStyle(){
 			this.setLineStyle(SWT.LINE_DOT);
-			this.setForegroundColor(new Color(null, 255, 92, 72));
+			this.setForegroundColor(ABSENCE);
 		}
 		
 		public void setDivergneceStyle(){
 			this.setLineStyle(SWT.LINE_DASH);
-			this.setForegroundColor(new Color(null, 210, 180, 140));
+			this.setForegroundColor(DIVERGENCE);
 		}
 	}
 
@@ -104,4 +109,7 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 	 */
 	static final Color THIS_FORE = new Color(null, 0, 0, 0);
 
+	static final Color COMFORMANCE = new Color(null, 85, 138, 37);
+	static final Color ABSENCE = new Color(null, 210, 180, 140);
+	static final Color DIVERGENCE = new Color(null, 255, 92, 72);
 }

@@ -58,7 +58,7 @@ public class ModuleDependencyImpl extends MinimalEObjectImpl.Container implement
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String NAME_EDEFAULT = null;
+	protected static final String NAME_EDEFAULT = "origin";
 
 	/**
 	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.

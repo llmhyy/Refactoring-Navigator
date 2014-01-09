@@ -18,6 +18,7 @@ import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gmf.runtime.common.core.command.ICommand;
+import org.eclipse.gmf.runtime.diagram.core.commands.DeleteCommand;
 import org.eclipse.gmf.runtime.diagram.core.edithelpers.CreateElementRequestAdapter;
 import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.diagram.ui.commands.CreateCommand;
@@ -42,6 +43,7 @@ import org.eclipse.gmf.runtime.emf.type.core.requests.CreateElementRequest;
 import org.eclipse.gmf.runtime.emf.type.core.requests.CreateRelationshipRequest;
 import org.eclipse.gmf.runtime.emf.type.core.requests.DestroyElementRequest;
 import org.eclipse.gmf.runtime.emf.type.core.requests.SetRequest;
+import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
@@ -150,7 +152,18 @@ public class DiagramUpdater {
 		for(int i=0; i<count; i++){
 			ModuleDependency dependency = reflexactoring.getModuleDenpencies().get(index);
 			if(dependency.getName().equals(DiagramUpdater.DIVERGENCE)){
-				deleteElementOnCanvas(diagramRoot, dependency);				
+				Edge edge = (Edge)findViewOfSpecificModuleDependency(diagramRoot, dependency);
+				
+				DestroyElementRequest destroyRequest = new DestroyElementRequest(dependency, false);
+				DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
+				DeleteCommand deleteCommand = new DeleteCommand(getRootEditPart(diagramRoot).getEditingDomain(), edge);
+				
+				CompoundCommand comCommand = new CompoundCommand();
+				comCommand.add(new ICommandProxy(destroyCommand));
+				comCommand.add(new ICommandProxy(deleteCommand));
+				
+				getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(comCommand);
+				
 			}
 			else{
 				setDependencyType(diagramRoot, dependency, DiagramUpdater.ORIGIN);
@@ -455,6 +468,29 @@ public class DiagramUpdater {
 						Module m = (Module)eObj;
 						if(m.getName().equals(module.getName()) && m.getDescription().equals(module.getDescription())){
 							return view;
+						}
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	private View findViewOfSpecificModuleDependency(DiagramRootEditPart diagramRoot, ModuleDependency dependency){
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
+				List<?> connectionList = rootEditPart.getConnections();
+				for(Object connObj: connectionList){
+					ModuleDependencyEditPart dependencyPart = (ModuleDependencyEditPart)connObj;
+					EObject eObj = dependencyPart.resolveSemanticElement();
+					if(eObj instanceof ModuleDependency){
+						ModuleDependency d = (ModuleDependency)eObj;
+						if(d.getName().equals(dependency.getName()) &&
+								d.getDestination().getDescription().equals(dependency.getDestination().getDescription()) &&
+								d.getOrigin().getDescription().equals(dependency.getOrigin().getDescription())){
+							return dependencyPart.getPrimaryView();
 						}
 					}
 				}

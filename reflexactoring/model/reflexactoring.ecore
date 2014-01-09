@@ -38,7 +38,8 @@
         eType="#//Module"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="destination" lowerBound="1"
         eType="#//Module"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral="origin"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="TypeDependency">
     <eStructuralFeatures xsi:type="ecore:EReference" name="origin" lowerBound="1"
