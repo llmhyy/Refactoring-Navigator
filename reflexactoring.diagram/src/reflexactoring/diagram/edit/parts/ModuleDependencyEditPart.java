@@ -8,8 +8,9 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ITreeBranchEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.notation.View;
-
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+
 import reflexactoring.diagram.edit.policies.ModuleDependencyItemSemanticEditPolicy;
 
 /**
@@ -82,6 +83,20 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 			return df;
 		}
 
+		public void setConformanceStyle(){
+			this.setLineStyle(SWT.LINE_SOLID);
+			this.setForegroundColor(new Color(null, 85, 138, 37));
+		}
+		
+		public void setAbsenceStyle(){
+			this.setLineStyle(SWT.LINE_DOT);
+			this.setForegroundColor(new Color(null, 255, 92, 72));
+		}
+		
+		public void setDivergneceStyle(){
+			this.setLineStyle(SWT.LINE_DASH);
+			this.setForegroundColor(new Color(null, 210, 180, 140));
+		}
 	}
 
 	/**

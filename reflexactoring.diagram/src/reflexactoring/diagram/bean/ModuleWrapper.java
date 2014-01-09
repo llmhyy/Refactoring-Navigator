@@ -67,4 +67,8 @@ public class ModuleWrapper {
 	public String getName(){
 		return this.module.getName();
 	}
+	
+	public String toString(){
+		return getName() + ":" + getDescription();
+	}
 }

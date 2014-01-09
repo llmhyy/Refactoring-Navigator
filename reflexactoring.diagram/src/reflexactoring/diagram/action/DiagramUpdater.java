@@ -10,21 +10,30 @@ import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gmf.runtime.common.core.command.ICommand;
 import org.eclipse.gmf.runtime.diagram.core.edithelpers.CreateElementRequestAdapter;
+import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
 import org.eclipse.gmf.runtime.diagram.ui.commands.CreateCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.DeferredCreateConnectionViewAndElementCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditDomain;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
 import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramEditDomain;
+import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramWorkbenchPart;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElementRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElementRequest.ConnectionViewAndElementDescriptor;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest.ViewAndElementDescriptor;
+import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
 import org.eclipse.gmf.runtime.emf.type.core.commands.SetValueCommand;
@@ -54,9 +63,12 @@ import reflexactoring.diagram.edit.commands.Interface2CreateCommand;
 import reflexactoring.diagram.edit.commands.InterfaceCreateCommand;
 import reflexactoring.diagram.edit.commands.ModuleDependencyCreateCommand;
 import reflexactoring.diagram.edit.commands.TypeDependencyCreateCommand;
+import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
+import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart.ModuleDependencyFigure;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
+import reflexactoring.diagram.part.ReflexactoringDiagramEditorUtil;
 import reflexactoring.diagram.providers.ReflexactoringElementTypes;
 import reflexactoring.impl.ReflexactoringImpl;
 import reflexactoring.provider.ReflexactoringEditPlugin;
@@ -154,16 +166,32 @@ public class DiagramUpdater {
 	protected void generateLowLevelConnection(DiagramRootEditPart diagramRoot,
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList) {
 		for(ICompilationUnitWrapper callerWrapper: compilationUnitWrapperList){
-			for(ICompilationUnitWrapper calleeWrapper: compilationUnitWrapperList){
-				if(callerWrapper != calleeWrapper && callerWrapper.getCalleeCompilationUnitList().containsKey(calleeWrapper)){
+			for(ICompilationUnitWrapper calleeWrapper: callerWrapper.getCalleeCompilationUnitList().keySet()){
+				if(callerWrapper != calleeWrapper){
 					Type callerType = findType(diagramRoot, callerWrapper);
 					Type calleeType = findType(diagramRoot, calleeWrapper);
 					
 					IElementType relationType = ReflexactoringElementTypes.TypeDependency_4003;
 					CreateRelationshipRequest req = new CreateRelationshipRequest(callerType, calleeType, relationType);
 					
-					TypeDependencyCreateCommand createCommand = new TypeDependencyCreateCommand(req, callerType, calleeType);
-					getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createCommand));	
+					ConnectionViewAndElementDescriptor viewDescriptor = new ConnectionViewAndElementDescriptor(
+							new CreateElementRequestAdapter(req),
+							((IHintedType) relationType).getSemanticHint(),
+							ReflexactoringDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT);
+					
+					CreateConnectionViewAndElementRequest request = new CreateConnectionViewAndElementRequest(
+							viewDescriptor);
+					
+					View callerView = findViewOfSepcificType(diagramRoot, callerType);
+					View calleeView = findViewOfSepcificType(diagramRoot, calleeType);
+					
+					ICommand createRelationCommand = new DeferredCreateConnectionViewAndElementCommand(
+							request, new EObjectAdapter(callerView),
+							new EObjectAdapter(calleeView),
+							diagramRoot.getViewer());
+					CompoundCommand c = new CompoundCommand();
+					c.add(new ICommandProxy(createRelationCommand));
+					getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);	
 				}
 			}
 		}
@@ -197,7 +225,7 @@ public class DiagramUpdater {
 		/**
 		 * Start comparing the module conformance between high and low level module.
 		 */
-		
+
 		/**
 		 * First, identify matched connections from two sets.
 		 */
@@ -208,30 +236,97 @@ public class DiagramUpdater {
 				iterator.remove();
 				realisticConnectionList.remove(connection);
 				
-				
+				ModuleDependencyFigure connectionFigure = findCorrespondingDepedencyFigure(diagramRoot, connection);
+				connectionFigure.setConformanceStyle();
 			}
 		}
 		
 		/**
-		 * Second, deal with missing dependency, i.e., the dependencies expected by user 
+		 * Second, deal with missing dependency (absence connection), i.e., the dependencies expected by user 
 		 * while not exist in code.
 		 * 
 		 */
-		for(ModuleConnectionWrapper connection: conceivedConnectionList){
-			
+		for(ModuleConnectionWrapper conceivedConnection: conceivedConnectionList){
+			ModuleDependencyFigure connectionFigure = createDependency(diagramRoot, conceivedConnection);
+			connectionFigure.setAbsenceStyle();
 		}
 		
 		/**
-		 * Third, deal with wrong dependencies, i.e., the dependencies unexpected by user
+		 * Third, deal with wrong dependencies (divergent connection), i.e., the dependencies unexpected by user
 		 * while exist in code.
 		 */
+		for(ModuleConnectionWrapper divergentConnection: realisticConnectionList){
+			ModuleDependencyFigure connectionFigure = createDependency(diagramRoot, divergentConnection);
+			connectionFigure.setDivergneceStyle();
+		}
+	}
+	
+	private ModuleDependencyFigure createDependency(DiagramRootEditPart diagramRoot, ModuleConnectionWrapper connection){
+		Module sourceModule = findModule(diagramRoot, connection.getSourceModule().getModule());
+		Module targetModule = findModule(diagramRoot, connection.getTargetModule().getModule());
+		
+		IElementType connectionType = ReflexactoringElementTypes.ModuleDependency_4001;
+		CreateRelationshipRequest req = new CreateRelationshipRequest(sourceModule, targetModule, connectionType);
+		
+		ConnectionViewAndElementDescriptor viewDescriptor = new ConnectionViewAndElementDescriptor(
+				new CreateElementRequestAdapter(req),
+				((IHintedType) connectionType).getSemanticHint(),
+				ReflexactoringDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT);
+		
+		CreateConnectionViewAndElementRequest request = new CreateConnectionViewAndElementRequest(
+				viewDescriptor);
+		
+		
+		View callerView = findViewOfSpecificModule(diagramRoot, sourceModule);
+		View calleeView = findViewOfSpecificModule(diagramRoot, targetModule);
+		
+		ICommand createRelationCommand = new DeferredCreateConnectionViewAndElementCommand(
+				request, new EObjectAdapter(callerView),
+				new EObjectAdapter(calleeView),
+				diagramRoot.getViewer());
+		CompoundCommand c = new CompoundCommand();
+		c.add(new ICommandProxy(createRelationCommand));
+		
+		getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);	
+		
+		ModuleDependencyFigure connectionFigure = findCorrespondingDepedencyFigure(diagramRoot, connection);
+		
+		return connectionFigure;
+	}
+	
+	private ModuleDependencyFigure findCorrespondingDepedencyFigure(DiagramRootEditPart diagramRoot,
+			ModuleConnectionWrapper connection){
+		
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
+				
+				List editPartList = rootEditPart.getConnections();
+				for(Object connectionObj: editPartList){
+					ConnectionEditPart connectionPart = (ConnectionEditPart)connectionObj;
+					if(connectionPart instanceof ModuleDependencyEditPart){
+						ModuleDependencyEditPart dependencyPart = (ModuleDependencyEditPart)connectionPart;
+						ModuleDependency dependency = (ModuleDependency)dependencyPart.resolveSemanticElement();
+						ModuleWrapper sourceModule = new ModuleWrapper(dependency.getOrigin());
+						ModuleWrapper targetModule = new ModuleWrapper(dependency.getDestination());
+						ModuleConnectionWrapper connectionWrapper = new ModuleConnectionWrapper(sourceModule, targetModule);
+						
+						if(connectionWrapper.equals(connection)){
+							return dependencyPart.getPrimaryShape();
+						}
+					}
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	private HashSet<ModuleConnectionWrapper> recoverRealisticConnectionList(
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList){
 		HashSet<ModuleConnectionWrapper> realisticConnectionList = new HashSet<>();
 		for(ICompilationUnitWrapper callerUnit: compilationUnitWrapperList){
-			for(ICompilationUnitWrapper calleeUnit: compilationUnitWrapperList){
+			for(ICompilationUnitWrapper calleeUnit: callerUnit.getCalleeCompilationUnitList().keySet()){
 				ModuleWrapper callerModule = callerUnit.getMappingModule();
 				ModuleWrapper calleeModule = calleeUnit.getMappingModule();
 				
@@ -275,7 +370,10 @@ public class DiagramUpdater {
 					View view = (View)objView;
 					EObject eObj = view.getElement();
 					if(eObj instanceof Module){
-						return module.getDescription().equals(((Module)eObj).getDescription())? view : null;
+						Module m = (Module)eObj;
+						if(m.getName().equals(module.getName()) && m.getDescription().equals(module.getDescription())){
+							return view;
+						}
 					}
 				}
 			}
@@ -284,6 +382,54 @@ public class DiagramUpdater {
 		return null;
 	}
 	
+	/**
+	 * @param diagramRoot
+	 * @param type
+	 * @return
+	 */
+	private View findViewOfSepcificType(DiagramRootEditPart diagramRoot,
+			Type type) {
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart editPart = (ReflexactoringEditPart)obj;
+				
+				List<?> editPartList = editPart.getChildren();
+				
+				for(int i=0; i<editPartList.size(); i++){
+					EditPart part = (EditPart) editPartList.get(i);
+					View view = (View)part.getModel();
+					EObject eObj = view.getElement();
+					if(eObj instanceof Type){
+						Type t = (Type)eObj;
+						if(t.getName().equals(type.getName())
+								&& t.getPackageName().equals(type.getPackageName())){
+							return view;
+						}
+					}
+					else if(eObj instanceof Module){
+						List<?> subEditPartList = part.getChildren();
+						for(Object typePart: ((EditPart) subEditPartList.get(1)).getChildren()){
+							EditPart subPart = (EditPart)typePart;
+							View subView = (View)subPart.getModel();
+							EObject eSubObj = subView.getElement();
+							if(eSubObj instanceof Type){
+								Type t = (Type)eSubObj;
+								if(t.getName().equals(type.getName())
+										&& t.getPackageName().equals(type.getPackageName())){
+									return subView;
+								}
+							}
+							
+						}
+					}
+				}
+			}
+		}
+		
+		
+		return null;
+	}
+
 	private Module findModule(DiagramRootEditPart diagramRoot, Module module){
 		for(Object obj: diagramRoot.getChildren()){
 			if(obj instanceof ReflexactoringEditPart){
@@ -294,7 +440,8 @@ public class DiagramUpdater {
 					EObject eObj = view.getElement();
 					if(eObj instanceof Module){
 						Module currentModule = (Module)eObj;
-						if(module.getDescription().equals(currentModule.getDescription())){
+						if(module.getDescription().equals(currentModule.getDescription())
+								&& module.getName().equals(currentModule.getName())){
 							return currentModule;
 						}
 					}
@@ -305,6 +452,8 @@ public class DiagramUpdater {
 		return null;
 	}
 	
+	
+	
 	private Type findType(DiagramRootEditPart diagramRoot, ICompilationUnitWrapper unit){
 		for(Object obj: diagramRoot.getChildren()){
 			if(obj instanceof ReflexactoringEditPart){
@@ -314,7 +463,7 @@ public class DiagramUpdater {
 					View view = (View)objView;
 					EObject eObj = view.getElement();
 					if(eObj instanceof Type){
-						Type type = (Type)obj;
+						Type type = (Type)eObj;
 						
 						String fullName = type.getPackageName() + "." + type.getName();
 						if(unit.getFullQualifiedName().equals(fullName)){

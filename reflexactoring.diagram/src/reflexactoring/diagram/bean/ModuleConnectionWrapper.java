@@ -16,6 +16,10 @@ public class ModuleConnectionWrapper {
 		this.targetModule = targetModule;
 	}
 
+	public String toString(){
+		return sourceModule.getName() + "=>" + targetModule.getName();
+	}
+	
 	public int hashCode(){
 		return (sourceModule.getDescription() + targetModule.getDescription()).hashCode();
 	}
