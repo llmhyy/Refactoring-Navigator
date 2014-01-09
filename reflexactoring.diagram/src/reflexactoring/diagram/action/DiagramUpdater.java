@@ -36,9 +36,11 @@ import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest.V
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
+import org.eclipse.gmf.runtime.emf.type.core.commands.DestroyElementCommand;
 import org.eclipse.gmf.runtime.emf.type.core.commands.SetValueCommand;
 import org.eclipse.gmf.runtime.emf.type.core.requests.CreateElementRequest;
 import org.eclipse.gmf.runtime.emf.type.core.requests.CreateRelationshipRequest;
+import org.eclipse.gmf.runtime.emf.type.core.requests.DestroyElementRequest;
 import org.eclipse.gmf.runtime.emf.type.core.requests.SetRequest;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -64,6 +66,7 @@ import reflexactoring.diagram.edit.commands.InterfaceCreateCommand;
 import reflexactoring.diagram.edit.commands.ModuleDependencyCreateCommand;
 import reflexactoring.diagram.edit.commands.TypeDependencyCreateCommand;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
+import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart.ModuleDependencyFigure;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
@@ -81,6 +84,15 @@ import reflexactoring.provider.ReflexactoringEditPlugin;
  *
  */
 public class DiagramUpdater {
+	
+	/**
+	 * Difference types 
+	 */
+	public static final String ORIGIN = "origin";
+	public static final String CONFORMANCE = "conformance";
+	public static final String DIVERGENCE = "divergence";
+	public static final String ABSENCE = "absence";
+	
 	/**
 	 * Create compilation units and their relations on diagram.
 	 * 
@@ -95,8 +107,10 @@ public class DiagramUpdater {
 		
 		RootEditPart root = diagram.getRootEditPart();
 		DiagramRootEditPart diagramRoot = (DiagramRootEditPart)root;
-		
+		//clearCanvas(diagramRoot);
 		try {
+			clearCanvas(diagramRoot);
+			
 			generateLowLevelModel(diagramRoot, compilationUnitWrapperList);
 			generateLowLevelConnection(diagramRoot, compilationUnitWrapperList);
 			
@@ -106,6 +120,52 @@ public class DiagramUpdater {
 		}
 	}
 
+	protected void clearCanvas(DiagramRootEditPart diagramRoot){
+		Reflexactoring reflexactoring = findReflexactoring(diagramRoot);
+		
+		/**
+		 * delete all the types first. Here, there will be a concurrent modification exception if you
+		 * iterates all the elements in diagram. Therefore, I use array instead of iterator. Thus, when
+		 * I delete an element, its successor will be in its place immediately.
+		 */
+		int count = reflexactoring.getTypes().size();
+		for(int i=0; i<count; i++){
+			Type type = reflexactoring.getTypes().get(0);
+			deleteElementOnCanvas(diagramRoot, type);
+		}
+		
+		for(Module module: reflexactoring.getModules()){
+			int innerCount = module.getMappingTypes().size();
+			for(int j=0; j<innerCount; j++){
+				Type type = module.getMappingTypes().get(0);
+				deleteElementOnCanvas(diagramRoot, type);
+			}
+		}
+		
+		/**
+		 * delete divergent edges and restore conformance and absence edges
+		 */
+		count = reflexactoring.getModuleDenpencies().size();
+		int index = 0;
+		for(int i=0; i<count; i++){
+			ModuleDependency dependency = reflexactoring.getModuleDenpencies().get(index);
+			if(dependency.getName().equals(DiagramUpdater.DIVERGENCE)){
+				deleteElementOnCanvas(diagramRoot, dependency);				
+			}
+			else{
+				setDependencyType(diagramRoot, dependency, DiagramUpdater.ORIGIN);
+				index++;
+			}
+		}
+		
+	}
+	
+	private void deleteElementOnCanvas(DiagramRootEditPart diagramRoot, EObject eObj){
+		DestroyElementRequest destroyRequest = new DestroyElementRequest(eObj, false);
+		DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
+		getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(destroyCommand));
+	}
+	
 	/**
 	 * @param diagramRoot
 	 * @param compilationUnitWrapperList
@@ -236,8 +296,11 @@ public class DiagramUpdater {
 				iterator.remove();
 				realisticConnectionList.remove(connection);
 				
-				ModuleDependencyFigure connectionFigure = findCorrespondingDepedencyFigure(diagramRoot, connection);
+				ModuleDependencyFigure connectionFigure = findCorrespondingDepedencyEditPart(diagramRoot, 
+						connection).getPrimaryShape();
 				connectionFigure.setConformanceStyle();
+				
+				setDependencyType(diagramRoot, connection, DiagramUpdater.CONFORMANCE);
 			}
 		}
 		
@@ -247,8 +310,10 @@ public class DiagramUpdater {
 		 * 
 		 */
 		for(ModuleConnectionWrapper conceivedConnection: conceivedConnectionList){
-			ModuleDependencyFigure connectionFigure = createDependency(diagramRoot, conceivedConnection);
+			ModuleDependencyFigure connectionFigure = findCorrespondingDepedencyEditPart(diagramRoot, 
+					conceivedConnection).getPrimaryShape();
 			connectionFigure.setAbsenceStyle();
+			setDependencyType(diagramRoot, conceivedConnection, DiagramUpdater.ABSENCE);
 		}
 		
 		/**
@@ -258,6 +323,7 @@ public class DiagramUpdater {
 		for(ModuleConnectionWrapper divergentConnection: realisticConnectionList){
 			ModuleDependencyFigure connectionFigure = createDependency(diagramRoot, divergentConnection);
 			connectionFigure.setDivergneceStyle();
+			setDependencyType(diagramRoot, divergentConnection, DiagramUpdater.DIVERGENCE);
 		}
 	}
 	
@@ -289,12 +355,12 @@ public class DiagramUpdater {
 		
 		getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);	
 		
-		ModuleDependencyFigure connectionFigure = findCorrespondingDepedencyFigure(diagramRoot, connection);
+		ModuleDependencyFigure connectionFigure = findCorrespondingDepedencyEditPart(diagramRoot, connection).getPrimaryShape();
 		
 		return connectionFigure;
 	}
 	
-	private ModuleDependencyFigure findCorrespondingDepedencyFigure(DiagramRootEditPart diagramRoot,
+	private ModuleDependencyEditPart findCorrespondingDepedencyEditPart(DiagramRootEditPart diagramRoot,
 			ModuleConnectionWrapper connection){
 		
 		for(Object obj: diagramRoot.getChildren()){
@@ -306,13 +372,16 @@ public class DiagramUpdater {
 					ConnectionEditPart connectionPart = (ConnectionEditPart)connectionObj;
 					if(connectionPart instanceof ModuleDependencyEditPart){
 						ModuleDependencyEditPart dependencyPart = (ModuleDependencyEditPart)connectionPart;
-						ModuleDependency dependency = (ModuleDependency)dependencyPart.resolveSemanticElement();
-						ModuleWrapper sourceModule = new ModuleWrapper(dependency.getOrigin());
-						ModuleWrapper targetModule = new ModuleWrapper(dependency.getDestination());
+						ModuleEditPart sourceEditPart = (ModuleEditPart)dependencyPart.getSource();
+						ModuleEditPart targetEditPart = (ModuleEditPart)dependencyPart.getTarget();
+						
+						//ModuleDependency dependency = (ModuleDependency)dependencyPart.resolveSemanticElement();
+						ModuleWrapper sourceModule = new ModuleWrapper((Module)sourceEditPart.resolveSemanticElement());
+						ModuleWrapper targetModule = new ModuleWrapper((Module)targetEditPart.resolveSemanticElement());
 						ModuleConnectionWrapper connectionWrapper = new ModuleConnectionWrapper(sourceModule, targetModule);
 						
 						if(connectionWrapper.equals(connection)){
-							return dependencyPart.getPrimaryShape();
+							return dependencyPart;
 						}
 					}
 				}
@@ -348,6 +417,19 @@ public class DiagramUpdater {
 		SetRequest setPackageReq = new SetRequest(targetObject, ReflexactoringPackage.eINSTANCE.getType_PackageName(), unitWrapper.getPackageName());
 		SetValueCommand setPackageCommand = new SetValueCommand(setPackageReq);
 		diagramEditDomain.getDiagramCommandStack().execute(new ICommandProxy(setPackageCommand));
+	}
+	
+	private void setDependencyType(DiagramRootEditPart diagramRoot, ModuleConnectionWrapper connection, String connectionType){
+		ModuleDependencyEditPart part = findCorrespondingDepedencyEditPart(diagramRoot, connection);
+		ModuleDependency dependency = (ModuleDependency)part.resolveSemanticElement();
+		
+		setDependencyType(diagramRoot, dependency, connectionType);
+	}
+	
+	private void setDependencyType(DiagramRootEditPart diagramRoot, EObject dependency, String connectionType){
+		SetRequest req = new SetRequest(dependency, ReflexactoringPackage.eINSTANCE.getModuleDependency_Name(), connectionType);
+		SetValueCommand setCommand = new SetValueCommand(req);
+		getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(setCommand));
 	}
 
 	private ReflexactoringEditPart getRootEditPart(DiagramRootEditPart diagramRoot){

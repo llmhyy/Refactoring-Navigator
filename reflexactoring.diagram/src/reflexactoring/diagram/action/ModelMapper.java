@@ -122,7 +122,9 @@ public class ModelMapper {
 		TFIDF tfidf = new TFIDF(false);
 		
 		ArrayList<String> documentList = new ArrayList<>();
-		documentList.add(ReflexactoringUtil.performStemming(module.getDescription().toLowerCase()));
+		String content = module.getDescription();
+		content = (content == null)? "" : content;
+		documentList.add(ReflexactoringUtil.performStemming(content.toLowerCase()));
 		
 		for(ICompilationUnitWrapper compiltionUnit: compilationUnitList){
 			documentList.add(compiltionUnit.getDescription());
