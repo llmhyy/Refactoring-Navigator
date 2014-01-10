@@ -41,12 +41,12 @@ import reflexactoring.diagram.util.Settings;
 
 public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 
-	private String diagramName = "/refactoring/default.reflexactoring";
+	
 	
 	@Override
 	public void run(IAction action) {
 		try {
-			ArrayList<ModuleWrapper> moduleList = getModuleList();
+			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList = new ArrayList<>();
 			for(ICompilationUnit unit: Settings.scope.getScopeCompilationUnitList()){
 				compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
@@ -100,33 +100,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 	
 	
 
-	private ArrayList<ModuleWrapper> getModuleList() throws PartInitException{
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
-		
-		if(project != null){
-			IFile file = project.getFile(diagramName);
-			if(file.exists()){
-				IPath path = file.getFullPath();
-				TransactionalEditingDomain editingDomain = GMFEditingDomainFactory.INSTANCE.createEditingDomain();
-				
-				URI targetURI = URI.createFileURI(path.toFile().toString());
-				ResourceSet resourceSet = editingDomain.getResourceSet();
-				Resource diagramResource = resourceSet.getResource(targetURI, true);
-				
-				Reflexactoring reflexactoring = (Reflexactoring)diagramResource.getContents().get(0);
-				
-				ArrayList<ModuleWrapper> moduleList = new ArrayList<>();
-				for(Module module: reflexactoring.getModules()){
-					moduleList.add(new ModuleWrapper(module));
-				}
-				
-				return moduleList;
-			}
-		}
-		
-		return null;
-	}
+	
 	
 	
 	

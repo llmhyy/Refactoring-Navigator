@@ -41,6 +41,8 @@ public class ICompilationUnitWrapper {
 		this.setDescription(content);
 	}
 	
+	
+	
 	public String toString(){
 		return this.compilationUnit.getElementName();
 	}
@@ -72,8 +74,8 @@ public class ICompilationUnitWrapper {
 	
 	public boolean equals(Object obj){
 		if(obj instanceof ICompilationUnitWrapper){
-			ICompilationUnitWrapper unit = (ICompilationUnitWrapper)obj;
-			return getSimpleName().equals(unit.getSimpleName());
+			ICompilationUnitWrapper type = (ICompilationUnitWrapper)obj;
+			return type.getFullQualifiedName().equals(this.getFullQualifiedName());
 		}
 		
 		return false;

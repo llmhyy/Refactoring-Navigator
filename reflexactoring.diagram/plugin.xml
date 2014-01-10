@@ -629,6 +629,21 @@
          </action>
       </actionSet>
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="reflexactoring.diagram.view.category"
+            name="Reflexactoring">
+      </category>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.HeuristicMappingView"
+            icon="icons/view/heurisitic_map.gif"
+            id="reflexactoring.diagram.view.mappingAjustion"
+            name="Heuristic Mapping"
+            restorable="true">
+      </view>
+   </extension>
 
    <!-- optionally, specify keybindings -->
 </plugin>
