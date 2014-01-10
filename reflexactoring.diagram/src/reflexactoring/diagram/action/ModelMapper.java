@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import reflexactoring.diagram.action.semantic.TFIDF;
+import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * This class is used to align the high level model with low level model.
@@ -35,6 +37,23 @@ public class ModelMapper {
 		 * on the contrary, one module can be mapped to many compilation unit.
 		 */
 		for(int j=0; j<compilationUnitList.size(); j++){
+			ICompilationUnitWrapper unit = compilationUnitList.get(j);
+			
+			/**
+			 * see whether user has specified mapping rules for such a compilation unit.
+			 */
+			HeuristicModuleUnitMap map = Settings.heuristicModuleUnitMapList.findHeuristicMapping(unit);
+			if(map != null){
+				ModuleWrapper module = map.getModule();
+				unit.setMappingModule(module);
+				module.getMappingList().add(unit);
+				
+				continue;
+			}
+			
+			/**
+			 * map module and compilation unit by similarity.
+			 */
 			int index = 0;
 			double maxValue = -1.0;
 			for(int i=0; i<moduleList.size();i++){
@@ -46,7 +65,6 @@ public class ModelMapper {
 			}
 			
 			if(maxValue != -1.0){
-				ICompilationUnitWrapper unit = compilationUnitList.get(j);
 				ModuleWrapper module = moduleList.get(index);
 				unit.setMappingModule(module);
 				module.getMappingList().add(unit);

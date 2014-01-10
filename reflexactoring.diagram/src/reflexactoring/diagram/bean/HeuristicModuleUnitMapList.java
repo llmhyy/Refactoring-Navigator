@@ -21,4 +21,14 @@ public class HeuristicModuleUnitMapList extends ArrayList<HeuristicModuleUnitMap
 			this.add(map);
 		}
 	}
+	
+	public HeuristicModuleUnitMap findHeuristicMapping(ICompilationUnitWrapper type){
+		for(HeuristicModuleUnitMap map: this){
+			if(map.getUnit().equals(type)){
+				return map;
+			}
+		}
+		
+		return null;
+	}
 }
