@@ -162,6 +162,15 @@ public class ModelMapper {
 			ArrayList<ModuleWrapper> moduleList, ArrayList<ICompilationUnitWrapper> compilationUnitList){
 		double[][] similarityTable = new double[moduleList.size()][compilationUnitList.size()];
 		
+		for(int i=0; i<similarityTable.length; i++){
+			double[] initialVector = similarityTable[i];
+			double[] resultVector = new PageRanker().generateResultVector(initialVector, compilationUnitList);
+			
+			for(int j=0; j<initialVector.length; j++){
+				similarityTable[i][j] = (initialVector[j] + resultVector[j])/2;
+			}
+		}
+		
 		return similarityTable;
 	}
 }
