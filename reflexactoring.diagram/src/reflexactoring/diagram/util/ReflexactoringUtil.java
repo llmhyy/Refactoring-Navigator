@@ -49,6 +49,14 @@ public class ReflexactoringUtil {
 		Activator.getDefault().getPreferenceStore().putValue(ProjectInfoPage.MAPPING_THRESHOLD, mappingThreshold);
 	}
 	
+	public static String getStopList(){
+		return Activator.getDefault().getPreferenceStore().getString(ProjectInfoPage.STOP_LIST);
+	}
+	
+	public static void setStopList(String stopList){
+		Activator.getDefault().getPreferenceStore().putValue(ProjectInfoPage.STOP_LIST, stopList);
+	}
+	
 	public static String[] splitString(int splittingStype, String string){
 		if(splittingStype == CamelSplitting){
 			return splitCamelString(string);

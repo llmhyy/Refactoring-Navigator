@@ -36,9 +36,11 @@ public class ProjectInfoPage extends PreferencePage implements
 
 	public static final String TARGET_PORJECT = "projectName";
 	public static final String MAPPING_THRESHOLD = "mappingThreshold";
+	public static final String STOP_LIST = "stopList";
 	
 	private Combo projectCombo;
 	private Text mappingThresholdText;
+	private Text stopListText;
 	
 	//private String defaultTargetProject;
 	/**
@@ -110,6 +112,16 @@ public class ProjectInfoPage extends PreferencePage implements
 		mappingThresholdData.horizontalSpan = 2;
 		mappingThresholdText.setLayoutData(mappingThresholdData);
 		
+		Label stopListLabel = new Label(composite, SWT.NONE);
+		stopListLabel.setText("Stop List");
+		stopListText = new Text(composite, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+		stopListText.setText(ReflexactoringUtil.getStopList());
+		GridData stopListData = new GridData(SWT.FILL, SWT.FILL, false, false);
+		stopListData.horizontalSpan = 2;
+		stopListData.widthHint = 250;
+		stopListData.heightHint = 100;
+		stopListText.setLayoutData(stopListData);
+		
 		return composite;
 	}
 	
@@ -131,10 +143,12 @@ public class ProjectInfoPage extends PreferencePage implements
 		Preferences preferences = ConfigurationScope.INSTANCE.getNode("Reflexactoring");
 		preferences.put(TARGET_PORJECT, this.projectCombo.getText());
 		preferences.put(MAPPING_THRESHOLD, this.mappingThresholdText.getText());
+		preferences.put(STOP_LIST, this.stopListText.getText());
 		
 		//Activator.getDefault().getPreferenceStore().putValue(TARGET_PORJECT, this.projectCombo.getText());
 		ReflexactoringUtil.setTargetProjectName(this.projectCombo.getText());
 		ReflexactoringUtil.setMappingThreshold(this.mappingThresholdText.getText());
+		ReflexactoringUtil.setStopList(this.stopListText.getText());
 		return true;
 	}
 }
