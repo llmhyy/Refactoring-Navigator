@@ -85,15 +85,39 @@ public class ReflexactoringUtil {
 				}
 			}
 			
-			return stringList.toArray(new String[0]);
+			return filterStopList(stringList.toArray(new String[0]));
 		}
 		else{
-			return splitCamelString(s);
+			return filterStopList(splitCamelString(s));
 		}
 	}
 	
 	public static String[] splitCamelString(String s) {
 		return s.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(?<!^)(?=(\\*)+)");
+	}
+
+	/**
+	 * Filter words from stop list.
+	 * @param s
+	 * @return
+	 */
+	public static String[] filterStopList(String[] s){
+		String stopString = ReflexactoringUtil.getStopList();
+		String[] stopStrings = stopString.split(" ");
+		
+		ArrayList<String> stopList = new ArrayList<>();
+		for(String s2: stopStrings){
+			stopList.add(s2);	
+		}
+		
+		ArrayList<String> filteredList = new ArrayList<>();
+		for(String s1: s){
+			if(!stopList.contains(s1)){
+				filteredList.add(s1);
+			}
+		}
+		
+		return filteredList.toArray(new String[0]);
 	}
 	
 	/**
