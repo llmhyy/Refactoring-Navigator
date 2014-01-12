@@ -60,6 +60,9 @@ public class ReflexactoringUtil {
 	}
 	
 	public static String getDictPath(){
+		if(Activator.getDefault() == null){
+			return "C:\\Program Files (x86)\\WordNet\\2.1\\dict";
+		}		
 		return Activator.getDefault().getPreferenceStore().getString(ProjectInfoPage.DICT_PATH);
 	}
 	
@@ -202,12 +205,12 @@ public class ReflexactoringUtil {
 	 * @return
 	 */
 	public static String removeDelimit(String descrption){
-		Pattern p = Pattern.compile("[.,;:?()\'\"]"); 
-		  
-        Matcher m = p.matcher(descrption);  
- 
-        String resultString = m.replaceAll("");
-        
+		Pattern p = Pattern.compile("[.,;:?()\\[\\]{}\'\"\\\\]");		  
+        Matcher m = p.matcher(descrption);   
+        String resultString = m.replaceAll(" ");
+        p = Pattern.compile(" {2,}");
+        m = p.matcher(resultString);
+        resultString = m.replaceAll(" ");  
 		return resultString;
 	}
 	

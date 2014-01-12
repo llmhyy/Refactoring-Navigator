@@ -86,7 +86,7 @@ public class MappingDialog extends TitleAreaDialog {
 		moduleLabel.setText("Mapping Module");
 		moduleLabel.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
 
-		moduleCombo = new Combo(group, SWT.BORDER);
+		moduleCombo = new Combo(group, SWT.BORDER | SWT.READ_ONLY);
 		moduleCombo.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
 		try {
 			for(ModuleWrapper module: ReflexactoringUtil.getModuleList(Settings.diagramPath)){
@@ -101,7 +101,7 @@ public class MappingDialog extends TitleAreaDialog {
 		unitLabel.setText("Mapping Type");
 		unitLabel.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
 		
-		unitCombo = new Combo(group, SWT.BORDER);
+		unitCombo = new Combo(group, SWT.BORDER | SWT.READ_ONLY);
 		unitCombo.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
 		for(ICompilationUnit unit: Settings.scope.getScopeCompilationUnitList()){
 			ICompilationUnitWrapper type = new ICompilationUnitWrapper(unit);
