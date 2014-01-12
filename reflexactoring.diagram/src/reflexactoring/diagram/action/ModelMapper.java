@@ -140,7 +140,7 @@ public class ModelMapper {
 		TFIDF tfidf = new TFIDF(false);
 		
 		ArrayList<String> documentList = new ArrayList<>();
-		String content = module.getDescription();
+		String content = ReflexactoringUtil.removeDelimit(module.getDescription());
 		content = (content == null)? "" : content;
 		documentList.add(ReflexactoringUtil.performStemming(content.toLowerCase()));
 		

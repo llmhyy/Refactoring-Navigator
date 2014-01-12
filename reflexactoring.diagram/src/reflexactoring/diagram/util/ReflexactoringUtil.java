@@ -184,6 +184,19 @@ public class ReflexactoringUtil {
 	}
 	
 	/**
+	 * A description would be like "This module is to do something, for example, it will do A, B, and C." 
+	 * Notably, the ".", "," or even ";" actually make no sense to computer program (at least for now). 
+	 * Therefore, this method is used to remove those *special character*s. Currently, we could regard ".",
+	 * ",", ";", ":", "?", "(", ")", "'", and """ as special character.   
+	 * @param descrption
+	 * @return
+	 */
+	public static String removeDelimit(String descrption){
+		
+		return descrption;
+	}
+	
+	/**
 	 * Given the path a graph editor, this method retrieve all modules which user has drawn on graph.
 	 * @param diagramName
 	 * @return
