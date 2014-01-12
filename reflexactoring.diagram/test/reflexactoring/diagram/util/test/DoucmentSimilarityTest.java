@@ -14,7 +14,7 @@ import reflexactoring.diagram.action.semantic.TFIDF;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
- * @author ly
+ * @author linyun
  *
  */
 public class DoucmentSimilarityTest {
@@ -52,6 +52,16 @@ public class DoucmentSimilarityTest {
 		String stemFile2 = ReflexactoringUtil.performStemming(file2);
 		
 		assertTrue(stemFile1.equals(stemFile2));
+	}
+	
+	@Test
+	public void testRemovingDelimit(){
+		String content = "The module; is\\? used??{to show different calculator panels including register panel,number panel, control, [panel] ()op panel and function panel";
+		content = ReflexactoringUtil.removeDelimit(content);
+		
+		String result = "The module is used to show different calculator panels including register panel number panel control panel op panel and function panel";
+		
+		assertTrue(content.equals(result));
 	}
 
 }
