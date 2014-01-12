@@ -52,7 +52,7 @@ public class WordNetDict
 		
 		String defaultPath = "C:\\Program Files (x86)\\WordNet\\2.1\\dict";
 		String path = ReflexactoringUtil.getDictPath();
-		path = (path == null ? defaultPath : path);
+		path = (path == null || path.trim() == ""? defaultPath : path);
 		URL url = null;
 		try
 		{

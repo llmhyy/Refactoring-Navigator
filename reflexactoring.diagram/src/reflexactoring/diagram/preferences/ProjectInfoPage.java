@@ -124,19 +124,24 @@ public class ProjectInfoPage extends PreferencePage implements
 		
 		Label stopListLabel = new Label(composite, SWT.NONE);
 		stopListLabel.setText("Stop List");
+		GridData stopListLabelData = new GridData(SWT.FILL, SWT.TOP, false, false);
+		stopListLabel.setLayoutData(stopListLabelData);
 		stopListText = new Text(composite, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		stopListText.setText(ReflexactoringUtil.getStopList());
 		GridData stopListData = new GridData(SWT.FILL, SWT.FILL, false, false);
 		stopListData.horizontalSpan = 2;
 		stopListData.widthHint = 250;
-		stopListData.heightHint = 100;
+		stopListData.heightHint = 160;
 		stopListText.setLayoutData(stopListData);
 		
 
 		Label dictPathLabel = new Label(composite, SWT.NONE);
 		dictPathLabel.setText("WordNetDict Path");
 		dictPathText = new Text(composite, SWT.BORDER);
-		dictPathText.setText(ReflexactoringUtil.getDictPath());
+		String path = ReflexactoringUtil.getDictPath();
+		String defaultPath = "C:\\Program Files (x86)\\WordNet\\2.1\\dict";
+		path = (path == null || path.trim() == ""? defaultPath : path);
+		dictPathText.setText(path);
 		GridData dictPathTextData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		dictPathTextData.horizontalSpan = 1;
 		dictPathText.setLayoutData(dictPathTextData);
