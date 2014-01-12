@@ -92,6 +92,11 @@ public class ReflexactoringUtil {
 		}
 	}
 	
+	/**
+	 * This method is used to split identifier by camel splitting.
+	 * @param s
+	 * @return
+	 */
 	public static String[] splitCamelString(String s) {
 		return s.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])|(?<!^)(?=(\\*)+)");
 	}
@@ -161,6 +166,12 @@ public class ReflexactoringUtil {
 		return 1 - Math.sqrt(product);
 	}
 	
+	/**
+	 * This method is for perform stemming, e.g., transfer "students" in its
+	 * original tense like "student".
+	 * @param description
+	 * @return
+	 */
 	public static String performStemming(String description){
 		String[] descList = description.split(" ");
 		StringBuffer buffer = new StringBuffer();
@@ -172,6 +183,12 @@ public class ReflexactoringUtil {
 		return stemString.substring(0, stemString.length()-1);
 	}
 	
+	/**
+	 * Given the path a graph editor, this method retrieve all modules which user has drawn on graph.
+	 * @param diagramName
+	 * @return
+	 * @throws PartInitException
+	 */
 	public static ArrayList<ModuleWrapper> getModuleList(String diagramName) throws PartInitException{
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
