@@ -4,6 +4,8 @@
 package reflexactoring.diagram.util;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -200,8 +202,13 @@ public class ReflexactoringUtil {
 	 * @return
 	 */
 	public static String removeDelimit(String descrption){
-		
-		return descrption;
+		Pattern p = Pattern.compile("[.,;:?()\'\"]"); 
+		  
+        Matcher m = p.matcher(descrption);  
+ 
+        String resultString = m.replaceAll("");
+        
+		return resultString;
 	}
 	
 	/**
