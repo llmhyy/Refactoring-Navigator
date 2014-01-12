@@ -57,6 +57,14 @@ public class ReflexactoringUtil {
 		Activator.getDefault().getPreferenceStore().putValue(ProjectInfoPage.STOP_LIST, stopList);
 	}
 	
+	public static String getDictPath(){
+		return Activator.getDefault().getPreferenceStore().getString(ProjectInfoPage.DICT_PATH);
+	}
+	
+	public static void setDictPath(String dictPath){
+		Activator.getDefault().getPreferenceStore().putValue(ProjectInfoPage.DICT_PATH, dictPath);
+	}
+	
 	public static String[] splitString(int splittingStype, String string){
 		if(splittingStype == CamelSplitting){
 			return splitCamelString(string);

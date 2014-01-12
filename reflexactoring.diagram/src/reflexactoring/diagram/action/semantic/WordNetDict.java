@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import edu.mit.jwi.Dictionary;
 import edu.mit.jwi.IDictionary;
 import edu.mit.jwi.item.IIndexWord;
@@ -49,7 +50,9 @@ public class WordNetDict
 	public void initial()
 	{
 		
-		String path = "C:\\Program Files (x86)\\WordNet\\2.1\\dict";
+		String defaultPath = "C:\\Program Files (x86)\\WordNet\\2.1\\dict";
+		String path = ReflexactoringUtil.getDictPath();
+		path = (path == null ? defaultPath : path);
 		URL url = null;
 		try
 		{

@@ -13,11 +13,16 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
@@ -37,10 +42,15 @@ public class ProjectInfoPage extends PreferencePage implements
 	public static final String TARGET_PORJECT = "projectName";
 	public static final String MAPPING_THRESHOLD = "mappingThreshold";
 	public static final String STOP_LIST = "stopList";
+	public static final String DICT_PATH = "wordNetDictPath";
 	
 	private Combo projectCombo;
 	private Text mappingThresholdText;
 	private Text stopListText;
+	
+	private Text dictPathText;
+	private Button dictPathButton;
+	private DirectoryDialog dictPathDialog; 
 	
 	//private String defaultTargetProject;
 	/**
@@ -122,6 +132,26 @@ public class ProjectInfoPage extends PreferencePage implements
 		stopListData.heightHint = 100;
 		stopListText.setLayoutData(stopListData);
 		
+
+		Label dictPathLabel = new Label(composite, SWT.NONE);
+		dictPathLabel.setText("WordNetDict Path");
+		dictPathText = new Text(composite, SWT.BORDER);
+		dictPathText.setText(ReflexactoringUtil.getDictPath());
+		GridData dictPathTextData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		dictPathTextData.horizontalSpan = 1;
+		dictPathText.setLayoutData(dictPathTextData);
+		dictPathDialog = new DirectoryDialog(getShell(), SWT.OPEN);		
+		dictPathButton = new Button(composite, SWT.PUSH);
+		dictPathButton.setText("...");
+		dictPathButton.addSelectionListener(new SelectionAdapter() {
+	        @Override
+	        public void widgetSelected(SelectionEvent e) {
+	          String path = dictPathDialog.open();
+	          if (path != null)
+	        	  dictPathText.setText(path);
+	        }
+	      });
+		
 		return composite;
 	}
 	
@@ -144,11 +174,14 @@ public class ProjectInfoPage extends PreferencePage implements
 		preferences.put(TARGET_PORJECT, this.projectCombo.getText());
 		preferences.put(MAPPING_THRESHOLD, this.mappingThresholdText.getText());
 		preferences.put(STOP_LIST, this.stopListText.getText());
+		preferences.put(DICT_PATH, this.dictPathText.getText());
 		
 		//Activator.getDefault().getPreferenceStore().putValue(TARGET_PORJECT, this.projectCombo.getText());
 		ReflexactoringUtil.setTargetProjectName(this.projectCombo.getText());
 		ReflexactoringUtil.setMappingThreshold(this.mappingThresholdText.getText());
 		ReflexactoringUtil.setStopList(this.stopListText.getText());
+		ReflexactoringUtil.setDictPath(this.dictPathText.getText());
+		
 		return true;
 	}
 }
