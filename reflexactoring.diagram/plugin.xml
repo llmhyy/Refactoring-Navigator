@@ -65,6 +65,16 @@
                id="reflexactoring.diagram.InitDiagramAction">
          </action>
       </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.moduleEdit"
+            objectClass="reflexactoring.diagram.edit.parts.ModuleEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.EditModuleDescriptionAction"
+               id="reflexactoring.diagram.action.editdescription"
+               label="Edit Description">
+         </action>
+      </objectContribution>
    </extension>
 	
    <extension point="org.eclipse.gmf.runtime.common.ui.services.action.globalActionHandlerProviders" id="global-actions">
