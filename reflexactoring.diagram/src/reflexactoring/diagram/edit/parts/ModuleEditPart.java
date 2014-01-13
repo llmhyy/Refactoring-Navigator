@@ -114,7 +114,7 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 	}
 
 	/**
-	 * @generated
+	 * @not generated
 	 */
 	protected boolean addFixedChild(EditPart childEditPart) {
 		if (childEditPart instanceof ModuleNameEditPart) {
@@ -124,9 +124,20 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 		}
 		if (childEditPart instanceof ModuleTypeContainerCompartmentEditPart) {
 			IFigure pane = getPrimaryShape().getFigureTypeContainer();
-			setupContentPane(pane); // FIXME each comparment should handle his content pane in his own way 
+			//setupContentPane(pane); // FIXME each comparment should handle his content pane in his own way 
+			
+			pane.setLayoutManager(new GridLayout());
+			GridData gridData = new GridData();
+			gridData.verticalAlignment = GridData.FILL;
+			gridData.horizontalAlignment = GridData.FILL;
+			gridData.horizontalIndent = 0;
+			gridData.horizontalSpan = 1;
+			gridData.verticalSpan = 1;
+			gridData.grabExcessHorizontalSpace = true;
+			gridData.grabExcessVerticalSpace = true;
+			
 			pane.add(((ModuleTypeContainerCompartmentEditPart) childEditPart)
-					.getFigure());
+					.getFigure(), gridData);
 			return true;
 		}
 		return false;
@@ -384,7 +395,7 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 			layoutFFigureTypeContainer.numColumns = 1;
 			layoutFFigureTypeContainer.makeColumnsEqualWidth = true;
 			fFigureTypeContainer.setLayoutManager(layoutFFigureTypeContainer);
-
+			//fFigureTypeContainer.setLineWidth(0);
 		}
 
 		/**

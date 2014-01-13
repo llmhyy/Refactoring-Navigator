@@ -1,5 +1,6 @@
 package reflexactoring.diagram.edit.parts;
 
+import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeCompartmentEditPart;
@@ -11,6 +12,7 @@ import org.eclipse.gmf.runtime.draw2d.ui.figures.ConstrainedToolbarLayout;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.tooling.runtime.edit.policies.reparent.CreationEditPolicyWithCustomReparent;
 
+import reflexactoring.diagram.edit.parts.Class2EditPart.ClassFigure;
 import reflexactoring.diagram.edit.policies.ModuleTypeContainerCompartmentCanonicalEditPolicy;
 import reflexactoring.diagram.edit.policies.ModuleTypeContainerCompartmentItemSemanticEditPolicy;
 import reflexactoring.diagram.part.Messages;
@@ -48,6 +50,8 @@ public class ModuleTypeContainerCompartmentEditPart extends
 		ResizableCompartmentFigure result = (ResizableCompartmentFigure) super
 				.createFigure();
 		result.setTitleVisibility(false);
+		result.setLayoutManager(new GridLayout());
+		
 		return result;
 	}
 
