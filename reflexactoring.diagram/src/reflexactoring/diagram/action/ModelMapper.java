@@ -34,7 +34,7 @@ public class ModelMapper {
 		
 		/**
 		 * should take care that one compilation unit can be mapped to only one module,
-		 * on the contrary, one module can be mapped to many compilation unit.
+		 * on the contrary, one module can be mapped to many compilation units.
 		 */
 		for(int j=0; j<compilationUnitList.size(); j++){
 			ICompilationUnitWrapper unit = compilationUnitList.get(j);
@@ -120,7 +120,8 @@ public class ModelMapper {
 			double[] moduleVector = vectorList.get(0);
 			for(int k=1; k<vectorList.size(); k++){
 				double[] compilationUnitVector = vectorList.get(k);
-				double similarity = ReflexactoringUtil.computeEuclideanSimilarity(moduleVector, compilationUnitVector);
+				//double similarity = ReflexactoringUtil.computeEuclideanSimilarity(moduleVector, compilationUnitVector);
+				double similarity = ReflexactoringUtil.computeCosine(moduleVector, compilationUnitVector);
 				similarityTable[i][k-1] = similarity;
 			}
 		}
@@ -163,11 +164,11 @@ public class ModelMapper {
 		double[][] similarityTable = new double[moduleList.size()][compilationUnitList.size()];
 		
 		for(int i=0; i<similarityTable.length; i++){
-			double[] initialVector = similarityTable[i];
+			double[] initialVector = semanticSimilarityTable[i];
 			double[] resultVector = new PageRanker().generateResultVector(initialVector, compilationUnitList);
 			
 			for(int j=0; j<initialVector.length; j++){
-				similarityTable[i][j] = (initialVector[j] + resultVector[j])/2;
+				similarityTable[i][j] = resultVector[j];
 			}
 		}
 		

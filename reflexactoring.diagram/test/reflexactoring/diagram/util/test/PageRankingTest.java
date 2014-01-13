@@ -7,6 +7,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import reflexactoring.diagram.action.PageRanker;
+
 import com.mathworks.toolbox.javabuilder.MWArray;
 import com.mathworks.toolbox.javabuilder.MWClassID;
 import com.mathworks.toolbox.javabuilder.MWComplexity;
@@ -84,6 +86,22 @@ public class PageRankingTest {
 			MWArray.disposeArray(inputs);
 			MWArray.disposeArray(results);
 		}
+	}
+	
+	@Test
+	public void testPageRanking2(){
+		Integer[] calleeNodeIndexes = {1, 2, 2, 3, 4, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8};
+		Integer[] callerNodeIndexes = {3, 1, 4, 1, 1, 2, 3, 2, 6, 7, 8, 4, 5, 8, 6};
+		int graphSize = 8;
+		double[] x0 = {0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125};
+		
+		double[] expectedResult = {0.03, 0.053, 0.027, 0.061, 0.162, 0.283, 0.241, 0.139};
+		
+		PageRanker ranker = new PageRanker();
+		double[] resultVector = ranker.getPageRankingResultVector(calleeNodeIndexes, callerNodeIndexes, graphSize, x0);
+		
+		assertArrayEquals(expectedResult, resultVector, 0.001);
+		
 	}
 
 }
