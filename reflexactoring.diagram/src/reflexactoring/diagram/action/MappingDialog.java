@@ -105,8 +105,11 @@ public class MappingDialog extends TitleAreaDialog {
 		unitCombo.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
 		for(ICompilationUnit unit: Settings.scope.getScopeCompilationUnitList()){
 			ICompilationUnitWrapper type = new ICompilationUnitWrapper(unit);
-			unitCombo.add(type.getFullQualifiedName());
-			unitCombo.setData(type.getFullQualifiedName(), type);
+			
+			if(Settings.heuristicModuleUnitMapList.findHeuristicMapping(type) == null){
+				unitCombo.add(type.getFullQualifiedName());
+				unitCombo.setData(type.getFullQualifiedName(), type);
+			}			
 		}
 		
 		return workArea;
