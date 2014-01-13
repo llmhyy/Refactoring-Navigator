@@ -22,6 +22,12 @@ public class HeuristicModuleUnitMapList extends ArrayList<HeuristicModuleUnitMap
 		}
 	}
 	
+	public void removeMap(HeuristicModuleUnitMap map){
+		if(this.contains(map)){
+			this.remove(map);
+		}
+	}
+	
 	public HeuristicModuleUnitMap findHeuristicMapping(ICompilationUnitWrapper type){
 		for(HeuristicModuleUnitMap map: this){
 			if(map.getUnit().equals(type)){

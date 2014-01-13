@@ -9,12 +9,17 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
@@ -71,6 +76,34 @@ public class HeuristicMappingView extends ViewPart {
 		gridData.grabExcessVerticalSpace = true;
 		gridData.horizontalAlignment = GridData.FILL;
 		tableViewer.getControl().setLayoutData(gridData);
+		
+		//Add context menu for DELETE action
+		Menu pop = new Menu(parent.getShell(), SWT.POP_UP);
+		MenuItem item = new MenuItem(pop, SWT.PUSH);
+		item.setText("Delete");
+		item.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				Object o = e.getSource();
+				if (o instanceof MenuItem) {
+					TableItem[] ti = tableViewer.getTable().getSelection();
+					if (ti != null && ti.length > 0) { 
+						Settings.heuristicModuleUnitMapList.removeMap((HeuristicModuleUnitMap) ti[0].getData());	
+						tableViewer.setInput(Settings.heuristicModuleUnitMapList);
+						tableViewer.refresh();
+					}else{
+						
+					}
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			} 
+		}); 
+		tableViewer.getTable().setMenu(pop); 
+		
 	}
 
 	private void createColumns(final Composite parent, final TableViewer viewer) {
