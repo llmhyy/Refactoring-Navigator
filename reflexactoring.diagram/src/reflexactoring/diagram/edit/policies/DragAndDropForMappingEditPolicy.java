@@ -11,7 +11,6 @@ import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.GroupEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.ShapeCompartmentDropEditPolicy;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Module;
@@ -58,8 +57,6 @@ public class DragAndDropForMappingEditPolicy extends
                        return null;
                     }
 					
-					System.out.println("test");
-					
 					ModuleEditPart modulePart = (ModuleEditPart)gep.getTopGraphicEditPart();
 					Module module = (Module)modulePart.resolveSemanticElement();
 					
@@ -103,6 +100,10 @@ public class DragAndDropForMappingEditPolicy extends
 		
 		ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(identifier);
 		if(null != unitWrapper){
+			HeuristicModuleUnitMap extantMap = Settings.heuristicModuleUnitMapList.findHeuristicMapping(identifier);
+			if(extantMap != null){
+				Settings.heuristicModuleUnitMapList.remove(extantMap);
+			}
 			HeuristicModuleUnitMap map = new HeuristicModuleUnitMap(new ModuleWrapper(module), unitWrapper);
 			Settings.heuristicModuleUnitMapList.addMap(map);			
 		}
