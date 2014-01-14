@@ -81,7 +81,9 @@ public class EditModuleDescriptionDialog extends TitleAreaDialog {
 		descriptionTextData.widthHint = 350;
 		descriptionTextData.heightHint = 100;
 		descriptionText.setLayoutData(descriptionTextData);
-		descriptionText.setText(this.description);
+		
+		String content = (this.description == null)? "": this.description;
+		descriptionText.setText(content);
 		
 		return workArea;
 	}
