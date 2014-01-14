@@ -8,12 +8,17 @@ import org.eclipse.gmf.runtime.emf.type.core.requests.SetRequest;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Module;
 import reflexactoring.ReflexactoringPackage;
+import reflexactoring.diagram.action.MappingDialog;
+import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
+import reflexactoring.diagram.util.Settings;
 
 
 public class EditModuleDescriptionAction extends AbstractActionDelegate implements IObjectActionDelegate{
@@ -45,8 +50,16 @@ public class EditModuleDescriptionAction extends AbstractActionDelegate implemen
 			ModuleEditPart part = (ModuleEditPart)selEditPart;
 			Module module = (Module) part.resolveSemanticElement();
 			
-			String userInputDesc = "test";
-			
+			String userInputDesc = "";
+			EditModuleDescriptionDialog dialog = new EditModuleDescriptionDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), module.getDescription());
+			dialog.create();
+			if(dialog.open() == Window.OK){
+				String des = dialog.getEditModuleDescription();
+				if(des != null){
+					userInputDesc = des;
+				}
+			}
+						
 			SetRequest setNameReq = new SetRequest(module, ReflexactoringPackage.eINSTANCE.getModule_Description(), userInputDesc);
 			SetValueCommand setNameCommand = new SetValueCommand(setNameReq);
 			part.getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(setNameCommand));
