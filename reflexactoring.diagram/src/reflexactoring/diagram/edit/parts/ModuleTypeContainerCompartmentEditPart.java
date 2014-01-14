@@ -13,6 +13,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.tooling.runtime.edit.policies.reparent.CreationEditPolicyWithCustomReparent;
 
 import reflexactoring.diagram.edit.parts.Class2EditPart.ClassFigure;
+import reflexactoring.diagram.edit.policies.DragAndDropForMappingEditPolicy;
 import reflexactoring.diagram.edit.policies.ModuleTypeContainerCompartmentCanonicalEditPolicy;
 import reflexactoring.diagram.edit.policies.ModuleTypeContainerCompartmentItemSemanticEditPolicy;
 import reflexactoring.diagram.part.Messages;
@@ -56,7 +57,7 @@ public class ModuleTypeContainerCompartmentEditPart extends
 	}
 
 	/**
-	 * @generated
+	 * @not generated
 	 */
 	protected void createDefaultEditPolicies() {
 		super.createDefaultEditPolicies();
@@ -67,8 +68,8 @@ public class ModuleTypeContainerCompartmentEditPart extends
 		installEditPolicy(EditPolicyRoles.CREATION_ROLE,
 				new CreationEditPolicyWithCustomReparent(
 						ReflexactoringVisualIDRegistry.TYPED_INSTANCE));
-		installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE,
-				new DragDropEditPolicy());
+		//installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE, new DragDropEditPolicy());
+		installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE, new DragAndDropForMappingEditPolicy());
 		installEditPolicy(EditPolicyRoles.CANONICAL_ROLE,
 				new ModuleTypeContainerCompartmentCanonicalEditPolicy());
 	}

@@ -34,14 +34,20 @@ public class ICompilationUnitWrapper {
 	 * @param compilationUnit
 	 */
 	public ICompilationUnitWrapper(ICompilationUnit compilationUnit) {
+		this(compilationUnit, true);
+	}
+	
+	public ICompilationUnitWrapper(ICompilationUnit compilationUnit, boolean extractDesc){
 		super();
 		this.compilationUnit = compilationUnit;
-		setJavaUnit(AST.parseCompilationUnit(compilationUnit, false));
-		String content = new TokenExtractor().extractTokens(compilationUnit);
-		
-		content = content + generateTitle();
-		
-		this.setDescription(content);
+		if(extractDesc){
+			setJavaUnit(AST.parseCompilationUnit(compilationUnit, false));
+			String content = new TokenExtractor().extractTokens(compilationUnit);
+			
+			content = content + generateTitle();
+			
+			this.setDescription(content);
+		}
 	}
 	
 	/**

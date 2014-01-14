@@ -37,4 +37,14 @@ public class HeuristicModuleUnitMapList extends ArrayList<HeuristicModuleUnitMap
 		
 		return null;
 	}
+	
+	public HeuristicModuleUnitMap findHeuristicMapping(String identifier){
+		for(HeuristicModuleUnitMap map: this){
+			if(map.getUnit().getFullQualifiedName().equals(identifier)){
+				return map;
+			}
+		}
+		
+		return null;
+	}
 }

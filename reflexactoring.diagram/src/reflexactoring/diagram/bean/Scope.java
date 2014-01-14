@@ -28,5 +28,14 @@ public class Scope {
 		this.scopeCompilationUnitList = scopeCompilationUnitList;
 	}
 	
-	
+	public ICompilationUnitWrapper findUnit(String identifier){
+		for(ICompilationUnit unit: this.scopeCompilationUnitList){
+			ICompilationUnitWrapper wrapper = new ICompilationUnitWrapper(unit, false);
+			if(wrapper.getFullQualifiedName().equals(identifier)){
+				return wrapper;
+			}
+		}
+		
+		return null;
+	}
 }

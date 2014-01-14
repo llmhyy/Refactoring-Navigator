@@ -653,6 +653,22 @@
             name="Heuristic Mapping"
             restorable="true">
       </view>
+      <view
+            class="reflexactoring.diagram.view.RefactoringSuggestionView"
+            icon="icons/view/recommend.gif"
+            id="reflexactoring.diagram.view.suggestion"
+            name="Refactoring Suggestion"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="reflexactoring.diagram.perspective.ReflexactoringPerspective"
+            icon="icons/perspective/reflexactoring.gif"
+            id="reflexactoring.diagram.perspective.refleactoring"
+            name="Reflexactoring">
+      </perspective>
    </extension>
 
    <!-- optionally, specify keybindings -->

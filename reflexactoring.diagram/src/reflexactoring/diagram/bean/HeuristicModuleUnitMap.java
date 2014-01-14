@@ -26,7 +26,8 @@ public class HeuristicModuleUnitMap {
 	public boolean equals(Object obj){
 		if(obj instanceof HeuristicModuleUnitMap){
 			HeuristicModuleUnitMap map = (HeuristicModuleUnitMap)obj;
-			return map.getModule().equals(this.module) && map.getUnit().equals(this.unit);
+			return map.getModule().getName().equals(this.module.getName()) 
+					&& map.getUnit().getFullQualifiedName().equals(this.unit.getFullQualifiedName());
 		}
 		
 		return false;
