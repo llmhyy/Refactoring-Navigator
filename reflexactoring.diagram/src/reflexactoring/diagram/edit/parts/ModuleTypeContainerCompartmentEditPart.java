@@ -8,12 +8,13 @@ import org.eclipse.gmf.runtime.diagram.ui.editpolicies.DragDropEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.ResizableCompartmentEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.figures.ResizableCompartmentFigure;
+import org.eclipse.gmf.runtime.diagram.ui.requests.RequestConstants;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.ConstrainedToolbarLayout;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.tooling.runtime.edit.policies.reparent.CreationEditPolicyWithCustomReparent;
 
 import reflexactoring.diagram.edit.parts.Class2EditPart.ClassFigure;
-import reflexactoring.diagram.edit.policies.DragAndDropForMappingEditPolicy;
+import reflexactoring.diagram.edit.policies.ModuleTypeContainerDropEditPolicy;
 import reflexactoring.diagram.edit.policies.ModuleTypeContainerCompartmentCanonicalEditPolicy;
 import reflexactoring.diagram.edit.policies.ModuleTypeContainerCompartmentItemSemanticEditPolicy;
 import reflexactoring.diagram.part.Messages;
@@ -69,7 +70,7 @@ public class ModuleTypeContainerCompartmentEditPart extends
 				new CreationEditPolicyWithCustomReparent(
 						ReflexactoringVisualIDRegistry.TYPED_INSTANCE));
 		//installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE, new DragDropEditPolicy());
-		installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE, new DragAndDropForMappingEditPolicy());
+		installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE, new ModuleTypeContainerDropEditPolicy());
 		installEditPolicy(EditPolicyRoles.CANONICAL_ROLE,
 				new ModuleTypeContainerCompartmentCanonicalEditPolicy());
 	}

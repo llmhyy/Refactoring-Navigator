@@ -31,9 +31,8 @@ import reflexactoring.diagram.view.HeuristicMappingView;
  * @author linyun
  *
  */
-public class DragAndDropForMappingEditPolicy extends
+public class ModuleTypeContainerDropEditPolicy extends
 		ShapeCompartmentDropEditPolicy {
-	private String previousIdentifierName = "";
 	
 	/**
 	 * Overriden to ensure that we don't drag the top level shape inside the shape compartment itself since this precipitates 
@@ -60,32 +59,13 @@ public class DragAndDropForMappingEditPolicy extends
 					ModuleEditPart modulePart = (ModuleEditPart)gep.getTopGraphicEditPart();
 					Module module = (Module)modulePart.resolveSemanticElement();
 					
+					Type type = getSemanticType(requestEP);
 					
-					if(requestEP instanceof Class2EditPart){
-						Class2EditPart typePart = (Class2EditPart)requestEP;
-						Type type = (Type)typePart.resolveSemanticElement();
+					if(type != null){
 						insertMappingRelation(module, type);
+						
+						refreshHeuristicView();				
 					}
-					else if(requestEP instanceof ClassEditPart){
-						ClassEditPart typePart = (ClassEditPart)requestEP;
-						Type type = (Type)typePart.resolveSemanticElement();
-						insertMappingRelation(module, type);
-					}
-					else if(requestEP instanceof Interface2EditPart){
-						Interface2EditPart typePart = (Interface2EditPart)requestEP;
-						Type type = (Type)typePart.resolveSemanticElement();
-						insertMappingRelation(module, type);
-					}
-					else if(requestEP instanceof InterfaceEditPart){
-						InterfaceEditPart typePart = (InterfaceEditPart)requestEP;
-						Type type = (Type)typePart.resolveSemanticElement();
-						insertMappingRelation(module, type);
-					}
-					
-					HeuristicMappingView view = (HeuristicMappingView)PlatformUI.getWorkbench().
-							getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW);
-					view.getViewer().setInput(Settings.heuristicModuleUnitMapList);
-					view.getViewer().refresh();
 				}
 			}
 		}
@@ -93,7 +73,7 @@ public class DragAndDropForMappingEditPolicy extends
 		return super.getDropCommand(request);
 	}
 	
-	private void insertMappingRelation(Module module, Type type){
+	private void removeMappingRelation(Module module, Type type){
 		String packageName = type.getPackageName();
 		String typeName = type.getName();
 		String identifier = packageName + "." + typeName;
@@ -102,6 +82,54 @@ public class DragAndDropForMappingEditPolicy extends
 		if(null != unitWrapper){
 			HeuristicModuleUnitMap extantMap = Settings.heuristicModuleUnitMapList.findHeuristicMapping(identifier);
 			if(extantMap != null){
+				Settings.heuristicModuleUnitMapList.remove(extantMap);
+			}			
+		}
+	}
+	
+	private Type getSemanticType(EditPart requestEP){
+		
+		Type type = null;
+		
+		if(requestEP instanceof Class2EditPart){
+			Class2EditPart typePart = (Class2EditPart)requestEP;
+			type = (Type)typePart.resolveSemanticElement();
+		}
+		else if(requestEP instanceof ClassEditPart){
+			ClassEditPart typePart = (ClassEditPart)requestEP;
+			type = (Type)typePart.resolveSemanticElement();
+		}
+		else if(requestEP instanceof Interface2EditPart){
+			Interface2EditPart typePart = (Interface2EditPart)requestEP;
+			type = (Type)typePart.resolveSemanticElement();
+		}
+		else if(requestEP instanceof InterfaceEditPart){
+			InterfaceEditPart typePart = (InterfaceEditPart)requestEP;
+			type = (Type)typePart.resolveSemanticElement();
+		}
+		
+		return type;
+	}
+	
+	private void refreshHeuristicView(){
+		HeuristicMappingView view = (HeuristicMappingView)PlatformUI.getWorkbench().
+				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW);
+		view.getViewer().setInput(Settings.heuristicModuleUnitMapList);
+		view.getViewer().refresh();	
+	}
+	
+	
+	
+	private void insertMappingRelation(Module module, Type type){
+		String packageName = type.getPackageName();
+		String typeName = type.getName();
+		String identifier = packageName + "." + typeName;
+		
+		ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(identifier);
+		if(null != unitWrapper){
+			HeuristicModuleUnitMap extantMap = Settings.heuristicModuleUnitMapList
+					.findHeuristicMapping(identifier);
+			if (extantMap != null) {
 				Settings.heuristicModuleUnitMapList.remove(extantMap);
 			}
 			HeuristicModuleUnitMap map = new HeuristicModuleUnitMap(new ModuleWrapper(module), unitWrapper);
