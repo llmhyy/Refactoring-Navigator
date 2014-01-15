@@ -62,7 +62,7 @@ public class EditModuleDescriptionDialog extends TitleAreaDialog {
 		Composite workArea = new Composite(parent, SWT.NONE);
 		workArea.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
 		GridLayout workAreaLayout = new GridLayout();
-		workAreaLayout.numColumns = 2;
+		workAreaLayout.numColumns = 1;
 		workAreaLayout.horizontalSpacing = 10;
 		workAreaLayout.marginHeight = 10;
 		workAreaLayout.marginBottom = 10;
@@ -78,7 +78,7 @@ public class EditModuleDescriptionDialog extends TitleAreaDialog {
 
 		descriptionText = new Text(workArea, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		GridData descriptionTextData = new GridData(SWT.FILL, SWT.FILL, false, false);
-		descriptionTextData.widthHint = 350;
+		descriptionTextData.widthHint = 460;
 		descriptionTextData.heightHint = 100;
 		descriptionText.setLayoutData(descriptionTextData);
 		descriptionText.setText(this.description);
