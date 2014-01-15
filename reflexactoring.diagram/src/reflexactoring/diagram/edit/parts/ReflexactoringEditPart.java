@@ -14,6 +14,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.gmf.tooling.runtime.edit.policies.reparent.CreationEditPolicyWithCustomReparent;
 
 import reflexactoring.diagram.edit.policies.ReflexactoringCanonicalEditPolicy;
+import reflexactoring.diagram.edit.policies.ReflexactoringDropPolicy;
 import reflexactoring.diagram.edit.policies.ReflexactoringItemSemanticEditPolicy;
 import reflexactoring.diagram.part.ReflexactoringVisualIDRegistry;
 
@@ -51,6 +52,7 @@ public class ReflexactoringEditPart extends DiagramEditPart {
 		installEditPolicy(EditPolicyRoles.CREATION_ROLE,
 				new CreationEditPolicyWithCustomReparent(
 						ReflexactoringVisualIDRegistry.TYPED_INSTANCE));
+		installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE, new ReflexactoringDropPolicy());
 		// removeEditPolicy(org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles.POPUPBAR_ROLE);
 	}
 

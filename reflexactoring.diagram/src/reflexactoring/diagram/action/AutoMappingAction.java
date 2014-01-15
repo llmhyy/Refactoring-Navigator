@@ -52,6 +52,16 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 				compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
 			}
 			
+			ArrayList<ModuleWrapper> moduleListWithNoDesc = checkModulesNotDescribedYet(moduleList);
+			if(moduleListWithNoDesc.size() != 0){
+				/**
+				 * Open a message dialog here, inform user of the to-be-described module.
+				 */
+				
+				
+				return;
+			}
+			
 			compilationUnitWrapperList = buildStructuralDependency(compilationUnitWrapperList);
 			
 			new ModelMapper().generateMappingRelation(moduleList, compilationUnitWrapperList);
@@ -63,6 +73,18 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	/**
+	 * Checking whether all the description of module has been filled in.
+	 * @param moduleList
+	 * @return
+	 */
+	private ArrayList<ModuleWrapper> checkModulesNotDescribedYet(ArrayList<ModuleWrapper> moduleList){
+		
+		ArrayList<ModuleWrapper> moduleListWithNoDesc = new ArrayList<>();
+		//TODO
+		return moduleListWithNoDesc;
 	}
 
 	/**
