@@ -66,11 +66,12 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		
 		ArrayList<ModuleWrapper> moduleListWithNoDesc = new ArrayList<>();
 		for(ModuleWrapper module : moduleList){
-			if(module.getDescription().equals("") || module.getDescription() == null){
+			if(module.getDescription() == null || module.getDescription().equals("")){
 				moduleListWithNoDesc.add(module);
 			}
 		}
 		return moduleListWithNoDesc;
+		
 	}
 
 	/**
