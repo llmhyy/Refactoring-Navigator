@@ -1,41 +1,21 @@
 package reflexactoring.diagram.action;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.gef.RootEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
-import org.eclipse.gmf.runtime.emf.core.GMFEditingDomainFactory;
+import javax.swing.JOptionPane;
+
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.SimpleType;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 
-import reflexactoring.Module;
-import reflexactoring.Reflexactoring;
-import reflexactoring.diagram.action.semantic.TFIDF;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.part.DiagramEditorContextMenuProvider;
-import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -57,7 +37,11 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 				/**
 				 * Open a message dialog here, inform user of the to-be-described module.
 				 */
-				
+				String message = "All modules should be described before performing mapping, please fill in descriprions for following modules:\n\n";
+				for (ModuleWrapper moduleWrapper : moduleListWithNoDesc) {
+					message += moduleWrapper.getName() + "\n";
+				}
+				JOptionPane.showMessageDialog(null, message, "Modules with no description", JOptionPane.ERROR_MESSAGE);				
 				
 				return;
 			}
@@ -83,7 +67,11 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 	private ArrayList<ModuleWrapper> checkModulesNotDescribedYet(ArrayList<ModuleWrapper> moduleList){
 		
 		ArrayList<ModuleWrapper> moduleListWithNoDesc = new ArrayList<>();
-		//TODO
+		for(ModuleWrapper module : moduleList){
+			if(module.getDescription().equals("") || module.getDescription() == null){
+				moduleListWithNoDesc.add(module);
+			}
+		}
 		return moduleListWithNoDesc;
 	}
 
