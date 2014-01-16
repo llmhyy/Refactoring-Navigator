@@ -99,7 +99,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		}
 		
 		/**
-		 * if no eror message, just return the OK message.
+		 * if no error message, just return the OK message.
 		 */
 		return AutoMappingAction.OK_MESSAGE;
 	}
