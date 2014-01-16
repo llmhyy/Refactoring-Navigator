@@ -2,13 +2,12 @@ package reflexactoring.diagram.action;
 
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -40,9 +39,8 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 				String message = "All modules should be described before performing mapping, please fill in descriprions for following modules:\n\n";
 				for (ModuleWrapper moduleWrapper : moduleListWithNoDesc) {
 					message += moduleWrapper.getName() + "\n";
-				}
-				JOptionPane.showMessageDialog(null, message, "Modules with no description", JOptionPane.ERROR_MESSAGE);				
-				
+				}			
+				MessageDialog.openError(null, "Modules with no description", message);
 				return;
 			}
 			
