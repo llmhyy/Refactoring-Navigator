@@ -20,7 +20,7 @@ import reflexactoring.diagram.util.Settings;
 
 public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 
-	
+	private final static String OK_MESSAGE = "ok";
 	
 	@Override
 	public void run(IAction action) {
@@ -31,15 +31,8 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 				compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
 			}
 			
-			ArrayList<ModuleWrapper> moduleListWithNoDesc = checkModulesNotDescribedYet(moduleList);
-			if(moduleListWithNoDesc.size() != 0){
-				/**
-				 * Open a message dialog here, inform user of the to-be-described module.
-				 */
-				String message = "All modules should be described before performing mapping, please fill in descriprions for following modules:\n\n";
-				for (ModuleWrapper moduleWrapper : moduleListWithNoDesc) {
-					message += moduleWrapper.getName() + "\n";
-				}			
+			String message = checkValidity(moduleList);
+			if(!AutoMappingAction.OK_MESSAGE.equals(message)){
 				MessageDialog.openError(null, "Modules with no description", message);
 				return;
 			}
@@ -55,6 +48,70 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	/**
+	 * Check three points:
+	 * 1) Whether any module with no name;
+	 * 2) Whether any module with no desc;
+	 * 3) Wether there is any duplicated name amongst modules
+	 * @param moduleList
+	 * @return
+	 */
+	private String checkValidity(ArrayList<ModuleWrapper> moduleList){
+		//TODO
+		/**
+		 * checking modules with no name
+		 */
+		boolean isAnyModuleWithNoName = checkModulesWithNoName(moduleList);
+		if(isAnyModuleWithNoName){
+			/**
+			 * return a message
+			 */
+		}
+		
+		/**
+		 * checking modules with no description.
+		 */
+		ArrayList<ModuleWrapper> modulesWithNoDesc = checkModulesNotDescribedYet(moduleList);
+		if(modulesWithNoDesc.size() != 0){
+			/**
+			 * Open a message dialog here, inform user of the to-be-described module.
+			 */
+			String message = "All modules should be described before performing mapping, please fill in descriprions for following modules:\n\n";
+			for (ModuleWrapper moduleWrapper : modulesWithNoDesc) {
+				message += moduleWrapper.getName() + "\n";
+			}			
+			MessageDialog.openError(null, "Modules with no description", message);
+			return message;
+		}
+		
+		//TODO
+		/**
+		 * checking modules with duplicated name
+		 */
+		String duplicatedModuleName = checkDuplicatedModuleName(moduleList);
+		if(duplicatedModuleName != null){
+			/**
+			 * return a message
+			 */
+			
+		}
+		
+		/**
+		 * if no
+		 */
+		return AutoMappingAction.OK_MESSAGE;
+	}
+	
+	private boolean checkModulesWithNoName(ArrayList<ModuleWrapper> moduleList){
+		//TODO
+		return false;
+	}
+	
+	private String checkDuplicatedModuleName(ArrayList<ModuleWrapper> moduleList){
+		//TODO
+		return null;
 	}
 	
 	/**
