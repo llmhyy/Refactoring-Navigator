@@ -26,21 +26,21 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 	public void run(IAction action) {
 		try {
 			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
-			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList = new ArrayList<>();
-			for(ICompilationUnit unit: Settings.scope.getScopeCompilationUnitList()){
-				compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
-			}
-			
 			String message = checkValidity(moduleList);
 			if(!AutoMappingAction.OK_MESSAGE.equals(message)){
 				MessageDialog.openError(null, "Modules with no description", message);
 				return;
 			}
 			
-			compilationUnitWrapperList = buildStructuralDependency(compilationUnitWrapperList);
+			/*ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList = new ArrayList<>();
+			for(ICompilationUnit unit: Settings.scope.getScopeCompilationUnitList()){
+				compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
+			}
+			compilationUnitWrapperList = buildStructuralDependency(compilationUnitWrapperList);*/
+			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList 
+				= ReflexactoringUtil.recoverCompilationUnitWrapperList();
 			
 			new ModelMapper().generateMappingRelation(moduleList, compilationUnitWrapperList);
-			
 			new DiagramUpdater().generateReflexionModel(moduleList, compilationUnitWrapperList);
 			
 		} catch (PartInitException e) {
@@ -130,46 +130,6 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		return moduleListWithNoDesc;
 		
 	}
-
-	/**
-	 * Identifying the reference relations in classes/interfaces in scope.
-	 * @param compilationUnitList
-	 * @return
-	 */
-	private ArrayList<ICompilationUnitWrapper> buildStructuralDependency(final ArrayList<ICompilationUnitWrapper> compilationUnitList){
-		for(final ICompilationUnitWrapper refererCompilationUnit: compilationUnitList){
-			final CompilationUnit compilationUnit = refererCompilationUnit.getJavaUnit();
-			compilationUnit.accept(new ASTVisitor() {
-				/**
-				 * Currently, I just simplify the problem by considering only SimpleType. It could be extended to
-				 * other subclasses of Type.
-				 */
-				public boolean visit(SimpleType type){
-					String typeName = type.getName().getFullyQualifiedName();
-					for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
-						String tobeComparedName = refereeCompilationUnit.getCompilationUnit().getElementName();
-						tobeComparedName = tobeComparedName.substring(0, tobeComparedName.indexOf(".java"));
-						if(typeName.equals(tobeComparedName) && !refererCompilationUnit.equals(refereeCompilationUnit)){
-							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
-							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
-						}
-					}
-					
-					
-					return true;
-				}
-			});
-		}
-		
-		return compilationUnitList;
-	}
-	
-	
-
-	
-	
-	
-	
 
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {

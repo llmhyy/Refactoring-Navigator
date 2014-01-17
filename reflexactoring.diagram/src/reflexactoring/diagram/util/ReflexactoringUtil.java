@@ -17,12 +17,17 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.emf.core.GMFEditingDomainFactory;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.ui.PartInitException;
 
 import reflexactoring.Activator;
 import reflexactoring.Module;
 import reflexactoring.Reflexactoring;
 import reflexactoring.diagram.action.semantic.WordNetDict;
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
 
@@ -246,5 +251,48 @@ public class ReflexactoringUtil {
 		}
 		
 		return null;
+	}
+	
+	public static ArrayList<ICompilationUnitWrapper> recoverCompilationUnitWrapperList(){
+		ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList = new ArrayList<>();
+		for(ICompilationUnit unit: Settings.scope.getScopeCompilationUnitList()){
+			compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
+		}
+		compilationUnitWrapperList = buildStructuralDependency(compilationUnitWrapperList);
+		
+		return compilationUnitWrapperList;
+	}
+	
+	/**
+	 * Identifying the reference relations in classes/interfaces in scope.
+	 * @param compilationUnitList
+	 * @return
+	 */
+	private static ArrayList<ICompilationUnitWrapper> buildStructuralDependency(final ArrayList<ICompilationUnitWrapper> compilationUnitList){
+		for(final ICompilationUnitWrapper refererCompilationUnit: compilationUnitList){
+			final CompilationUnit compilationUnit = refererCompilationUnit.getJavaUnit();
+			compilationUnit.accept(new ASTVisitor() {
+				/**
+				 * Currently, I just simplify the problem by considering only SimpleType. It could be extended to
+				 * other subclasses of Type.
+				 */
+				public boolean visit(SimpleType type){
+					String typeName = type.getName().getFullyQualifiedName();
+					for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
+						String tobeComparedName = refereeCompilationUnit.getCompilationUnit().getElementName();
+						tobeComparedName = tobeComparedName.substring(0, tobeComparedName.indexOf(".java"));
+						if(typeName.equals(tobeComparedName) && !refererCompilationUnit.equals(refereeCompilationUnit)){
+							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
+							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
+						}
+					}
+					
+					
+					return true;
+				}
+			});
+		}
+		
+		return compilationUnitList;
 	}
 }
