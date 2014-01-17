@@ -1,5 +1,7 @@
 package reflexactoring.diagram.action;
 
+import java.util.ArrayList;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -10,6 +12,11 @@ public class RecommendRefactoringAction implements
 
 	@Override
 	public void run(IAction action) {
+		
+		RefactoringRecommender recommender = new RefactoringRecommender();
+		
+		ArrayList<Suggestion> suggestions = recommender.recommend();
+		
 		
 	}
 
