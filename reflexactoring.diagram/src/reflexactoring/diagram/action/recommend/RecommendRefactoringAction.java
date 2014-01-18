@@ -9,7 +9,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
 public class RecommendRefactoringAction implements
 		IWorkbenchWindowActionDelegate {
-
+	
 	@Override
 	public void run(IAction action) {
 		
