@@ -39,7 +39,7 @@ public class AddModuleAction extends RefactoringAction {
 	@Override
 	public String getDetailedDescription(){
 		StringBuffer buffer = new StringBuffer();
-		String desc = "containing ";
+		String desc = "to contain ";
 		buffer.append(desc);
 		for(ICompilationUnitWrapper wrapper: unMappedUnits){
 			buffer.append(wrapper.getSimpleName() + ", ");

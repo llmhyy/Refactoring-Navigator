@@ -40,11 +40,15 @@ public class RefactoringSuggestionView extends ViewPart {
 		form.getBody().setLayout(new TableWrapLayout());
 		text = toolkit.createFormText(form.getBody(), true);
 		text.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
-		text.setText("<form>" + initialDesc +"<p></p><p></p><p></p><p></p><p></p><p></p></form>", true, false);
+		text.setText("<form>" + initialDesc +"</form>", true, false);
 	}
 	
 	public void refreshSuggestionsOnUI(ArrayList<Suggestion> suggestions){
 		
+		
+		if(suggestions == null){
+			return;
+		}
 		
 		String content = generateCSS(suggestions);
 		
