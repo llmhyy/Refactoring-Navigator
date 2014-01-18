@@ -38,7 +38,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			}
 			compilationUnitWrapperList = buildStructuralDependency(compilationUnitWrapperList);*/
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList 
-				= ReflexactoringUtil.recoverCompilationUnitWrapperList();
+				= Settings.scope.getScopeCompilationUnitList();
 			
 			new ModelMapper().generateMappingRelation(moduleList, compilationUnitWrapperList);
 			new DiagramUpdater().generateReflexionModel(moduleList, compilationUnitWrapperList);

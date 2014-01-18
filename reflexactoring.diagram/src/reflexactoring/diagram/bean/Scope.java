@@ -12,27 +12,36 @@ import org.eclipse.jdt.core.ICompilationUnit;
  *
  */
 public class Scope {
-	private ArrayList<ICompilationUnit> scopeCompilationUnitList = new ArrayList<>();
+	private ArrayList<ICompilationUnitWrapper> scopeCompilationUnitList = new ArrayList<>();
 
 	/**
 	 * @return the scopeCompilationUnitList
 	 */
-	public ArrayList<ICompilationUnit> getScopeCompilationUnitList() {
+	public ArrayList<ICompilationUnitWrapper> getScopeCompilationUnitList() {
 		return scopeCompilationUnitList;
+	}
+	
+	public ArrayList<ICompilationUnit> getScopeRawCompilationUnitList(){
+		ArrayList<ICompilationUnit> units = new ArrayList<>();
+		for(ICompilationUnitWrapper wrapper: this.scopeCompilationUnitList){
+			units.add(wrapper.getCompilationUnit());
+		}
+		
+		return units;
 	}
 
 	/**
 	 * @param scopeCompilationUnitList the scopeCompilationUnitList to set
 	 */
-	public void setScopeCompilationUnitList(ArrayList<ICompilationUnit> scopeCompilationUnitList) {
+	public void setScopeCompilationUnitList(ArrayList<ICompilationUnitWrapper> scopeCompilationUnitList) {
 		this.scopeCompilationUnitList = scopeCompilationUnitList;
 	}
 	
 	public ICompilationUnitWrapper findUnit(String identifier){
-		for(ICompilationUnit unit: this.scopeCompilationUnitList){
-			ICompilationUnitWrapper wrapper = new ICompilationUnitWrapper(unit, false);
-			if(wrapper.getFullQualifiedName().equals(identifier)){
-				return wrapper;
+		for(ICompilationUnitWrapper unit: this.scopeCompilationUnitList){
+			//ICompilationUnitWrapper wrapper = new ICompilationUnitWrapper(unit, false);
+			if(unit.getFullQualifiedName().equals(identifier)){
+				return unit;
 			}
 		}
 		

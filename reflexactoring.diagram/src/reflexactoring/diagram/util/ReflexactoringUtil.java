@@ -253,7 +253,7 @@ public class ReflexactoringUtil {
 		return null;
 	}
 	
-	public static ArrayList<ICompilationUnitWrapper> recoverCompilationUnitWrapperList(){
+	/*public static ArrayList<ICompilationUnitWrapper> recoverCompilationUnitWrapperList(){
 		ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList = new ArrayList<>();
 		for(ICompilationUnit unit: Settings.scope.getScopeCompilationUnitList()){
 			compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
@@ -261,14 +261,14 @@ public class ReflexactoringUtil {
 		compilationUnitWrapperList = buildStructuralDependency(compilationUnitWrapperList);
 		
 		return compilationUnitWrapperList;
-	}
+	}*/
 	
 	/**
 	 * Identifying the reference relations in classes/interfaces in scope.
 	 * @param compilationUnitList
 	 * @return
 	 */
-	private static ArrayList<ICompilationUnitWrapper> buildStructuralDependency(final ArrayList<ICompilationUnitWrapper> compilationUnitList){
+	public static ArrayList<ICompilationUnitWrapper> buildStructuralDependency(final ArrayList<ICompilationUnitWrapper> compilationUnitList){
 		for(final ICompilationUnitWrapper refererCompilationUnit: compilationUnitList){
 			final CompilationUnit compilationUnit = refererCompilationUnit.getJavaUnit();
 			compilationUnit.accept(new ASTVisitor() {

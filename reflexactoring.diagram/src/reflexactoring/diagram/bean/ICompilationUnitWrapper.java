@@ -213,4 +213,12 @@ public class ICompilationUnitWrapper implements SuggestionObject{
 		
 		this.calleeCompilationUnitList.put(unit, ++count);
 	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.SuggestionObject#getName()
+	 */
+	@Override
+	public String getName() {
+		return this.getSimpleName();
+	}
 }

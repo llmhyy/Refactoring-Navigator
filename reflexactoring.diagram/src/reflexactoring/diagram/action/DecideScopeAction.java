@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.action;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -31,6 +33,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Activator;
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
@@ -57,7 +60,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		if(this.previousSelections != null){
 			scopeDialog.setExpandedElements(previousSelections);
 			//scopeDialog.setInitialSelections(previousSelections);
-			scopeDialog.setInitialElementSelections(Settings.scope.getScopeCompilationUnitList());			
+			scopeDialog.setInitialElementSelections(Settings.scope.getScopeRawCompilationUnitList());			
 		}
 		//scopeDialog.setExpandedElements(projects);
 		//scopeDialog.setInitialElementSelections(Settings.scopeCompilationUnitList);
@@ -72,10 +75,19 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			this.previousSelections = selectedObjects;
 			for(int i=0; i<selectedObjects.length; i++){
 				if(selectedObjects[i] instanceof ICompilationUnit){
-					Settings.scope.getScopeCompilationUnitList().add((ICompilationUnit)selectedObjects[i]);
+					ICompilationUnit unit = (ICompilationUnit)selectedObjects[i];
+					
+					Settings.scope.getScopeCompilationUnitList().add(new ICompilationUnitWrapper(unit));
 				}
 				//Settings.scopeCompilationUnitList.add(selectedObjects[i]);
 			}
+			
+			/**
+			 * Build dependencies amongst java types in scope.
+			 */
+			ArrayList<ICompilationUnitWrapper> list = 
+					ReflexactoringUtil.buildStructuralDependency(Settings.scope.getScopeCompilationUnitList());
+			Settings.scope.setScopeCompilationUnitList(list);
 		}
 		
 	}
