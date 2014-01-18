@@ -11,7 +11,7 @@ import reflexactoring.Module;
  * @author linyun
  *
  */
-public class ModuleWrapper {
+public class ModuleWrapper implements SuggestionObject{
 	private Module module;
 	private ArrayList<ICompilationUnitWrapper> mappingList = new ArrayList<>();
 	

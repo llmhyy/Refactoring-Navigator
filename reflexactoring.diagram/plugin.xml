@@ -619,7 +619,7 @@
                tooltip="Decide the scope of refactoring">
          </action>
          <action
-               class="reflexactoring.diagram.action.RecommendRefactoringAction"
+               class="reflexactoring.diagram.action.recommend.RecommendRefactoringAction"
                icon="icons/menu/recommend.gif"
                id="reflexactoring.diagram.action.recommendRefacotring"
                label="Recommend Refactoring"

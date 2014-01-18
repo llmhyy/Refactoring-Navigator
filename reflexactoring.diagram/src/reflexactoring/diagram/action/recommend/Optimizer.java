@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reflexactoring.diagram.action;
+package reflexactoring.diagram.action.recommend;
 
 import java.util.ArrayList;
 

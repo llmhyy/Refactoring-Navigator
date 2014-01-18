@@ -7,7 +7,7 @@ package reflexactoring.diagram.bean;
  * @author linyun
  *
  */
-public class ModuleConnectionWrapper {
+public class ModuleConnectionWrapper implements SuggestionObject{
 	private ModuleWrapper sourceModule;
 	private ModuleWrapper targetModule;
 	

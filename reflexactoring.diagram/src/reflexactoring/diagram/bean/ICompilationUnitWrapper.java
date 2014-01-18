@@ -21,7 +21,7 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  * @author linyun
  *
  */
-public class ICompilationUnitWrapper {
+public class ICompilationUnitWrapper implements SuggestionObject{
 	private ICompilationUnit compilationUnit;
 	private ModuleWrapper mappingModule;
 	private CompilationUnit javaUnit;
