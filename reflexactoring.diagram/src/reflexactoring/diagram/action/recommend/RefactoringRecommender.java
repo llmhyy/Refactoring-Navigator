@@ -54,7 +54,7 @@ public class RefactoringRecommender {
 			 */
 			
 			Optimizer optimizer = new Optimizer();
-			ArrayList<Suggestion> suggestions = optimizer.optimize(ReflexactoringUtil.recoverCompilationUnitWrapperList(), moduleList);
+			ArrayList<Suggestion> suggestions = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList);
 			
 			return suggestions;
 			
@@ -68,11 +68,26 @@ public class RefactoringRecommender {
 	
 	
 	private ArrayList<Suggestion> generateSuggestionForUnmappedUnits(ArrayList<ICompilationUnitWrapper> unmappedUnits){
-		return null;
+		
+		AddModuleAction action = new AddModuleAction(unmappedUnits);
+		
+		Suggestion suggestion = new Suggestion(null, action);
+		
+		ArrayList<Suggestion> suggestions = new ArrayList<>();
+		suggestions.add(suggestion);
+		
+		return suggestions;
 	}
 	
 	private ArrayList<ICompilationUnitWrapper> checkUnmappedCompilationUnits(){
-		return null;
+		ArrayList<ICompilationUnitWrapper> list = new ArrayList<>();
+		for(ICompilationUnitWrapper unit: Settings.scope.getScopeCompilationUnitList()){
+			if(unit.getMappingModule() == null){
+				list.add(unit);
+			}
+		}
+		
+		return list;
 	}
 	
 }

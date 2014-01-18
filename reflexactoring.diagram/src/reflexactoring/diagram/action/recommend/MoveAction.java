@@ -11,4 +11,5 @@ public class MoveAction extends DirectOrientedAction {
 	public MoveAction(){
 		this.actionName = RefactoringAction.MOVE;
 	}
+
 }

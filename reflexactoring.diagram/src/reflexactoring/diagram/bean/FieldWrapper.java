@@ -8,5 +8,9 @@ package reflexactoring.diagram.bean;
  *
  */
 public class FieldWrapper extends UnitMemberWrapper {
-
+	@Override
+	public String getName() {
+		//TODO
+		return null;
+	}
 }

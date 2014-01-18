@@ -31,4 +31,6 @@ public abstract class RefactoringAction {
 	public void setActionName(String actionName) {
 		this.actionName = actionName;
 	}
+	
+	public abstract String getDetailedDescription();
 }

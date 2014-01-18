@@ -40,4 +40,13 @@ public abstract class DirectOrientedAction extends RefactoringAction {
 	public void setDestination(ModuleWrapper destination) {
 		this.destination = destination;
 	}
+	
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.action.recommend.RefactoringAction#getDetailedDescription()
+	 */
+	@Override
+	public String getDetailedDescription() {
+		String desc = "from " + origin.getName() + " to " + destination.getName();
+		return desc;
+	}
 }

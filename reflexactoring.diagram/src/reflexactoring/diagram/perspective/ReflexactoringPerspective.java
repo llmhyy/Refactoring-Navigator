@@ -8,7 +8,7 @@ import org.eclipse.ui.IPerspectiveFactory;
 public class ReflexactoringPerspective implements IPerspectiveFactory {
 
 	public static String HEURISTIC_MAPPING_VIEW = "reflexactoring.diagram.view.mappingAjustion";
-	public static String PROPERTY_VIEW = "reflexactoring.diagram.view.suggestion";
+	public static String REFACTORING_SUGGESTION = "reflexactoring.diagram.view.suggestion";
 	
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
@@ -21,7 +21,7 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 		bottom.addView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW);
 		
 		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT, 0.7f, editorArea);
-		right.addView(ReflexactoringPerspective.PROPERTY_VIEW);
+		right.addView(ReflexactoringPerspective.REFACTORING_SUGGESTION);
 		right.addView(IPageLayout.ID_OUTLINE);
 	}
 

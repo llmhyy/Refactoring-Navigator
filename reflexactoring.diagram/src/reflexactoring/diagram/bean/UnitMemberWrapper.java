@@ -7,6 +7,6 @@ package reflexactoring.diagram.bean;
  * @author linyun
  *
  */
-public class UnitMemberWrapper implements SuggestionObject {
+public abstract class UnitMemberWrapper implements SuggestionObject {
 
 }

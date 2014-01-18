@@ -64,5 +64,8 @@ public class ModuleConnectionWrapper implements SuggestionObject{
 		this.targetModule = targetModule;
 	}
 	
-	
+	@Override
+	public String getName() {
+		return "edge";
+	}
 }

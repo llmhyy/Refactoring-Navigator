@@ -22,6 +22,15 @@ public class Suggestion {
 		this.suggeestionObject = suggeestionObject;
 		this.action = action;
 	}
+	
+	public String toString(){
+		
+		String suggestionObjName = (this.suggeestionObject == null)? "modules ": this.suggeestionObject.getName();
+		
+		return this.action.getActionName() + " " + 
+				suggestionObjName + 
+				this.action.getDetailedDescription();
+	}
 
 	/**
 	 * @return the suggeestionObject

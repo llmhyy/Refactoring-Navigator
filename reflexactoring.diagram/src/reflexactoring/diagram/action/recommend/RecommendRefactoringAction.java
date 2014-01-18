@@ -6,6 +6,10 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.PlatformUI;
+
+import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.view.RefactoringSuggestionView;
 
 public class RecommendRefactoringAction implements
 		IWorkbenchWindowActionDelegate {
@@ -17,6 +21,10 @@ public class RecommendRefactoringAction implements
 		
 		ArrayList<Suggestion> suggestions = recommender.recommend();
 		
+		
+		RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().
+				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTION);
+		view.refreshSuggestionsOnUI(suggestions);
 		
 	}
 
