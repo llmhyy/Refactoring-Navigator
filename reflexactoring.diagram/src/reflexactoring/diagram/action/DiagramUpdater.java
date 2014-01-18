@@ -59,7 +59,7 @@ import reflexactoring.Reflexactoring;
 import reflexactoring.ReflexactoringPackage;
 import reflexactoring.Type;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.ModuleConnectionWrapper;
+import reflexactoring.diagram.bean.ModuleDependencyWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.edit.commands.Class2CreateCommand;
 import reflexactoring.diagram.edit.commands.ClassCreateCommand;
@@ -86,14 +86,6 @@ import reflexactoring.provider.ReflexactoringEditPlugin;
  *
  */
 public class DiagramUpdater {
-	
-	/**
-	 * Difference types 
-	 */
-	public static final String ORIGIN = "origin";
-	public static final String CONFORMANCE = "conformance";
-	public static final String DIVERGENCE = "divergence";
-	public static final String ABSENCE = "absence";
 	
 	/**
 	 * Create compilation units and their relations on diagram.
@@ -151,7 +143,7 @@ public class DiagramUpdater {
 		int index = 0;
 		for(int i=0; i<count; i++){
 			ModuleDependency dependency = reflexactoring.getModuleDenpencies().get(index);
-			if(dependency.getName().equals(DiagramUpdater.DIVERGENCE)){
+			if(dependency.getName().equals(ModuleDependencyWrapper.DIVERGENCE)){
 				Edge edge = (Edge)findViewOfSpecificModuleDependency(diagramRoot, dependency);
 				
 				DestroyElementRequest destroyRequest = new DestroyElementRequest(dependency, false);
@@ -166,7 +158,7 @@ public class DiagramUpdater {
 				
 			}
 			else{
-				setDependencyType(diagramRoot, dependency, DiagramUpdater.ORIGIN);
+				setDependencyType(diagramRoot, dependency, ModuleDependencyWrapper.ORIGIN);
 				index++;
 			}
 		}
@@ -284,16 +276,16 @@ public class DiagramUpdater {
 		 * other one for realistic connections.
 		 */
 		Reflexactoring root = findReflexactoring(diagramRoot);
-		HashSet<ModuleConnectionWrapper> conceivedConnectionList = new HashSet<>();
+		HashSet<ModuleDependencyWrapper> conceivedConnectionList = new HashSet<>();
 		for(ModuleDependency connection: root.getModuleDenpencies()){
 			ModuleWrapper sourceModule = new ModuleWrapper(connection.getOrigin());
 			ModuleWrapper targetModule = new ModuleWrapper(connection.getDestination());
-			ModuleConnectionWrapper connectionWrapper = new ModuleConnectionWrapper(sourceModule, targetModule);
+			ModuleDependencyWrapper connectionWrapper = new ModuleDependencyWrapper(sourceModule, targetModule);
 			
 			conceivedConnectionList.add(connectionWrapper);
 		}
 		
-		HashSet<ModuleConnectionWrapper> realisticConnectionList = recoverRealisticConnectionList(compilationUnitWrapperList);
+		HashSet<ModuleDependencyWrapper> realisticConnectionList = recoverRealisticConnectionList(compilationUnitWrapperList);
 		
 		/**
 		 * Start comparing the module conformance between high and low level module.
@@ -302,9 +294,9 @@ public class DiagramUpdater {
 		/**
 		 * First, identify matched connections from two sets.
 		 */
-		Iterator<ModuleConnectionWrapper> iterator = conceivedConnectionList.iterator();
+		Iterator<ModuleDependencyWrapper> iterator = conceivedConnectionList.iterator();
 		while(iterator.hasNext()){
-			ModuleConnectionWrapper connection = iterator.next();
+			ModuleDependencyWrapper connection = iterator.next();
 			if(realisticConnectionList.contains(connection)){
 				iterator.remove();
 				realisticConnectionList.remove(connection);
@@ -313,7 +305,7 @@ public class DiagramUpdater {
 						connection).getPrimaryShape();
 				connectionFigure.setConformanceStyle();
 				
-				setDependencyType(diagramRoot, connection, DiagramUpdater.CONFORMANCE);
+				setDependencyType(diagramRoot, connection, ModuleDependencyWrapper.CONFORMANCE);
 			}
 		}
 		
@@ -322,25 +314,25 @@ public class DiagramUpdater {
 		 * while not exist in code.
 		 * 
 		 */
-		for(ModuleConnectionWrapper conceivedConnection: conceivedConnectionList){
+		for(ModuleDependencyWrapper conceivedConnection: conceivedConnectionList){
 			ModuleDependencyFigure connectionFigure = findCorrespondingDepedencyEditPart(diagramRoot, 
 					conceivedConnection).getPrimaryShape();
 			connectionFigure.setAbsenceStyle();
-			setDependencyType(diagramRoot, conceivedConnection, DiagramUpdater.ABSENCE);
+			setDependencyType(diagramRoot, conceivedConnection, ModuleDependencyWrapper.ABSENCE);
 		}
 		
 		/**
 		 * Third, deal with wrong dependencies (divergent connection), i.e., the dependencies unexpected by user
 		 * while exist in code.
 		 */
-		for(ModuleConnectionWrapper divergentConnection: realisticConnectionList){
+		for(ModuleDependencyWrapper divergentConnection: realisticConnectionList){
 			ModuleDependencyFigure connectionFigure = createDependency(diagramRoot, divergentConnection);
 			connectionFigure.setDivergneceStyle();
-			setDependencyType(diagramRoot, divergentConnection, DiagramUpdater.DIVERGENCE);
+			setDependencyType(diagramRoot, divergentConnection, ModuleDependencyWrapper.DIVERGENCE);
 		}
 	}
 	
-	private ModuleDependencyFigure createDependency(DiagramRootEditPart diagramRoot, ModuleConnectionWrapper connection){
+	private ModuleDependencyFigure createDependency(DiagramRootEditPart diagramRoot, ModuleDependencyWrapper connection){
 		Module sourceModule = findModule(diagramRoot, connection.getSourceModule().getModule());
 		Module targetModule = findModule(diagramRoot, connection.getTargetModule().getModule());
 		
@@ -374,7 +366,7 @@ public class DiagramUpdater {
 	}
 	
 	private ModuleDependencyEditPart findCorrespondingDepedencyEditPart(DiagramRootEditPart diagramRoot,
-			ModuleConnectionWrapper connection){
+			ModuleDependencyWrapper connection){
 		
 		for(Object obj: diagramRoot.getChildren()){
 			if(obj instanceof ReflexactoringEditPart){
@@ -391,7 +383,7 @@ public class DiagramUpdater {
 						//ModuleDependency dependency = (ModuleDependency)dependencyPart.resolveSemanticElement();
 						ModuleWrapper sourceModule = new ModuleWrapper((Module)sourceEditPart.resolveSemanticElement());
 						ModuleWrapper targetModule = new ModuleWrapper((Module)targetEditPart.resolveSemanticElement());
-						ModuleConnectionWrapper connectionWrapper = new ModuleConnectionWrapper(sourceModule, targetModule);
+						ModuleDependencyWrapper connectionWrapper = new ModuleDependencyWrapper(sourceModule, targetModule);
 						
 						if(connectionWrapper.equals(connection)){
 							return dependencyPart;
@@ -404,16 +396,16 @@ public class DiagramUpdater {
 		return null;
 	}
 	
-	private HashSet<ModuleConnectionWrapper> recoverRealisticConnectionList(
+	private HashSet<ModuleDependencyWrapper> recoverRealisticConnectionList(
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList){
-		HashSet<ModuleConnectionWrapper> realisticConnectionList = new HashSet<>();
+		HashSet<ModuleDependencyWrapper> realisticConnectionList = new HashSet<>();
 		for(ICompilationUnitWrapper callerUnit: compilationUnitWrapperList){
 			for(ICompilationUnitWrapper calleeUnit: callerUnit.getCalleeCompilationUnitList().keySet()){
 				ModuleWrapper callerModule = callerUnit.getMappingModule();
 				ModuleWrapper calleeModule = calleeUnit.getMappingModule();
 				
 				if(callerModule != null && calleeModule != null && !callerModule.equals(calleeModule)){
-					ModuleConnectionWrapper connection = new ModuleConnectionWrapper(callerModule, calleeModule);
+					ModuleDependencyWrapper connection = new ModuleDependencyWrapper(callerModule, calleeModule);
 					realisticConnectionList.add(connection);
 				}
 			}
@@ -432,7 +424,7 @@ public class DiagramUpdater {
 		diagramEditDomain.getDiagramCommandStack().execute(new ICommandProxy(setPackageCommand));
 	}
 	
-	private void setDependencyType(DiagramRootEditPart diagramRoot, ModuleConnectionWrapper connection, String connectionType){
+	private void setDependencyType(DiagramRootEditPart diagramRoot, ModuleDependencyWrapper connection, String connectionType){
 		ModuleDependencyEditPart part = findCorrespondingDepedencyEditPart(diagramRoot, connection);
 		ModuleDependency dependency = (ModuleDependency)part.resolveSemanticElement();
 		

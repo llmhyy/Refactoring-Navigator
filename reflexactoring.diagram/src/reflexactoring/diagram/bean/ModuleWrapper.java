@@ -12,7 +12,10 @@ import reflexactoring.Module;
  *
  */
 public class ModuleWrapper implements SuggestionObject{
+	
 	private Module module;
+	private ArrayList<ModuleWrapper> calleeModuleList = new ArrayList<>();
+	private ArrayList<ModuleWrapper> callerModuleList = new ArrayList<>();
 	private ArrayList<ICompilationUnitWrapper> mappingList = new ArrayList<>();
 	
 	/**
@@ -70,5 +73,55 @@ public class ModuleWrapper implements SuggestionObject{
 	
 	public String toString(){
 		return getName() /*+ ":" + getDescription()*/;
+	}
+
+	/**
+	 * @return the calleeModuleList
+	 */
+	public ArrayList<ModuleWrapper> getCalleeModuleList() {
+		return calleeModuleList;
+	}
+	
+	public void addCalleeModule(ModuleWrapper calleeWrapper){
+		for(ModuleWrapper module: this.calleeModuleList){
+			if(module.getName().equals(calleeWrapper.getName())
+					&& module.getDescription().equals(calleeWrapper.getDescription())){
+				return;
+			}
+		}
+		
+		this.calleeModuleList.add(calleeWrapper);
+	}
+
+	/**
+	 * @param calleeModuleList the calleeModuleList to set
+	 */
+	public void setCalleeModuleList(ArrayList<ModuleWrapper> calleeModuleList) {
+		this.calleeModuleList = calleeModuleList;
+	}
+
+	/**
+	 * @return the callerModuleList
+	 */
+	public ArrayList<ModuleWrapper> getCallerModuleList() {
+		return callerModuleList;
+	}
+
+	public void addCallerModule(ModuleWrapper callerWrapper){
+		for(ModuleWrapper module: this.callerModuleList){
+			if(module.getName().equals(callerWrapper.getName())
+					&& module.getDescription().equals(callerWrapper.getDescription())){
+				return;
+			}
+		}
+		
+		this.callerModuleList.add(callerWrapper);
+	}
+	
+	/**
+	 * @param callerModuleList the callerModuleList to set
+	 */
+	public void setCallerModuleList(ArrayList<ModuleWrapper> callerModuleList) {
+		this.callerModuleList = callerModuleList;
 	}
 }

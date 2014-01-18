@@ -25,9 +25,11 @@ import org.eclipse.ui.PartInitException;
 
 import reflexactoring.Activator;
 import reflexactoring.Module;
+import reflexactoring.ModuleDependency;
 import reflexactoring.Reflexactoring;
 import reflexactoring.diagram.action.semantic.WordNetDict;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ModuleDependencyWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
 
@@ -246,7 +248,39 @@ public class ReflexactoringUtil {
 					moduleList.add(new ModuleWrapper(module));
 				}
 				
+				/**
+				 * Build calling relation amongst modules.
+				 */
+				for(ModuleDependency moduleDependency: reflexactoring.getModuleDenpencies()){
+					
+					if(!moduleDependency.getName().equals(ModuleDependencyWrapper.DIVERGENCE)){
+						Module origin = moduleDependency.getOrigin();
+						Module destination = moduleDependency.getDestination();
+						
+						ModuleWrapper originWrapper = findModule(moduleList, origin);
+						ModuleWrapper destinationWrapper = findModule(moduleList, destination);
+						
+						if(originWrapper != null && destinationWrapper != null){
+							originWrapper.addCalleeModule(destinationWrapper);
+							destinationWrapper.addCallerModule(originWrapper);
+						}
+					}
+					
+					
+				}
+				
 				return moduleList;
+			}
+		}
+		
+		return null;
+	}
+	
+	private static ModuleWrapper findModule(ArrayList<ModuleWrapper> list, Module module){
+		for(ModuleWrapper wrapper: list){
+			if(wrapper.getName().equals(module.getName())
+					&& wrapper.getDescription().equals(module.getDescription())){
+				return wrapper;
 			}
 		}
 		
