@@ -54,7 +54,7 @@ public class RefactoringRecommender {
 			 */
 			
 			Optimizer optimizer = new Optimizer();
-			ArrayList<Suggestion> suggestions = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList);
+			ArrayList<Suggestion> suggestions = optimizer.getSuggestionsByOptimization(Settings.scope.getScopeCompilationUnitList(), moduleList);
 			
 			return suggestions;
 			

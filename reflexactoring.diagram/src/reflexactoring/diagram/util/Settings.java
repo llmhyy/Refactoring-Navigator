@@ -29,4 +29,5 @@ public class Settings {
 		= new HeuristicModuleUnitMapList();
 		
 	public static String diagramPath = "/refactoring/default.reflexactoring";
+	public static double largeSimilarityValue = 1.0d;
 }

@@ -25,10 +25,12 @@ public class ModelMapper {
 	 * will have a list of mapping compilationUnit; in contrast, for each compilationUnit
 	 * in compilationUnit, the compilation unit wrapper will have a corresponding mapped module.
 	 * 
+	 * This method will return the overall similarity table.
+	 * 
 	 * @param moduleList
 	 * @param compilationUnitList
 	 */
-	public void generateMappingRelation(ArrayList<ModuleWrapper> moduleList,
+	public double[][] generateMappingRelation(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
 		double[][] overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
 		
@@ -47,6 +49,15 @@ public class ModelMapper {
 				ModuleWrapper module = map.getModule();
 				unit.setMappingModule(module);
 				module.getMappingList().add(unit);
+				
+				/**
+				 * also need to change the corresponding overall similarity weight to a large value.
+				 */
+				for(int i=0; i<moduleList.size(); i++){
+					if(module.equals(moduleList.get(i))){
+						overallSimilarityTable[i][j] = Settings.largeSimilarityValue;
+					}
+				}
 				
 				continue;
 			}
@@ -70,6 +81,8 @@ public class ModelMapper {
 				module.getMappingList().add(unit);
 			}
 		}
+		
+		return overallSimilarityTable;
 	}
 	
 	/**
