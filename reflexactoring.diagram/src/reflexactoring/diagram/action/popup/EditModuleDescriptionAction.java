@@ -59,10 +59,23 @@ public class EditModuleDescriptionAction extends AbstractActionDelegate implemen
 					userInputDesc = des;
 				}
 			}
-						
-			SetRequest setNameReq = new SetRequest(module, ReflexactoringPackage.eINSTANCE.getModule_Description(), userInputDesc);
+			
+			String userInputName = "test";
+			
+			/**
+			 * set module name.
+			 */
+			SetRequest setNameReq = new SetRequest(module, ReflexactoringPackage.eINSTANCE.getModule_Name(), userInputName);
 			SetValueCommand setNameCommand = new SetValueCommand(setNameReq);
 			part.getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(setNameCommand));
+			
+			
+			/**
+			 * set module description
+			 */
+			SetRequest setDescReq = new SetRequest(module, ReflexactoringPackage.eINSTANCE.getModule_Description(), userInputDesc);
+			SetValueCommand setDescCommand = new SetValueCommand(setDescReq);
+			part.getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(setDescCommand));
 			
 		} 
 		
