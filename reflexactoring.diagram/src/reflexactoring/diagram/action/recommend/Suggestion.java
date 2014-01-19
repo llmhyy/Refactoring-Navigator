@@ -28,7 +28,7 @@ public class Suggestion {
 		String suggestionObjName = (this.suggeestionObject == null)? "modules ": this.suggeestionObject.getName();
 		
 		return this.action.getActionName() + " " + 
-				suggestionObjName + 
+				suggestionObjName + " " +
 				this.action.getDetailedDescription();
 	}
 

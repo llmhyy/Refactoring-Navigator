@@ -4,6 +4,7 @@
 package reflexactoring.diagram.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import reflexactoring.Module;
 
@@ -11,7 +12,7 @@ import reflexactoring.Module;
  * @author linyun
  *
  */
-public class ModuleWrapper implements SuggestionObject{
+public class ModuleWrapper implements SuggestionObject, GraphNode{
 	
 	private Module module;
 	private ArrayList<ModuleWrapper> calleeModuleList = new ArrayList<>();
@@ -123,5 +124,22 @@ public class ModuleWrapper implements SuggestionObject{
 	 */
 	public void setCallerModuleList(ArrayList<ModuleWrapper> callerModuleList) {
 		this.callerModuleList = callerModuleList;
+	}
+
+	/** 
+	 * (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.GraphNode#getCallerList()
+	 */
+	@Override
+	public List<? extends GraphNode> getCallerList() {
+		return this.callerModuleList;
+	}
+
+	/** (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.GraphNode#getCalleeList()
+	 */
+	@Override
+	public List<? extends GraphNode> getCalleeList() {
+		return this.calleeModuleList;
 	}
 }

@@ -50,15 +50,6 @@ public class ModelMapper {
 				unit.setMappingModule(module);
 				module.getMappingList().add(unit);
 				
-				/**
-				 * also need to change the corresponding overall similarity weight to a large value.
-				 */
-				for(int i=0; i<moduleList.size(); i++){
-					if(module.equals(moduleList.get(i))){
-						overallSimilarityTable[i][j] = Settings.largeSimilarityValue;
-					}
-				}
-				
 				continue;
 			}
 			
@@ -83,6 +74,35 @@ public class ModelMapper {
 		}
 		
 		return overallSimilarityTable;
+	}
+	
+	public double[][] computeSimilarityTableWithRegardToHeurisitcRules(ArrayList<ModuleWrapper> moduleList,
+			ArrayList<ICompilationUnitWrapper> compilationUnitList){
+		
+		double[][] similarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
+		
+		for(int j=0; j<compilationUnitList.size(); j++){
+			ICompilationUnitWrapper unit = compilationUnitList.get(j);
+			
+			/**
+			 * see whether user has specified mapping rules for such a compilation unit.
+			 */
+			HeuristicModuleUnitMap map = Settings.heuristicModuleUnitMapList.findHeuristicMapping(unit);
+			if(map != null){
+				ModuleWrapper module = map.getModule();
+				/**
+				 * need to change the corresponding overall similarity weight to a large value.
+				 */
+				for(int i=0; i<moduleList.size(); i++){
+					if(module.equals(moduleList.get(i))){
+						similarityTable[i][j] = Settings.largeSimilarityValue;
+					}
+				}
+				
+			}
+		}
+		
+		return similarityTable;
 	}
 	
 	/**

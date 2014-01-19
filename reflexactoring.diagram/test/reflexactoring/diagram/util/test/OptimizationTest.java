@@ -36,6 +36,7 @@ public class OptimizationTest {
 		Object[] inputs = null;
 		Object[] results = null;
 		
+		
 		try{
 			double[] weightVector = {0.5, 0.7, 0.3, 0.5, 0.5, 0.7, 0.6};
 			double[] initialVector = {0, 0, 0, 0, 0, 0, 0};
@@ -86,10 +87,10 @@ public class OptimizationTest {
 			inputs[9] = x0Matrix;
 			
 			OptimalGraphMatcher matcher = new OptimalGraphMatcher();
-			results = matcher.compute_optimization(1, inputs);
+			results = matcher.compute_optimization(7, inputs);
 			
-			MWNumericArray resultMatrix = (MWNumericArray)results[0];
-			System.out.println(resultMatrix);
+			
+			System.out.println();
 		}
 		catch(MWException e){
 			e.printStackTrace();

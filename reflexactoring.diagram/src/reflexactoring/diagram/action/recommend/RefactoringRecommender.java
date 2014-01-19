@@ -42,7 +42,7 @@ public class RefactoringRecommender {
 	public ArrayList<Suggestion> recommend(){
 		
 		ArrayList<ICompilationUnitWrapper> unmappedUnits = checkUnmappedCompilationUnits();
-		if(unmappedUnits.size() != 0){
+		if(unmappedUnits.size() != 0 && !Settings.isSkipUnMappedTypes){
 			ArrayList<Suggestion> suggestions = generateSuggestionForUnmappedUnits(unmappedUnits);
 			return suggestions;
 		}
