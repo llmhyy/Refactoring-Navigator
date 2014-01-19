@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 
+import reflexactoring.Type;
+
 /**
  * @author linyun
  *
@@ -46,5 +48,18 @@ public class Scope {
 		}
 		
 		return null;
+	}
+	
+	public ICompilationUnitWrapper findUnit(Type type){
+		String packageName = type.getPackageName();
+		String typeName = type.getName();
+		
+		String identifier = packageName+"."+typeName;
+		
+		return findUnit(identifier);
+	}
+	
+	public void removeUnit(ICompilationUnitWrapper unitWrapper){
+		this.scopeCompilationUnitList.remove(unitWrapper);
 	}
 }

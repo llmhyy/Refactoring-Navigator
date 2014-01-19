@@ -23,6 +23,7 @@ import reflexactoring.diagram.edit.parts.Interface2EditPart;
 import reflexactoring.diagram.edit.parts.InterfaceEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.HeuristicMappingView;
 
@@ -50,6 +51,9 @@ public class ReflexactoringDropPolicy extends DragDropEditPolicy {
 					}*/
 
 					Type type = getSemanticType(requestEP);
+					
+					ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(type);
+					unitWrapper.setMappingModule(null);
 
 					if (type != null) {
 						removeMappingRelation(type);
