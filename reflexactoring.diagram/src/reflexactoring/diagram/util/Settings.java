@@ -27,6 +27,8 @@ public class Settings {
 	 */
 	public static HeuristicModuleUnitMapList heuristicModuleUnitMapList
 		= new HeuristicModuleUnitMapList();
+	
+	public static boolean isSkipUnMappedTypes = false;
 		
 	public static String diagramPath = "/refactoring/default.reflexactoring";
 	public static double largeSimilarityValue = 1.0d;
