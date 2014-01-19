@@ -2,10 +2,6 @@ package reflexactoring.diagram.action;
 
 import java.util.ArrayList;
 
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -28,7 +24,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 			String message = checkValidity(moduleList);
 			if(!AutoMappingAction.OK_MESSAGE.equals(message)){
-				MessageDialog.openError(null, "Modules with no description", message);
+				MessageDialog.openError(null, "Validity Error", message);
 				return;
 			}
 			
@@ -54,7 +50,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 	 * Check three points:
 	 * 1) Whether any module with no name;
 	 * 2) Whether any module with no desc;
-	 * 3) Wether there is any duplicated name amongst modules
+	 * 3) WHether there is any duplicated name amongst modules
 	 * @param moduleList
 	 * @return
 	 */
@@ -68,6 +64,8 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			/**
 			 * return a message
 			 */
+			String message = "There is module with no name, please fill in names for all modules";
+			return message;
 		}
 		
 		/**
@@ -82,7 +80,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			for (ModuleWrapper moduleWrapper : modulesWithNoDesc) {
 				message += moduleWrapper.getName() + "\n";
 			}			
-			MessageDialog.openError(null, "Modules with no description", message);
+			//MessageDialog.openError(null, "Modules with no description", message);
 			return message;
 		}
 		
@@ -95,7 +93,8 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			/**
 			 * return a message
 			 */
-			
+			String message = "Modules should not have duplicated names, please eliminate duplication of following module names:\n\n" + duplicatedModuleName;
+			return message;
 		}
 		
 		/**
@@ -105,13 +104,33 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 	}
 	
 	private boolean checkModulesWithNoName(ArrayList<ModuleWrapper> moduleList){
-		//TODO
+		for (ModuleWrapper moduleWrapper : moduleList) {
+			if(moduleWrapper.getName() == null || moduleWrapper.getName().equals(""))
+				return true;
+		}
 		return false;
 	}
 	
 	private String checkDuplicatedModuleName(ArrayList<ModuleWrapper> moduleList){
-		//TODO
-		return null;
+		ArrayList<String> moduleName = new ArrayList<>();
+		ArrayList<String> duplicatedName = new ArrayList<>();
+		String duplicatedModuleName = null;
+		for (ModuleWrapper moduleWrapper : moduleList) {
+			String name = moduleWrapper.getName();
+			if(moduleName.contains(name)){
+				if(!duplicatedName.contains(name)){
+					duplicatedName.add(name);
+					if(duplicatedModuleName == null){
+						duplicatedModuleName = "";
+					}
+					duplicatedModuleName += moduleWrapper.getName() + "\n";
+				}
+			}
+			else{
+				moduleName.add(name);
+			}
+		}
+		return duplicatedModuleName;
 	}
 	
 	/**
