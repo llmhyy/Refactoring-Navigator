@@ -19,8 +19,11 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.emf.core.GMFEditingDomainFactory;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.ui.PartInitException;
 
 import reflexactoring.Activator;
@@ -313,14 +316,38 @@ public class ReflexactoringUtil {
 				public boolean visit(SimpleType type){
 					String typeName = type.getName().getFullyQualifiedName();
 					for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
-						String tobeComparedName = refereeCompilationUnit.getCompilationUnit().getElementName();
-						tobeComparedName = tobeComparedName.substring(0, tobeComparedName.indexOf(".java"));
-						if(typeName.equals(tobeComparedName) && !refererCompilationUnit.equals(refereeCompilationUnit)){
+						if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
 							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
 							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
 						}
 					}
 					
+					return true;
+				}
+				
+				public boolean visit(ImportDeclaration declaration){
+					String fullQulifiedName = declaration.getName().getFullyQualifiedName();
+					for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
+						if(fullQulifiedName.equals(refereeCompilationUnit.getFullQualifiedName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
+							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
+							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
+						}
+					}
+					
+					return true;
+				}
+				
+				public boolean visit(ClassInstanceCreation creation){
+					Type type = creation.getType();
+					if(type instanceof SimpleType){
+						String typeName = ((SimpleType)type).getName().getFullyQualifiedName();
+						for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
+							if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
+								refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
+								refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
+							}
+						}
+					}
 					
 					return true;
 				}

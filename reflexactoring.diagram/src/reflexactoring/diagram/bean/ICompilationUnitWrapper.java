@@ -5,10 +5,12 @@ package reflexactoring.diagram.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Name;
@@ -21,7 +23,7 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  * @author linyun
  *
  */
-public class ICompilationUnitWrapper implements SuggestionObject{
+public class ICompilationUnitWrapper implements SuggestionObject, GraphNode{
 	private ICompilationUnit compilationUnit;
 	private ModuleWrapper mappingModule;
 	private CompilationUnit javaUnit;
@@ -41,7 +43,14 @@ public class ICompilationUnitWrapper implements SuggestionObject{
 		super();
 		this.compilationUnit = compilationUnit;
 		if(extractDesc){
-			setJavaUnit(AST.parseCompilationUnit(compilationUnit, false));
+			
+			ASTParser parser = ASTParser.newParser(AST.JLS3);
+			parser.setKind(ASTParser.K_COMPILATION_UNIT);
+			//parser.setSource(doc.get().toCharArray());
+			parser.setSource(compilationUnit);
+			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+			
+			setJavaUnit(cu);
 			String content = new TokenExtractor().extractTokens(compilationUnit);
 			
 			content = content + generateTitle();
@@ -220,5 +229,31 @@ public class ICompilationUnitWrapper implements SuggestionObject{
 	@Override
 	public String getName() {
 		return this.getSimpleName();
+	}
+	
+	/** 
+	 * (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.GraphNode#getCallerList()
+	 */
+	@Override
+	public List<? extends GraphNode> getCallerList() {
+		return convertToList(callerCompilationUnitList);
+	}
+
+	/** (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.GraphNode#getCalleeList()
+	 */
+	@Override
+	public List<? extends GraphNode> getCalleeList() {
+		return convertToList(calleeCompilationUnitList);
+	}
+	
+	private ArrayList<ICompilationUnitWrapper> convertToList(HashMap<ICompilationUnitWrapper, Integer> map){
+		ArrayList<ICompilationUnitWrapper> list = new ArrayList<>();
+		for(ICompilationUnitWrapper wrapper: map.keySet()){
+			list.add(wrapper);
+		}
+		
+		return list;
 	}
 }
