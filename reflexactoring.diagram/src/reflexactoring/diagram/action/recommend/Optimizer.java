@@ -14,6 +14,7 @@ import com.mathworks.toolbox.javabuilder.MWStructArray;
 
 import fudan.se.graphmatching.optimization.OptimalGraphMatcher;
 import reflexactoring.diagram.action.ModelMapper;
+import reflexactoring.diagram.action.recommend.debug.Debugger;
 import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -26,7 +27,7 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
 public class Optimizer {
 	
 	private Double[] weightVector;
-	private Double[] x0Vector;
+	private Integer[] x0Vector;
 	
 	public ArrayList<Suggestion> getSuggestionsByOptimization(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
 		
@@ -56,7 +57,7 @@ public class Optimizer {
 		ArrayList<Suggestion> suggestions = new ArrayList<>();
 		
 		Double[] optimalResult = optimalResults.getOptimalResult();
-		Double[] x0Result = optimalResults.getX0Vector();
+		Integer[] x0Result = optimalResults.getX0Vector();
 		SparseVectors relationVectors = optimalResults.getRelationVectors();
 		
 		for(int i=0; i<optimalResult.length; i++){
@@ -64,11 +65,11 @@ public class Optimizer {
 			 * indicate optimal result is 1 and x0 is 0, implying
 			 */
 			if(optimalResult[i] > x0Result[i]){
-				double moduleIndex = relationVectors.getI()[i];
-				double unitIndex = relationVectors.getJ()[i];
+				int moduleIndex = relationVectors.getI()[i];
+				int unitIndex = relationVectors.getJ()[i];
 				
-				ModuleWrapper tobeMappedmodule = modules.get((int)moduleIndex);
-				ICompilationUnitWrapper unit = units.get((int)unitIndex);
+				ModuleWrapper tobeMappedmodule = modules.get(moduleIndex);
+				ICompilationUnitWrapper unit = units.get(unitIndex);
 				
 				MoveAction action = new MoveAction();
 				action.setOrigin(unit.getMappingModule());
@@ -99,8 +100,12 @@ public class Optimizer {
 		 */
 		SparseVectors relationVectors = extractRelation(similarityTable, modules, units);
 		
+		System.out.println("The variable number is: " + this.weightVector.length);
+		
 		SparseVectors highLevelVectors = extractGraph(modules);
 		SparseVectors lowLevelVectors = extractGraph(units);
+		
+		System.out.println(Debugger.printInputValues(weightVector, highLevelNumber, lowLevelNumber, highLevelVectors, lowLevelVectors, relationVectors, x0Vector));
 		
 		OptimalResults optimalResults = computeOptimalResult(weightVector, highLevelNumber, lowLevelNumber, 
 				highLevelVectors, lowLevelVectors, relationVectors, x0Vector);
@@ -110,7 +115,7 @@ public class Optimizer {
 	
 	private OptimalResults computeOptimalResult(Double[] weightVector, int h, int l,
 			SparseVectors highLevelVectors, SparseVectors lowLevelVectors, SparseVectors relationVectors,
-			Double[] x0Vector){
+			Integer[] x0Vector){
 		
 		OptimalResults optimalResults = null;
 		
@@ -168,7 +173,7 @@ public class Optimizer {
 			inputs[9] = x0Matrix;
 			
 			OptimalGraphMatcher matcher = new OptimalGraphMatcher();
-			results = matcher.compute_optimization(6, inputs);
+			results = matcher.compute_optimization(7, inputs);
 			
 			optimalResults = convertResults(results);
 			optimalResults.setX0Vector(x0Vector);
@@ -213,10 +218,10 @@ public class Optimizer {
 		MWNumericArray optimalResultMatrix = (MWNumericArray)results[0];
 		MWNumericArray fValMatrix = (MWNumericArray)results[1];
 		MWNumericArray exitFlagMatrix = (MWNumericArray)results[2];
-		//MWStructArray infoMatrix = (MWStructArray)results[3];
 		MWNumericArray validityMatrix = (MWNumericArray)results[3];
 		MWNumericArray programRowMatrix = (MWNumericArray)results[4];
 		MWNumericArray programColumnMatrix = (MWNumericArray)results[5];
+		MWStructArray infoMatrix = (MWStructArray)results[6];
 		
 		Double validity = (Double)validityMatrix.get(new int[]{1, 1});
 		/**
@@ -236,7 +241,7 @@ public class Optimizer {
 					optimalResult[i] = 1d;
 				}
 				else{
-					optimalResult[i] = value;
+					optimalResult[i] = (double)value;
 					System.err.println("a problem occur");
 				}
 			}
@@ -244,11 +249,11 @@ public class Optimizer {
 			Double optimalValue = (Double)fValMatrix.get(new int[]{1, 1});
 			Double exitFlag = (Double)exitFlagMatrix.get(new int[]{1, 1});
 			
-			//String status = infoMatrix.getField("Status", 1).get(new int[]{1,1}).toString();
+			String status = infoMatrix.getField("Status", 1).get(new int[]{1,1}).toString();
 			
 			optimalResults.setOptimalResult(optimalResult);
 			optimalResults.setOptimalValue(optimalValue);
-			//optimalResults.setInfo(status);
+			optimalResults.setStatus(status);
 			optimalResults.setExitFlag(exitFlag);
 		}
 		else{
@@ -261,7 +266,7 @@ public class Optimizer {
 		return optimalResults;
 	}
 	
-	private MWNumericArray convert(Double[] vector){
+	private MWNumericArray convert(Integer[] vector){
 		MWNumericArray matrix = MWNumericArray.newInstance(new int[]{1, vector.length}, MWClassID.DOUBLE, MWComplexity.REAL);
 		
 		for(int k=1; k<=vector.length; k++){
@@ -285,16 +290,16 @@ public class Optimizer {
 		//double[][] relationTable = new double[highLevelNumber][lowLevelNumber];
 		
 		ArrayList<Double> weightVectorList = new ArrayList<>();
-		ArrayList<Double> x0VectorList = new ArrayList<>();
+		ArrayList<Integer> x0VectorList = new ArrayList<>();
 		
-		ArrayList<Double> iList = new ArrayList<>();
-		ArrayList<Double> jList = new ArrayList<>();
+		ArrayList<Integer> iList = new ArrayList<>();
+		ArrayList<Integer> jList = new ArrayList<>();
 		
 		for(int i=0; i<highLevelNumber; i++){
 			for(int j=0; j<lowLevelNumber; j++){
 				if((i != j) && similarityTable[i][j] >= Double.valueOf(ReflexactoringUtil.getMappingThreshold())){
-					iList.add((double)(i));
-					jList.add((double)(j));
+					iList.add((int)(i));
+					jList.add((int)(j));
 					
 					/**
 					 * initial weight
@@ -306,27 +311,27 @@ public class Optimizer {
 					ICompilationUnitWrapper unit = units.get(j);
 					ModuleWrapper module = modules.get(i);
 					if(module.equals(unit.getMappingModule())){
-						x0VectorList.add(1d);
+						x0VectorList.add(1);
 					}
 					else{
-						x0VectorList.add(0d);
+						x0VectorList.add(0);
 					}
 				}
 			}
 		}
 		
-		Double[] i = iList.toArray(new Double[0]);
-		Double[] j = jList.toArray(new Double[0]);
+		Integer[] i = iList.toArray(new Integer[0]);
+		Integer[] j = jList.toArray(new Integer[0]);
 		
 		this.weightVector = weightVectorList.toArray(new Double[0]);
-		this.x0Vector = x0VectorList.toArray(new Double[0]);
+		this.x0Vector = x0VectorList.toArray(new Integer[0]);
 		
 		return new SparseVectors(i, j);
 	}
 	
 	private SparseVectors extractGraph(ArrayList<? extends GraphNode> nodes){
-		ArrayList<Double> iList = new ArrayList<>();
-		ArrayList<Double> jList = new ArrayList<>();
+		ArrayList<Integer> iList = new ArrayList<>();
+		ArrayList<Integer> jList = new ArrayList<>();
 		
 		for(int i=0; i<nodes.size(); i++){
 			for(int j=0; j<nodes.size(); j++){
@@ -335,15 +340,15 @@ public class Optimizer {
 					GraphNode nodeJ = nodes.get(j);
 					
 					if(nodeI.getCalleeList().contains(nodeJ)){
-						iList.add((double) (i));
-						jList.add((double) (j));
+						iList.add((int) (i));
+						jList.add((int) (j));
 					}
 				}
 			}
 		}
 		
-		Double[] i = iList.toArray(new Double[0]);
-		Double[] j = jList.toArray(new Double[0]);
+		Integer[] i = iList.toArray(new Integer[0]);
+		Integer[] j = jList.toArray(new Integer[0]);
 		
 		return new SparseVectors(i, j);
 	}
@@ -355,8 +360,9 @@ public class Optimizer {
 		private Double validity;
 		private Double programRow;
 		private Double programColumn;
+		private String status;
 		
-		private Double[] x0Vector;
+		private Integer[] x0Vector;
 		private SparseVectors relationVectors;
 		
 		public OptimalResults(){}
@@ -458,14 +464,14 @@ public class Optimizer {
 		/**
 		 * @return the x0Vector
 		 */
-		public Double[] getX0Vector() {
+		public Integer[] getX0Vector() {
 			return x0Vector;
 		}
 
 		/**
 		 * @param x0Vector the x0Vector to set
 		 */
-		public void setX0Vector(Double[] x0Vector) {
+		public void setX0Vector(Integer[] x0Vector) {
 			this.x0Vector = x0Vector;
 		}
 
@@ -482,6 +488,20 @@ public class Optimizer {
 		public void setRelationVectors(SparseVectors relationVectors) {
 			this.relationVectors = relationVectors;
 		}
+
+		/**
+		 * @return the status
+		 */
+		public String getStatus() {
+			return status;
+		}
+
+		/**
+		 * @param status the status to set
+		 */
+		public void setStatus(String status) {
+			this.status = status;
+		}
 		
 		
 	}
@@ -496,14 +516,14 @@ public class Optimizer {
 	 *
 	 */
 	public class SparseVectors{
-		private Double[] i;
-		private Double[] j;
+		private Integer[] i;
+		private Integer[] j;
 		
 		/**
 		 * @param i
 		 * @param j
 		 */
-		public SparseVectors(Double[] i, Double[] j) {
+		public SparseVectors(Integer[] i, Integer[] j) {
 			super();
 			this.i = i;
 			this.j = j;
@@ -526,25 +546,25 @@ public class Optimizer {
 		/**
 		 * @return the i
 		 */
-		public Double[] getI() {
+		public Integer[] getI() {
 			return i;
 		}
 		/**
 		 * @param i the i to set
 		 */
-		public void setI(Double[] i) {
+		public void setI(Integer[] i) {
 			this.i = i;
 		}
 		/**
 		 * @return the j
 		 */
-		public Double[] getJ() {
+		public Integer[] getJ() {
 			return j;
 		}
 		/**
 		 * @param j the j to set
 		 */
-		public void setJ(Double[] j) {
+		public void setJ(Integer[] j) {
 			this.j = j;
 		}
 	}
