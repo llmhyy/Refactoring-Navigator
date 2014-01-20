@@ -221,7 +221,7 @@ public class Optimizer {
 		MWNumericArray validityMatrix = (MWNumericArray)results[3];
 		MWNumericArray programRowMatrix = (MWNumericArray)results[4];
 		MWNumericArray programColumnMatrix = (MWNumericArray)results[5];
-		MWStructArray infoMatrix = (MWStructArray)results[6];
+		//MWStructArray infoMatrix = (MWStructArray)results[6];
 		
 		Double validity = (Double)validityMatrix.get(new int[]{1, 1});
 		/**
@@ -249,11 +249,11 @@ public class Optimizer {
 			Double optimalValue = (Double)fValMatrix.get(new int[]{1, 1});
 			Double exitFlag = (Double)exitFlagMatrix.get(new int[]{1, 1});
 			
-			String status = infoMatrix.getField("Status", 1).get(new int[]{1,1}).toString();
+			//String status = infoMatrix.getField("Status", 1).get(new int[]{1,1}).toString();
 			
 			optimalResults.setOptimalResult(optimalResult);
 			optimalResults.setOptimalValue(optimalValue);
-			optimalResults.setStatus(status);
+			//optimalResults.setStatus(status);
 			optimalResults.setExitFlag(exitFlag);
 		}
 		else{
