@@ -661,6 +661,14 @@
             name="Refactoring Suggestion"
             restorable="true">
       </view>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.ModuleUnitsSimilarityView"
+            icon="icons/view/module_type_similarity.gif"
+            id="reflexactoring.diagram.view.moduleTypeSimilarity"
+            name="Similarity Table"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">

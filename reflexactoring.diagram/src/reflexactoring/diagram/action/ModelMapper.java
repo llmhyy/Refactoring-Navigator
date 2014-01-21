@@ -81,6 +81,12 @@ public class ModelMapper {
 		
 		double[][] similarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
 		
+		return computeSimilarityTableWithRegardToHeurisitcRules(moduleList, compilationUnitList, similarityTable);
+	}
+	
+	public double[][] computeSimilarityTableWithRegardToHeurisitcRules(ArrayList<ModuleWrapper> moduleList,
+			ArrayList<ICompilationUnitWrapper> compilationUnitList, double[][] similarityTable){
+		
 		for(int j=0; j<compilationUnitList.size(); j++){
 			ICompilationUnitWrapper unit = compilationUnitList.get(j);
 			

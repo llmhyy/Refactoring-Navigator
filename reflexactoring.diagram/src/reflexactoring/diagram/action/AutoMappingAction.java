@@ -8,12 +8,15 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
+import reflexactoring.diagram.view.ModuleUnitsSimilarityView;
 
 public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 
@@ -37,11 +40,18 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList 
 				= Settings.scope.getScopeCompilationUnitList();
 			
-			double[][] similarityTable = new ModelMapper().generateMappingRelation(moduleList, compilationUnitWrapperList);
+			ModelMapper mapper = new ModelMapper();
+			
+			mapper.generateMappingRelation(moduleList, compilationUnitWrapperList);
+			double[][] similarityTable = mapper.computeSimilarityTableWithRegardToHeurisitcRules(moduleList, compilationUnitWrapperList);
 			ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(similarityTable, 
 					moduleList, compilationUnitWrapperList);
 			Settings.similarityTable = table;
 			
+			ModuleUnitsSimilarityView view = (ModuleUnitsSimilarityView)PlatformUI.getWorkbench().
+					getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
+			view.getViewer().setInput(Settings.similarityTable);
+			view.getViewer().refresh();
 			
 			new DiagramUpdater().generateReflexionModel(moduleList, compilationUnitWrapperList);
 			
