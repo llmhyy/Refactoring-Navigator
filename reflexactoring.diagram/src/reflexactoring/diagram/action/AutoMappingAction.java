@@ -10,6 +10,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
@@ -36,7 +37,12 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList 
 				= Settings.scope.getScopeCompilationUnitList();
 			
-			new ModelMapper().generateMappingRelation(moduleList, compilationUnitWrapperList);
+			double[][] similarityTable = new ModelMapper().generateMappingRelation(moduleList, compilationUnitWrapperList);
+			ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(similarityTable, 
+					moduleList, compilationUnitWrapperList);
+			Settings.similarityTable = table;
+			
+			
 			new DiagramUpdater().generateReflexionModel(moduleList, compilationUnitWrapperList);
 			
 		} catch (PartInitException e) {

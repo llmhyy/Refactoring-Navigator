@@ -34,6 +34,8 @@ import reflexactoring.diagram.action.semantic.WordNetDict;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleDependencyWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.ModuleUnitsSimilarity;
+import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
 
 /**
@@ -355,5 +357,37 @@ public class ReflexactoringUtil {
 		}
 		
 		return compilationUnitList;
+	}
+	
+	public static ModuleUnitsSimilarityTable convertRawTableToModuleUnitsSimilarityTable(double[][] similarityTable, ArrayList<ModuleWrapper> modules,
+			ArrayList<ICompilationUnitWrapper> units){
+		ModuleUnitsSimilarityTable table = new ModuleUnitsSimilarityTable();
+		for(int i=0; i<modules.size(); i++){
+			ModuleWrapper module = modules.get(i);
+			double[] values = similarityTable[i];
+			
+			ModuleUnitsSimilarity similarity = new ModuleUnitsSimilarity(module, units, values);
+			table.add(similarity);
+		}
+		
+		return table;
+	}
+	
+	public static double[][] convertModuleUnitsSimilarityTableToRawTable(ModuleUnitsSimilarityTable table){
+		if(table == null || table.size() == 0){
+			return new double[0][0];
+		}
+		
+		int width = table.get(0).getValues().length;
+		double[][] similarityTable = new double[table.size()][width];
+		
+		for(int i=0; i<table.size(); i++){
+			ModuleUnitsSimilarity similarity = table.get(i);
+			for(int j=0; j<similarity.getValues().length; j++){
+				similarityTable[i][j] = similarity.getValues()[j];
+			}
+		}
+		
+		return similarityTable;
 	}
 }

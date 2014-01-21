@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
+import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.Scope;
 
 /**
@@ -27,6 +28,12 @@ public class Settings {
 	 */
 	public static HeuristicModuleUnitMapList heuristicModuleUnitMapList
 		= new HeuristicModuleUnitMapList();
+	
+	/**
+	 * It is used to keep user-specified module-type similarity value. For each pair
+	 * of module and type, there is a similarity between them.
+	 */
+	public static ModuleUnitsSimilarityTable similarityTable = new ModuleUnitsSimilarityTable();
 	
 	public static boolean isSkipUnMappedTypes = false;
 		
