@@ -87,7 +87,9 @@ public class HeuristicMappingView extends ViewPart {
 				if (o instanceof MenuItem) {
 					TableItem[] ti = tableViewer.getTable().getSelection();
 					if (ti != null && ti.length > 0) { 
-						Settings.heuristicModuleUnitMapList.removeMap((HeuristicModuleUnitMap) ti[0].getData());	
+						for(int i = 0; i < ti.length; i++){
+							Settings.heuristicModuleUnitMapList.removeMap((HeuristicModuleUnitMap) ti[i].getData());	
+						}						
 						tableViewer.setInput(Settings.heuristicModuleUnitMapList);
 						tableViewer.refresh();
 					}else{
