@@ -72,7 +72,7 @@
          <action
                class="reflexactoring.diagram.action.popup.EditModuleDescriptionAction"
                id="reflexactoring.diagram.action.editdescription"
-               label="Edit Description">
+               label="Edit Name or Description">
          </action>
       </objectContribution>
    </extension>

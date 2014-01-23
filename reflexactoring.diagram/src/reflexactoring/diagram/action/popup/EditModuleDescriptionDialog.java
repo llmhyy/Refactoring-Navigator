@@ -34,15 +34,18 @@ import reflexactoring.diagram.util.Settings;
  */
 public class EditModuleDescriptionDialog extends TitleAreaDialog {
 
+	private Text nameText;
 	private Text descriptionText;
 	
+	private String name;
 	private String description;
 	
 	/**
 	 * @param parentShell
 	 */
-	public EditModuleDescriptionDialog(Shell parentShell, String des) {
+	public EditModuleDescriptionDialog(Shell parentShell, String name, String des) {
 		super(parentShell);
+		this.name = name;
 		this.description = des;
 		// TODO Auto-generated constructor stub
 	}
@@ -51,8 +54,8 @@ public class EditModuleDescriptionDialog extends TitleAreaDialog {
 		setHelpAvailable(false);
 		super.create();
 		
-		setTitle("Edit Module Description");
-		setMessage("Please edit the module description.", IMessageProvider.INFORMATION);
+		setTitle("Edit Module Name And Description");
+		setMessage("Please edit the module name and description.", IMessageProvider.INFORMATION);
 	}
 	
 	@Override
@@ -72,6 +75,20 @@ public class EditModuleDescriptionDialog extends TitleAreaDialog {
 		workArea.setLayout(workAreaLayout);
 
 		// The text fields will grow with the size of the dialog
+		Label nameLabel = new Label(workArea, SWT.NONE);
+		nameLabel.setText("Module Name");
+		nameLabel.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
+
+		nameText = new Text(workArea, SWT.BORDER);
+		GridData nameTextData = new GridData(SWT.FILL, SWT.FILL, false, false);
+		nameTextData.widthHint = 460;
+		nameTextData.heightHint = 20;
+		nameText.setLayoutData(nameTextData);
+		
+		String content = (this.name == null)? "": this.name;
+		nameText.setText(content);
+		
+		
 		Label moduleLabel = new Label(workArea, SWT.NONE);
 		moduleLabel.setText("Module Description");
 		moduleLabel.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
@@ -82,7 +99,7 @@ public class EditModuleDescriptionDialog extends TitleAreaDialog {
 		descriptionTextData.heightHint = 100;
 		descriptionText.setLayoutData(descriptionTextData);
 		
-		String content = (this.description == null)? "": this.description;
+		content = (this.description == null)? "": this.description;
 		descriptionText.setText(content);
 		
 		return workArea;
@@ -139,8 +156,13 @@ public class EditModuleDescriptionDialog extends TitleAreaDialog {
 	
 	@Override
 	protected void okPressed() {
+		this.name = nameText.getText();
 		this.description = descriptionText.getText();
 		super.okPressed();
+	}
+	
+	public String getEditModuleName(){
+		return this.name;
 	}
 	
 	public String getEditModuleDescription(){

@@ -51,14 +51,16 @@ public class EditModuleDescriptionAction extends AbstractActionDelegate implemen
 			Module module = (Module) part.resolveSemanticElement();
 			
 			String userInputDesc = "";
-			EditModuleDescriptionDialog dialog = new EditModuleDescriptionDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), module.getDescription());
+			String userInputName = "";
+			EditModuleDescriptionDialog dialog = new EditModuleDescriptionDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), module.getName(), module.getDescription());
 			dialog.create();
 			if(dialog.open() == Window.OK){
+				String nam = dialog.getEditModuleName();
 				String des = dialog.getEditModuleDescription();
-				if(des != null){
+				if(des != null && nam != null){
+					userInputName = nam;
 					userInputDesc = des;
 				}
-				String userInputName = "test";
 				
 				/**
 				 * set module name.
