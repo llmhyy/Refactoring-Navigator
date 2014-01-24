@@ -1,9 +1,12 @@
 package reflexactoring.diagram.view;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -120,6 +123,9 @@ public class ModuleUnitsSimilarityView extends ViewPart {
 		column.setWidth(bound);
 		column.setResizable(true);
 		column.setMoveable(true);
+		
+		viewerColumn.setEditingSupport(new SimilarityTableEditingSupport(tableViewer, colNumber));
+		
 		return viewerColumn;
 	}
 
@@ -139,5 +145,68 @@ public class ModuleUnitsSimilarityView extends ViewPart {
 	public Composite getComposite() {
 		return composite;
 	}
+	
+	public class SimilarityTableEditingSupport extends EditingSupport{
+		private CellEditor editor;
+		private TableViewer viewer;
+		private int columnNo;
+		
+		public SimilarityTableEditingSupport(TableViewer viewer, int columnNo){
+			super(viewer);
+			this.columnNo = columnNo;
+			this.viewer = viewer;
+			this.editor = new TextCellEditor(viewer.getTable());
+		}
 
+		/* (non-Javadoc)
+		 * @see org.eclipse.jface.viewers.EditingSupport#getCellEditor(java.lang.Object)
+		 */
+		@Override
+		protected CellEditor getCellEditor(Object element) {
+			return editor;
+		}
+
+		/**
+		 * if column number is 0, it stands for the name of module which cannot be edited.
+		 */
+		@Override
+		protected boolean canEdit(Object element) {
+			return columnNo != 0;
+		}
+
+		@Override
+		protected Object getValue(Object element) {
+			if(element instanceof ModuleUnitsSimilarity){
+				ModuleUnitsSimilarity moduleUnitsSimilarity = (ModuleUnitsSimilarity)element;
+				
+				if(0 == columnNo){
+					return moduleUnitsSimilarity.getModule().getName();
+				}
+				else{
+					return String.valueOf(moduleUnitsSimilarity.getValues()[columnNo-1]);
+				}
+			}
+			
+			return null;
+		}
+		
+		@Override
+		protected void setValue(Object element, Object value) {
+			if(element instanceof ModuleUnitsSimilarity){
+				ModuleUnitsSimilarity moduleUnitsSimilarity = (ModuleUnitsSimilarity)element;
+				
+				if(columnNo > 0){
+					/**
+					 * need a check for string value.
+					 */
+					double similarity = Double.valueOf((String) value);
+					moduleUnitsSimilarity.getValues()[columnNo-1] = similarity;
+					viewer.update(element, null);
+					viewer.refresh();
+				}
+			}
+		}
+		
+		
+	}
 }

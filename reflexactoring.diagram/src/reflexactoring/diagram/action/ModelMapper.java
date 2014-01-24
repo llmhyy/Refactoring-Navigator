@@ -32,7 +32,15 @@ public class ModelMapper {
 	 */
 	public double[][] generateMappingRelation(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
-		double[][] overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
+		
+		double[][] overallSimilarityTable; 
+		
+		if(Settings.similarityTable.size() > 0){
+			overallSimilarityTable = ReflexactoringUtil.convertModuleUnitsSimilarityTableToRawTable(Settings.similarityTable);
+		}
+		else{
+			overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
+		}
 		
 		/**
 		 * should take care that one compilation unit can be mapped to only one module,

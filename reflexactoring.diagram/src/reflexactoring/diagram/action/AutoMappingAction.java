@@ -43,8 +43,8 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			
 			ModelMapper mapper = new ModelMapper();
 			
-			mapper.generateMappingRelation(moduleList, compilationUnitWrapperList);
-			double[][] similarityTable = mapper.computeSimilarityTableWithRegardToHeurisitcRules(moduleList, compilationUnitWrapperList);
+			double[][] similarityTable = mapper.generateMappingRelation(moduleList, compilationUnitWrapperList);
+			//double[][] similarityTable = mapper.computeSimilarityTableWithRegardToHeurisitcRules(moduleList, compilationUnitWrapperList);
 			ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(similarityTable, 
 					moduleList, compilationUnitWrapperList);
 			Settings.similarityTable = table;
