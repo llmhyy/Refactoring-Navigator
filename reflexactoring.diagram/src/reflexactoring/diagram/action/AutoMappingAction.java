@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -50,8 +51,10 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			
 			ModuleUnitsSimilarityView view = (ModuleUnitsSimilarityView)PlatformUI.getWorkbench().
 					getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
-			view.getViewer().setInput(Settings.similarityTable);
-			view.getViewer().refresh();
+			view.refreshUI(Settings.similarityTable);
+			//view.getViewer().setContentProvider(new ArrayContentProvider());
+			//view.getViewer().setInput(Settings.similarityTable);
+			//view.getViewer().refresh();
 			
 			
 			

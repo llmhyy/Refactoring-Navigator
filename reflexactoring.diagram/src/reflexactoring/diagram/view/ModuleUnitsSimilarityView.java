@@ -9,6 +9,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
@@ -18,11 +19,13 @@ import org.eclipse.ui.part.ViewPart;
 
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarity;
+import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.util.Settings;
 
 public class ModuleUnitsSimilarityView extends ViewPart {
 
 	private TableViewer tableViewer;
+	private Composite composite;
 	
 	public ModuleUnitsSimilarityView() {
 		// TODO Auto-generated constructor stub
@@ -30,28 +33,42 @@ public class ModuleUnitsSimilarityView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		tableViewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.FULL_SELECTION | SWT.BORDER);
 		
+		this.composite = parent;
 		
 		if(Settings.similarityTable != null && Settings.similarityTable.size() > 0){
-			createColumns(parent, tableViewer);
-			
-			final Table table = tableViewer.getTable();
-			table.setHeaderVisible(true);
-			table.setLinesVisible(true);
-
-			tableViewer.setContentProvider(new ArrayContentProvider());
-			tableViewer.setInput(Settings.similarityTable);
-
-			GridData gridData = new GridData();
-			gridData.verticalAlignment = GridData.FILL;
-			gridData.horizontalSpan = 2;
-			gridData.grabExcessHorizontalSpace = true;
-			gridData.grabExcessVerticalSpace = true;
-			gridData.horizontalAlignment = GridData.FILL;
-			tableViewer.getControl().setLayoutData(gridData);
+			refreshUI(Settings.similarityTable);
 		}
+	}
+	
+	public void refreshUI(ModuleUnitsSimilarityTable similarityTable){
+		
+		for(Control control: this.composite.getChildren()){
+			control.dispose();
+		}
+		
+		tableViewer = new TableViewer(this.composite, SWT.MULTI | SWT.H_SCROLL
+				| SWT.FULL_SELECTION | SWT.BORDER);
+		
+		createColumns(this.composite, tableViewer);
+		
+		final Table table = tableViewer.getTable();
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+
+		tableViewer.setContentProvider(new ArrayContentProvider());
+		tableViewer.setInput(similarityTable);
+
+		GridData gridData = new GridData();
+		gridData.verticalAlignment = GridData.FILL;
+		gridData.horizontalSpan = 2;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.horizontalAlignment = GridData.FILL;
+		tableViewer.getControl().setLayoutData(gridData);
+		
+		this.composite.redraw();
+		this.composite.layout();
 	}
 	
 	private void createColumns(final Composite parent, final TableViewer viewer) {
@@ -114,6 +131,13 @@ public class ModuleUnitsSimilarityView extends ViewPart {
 	public void setFocus() {
 		// TODO Auto-generated method stub
 
+	}
+
+	/**
+	 * @return the composite
+	 */
+	public Composite getComposite() {
+		return composite;
 	}
 
 }
