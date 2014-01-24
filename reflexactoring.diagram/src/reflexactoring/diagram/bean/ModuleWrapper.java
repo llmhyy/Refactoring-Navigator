@@ -30,7 +30,7 @@ public class ModuleWrapper implements SuggestionObject, GraphNode{
 	public boolean equals(Object obj){
 		if(obj instanceof ModuleWrapper){
 			ModuleWrapper moduleWrapper = (ModuleWrapper)obj;
-			if(moduleWrapper.getName().equals(getName()) && moduleWrapper.getDescription().equals(getDescription())){
+			if(moduleWrapper.getName().equals(getName())){
 				return true;
 			}
 		}

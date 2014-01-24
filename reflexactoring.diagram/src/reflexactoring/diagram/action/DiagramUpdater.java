@@ -550,8 +550,7 @@ public class DiagramUpdater {
 					EObject eObj = view.getElement();
 					if(eObj instanceof Module){
 						Module currentModule = (Module)eObj;
-						if(module.getDescription().equals(currentModule.getDescription())
-								&& module.getName().equals(currentModule.getName())){
+						if(module.getName().equals(currentModule.getName())){
 							return currentModule;
 						}
 					}
