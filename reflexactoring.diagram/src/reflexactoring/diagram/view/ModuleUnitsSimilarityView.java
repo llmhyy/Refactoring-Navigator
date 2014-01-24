@@ -23,6 +23,7 @@ import org.eclipse.ui.part.ViewPart;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarity;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 public class ModuleUnitsSimilarityView extends ViewPart {
@@ -199,9 +200,12 @@ public class ModuleUnitsSimilarityView extends ViewPart {
 					/**
 					 * need a check for string value.
 					 */
-					double similarity = Double.valueOf((String) value);
-					moduleUnitsSimilarity.getValues()[columnNo-1] = similarity;
-					viewer.update(element, null);
+					String numberStr = (String)value;
+					if(ReflexactoringUtil.checkNumber(numberStr)){
+						double similarity = Double.valueOf(numberStr);
+						moduleUnitsSimilarity.getValues()[columnNo-1] = similarity;
+						viewer.update(element, null);						
+					}
 					viewer.refresh();
 				}
 			}

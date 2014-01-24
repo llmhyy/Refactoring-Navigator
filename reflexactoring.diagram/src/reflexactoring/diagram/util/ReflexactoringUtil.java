@@ -390,4 +390,8 @@ public class ReflexactoringUtil {
 		
 		return similarityTable;
 	}
+	
+	public static boolean checkNumber(String string){
+		return true;
+	}
 }
