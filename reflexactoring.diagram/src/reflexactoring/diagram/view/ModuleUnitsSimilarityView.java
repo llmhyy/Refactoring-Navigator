@@ -14,6 +14,7 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -123,7 +124,8 @@ public class ModuleUnitsSimilarityView extends ViewPart {
 				public void update(ViewerCell cell) {
 					super.update(cell);
 					if(Double.valueOf(cell.getText()) >= Double.valueOf(ReflexactoringUtil.getMappingThreshold())){
-						cell.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
+						cell.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
+						cell.setFont(new Font(Display.getCurrent(), "Arial", 12, SWT.BOLD));
 					}
 					
 				}
@@ -233,21 +235,5 @@ public class ModuleUnitsSimilarityView extends ViewPart {
 			}
 		}
 
-	}
-
-	public class ValueLabelLayout extends ColumnLabelProvider {
-		@Override
-		public void update(ViewerCell cell) {
-			if(Double.valueOf(cell.getText()) >= Double.valueOf(ReflexactoringUtil.getMappingThreshold())){
-				StyleRange myStyledRange = new StyleRange(16, 2, null, Display
-						.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
-				StyleRange[] range = { myStyledRange };
-				cell.setStyleRanges(range);
-				super.update(cell);
-			}
-			
-		}
-		
-		
 	}
 }

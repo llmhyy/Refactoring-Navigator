@@ -60,6 +60,10 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			
 			new DiagramUpdater().generateReflexionModel(moduleList, compilationUnitWrapperList);
 			
+			/**
+			 * after all, the recompute settings should be set false to improve efficiency
+			 */
+			Settings.isRedoSimilarityCalculation = false;
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
