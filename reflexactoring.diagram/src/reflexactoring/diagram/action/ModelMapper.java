@@ -3,6 +3,7 @@
  */
 package reflexactoring.diagram.action;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class ModelMapper {
 		
 		double[][] overallSimilarityTable; 
 		
-		if(Settings.similarityTable.size() > 0){
+		if(Settings.similarityTable.size() > 0 && !Settings.isRedoSimilarityCalculation){
 			overallSimilarityTable = ReflexactoringUtil.convertModuleUnitsSimilarityTableToRawTable(Settings.similarityTable);
 		}
 		else{
@@ -141,6 +142,9 @@ public class ModelMapper {
 		for(int i=0; i<m; i++){
 			for(int j=0; j<n; j++){
 				overallSimilarity[i][j] = (semanticSimilarityTable[i][j] + structuralSimilarityTable[i][j])/2;
+
+				DecimalFormat df = new DecimalFormat("#.###");
+				overallSimilarity[i][j] = Double.parseDouble(df.format(overallSimilarity[i][j]));
 			}
 		}
 		

@@ -88,6 +88,8 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			ArrayList<ICompilationUnitWrapper> list = 
 					ReflexactoringUtil.buildStructuralDependency(Settings.scope.getScopeCompilationUnitList());
 			Settings.scope.setScopeCompilationUnitList(list);
+			
+			Settings.isRedoSimilarityCalculation = true;
 		}
 		
 	}

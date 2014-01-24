@@ -118,9 +118,6 @@ public class PageRanker {
 			resultVector = new double[initialVector.length];
 			for(int i=0; i<initialVector.length; i++){
 				resultVector[i] = (Double) resultMatrix.get(new int[]{i+1, 1});
-				
-				DecimalFormat df = new DecimalFormat("#.###");
-				resultVector[i] = Double.parseDouble(df.format(resultVector[i]));
 			}
 			
 		} catch (MWException e) {

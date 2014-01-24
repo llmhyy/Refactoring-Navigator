@@ -36,6 +36,7 @@ public class Settings {
 	public static ModuleUnitsSimilarityTable similarityTable = new ModuleUnitsSimilarityTable();
 	
 	public static boolean isSkipUnMappedTypes = false;
+	public static boolean isRedoSimilarityCalculation = true;
 		
 	public static String diagramPath = "/refactoring/default.reflexactoring";
 	public static double largeSimilarityValue = 1.0d;
