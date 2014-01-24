@@ -63,7 +63,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			/**
 			 * after all, the recompute settings should be set false to improve efficiency
 			 */
-			Settings.isRedoSimilarityCalculation = false;
+			Settings.isCompliationUnitChanged = false;
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
