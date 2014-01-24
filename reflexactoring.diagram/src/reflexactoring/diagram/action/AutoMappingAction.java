@@ -48,10 +48,14 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 					moduleList, compilationUnitWrapperList);
 			Settings.similarityTable = table;
 			
-			ModuleUnitsSimilarityView view = (ModuleUnitsSimilarityView)PlatformUI.getWorkbench().
-					getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
-			view.getViewer().setInput(Settings.similarityTable);
-			view.getViewer().refresh();
+			if(Settings.similarityTable == null || Settings.similarityTable.size() == 0){
+				ModuleUnitsSimilarityView view = (ModuleUnitsSimilarityView)PlatformUI.getWorkbench().
+						getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
+				view.getViewer().setInput(Settings.similarityTable);
+				view.getViewer().refresh();
+			}
+			
+			
 			
 			new DiagramUpdater().generateReflexionModel(moduleList, compilationUnitWrapperList);
 			
