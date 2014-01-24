@@ -19,6 +19,7 @@ import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
@@ -90,7 +91,9 @@ public class Optimizer {
 	}
 	
 	private OptimalResults optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
-		double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
+		//double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
+		double[][] similarityTable = ReflexactoringUtil.
+				convertModuleUnitsSimilarityTableToRawTable(Settings.similarityTable);
 		
 		int highLevelNumber = modules.size();
 		int lowLevelNumber = units.size();
