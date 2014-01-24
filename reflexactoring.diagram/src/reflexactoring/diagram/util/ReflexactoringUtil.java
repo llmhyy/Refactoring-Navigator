@@ -394,4 +394,53 @@ public class ReflexactoringUtil {
 	public static boolean checkNumber(String string){
 		return true;
 	}
+	
+	public static boolean isModuleChaged(ArrayList<ModuleWrapper> newModuleList){
+		if(Settings.similarityTable.size() != newModuleList.size()){
+			return true;
+		}
+		
+		for(ModuleUnitsSimilarity moduleSimilarity: Settings.similarityTable){
+			ModuleWrapper originalModule = moduleSimilarity.getModule();
+			ModuleWrapper newModule = findCorrespondingModule(originalModule, newModuleList);
+			
+			if(newModule == null){
+				return true;
+			}
+			else if(!newModule.getDescription().equals(originalModule.getDescription())){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public static ModuleWrapper findCorrespondingModule(ModuleWrapper module, ArrayList<ModuleWrapper> newModuleList){
+		for(ModuleWrapper newModule: newModuleList){
+			if(module.getName().equals(newModule.getName())){
+				return newModule;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * The conditions when a similarity computation is need are:
+	 * 1) modules are changed
+	 * 2) compilation units are changed
+	 * 3) similarity has never been computed yet
+	 * @return
+	 */
+	public static boolean isNeedReComputeSimilarity(){
+		try {
+			return Settings.isCompliationUnitChanged || isModuleChaged(getModuleList(Settings.diagramPath))
+					|| Settings.similarityTable.size()==0;
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
 }

@@ -92,9 +92,16 @@ public class Optimizer {
 	
 	private OptimalResults optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
 		//double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
-		double[][] similarityTable = ReflexactoringUtil.
-				convertModuleUnitsSimilarityTableToRawTable(Settings.similarityTable);
+		double[][] similarityTable;
 		
+		if(ReflexactoringUtil.isNeedReComputeSimilarity()){
+			similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
+		}
+		else{
+			similarityTable	= ReflexactoringUtil.
+					convertModuleUnitsSimilarityTableToRawTable(Settings.similarityTable);
+			
+		}
 		int highLevelNumber = modules.size();
 		int lowLevelNumber = units.size();
 		
