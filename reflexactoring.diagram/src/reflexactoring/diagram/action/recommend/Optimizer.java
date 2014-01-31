@@ -244,15 +244,16 @@ public class Optimizer {
 			Double[] optimalResult = new Double[length];
 			for(int i=0; i<length; i++){
 				Double value = (Double)optimalResultMatrix.get(new int[]{i+1, 1});
-				if(value < 0.001){
+				if(value < 0.5){
 					optimalResult[i] = 0d;
 				}
-				else if((value-1)<0.001 && (value-1)>-0.001){
+				else if(value >= 0.5){
 					optimalResult[i] = 1d;
 				}
 				else{
 					optimalResult[i] = (double)value;
-					System.err.println("a problem occur");
+					System.err.println("a problem occur, the vector contains values other 0 or 1");
+					System.err.println(value);
 				}
 			}
 			
