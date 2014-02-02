@@ -1,4 +1,4 @@
-package reflexactoring.diagram.action.recommend;
+package reflexactoring.diagram.action.recommend.optimal;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,8 @@ import com.mathworks.toolbox.javabuilder.MWStructArray;
 
 import fudan.se.graphmatching.optimization.OptimalGraphMatcher;
 import reflexactoring.diagram.action.ModelMapper;
-import reflexactoring.diagram.action.recommend.debug.Debugger;
+import reflexactoring.diagram.action.recommend.MoveAction;
+import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -22,7 +23,7 @@ import reflexactoring.diagram.util.Settings;
  * @author linyun
  *
  */
-public class Optimizer {
+public class GlobalOptimizer {
 	
 	private Double[] weightVector;
 	private Integer[] x0Vector;

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.eclipse.ui.PartInitException;
 
+import reflexactoring.diagram.action.recommend.optimal.GlobalOptimizer;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -53,7 +54,7 @@ public class RefactoringRecommender {
 			 * need to gain the dependencies amongst modules
 			 */
 			
-			Optimizer optimizer = new Optimizer();
+			GlobalOptimizer optimizer = new GlobalOptimizer();
 			ArrayList<Suggestion> suggestions = optimizer.getSuggestionsByOptimization(Settings.scope.getScopeCompilationUnitList(), moduleList);
 			
 			return suggestions;

@@ -1,9 +1,10 @@
 /**
  * 
  */
-package reflexactoring.diagram.action.recommend.debug;
+package reflexactoring.diagram.action.recommend.optimal;
 
-import reflexactoring.diagram.action.recommend.Optimizer.SparseVectors;
+import reflexactoring.diagram.action.recommend.optimal.GlobalOptimizer.SparseVectors;
+
 
 /**
  * @author linyun

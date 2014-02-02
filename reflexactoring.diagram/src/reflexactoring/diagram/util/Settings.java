@@ -40,4 +40,14 @@ public class Settings {
 		
 	public static String diagramPath = "/refactoring/default.reflexactoring";
 	public static double largeSimilarityValue = 1.0d;
+	
+	//=============================================================
+	/**
+	 * The following is the parameters for optimization
+	 */
+	public static double alpha = 0.5;
+	public static double beta = 0.5;
+	public static double mutationRate = 0.001;
+	public static int geneticIterationNum = 10000;
+	public static int populationSize = 50;
 }
