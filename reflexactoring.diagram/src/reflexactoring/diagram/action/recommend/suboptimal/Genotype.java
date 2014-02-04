@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
+import java.util.ArrayList;
+
 import reflexactoring.diagram.util.Settings;
 import Jama.Matrix;
 
@@ -36,6 +38,15 @@ public class Genotype {
 		super();
 		DNA = dNA;
 		this.fitness = fitness;
+	}
+	
+	@Override
+	public String toString(){
+		StringBuffer buffer = new StringBuffer();
+		for(int i=0; i<DNA.length; i++){
+			buffer.append(DNA[i]);
+		}
+		return buffer.toString();
 	}
 
 	/**
@@ -130,10 +141,20 @@ public class Genotype {
 			}
 		}
 		
+		int count = 0;
+		Matrix mappingMatrix = new Matrix(relationMatrix.getRowDimension(), relationMatrix.getColumnDimension());
+		for(int i=0; i<relationMatrix.getRowDimension(); i++){
+			for(int j=0; j<relationMatrix.getColumnDimension(); j++){
+				if(relationMatrix.get(i, j) != 0){
+					mappingMatrix.set(i, j, x.get(count++, 0));
+				}
+			}
+		}
+		
 		/**
 		 * R*L*R' ~ H
 		 */
-		result = relationMatrix.times(lowLevelMatrix).times(relationMatrix.transpose());
+		result = mappingMatrix.times(lowLevelMatrix).times(mappingMatrix.transpose());
 		for(int i=0; i<result.getRowDimension(); i++){
 			for(int j=0; j<result.getColumnDimension(); j++){
 				if(i!=j){
@@ -158,25 +179,22 @@ public class Genotype {
 		int highNum = relationMatrix.getRowDimension();
 		int lowNum = relationMatrix.getColumnDimension();
 		
-		int count = 0;
+		ArrayList<int[]> map = new ArrayList<>(); 
 		for(int i=0; i<relationMatrix.getRowDimension(); i++){
 			for(int j=0; j<relationMatrix.getColumnDimension(); j++){
 				if(relationMatrix.get(i, j) != 0){
-					count++;
+					map.add(new int[]{i, j});
 				}
 			}
 		}
 		
-		Matrix edgeVertexMatrix = new Matrix(highNum+lowNum, count);
-		for(int i=0; i<relationMatrix.getRowDimension(); i++){
-			for(int j=0; j<relationMatrix.getColumnDimension(); j++){
-				if(relationMatrix.get(i, j) != 0){
-					edgeVertexMatrix.set(i, j, 1);
-				}
-				else{
-					edgeVertexMatrix.set(i, j, 0);
-				}
-			}
+		Matrix edgeVertexMatrix = new Matrix(highNum+lowNum, map.size());
+		for(int j=0; j<map.size(); j++){
+			int moduleIndex = map.get(j)[0];
+			int unitIndex = map.get(j)[1] + highNum;
+			
+			edgeVertexMatrix.set(moduleIndex, j, 1);
+			edgeVertexMatrix.set(unitIndex, j, 1);
 		}
 		
 		return edgeVertexMatrix;
@@ -195,7 +213,7 @@ public class Genotype {
 		double euclideanDis = computeEuclideanDistance(x, x0Vector);
 		
 		double objectiveValue = Settings.alpha*totalWeight.get(0, 0)/length
-				+ Settings.beta*(1-euclideanDis)/Math.sqrt(length);
+				+ Settings.beta*(1-euclideanDis/Math.sqrt(length));
 		
 		return objectiveValue;
 	}
@@ -206,7 +224,7 @@ public class Genotype {
 		
 		double sum = 0;
 		for(int i=0; i<vector1.length; i++){
-			sum = (vector1[i][0]-vector2[i][0])*(vector1[i][0]-vector2[i][0]);
+			sum += (vector1[i][0]-vector2[i][0])*(vector1[i][0]-vector2[i][0]);
 		}
 		
 		return Math.sqrt(sum);

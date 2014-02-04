@@ -92,10 +92,11 @@ public class GeneticOptimizer {
 	private Genotype computeOptimalResult(FitnessComputingFactor computingFactor) {
 		
 		Population population = generatePopulation(computingFactor);
+		System.out.println(population.getOptimalGene().getFitness());
 		
 		for(int i=0; i<Settings.geneticIterationNum; i++){
 			population = generateNextGeneration(population, computingFactor);
-			population.updateOptimalGene();
+			System.out.println(population.getOptimalGene().getFitness());
 		}
 		
 		return population.getOptimalGene();
@@ -197,11 +198,13 @@ public class GeneticOptimizer {
 			Genotype subGene1 = new Genotype(childDNA1);
 			subGene1.setFitness(subGene1.computeFitness(computingFactor));
 			Genotype subGene2 = new Genotype(childDNA2);
-			subGene1.setFitness(subGene2.computeFitness(computingFactor));
+			subGene2.setFitness(subGene2.computeFitness(computingFactor));
 			
 			crosssoverPopulation.add(subGene1);
 			crosssoverPopulation.add(subGene2);
 		}
+		
+		crosssoverPopulation.updateOptimalGene();
 		
 		return crosssoverPopulation;
 	}

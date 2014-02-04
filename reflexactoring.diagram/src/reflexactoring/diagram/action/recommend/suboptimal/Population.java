@@ -36,7 +36,7 @@ public class Population extends ArrayList<Genotype>{
 		
 		if(this.size() == 0)return;
 		
-		Genotype optimalGene = this.get(0);
+		Genotype optimalGene = (null == this.optimalGene)? this.get(0) : this.optimalGene;
 		
 		for(int i=0; i<this.size(); i++){
 			Genotype gene = this.get(i);
