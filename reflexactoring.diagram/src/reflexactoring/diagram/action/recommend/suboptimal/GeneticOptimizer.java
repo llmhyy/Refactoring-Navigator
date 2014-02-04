@@ -5,11 +5,8 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 
 import java.util.ArrayList;
 
+import Jama.Matrix;
 import reflexactoring.diagram.action.ModelMapper;
-import reflexactoring.diagram.action.recommend.Suggestion;
-import reflexactoring.diagram.action.recommend.optimal.Debugger;
-import reflexactoring.diagram.action.recommend.optimal.GlobalOptimizer.OptimalResults;
-import reflexactoring.diagram.action.recommend.optimal.GlobalOptimizer.SparseVectors;
 import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -22,10 +19,10 @@ import reflexactoring.diagram.util.Settings;
  */
 public class GeneticOptimizer {
 	
-	private Double[] weightVector;
-	private Integer[] x0Vector;
+	private Matrix weightVector;
+	private Matrix x0Vector;
 	
-	private OptimalResults optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
+	public Genotype optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
 		//double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
 		double[][] similarityTable;
 		
@@ -37,55 +34,48 @@ public class GeneticOptimizer {
 					convertModuleUnitsSimilarityTableToRawTable(Settings.similarityTable);
 			
 		}
-		int highLevelNumber = modules.size();
-		int lowLevelNumber = units.size();
 		
 		/**
 		 * In this method, the weight vector and x0 vector will be initialized as well.
 		 */
-		SparseVectors relationVectors = extractRelation(similarityTable, modules, units);
+		Matrix relationMatrix = extractRelation(similarityTable, modules, units);
 		
-		System.out.println("The variable number is: " + this.weightVector.length);
+		System.out.println("The variable number is: " + this.weightVector.getColumnDimension());
 		
-		SparseVectors highLevelVectors = extractGraph(modules);
-		SparseVectors lowLevelVectors = extractGraph(units);
+		Matrix highLevelMatrix = extractGraph(modules);
+		Matrix lowLevelMatrix = extractGraph(units);
 		
-		//System.out.println(Debugger.printInputValues(weightVector, highLevelNumber, lowLevelNumber, highLevelVectors, lowLevelVectors, relationVectors, x0Vector));
+		FitnessComputingFactor computingFactor = new FitnessComputingFactor();
+		computingFactor.setHighLevelMatrix(highLevelMatrix);
+		computingFactor.setLowLevelMatrix(lowLevelMatrix);
+		computingFactor.setRelationMatrix(relationMatrix);
+		computingFactor.setWeightVector(weightVector);
+		computingFactor.setX0Vector(x0Vector);
 		
+		Genotype gene = computeOptimalResult(computingFactor);
 		
-		return null;
+		return gene;
 	}
-	
-	
-	
 	
 	/**
-	 * @param weightVector2
-	 * @param highLevelNumber
-	 * @param lowLevelNumber
-	 * @param highLevelVectors
-	 * @param lowLevelVectors
-	 * @param relationVectors
-	 * @param x0Vector
-	 * @return
+	 * 
 	 */
-	private Results computeOptimalResult(Double[] weightVector2,
-			int highLevelNumber, int lowLevelNumber,
-			SparseVectors highLevelVectors, SparseVectors lowLevelVectors,
-			SparseVectors relationVectors, Integer[] x0Vector) {
-
-		ArrayList<int[]> population = generatePopulation(x0Vector.length);
-		Results results = null;
+	private Genotype computeOptimalResult(FitnessComputingFactor computingFactor) {
+		
+		Population population = generatePopulation(computingFactor);
+		
 		for(int i=0; i<Settings.geneticIterationNum; i++){
-			results = crossoverAndMutate(population);
-			population = results.getPopluation();
+			population = generateNextGeneration(population, computingFactor);
+			population.updateOptimalGene();
 		}
 		
-		return results;
+		return population.getOptimalGene();
 	}
 	
-	private ArrayList<int[]> generatePopulation(int dimension){
-		ArrayList<int[]> population = new ArrayList<>();
+	private Population generatePopulation(FitnessComputingFactor computingFactor){
+		int dimension = computingFactor.getX0Vector().getRowDimension();
+		
+		Population population = new Population();
 		for(int i=0; i<Settings.populationSize; i++){
 			int[] seed = new int[dimension];
 			for(int j=0; j<dimension; j++){
@@ -96,8 +86,15 @@ public class GeneticOptimizer {
 					seed[j] = 0;
 				}
 			}
-			population.add(seed);
+			
+			Genotype gene = new Genotype(seed);
+			gene.setFitness(gene.computeFitness(computingFactor));
+			
+			population.add(gene);
 		}
+		
+		population.updateOptimalGene();
+		
 		return population;
 	}
 	
@@ -106,89 +103,167 @@ public class GeneticOptimizer {
 	 * @param population
 	 * @return
 	 */
-	private Results crossoverAndMutate(ArrayList<int[]> population){
-		
-		// selector: roulette wheel selection
+	private Population generateNextGeneration(Population population, FitnessComputingFactor computingFactor){
 		
 		/**
-		 * crossover
+		 * selector: roulette wheel selection
 		 */
+		Population selectedPopulation = selectPopulation(population, computingFactor.getHighLevelMatrix().getRowDimension(), computingFactor.getLowLevelMatrix().getRowDimension());
 		
 		/**
-		 * mutate
+		 * crossover and mutate
 		 */
+		Population crossedPopulation = crossoverAndMutate(selectedPopulation, computingFactor);
 		
-		return null;
+		
+		return crossedPopulation;
 	}
 	
-	public class Results{
-		private ArrayList<int[]> popluation;
-		private double optimalResult;
-		private int[] bestSolution;
-		/**
-		 * @return the popluation
-		 */
-		public ArrayList<int[]> getPopluation() {
-			return popluation;
-		}
-		/**
-		 * @param popluation the popluation to set
-		 */
-		public void setPopluation(ArrayList<int[]> popluation) {
-			this.popluation = popluation;
-		}
-		/**
-		 * @return the optimalResult
-		 */
-		public double getOptimalResult() {
-			return optimalResult;
-		}
-		/**
-		 * @param optimalResult the optimalResult to set
-		 */
-		public void setOptimalResult(double optimalResult) {
-			this.optimalResult = optimalResult;
-		}
-		/**
-		 * @return the bestSolution
-		 */
-		public int[] getBestSolution() {
-			return bestSolution;
-		}
-		/**
-		 * @param bestSolution the bestSolution to set
-		 */
-		public void setBestSolution(int[] bestSolution) {
-			this.bestSolution = bestSolution;
+	/**
+	 * @param selectedPopulation
+	 * @return
+	 */
+	private Population crossoverAndMutate(Population selectedPopulation, FitnessComputingFactor computingFactor) {
+		
+		Population crosssoverPopulation = new Population();
+		crosssoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
+		
+		for(int i=0; i<selectedPopulation.size(); i=i+2){
+			Genotype gene1 = selectedPopulation.get(i);
+			Genotype gene2 = selectedPopulation.get(i+1);
+			
+			int[] DNA1 = gene1.getDNA();
+			int[] DNA2 = gene2.getDNA();
+			
+			int[] childDNA1 = new int[DNA1.length];
+			int[] childDNA2 = new int[DNA2.length];
+			
+			for(int j=0; j<DNA1.length; j++){
+				if(DNA1[j] == DNA2[j]){
+					childDNA1[j] = DNA1[j];
+					childDNA2[j] = DNA2[j];
+				}
+				else{
+					double fitness1 = normalizeFitnessValue(gene1.getFitness(), 
+							computingFactor.getHighLevelMatrix().getRowDimension(), computingFactor.getLowLevelMatrix().getRowDimension());
+					double fitness2 = normalizeFitnessValue(gene2.getFitness(), 
+							computingFactor.getHighLevelMatrix().getRowDimension(), computingFactor.getLowLevelMatrix().getRowDimension());
+					
+					double flipPoint = fitness1/(fitness1 + fitness2);
+					childDNA1[j] = (Math.random()<=flipPoint)? 1 : 0;
+					childDNA2[j] = (Math.random()>flipPoint)? 1 : 0;
+				}
+				
+				/**
+				 * mutate
+				 */
+				if(Math.random() <= Settings.mutationRate){
+					childDNA1[j] = flip(childDNA1[j]);
+				}
+				if(Math.random() <= Settings.mutationRate){
+					childDNA2[j] = flip(childDNA2[j]);
+				}
+			}
+			
+			Genotype subGene1 = new Genotype(childDNA1);
+			subGene1.setFitness(subGene1.computeFitness(computingFactor));
+			Genotype subGene2 = new Genotype(childDNA2);
+			subGene1.setFitness(subGene2.computeFitness(computingFactor));
+			
+			crosssoverPopulation.add(subGene1);
+			crosssoverPopulation.add(subGene2);
 		}
 		
-		
+		return crosssoverPopulation;
 	}
 
+	private int flip(int code){
+		if(code == 0){
+			return 1;
+		}
+		else{
+			return 0;
+		}
+	}
+
+
 	/**
-	 * In this method, the weight vector and x0 vector will be initialized as well.
+	 * roulette wheel selection
+	 * @param population
+	 * @return
+	 */
+	private Population selectPopulation(Population population, int highNum, int lowNum){
+		Population selectedPopluation = new Population();
+		selectedPopluation.setOptimalGene(population.getOptimalGene());
+
+		double[] bin = new double[population.size()+1];
+		double sum = 0;
+		bin[0] = 0;
+		for(int i=0; i<population.size(); i++){
+			double fitness = population.get(i).getFitness();
+			sum += normalizeFitnessValue(fitness, highNum, lowNum);
+			bin[i+1] = sum;
+		}
+		
+		for(int i=0; i<bin.length; i++){
+			bin[i] = bin[i]/sum;
+		}
+		
+		for(int i=0; i<population.size(); i++){
+			double random = Math.random();
+			
+			int index = 0;
+			for(int j=0; j<bin.length-1; j++){
+				if(bin[j] < random && bin[j+1] >= random){
+					index = j;
+					break;
+				}
+			}
+			
+			selectedPopluation.add(population.get(index));
+		}
+		
+		return selectedPopluation;
+	}
+	
+	/**
+	 * since the fitness function will be negative, therefore, I normalize the value
+	 * to positive by adding the number of all constraints, that is, h+l+(h^2-h)=l+h^2.
+	 * 
+	 * By this means, all the fitness value will be positive.
+	 * 
+	 * @param fitness
+	 * @param highNum
+	 * @param lowNum
+	 * @return
+	 */
+	private double normalizeFitnessValue(double fitness, int highNum, int lowNum){
+		return fitness + highNum*highNum + lowNum;
+	}
+	
+	
+
+	/**
+	 * In this method, the weight vector and x0 vector will be initialized as well. This may not
+	 * be well from an engineering point of view, but may save some computation.
 	 * @param similarityTable
 	 * @param modules
 	 * @param units
 	 * @return
 	 */
-	private SparseVectors extractRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<ICompilationUnitWrapper> units){
+	private Matrix extractRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<ICompilationUnitWrapper> units){
 		int highLevelNumber = modules.size();
 		int lowLevelNumber = units.size();
 		
-		//double[][] relationTable = new double[highLevelNumber][lowLevelNumber];
+		Matrix relationMatrix = new Matrix(highLevelNumber, lowLevelNumber);
 		
 		ArrayList<Double> weightVectorList = new ArrayList<>();
 		ArrayList<Integer> x0VectorList = new ArrayList<>();
 		
-		ArrayList<Integer> iList = new ArrayList<>();
-		ArrayList<Integer> jList = new ArrayList<>();
-		
 		for(int i=0; i<highLevelNumber; i++){
 			for(int j=0; j<lowLevelNumber; j++){
 				if((i != j) && similarityTable[i][j] >= Double.valueOf(ReflexactoringUtil.getMappingThreshold())){
-					iList.add((int)(i));
-					jList.add((int)(j));
+					relationMatrix.set(i, j, 1);
 					
 					/**
 					 * initial weight
@@ -206,101 +281,41 @@ public class GeneticOptimizer {
 						x0VectorList.add(0);
 					}
 				}
+				else{
+					relationMatrix.set(i, j, 0);
+				}
 			}
 		}
 		
-		Integer[] i = iList.toArray(new Integer[0]);
-		Integer[] j = jList.toArray(new Integer[0]);
+		this.weightVector = GeneticUtil.convertRowVectorToMatrix(weightVectorList);
+		this.x0Vector = GeneticUtil.convertColumnVectorToMatrx(x0VectorList);
 		
-		this.weightVector = weightVectorList.toArray(new Double[0]);
-		this.x0Vector = x0VectorList.toArray(new Integer[0]);
-		
-		return new SparseVectors(i, j);
+		return relationMatrix;
 	}
 	
-	private SparseVectors extractGraph(ArrayList<? extends GraphNode> nodes){
-		ArrayList<Integer> iList = new ArrayList<>();
-		ArrayList<Integer> jList = new ArrayList<>();
+	
+	
+	private Matrix extractGraph(ArrayList<? extends GraphNode> nodes){
 		
-		for(int i=0; i<nodes.size(); i++){
-			for(int j=0; j<nodes.size(); j++){
+		int dimension = nodes.size();
+		Matrix graphMatrix = new Matrix(dimension, dimension);
+		
+		for(int i=0; i<dimension; i++){
+			for(int j=0; j<dimension; j++){
 				if(i != j){
 					GraphNode nodeI = nodes.get(i);
 					GraphNode nodeJ = nodes.get(j);
 					
 					if(nodeI.getCalleeList().contains(nodeJ)){
-						iList.add((int) (i));
-						jList.add((int) (j));
+						graphMatrix.set(i, j, 1);
+					}
+					else{
+						graphMatrix.set(i, j, 0);
 					}
 				}
 			}
 		}
 		
-		Integer[] i = iList.toArray(new Integer[0]);
-		Integer[] j = jList.toArray(new Integer[0]);
-		
-		return new SparseVectors(i, j);
-	}
-	
-	/**
-	 * This class is to be adapted to the data type in matlab.  For example,
-	 * i=[1 2 1], j=[1 0 2] mean that the points (1, 1), (2, 0) and (1, 2) are
-	 * non-zero entries.
-	 * 
-	 * @author linyun
-	 *
-	 */
-	public class SparseVectors{
-		private Integer[] i;
-		private Integer[] j;
-		
-		/**
-		 * @param i
-		 * @param j
-		 */
-		public SparseVectors(Integer[] i, Integer[] j) {
-			super();
-			this.i = i;
-			this.j = j;
-		}
-		
-		public String toString(){
-			StringBuffer buffer = new StringBuffer();
-			
-			for(int k=0; k<i.length; k++){
-				buffer.append(i[k]+ " ");
-			}
-			buffer.append("\n");
-			for(int k=0; k<i.length; k++){
-				buffer.append(j[k]+ " ");
-			}
-			
-			return buffer.toString();
-		}
-		
-		/**
-		 * @return the i
-		 */
-		public Integer[] getI() {
-			return i;
-		}
-		/**
-		 * @param i the i to set
-		 */
-		public void setI(Integer[] i) {
-			this.i = i;
-		}
-		/**
-		 * @return the j
-		 */
-		public Integer[] getJ() {
-			return j;
-		}
-		/**
-		 * @param j the j to set
-		 */
-		public void setJ(Integer[] j) {
-			this.j = j;
-		}
+		return graphMatrix;
 	}
 }
