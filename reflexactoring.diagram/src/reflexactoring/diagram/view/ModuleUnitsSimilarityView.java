@@ -78,6 +78,25 @@ public class ModuleUnitsSimilarityView extends ViewPart {
 		gridData.horizontalAlignment = GridData.FILL;
 		tableViewer.getControl().setLayoutData(gridData);
 
+		Menu pop = new Menu(this.composite.getShell(), SWT.POP_UP);
+		MenuItem item = new MenuItem(pop, SWT.PUSH);
+		item.setText("Refresh");
+		item.addSelectionListener(new SelectionListener() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				tableViewer.setInput(Settings.similarityTable);;
+				tableViewer.refresh();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				
+			}
+			
+		});
+		tableViewer.getTable().setMenu(pop); 
+		
 		this.composite.redraw();
 		this.composite.layout();
 	}
