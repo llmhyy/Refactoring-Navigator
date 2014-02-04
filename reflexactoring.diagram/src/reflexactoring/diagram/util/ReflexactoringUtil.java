@@ -37,6 +37,7 @@ import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarity;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
+import reflexactoring.diagram.preferences.RecommendSettingPage;
 
 /**
  * @author linyun
@@ -69,6 +70,14 @@ public class ReflexactoringUtil {
 	
 	public static void setStopList(String stopList){
 		Activator.getDefault().getPreferenceStore().putValue(ProjectInfoPage.STOP_LIST, stopList);
+	}
+	
+	public static String getIterationNumber() {
+		return Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.ITERATION_NUMBER);
+	}
+	
+	public static void setIterationNumber(String iterationNumber){
+		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.ITERATION_NUMBER, iterationNumber);
 	}
 	
 	public static String getDictPath(){
@@ -448,4 +457,6 @@ public class ReflexactoringUtil {
 		
 		return true;
 	}
+
+	
 }
