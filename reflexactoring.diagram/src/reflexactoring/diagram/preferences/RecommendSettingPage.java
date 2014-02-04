@@ -69,15 +69,46 @@ public class RecommendSettingPage extends PreferencePage implements
 		iterationNumberData.horizontalSpan = 2;
 		iterationNumberText.setLayoutData(iterationNumberData);
 		
+		Label populationSizeLabel = new Label(composite, SWT.NONE);
+		populationSizeLabel.setText("Population Size");
+		populationSizeText = new Text(composite, SWT.BORDER);
+		populationSizeText.setText(ReflexactoringUtil.getPopulationSize());
+		GridData populationSizeData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		populationSizeData.horizontalSpan = 2;
+		populationSizeText.setLayoutData(populationSizeData);
+		
+		Label mutationRateLabel = new Label(composite, SWT.NONE);
+		mutationRateLabel.setText("Mutation Rate");
+		mutationRateText = new Text(composite, SWT.BORDER);
+		mutationRateText.setText(ReflexactoringUtil.getMutationRate());
+		GridData mutationRateData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		iterationNumberData.horizontalSpan = 2;
+		mutationRateText.setLayoutData(mutationRateData);
+		
+		
 		return composite;
 		
 	}
 	
+	/*private void createComponentUI(Composite composite, String labelName, Text text, String content){
+		Label label = new Label(composite, SWT.NONE);
+		label.setText(labelName);
+		text = new Text(composite, SWT.BORDER);
+		text.setText(content);
+		GridData data = new GridData(SWT.FILL, SWT.FILL, true, false);
+		data.horizontalSpan = 2;
+		text.setLayoutData(data);
+	}*/
+	
 	public boolean performOk(){
 		Preferences preferences = ConfigurationScope.INSTANCE.getNode("Reflexactoring");
 		preferences.put(ITERATION_NUMBER, this.iterationNumberText.getText());
+		preferences.put(POPULATION_SIZE, this.populationSizeText.getText());
+		preferences.put(MUTATION_RATE, this.mutationRateText.getText());
 		
 		ReflexactoringUtil.setIterationNumber(this.iterationNumberText.getText());
+		ReflexactoringUtil.setPopulationSize(this.populationSizeText.getText());
+		ReflexactoringUtil.setMutationRate(this.mutationRateText.getText());
 		
 		return true;
 	}

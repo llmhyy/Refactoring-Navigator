@@ -73,11 +73,30 @@ public class ReflexactoringUtil {
 	}
 	
 	public static String getIterationNumber() {
-		return Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.ITERATION_NUMBER);
+		String iterationNum = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.ITERATION_NUMBER);
+		return (iterationNum == null || iterationNum.length() == 0)? String.valueOf(Settings.geneticIterationNum) : iterationNum;
 	}
 	
 	public static void setIterationNumber(String iterationNumber){
 		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.ITERATION_NUMBER, iterationNumber);
+	}
+	
+	public static String getPopulationSize() {
+		String string = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.POPULATION_SIZE);
+		return (string == null || string.length() == 0)? String.valueOf(Settings.populationSize) : string;
+	}
+	
+	public static void setPopulationSize(String populationSize){
+		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.POPULATION_SIZE, populationSize);
+	}
+	
+	public static String getMutationRate() {
+		String string = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.MUTATION_RATE);
+		return (string == null || string.length() == 0)? String.valueOf(Settings.mutationRate) : string;
+	}
+	
+	public static void setMutationRate(String mutationRate){
+		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.MUTATION_RATE, mutationRate);
 	}
 	
 	public static String getDictPath(){

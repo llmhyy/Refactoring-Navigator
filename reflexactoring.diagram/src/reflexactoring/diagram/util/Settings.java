@@ -47,7 +47,7 @@ public class Settings {
 	 */
 	public static double alpha = 0.5;
 	public static double beta = 0.5;
-	public static double mutationRate = 0.001;
-	public static int geneticIterationNum = 100;
+	public static double mutationRate = 0.01;
+	public static int geneticIterationNum = 1000;
 	public static int populationSize = 50;
 }

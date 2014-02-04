@@ -94,7 +94,7 @@ public class GeneticOptimizer {
 		Population population = generatePopulation(computingFactor);
 		System.out.println(population.getOptimalGene().getFitness());
 		
-		for(int i=0; i<Settings.geneticIterationNum; i++){
+		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getIterationNumber()); i++){
 			population = generateNextGeneration(population, computingFactor);
 			System.out.println(population.getOptimalGene().getFitness());
 		}
@@ -106,7 +106,7 @@ public class GeneticOptimizer {
 		int dimension = computingFactor.getX0Vector().getRowDimension();
 		
 		Population population = new Population();
-		for(int i=0; i<Settings.populationSize; i++){
+		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getPopulationSize()); i++){
 			int[] seed = new int[dimension];
 			for(int j=0; j<dimension; j++){
 				if(Math.random()>=0.5){
@@ -295,7 +295,7 @@ public class GeneticOptimizer {
 		
 		for(int i=0; i<highLevelNumber; i++){
 			for(int j=0; j<lowLevelNumber; j++){
-				if((i != j) && similarityTable[i][j] >= Double.valueOf(ReflexactoringUtil.getMappingThreshold())){
+				if(similarityTable[i][j] >= Double.valueOf(ReflexactoringUtil.getMappingThreshold())){
 					relationMatrix.set(i, j, 1);
 					relationMap.add(new int[]{i, j});
 					/**
