@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import org.eclipse.ui.PartInitException;
 
 import reflexactoring.diagram.action.recommend.optimal.GlobalOptimizer;
+import reflexactoring.diagram.action.recommend.suboptimal.GeneticOptimizer;
+import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -54,8 +56,16 @@ public class RefactoringRecommender {
 			 * need to gain the dependencies amongst modules
 			 */
 			
-			GlobalOptimizer optimizer = new GlobalOptimizer();
-			ArrayList<Suggestion> suggestions = optimizer.getSuggestionsByOptimization(Settings.scope.getScopeCompilationUnitList(), moduleList);
+			GeneticOptimizer optimizer = new GeneticOptimizer();
+			int[] bestSolution = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList);
+			int[] initialSolution = optimizer.getX0();
+			ArrayList<int[]> relationMap = optimizer.getRelationMap();
+			
+			Suggester suggester = new Suggester();
+			ArrayList<Suggestion> suggestions = suggester.generateSuggestions(Settings.scope.getScopeCompilationUnitList(), moduleList, 
+					bestSolution, initialSolution, relationMap);
+			
+			//GlobalOptimizer optimizer = new GlobalOptimizer();
 			
 			return suggestions;
 			

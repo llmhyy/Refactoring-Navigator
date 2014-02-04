@@ -21,8 +21,35 @@ public class GeneticOptimizer {
 	
 	private Matrix weightVector;
 	private Matrix x0Vector;
+	private FitnessComputingFactor computingFactor;
+	private ArrayList<int[]> relationMap;
 	
-	public Genotype optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
+	public ArrayList<int[]> getRelationMap(){
+		return this.relationMap;
+	}
+	
+	/**
+	 * this method should be invoked after calling optimize().
+	 * @return
+	 */
+	public int[] getX0(){
+		int[] x0 = new int[x0Vector.getRowDimension()];
+		
+		for(int i=0; i<x0Vector.getRowDimension(); i++){
+			x0[i] = (int) x0Vector.get(i, 0);
+		}
+		
+		return x0;
+	}
+	
+	/**
+	 * @return the computingFactor
+	 */
+	public FitnessComputingFactor getComputingFactor() {
+		return computingFactor;
+	}
+
+	public int[] optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
 		//double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
 		double[][] similarityTable;
 		
@@ -52,9 +79,11 @@ public class GeneticOptimizer {
 		computingFactor.setWeightVector(weightVector);
 		computingFactor.setX0Vector(x0Vector);
 		
+		this.computingFactor = computingFactor;
+		
 		Genotype gene = computeOptimalResult(computingFactor);
 		
-		return gene;
+		return gene.getDNA();
 	}
 	
 	/**
@@ -259,12 +288,13 @@ public class GeneticOptimizer {
 		
 		ArrayList<Double> weightVectorList = new ArrayList<>();
 		ArrayList<Integer> x0VectorList = new ArrayList<>();
+		ArrayList<int[]> relationMap = new ArrayList<>();
 		
 		for(int i=0; i<highLevelNumber; i++){
 			for(int j=0; j<lowLevelNumber; j++){
 				if((i != j) && similarityTable[i][j] >= Double.valueOf(ReflexactoringUtil.getMappingThreshold())){
 					relationMatrix.set(i, j, 1);
-					
+					relationMap.add(new int[]{i, j});
 					/**
 					 * initial weight
 					 */
@@ -289,6 +319,7 @@ public class GeneticOptimizer {
 		
 		this.weightVector = GeneticUtil.convertRowVectorToMatrix(weightVectorList);
 		this.x0Vector = GeneticUtil.convertColumnVectorToMatrx(x0VectorList);
+		this.relationMap = relationMap;
 		
 		return relationMatrix;
 	}
