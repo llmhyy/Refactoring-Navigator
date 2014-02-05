@@ -48,6 +48,10 @@ public class Genotype {
 		}
 		return buffer.toString();
 	}
+	
+	public boolean isFeasible(){
+		return fitness >= 0;
+	}
 
 	/**
 	 * @return the dNA
