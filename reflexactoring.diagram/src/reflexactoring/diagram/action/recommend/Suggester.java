@@ -14,7 +14,7 @@ import reflexactoring.diagram.bean.ModuleWrapper;
  */
 public class Suggester {
 	
-	public ArrayList<Suggestion> generateSuggestions(ArrayList<ICompilationUnitWrapper> units,
+	public ArrayList<Suggestion> generateSuggestionsInClassLevel(ArrayList<ICompilationUnitWrapper> units,
 			ArrayList<ModuleWrapper> modules, int[] bestSolution, int[] initialSolution,
 			ArrayList<int[]> relationMap){
 		

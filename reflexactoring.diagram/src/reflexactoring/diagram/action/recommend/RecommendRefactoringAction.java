@@ -19,7 +19,7 @@ public class RecommendRefactoringAction implements
 		
 		RefactoringRecommender recommender = new RefactoringRecommender();
 		
-		ArrayList<Suggestion> suggestions = recommender.recommend();
+		ArrayList<Suggestion> suggestions = recommender.recommendInClassLevel();
 		
 		
 		RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().

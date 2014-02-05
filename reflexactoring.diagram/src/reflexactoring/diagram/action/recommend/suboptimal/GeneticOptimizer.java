@@ -49,7 +49,7 @@ public class GeneticOptimizer {
 		return computingFactor;
 	}
 
-	public int[] optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
+	public Genotype optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
 		//double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
 		double[][] similarityTable;
 		
@@ -83,7 +83,7 @@ public class GeneticOptimizer {
 		
 		Genotype gene = computeOptimalResult(computingFactor);
 		
-		return gene.getDNA();
+		return gene;
 	}
 	
 	/**

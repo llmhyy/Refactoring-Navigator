@@ -5,7 +5,9 @@ package reflexactoring.diagram.action.recommend;
 
 import java.util.ArrayList;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.recommend.optimal.GlobalOptimizer;
 import reflexactoring.diagram.action.recommend.suboptimal.GeneticOptimizer;
@@ -42,7 +44,7 @@ public class RefactoringRecommender {
 		
 	}
 	
-	public ArrayList<Suggestion> recommend(){
+	public ArrayList<Suggestion> recommendInClassLevel(){
 		
 		ArrayList<ICompilationUnitWrapper> unmappedUnits = checkUnmappedCompilationUnits();
 		if(unmappedUnits.size() != 0 && !Settings.isSkipUnMappedTypes){
@@ -57,17 +59,28 @@ public class RefactoringRecommender {
 			 */
 			
 			GeneticOptimizer optimizer = new GeneticOptimizer();
-			int[] bestSolution = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList);
-			int[] initialSolution = optimizer.getX0();
-			ArrayList<int[]> relationMap = optimizer.getRelationMap();
+			Genotype gene = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList);
 			
-			Suggester suggester = new Suggester();
-			ArrayList<Suggestion> suggestions = suggester.generateSuggestions(Settings.scope.getScopeCompilationUnitList(), moduleList, 
-					bestSolution, initialSolution, relationMap);
+			if(gene.isFeasible()){
+				ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(gene, optimizer, moduleList);
+				return suggestions;
+			}
+			else{
+				String title = "Cannot find a solution";
+				String message = "Moving java classes among modules may not achieve the conformance, "
+						+ "may I try moving methods among classes? Click OK to confirm, otherwise, I "
+						+ "will show you the best solutions (still infeasible yet)";
+				boolean confirm = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
+				
+				if(confirm){
+					
+				}
+				else{
+					ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(gene, optimizer, moduleList);
+					return suggestions;
+				}
+			}
 			
-			//GlobalOptimizer optimizer = new GlobalOptimizer();
-			
-			return suggestions;
 			
 		} catch (PartInitException e) {
 			e.printStackTrace();
@@ -76,7 +89,18 @@ public class RefactoringRecommender {
 		return new ArrayList<Suggestion>();
 	}
 	
-	
+	private ArrayList<Suggestion> generateClassLevelSuggestions(Genotype gene, GeneticOptimizer optimizer, ArrayList<ModuleWrapper> moduleList){
+		int[] bestSolution = gene.getDNA();
+		
+		int[] initialSolution = optimizer.getX0();
+		ArrayList<int[]> relationMap = optimizer.getRelationMap();
+		
+		Suggester suggester = new Suggester();
+		ArrayList<Suggestion> suggestions = suggester.generateSuggestionsInClassLevel(Settings.scope.getScopeCompilationUnitList(), moduleList, 
+				bestSolution, initialSolution, relationMap);
+		
+		return suggestions;
+	}
 	
 	private ArrayList<Suggestion> generateSuggestionForUnmappedUnits(ArrayList<ICompilationUnitWrapper> unmappedUnits){
 		
