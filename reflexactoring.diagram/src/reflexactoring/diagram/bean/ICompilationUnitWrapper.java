@@ -46,6 +46,7 @@ public class ICompilationUnitWrapper implements SuggestionObject, GraphNode{
 			
 			ASTParser parser = ASTParser.newParser(AST.JLS3);
 			parser.setKind(ASTParser.K_COMPILATION_UNIT);
+			parser.setResolveBindings(true);
 			//parser.setSource(doc.get().toCharArray());
 			parser.setSource(compilationUnit);
 			CompilationUnit cu = (CompilationUnit) parser.createAST(null);

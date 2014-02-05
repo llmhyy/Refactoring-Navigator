@@ -85,8 +85,7 @@ public class ModuleWrapper implements SuggestionObject, GraphNode{
 	
 	public void addCalleeModule(ModuleWrapper calleeWrapper){
 		for(ModuleWrapper module: this.calleeModuleList){
-			if(module.getName().equals(calleeWrapper.getName())
-					&& module.getDescription().equals(calleeWrapper.getDescription())){
+			if(module.getName().equals(calleeWrapper.getName())){
 				return;
 			}
 		}

@@ -74,7 +74,8 @@ public class RefactoringRecommender {
 				boolean confirm = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
 				
 				if(confirm){
-					
+					UnitMemberExtractor extractor = new UnitMemberExtractor();
+					extractor.extract(Settings.scope.getScopeCompilationUnitList());
 				}
 				else{
 					ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(gene, optimizer, moduleList);
