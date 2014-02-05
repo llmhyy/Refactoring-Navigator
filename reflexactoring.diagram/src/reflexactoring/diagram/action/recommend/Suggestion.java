@@ -3,6 +3,7 @@
  */
 package reflexactoring.diagram.action.recommend;
 
+import reflexactoring.diagram.action.recommend.action.RefactoringAction;
 import reflexactoring.diagram.bean.SuggestionObject;
 
 /**

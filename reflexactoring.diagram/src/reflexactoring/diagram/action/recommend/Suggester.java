@@ -5,6 +5,7 @@ package reflexactoring.diagram.action.recommend;
 
 import java.util.ArrayList;
 
+import reflexactoring.diagram.action.recommend.action.MoveAction;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 

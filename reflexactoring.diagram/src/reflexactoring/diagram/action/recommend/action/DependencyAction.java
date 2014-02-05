@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reflexactoring.diagram.action.recommend;
+package reflexactoring.diagram.action.recommend.action;
 
 /**
  * @author linyun

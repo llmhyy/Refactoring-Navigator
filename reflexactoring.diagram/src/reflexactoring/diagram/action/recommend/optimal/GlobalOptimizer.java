@@ -11,8 +11,8 @@ import com.mathworks.toolbox.javabuilder.MWStructArray;
 
 import fudan.se.graphmatching.optimization.OptimalGraphMatcher;
 import reflexactoring.diagram.action.ModelMapper;
-import reflexactoring.diagram.action.recommend.MoveAction;
 import reflexactoring.diagram.action.recommend.Suggestion;
+import reflexactoring.diagram.action.recommend.action.MoveAction;
 import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;

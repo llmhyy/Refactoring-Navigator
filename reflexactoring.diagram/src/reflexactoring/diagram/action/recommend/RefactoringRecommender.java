@@ -9,6 +9,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.diagram.action.recommend.action.AddModuleAction;
 import reflexactoring.diagram.action.recommend.optimal.GlobalOptimizer;
 import reflexactoring.diagram.action.recommend.suboptimal.GeneticOptimizer;
 import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
@@ -67,7 +68,7 @@ public class RefactoringRecommender {
 			}
 			else{
 				String title = "Cannot find a solution";
-				String message = "Moving java classes among modules may not achieve the conformance, "
+				String message = "Moving classes among modules may not achieve the conformance, \n"
 						+ "may I try moving methods among classes? Click OK to confirm, otherwise, I "
 						+ "will show you the best solutions (still infeasible yet)";
 				boolean confirm = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
