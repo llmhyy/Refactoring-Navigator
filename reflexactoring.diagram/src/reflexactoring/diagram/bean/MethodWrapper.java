@@ -22,7 +22,6 @@ public class MethodWrapper extends UnitMemberWrapper {
 	
 	@Override
 	public String getName() {
-		//TODO
 		return this.method.getName().getIdentifier();
 	}
 	
@@ -50,5 +49,13 @@ public class MethodWrapper extends UnitMemberWrapper {
 	@Override
 	public IMember getJavaMember() {
 		return (IMember)this.method.resolveBinding().getJavaElement();
+	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.SuggestionObject#getType()
+	 */
+	@Override
+	public String getTypeName() {
+		return "method";
 	}
 }

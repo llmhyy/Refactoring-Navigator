@@ -15,6 +15,7 @@ import reflexactoring.diagram.action.recommend.suboptimal.GeneticOptimizer;
 import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -45,7 +46,7 @@ public class RefactoringRecommender {
 		
 	}
 	
-	public ArrayList<Suggestion> recommendInClassLevel(){
+	public ArrayList<Suggestion> recommend(){
 		
 		ArrayList<ICompilationUnitWrapper> unmappedUnits = checkUnmappedCompilationUnits();
 		if(unmappedUnits.size() != 0 && !Settings.isSkipUnMappedTypes){
@@ -60,10 +61,10 @@ public class RefactoringRecommender {
 			 */
 			
 			GeneticOptimizer optimizer = new GeneticOptimizer();
-			Genotype gene = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList);
+			Genotype unitGene = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList);
 			
-			if(gene.isFeasible()){
-				ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(gene, optimizer, moduleList);
+			if(unitGene.isFeasible()){
+				ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(unitGene, optimizer, moduleList);
 				return suggestions;
 			}
 			else{
@@ -75,10 +76,17 @@ public class RefactoringRecommender {
 				
 				if(confirm){
 					UnitMemberExtractor extractor = new UnitMemberExtractor();
-					extractor.extract(Settings.scope.getScopeCompilationUnitList());
+					UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
+					
+					Genotype memberGene = optimizer.optimize(members, moduleList);
+					
+					ArrayList<Suggestion> suggestions = generateMemberLevelSuggestions(memberGene, optimizer, 
+							moduleList, members);
+					
+					return suggestions;
 				}
 				else{
-					ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(gene, optimizer, moduleList);
+					ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(unitGene, optimizer, moduleList);
 					return suggestions;
 				}
 			}
@@ -91,6 +99,20 @@ public class RefactoringRecommender {
 		return new ArrayList<Suggestion>();
 	}
 	
+	private ArrayList<Suggestion> generateMemberLevelSuggestions(Genotype gene, GeneticOptimizer optimizer, 
+			ArrayList<ModuleWrapper> moduleList, UnitMemberWrapperList members){
+		int[] bestSolution = gene.getDNA();
+		
+		int[] initialSolution = optimizer.getX0();
+		ArrayList<int[]> relationMap = optimizer.getRelationMap();
+		
+		Suggester suggester = new Suggester();
+		ArrayList<Suggestion> suggestions = suggester.generateSuggestions(members, moduleList, 
+				bestSolution, initialSolution, relationMap);
+		
+		return suggestions;
+	}
+	
 	private ArrayList<Suggestion> generateClassLevelSuggestions(Genotype gene, GeneticOptimizer optimizer, ArrayList<ModuleWrapper> moduleList){
 		int[] bestSolution = gene.getDNA();
 		
@@ -98,7 +120,7 @@ public class RefactoringRecommender {
 		ArrayList<int[]> relationMap = optimizer.getRelationMap();
 		
 		Suggester suggester = new Suggester();
-		ArrayList<Suggestion> suggestions = suggester.generateSuggestionsInClassLevel(Settings.scope.getScopeCompilationUnitList(), moduleList, 
+		ArrayList<Suggestion> suggestions = suggester.generateSuggestions(Settings.scope.getScopeCompilationUnitList(), moduleList, 
 				bestSolution, initialSolution, relationMap);
 		
 		return suggestions;

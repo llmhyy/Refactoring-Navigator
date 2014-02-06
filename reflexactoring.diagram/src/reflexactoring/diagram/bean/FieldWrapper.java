@@ -56,4 +56,12 @@ public class FieldWrapper extends UnitMemberWrapper{
 		return (IMember)node.resolveBinding().getJavaElement();
 		
 	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.SuggestionObject#getType()
+	 */
+	@Override
+	public String getTypeName() {
+		return "field";
+	}
 }

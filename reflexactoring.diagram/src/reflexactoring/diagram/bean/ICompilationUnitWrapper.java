@@ -23,7 +23,7 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  * @author linyun
  *
  */
-public class ICompilationUnitWrapper implements SuggestionObject, GraphNode{
+public class ICompilationUnitWrapper implements LowLevelSuggestionObject, GraphNode{
 	private ICompilationUnit compilationUnit;
 	private ModuleWrapper mappingModule;
 	private CompilationUnit javaUnit;
@@ -93,7 +93,6 @@ public class ICompilationUnitWrapper implements SuggestionObject, GraphNode{
 		try {
 			return this.compilationUnit.getPackageDeclarations()[0].getElementName();
 		} catch (JavaModelException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -256,5 +255,13 @@ public class ICompilationUnitWrapper implements SuggestionObject, GraphNode{
 		}
 		
 		return list;
+	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.SuggestionObject#getType()
+	 */
+	@Override
+	public String getTypeName() {
+		return "Java type";
 	}
 }

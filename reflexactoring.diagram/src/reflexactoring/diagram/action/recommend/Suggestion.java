@@ -4,6 +4,7 @@
 package reflexactoring.diagram.action.recommend;
 
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
+import reflexactoring.diagram.bean.LowLevelSuggestionObject;
 import reflexactoring.diagram.bean.SuggestionObject;
 
 /**
@@ -26,10 +27,15 @@ public class Suggestion {
 	
 	public String toString(){
 		
+		String suggestionObjType = "";
+		if(suggeestionObject instanceof LowLevelSuggestionObject){
+			suggestionObjType = " " + ((LowLevelSuggestionObject)suggeestionObject).getTypeName();
+		}
+		
 		String suggestionObjName = (this.suggeestionObject == null)? "modules ": this.suggeestionObject.getName();
 		
-		return this.action.getActionName() + " " + 
-				suggestionObjName + " " +
+		return this.action.getActionName() + 
+				suggestionObjType + " " + suggestionObjName + " " +
 				this.action.getDetailedDescription();
 	}
 

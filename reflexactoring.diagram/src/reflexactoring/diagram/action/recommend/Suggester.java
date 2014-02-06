@@ -7,7 +7,10 @@ import java.util.ArrayList;
 
 import reflexactoring.diagram.action.recommend.action.MoveAction;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.SuggestionObject;
+import reflexactoring.diagram.bean.UnitMemberWrapper;
 
 /**
  * @author linyun
@@ -15,7 +18,7 @@ import reflexactoring.diagram.bean.ModuleWrapper;
  */
 public class Suggester {
 	
-	public ArrayList<Suggestion> generateSuggestionsInClassLevel(ArrayList<ICompilationUnitWrapper> units,
+	public ArrayList<Suggestion> generateSuggestions(ArrayList<? extends SuggestionObject> suggestionObjects,
 			ArrayList<ModuleWrapper> modules, int[] bestSolution, int[] initialSolution,
 			ArrayList<int[]> relationMap){
 		
@@ -31,13 +34,20 @@ public class Suggester {
 				int unitIndex = relationMap.get(i)[1];
 				
 				ModuleWrapper tobeMappedmodule = modules.get(moduleIndex);
-				ICompilationUnitWrapper unit = units.get(unitIndex);
+				SuggestionObject suggestionObject = suggestionObjects.get(unitIndex);
 				
 				MoveAction action = new MoveAction();
-				action.setOrigin(unit.getMappingModule());
+				
+				if(suggestionObject instanceof ICompilationUnitWrapper){
+					action.setOrigin(((ICompilationUnitWrapper)suggestionObject).getMappingModule());					
+				}
+				else if(suggestionObject instanceof UnitMemberWrapper){
+					action.setOrigin(((UnitMemberWrapper)suggestionObject).getUnitWrapper().getMappingModule());
+				}
+				
 				action.setDestination(tobeMappedmodule);
 				
-				Suggestion suggestion = new Suggestion(unit, action);
+				Suggestion suggestion = new Suggestion(suggestionObject, action);
 				suggestions.add(suggestion);
 			}
 			/**

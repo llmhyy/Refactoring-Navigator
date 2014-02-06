@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.IMember;
  * @author linyun
  *
  */
-public abstract class UnitMemberWrapper implements SuggestionObject, GraphNode {
+public abstract class UnitMemberWrapper implements LowLevelSuggestionObject, GraphNode {
 	protected ICompilationUnitWrapper unitWrapper;
 	protected ArrayList<UnitMemberWrapper> callerList = new ArrayList<>();
 	protected ArrayList<UnitMemberWrapper> calleeList = new ArrayList<>();
@@ -39,15 +39,13 @@ public abstract class UnitMemberWrapper implements SuggestionObject, GraphNode {
 
 	@Override
 	public List<? extends GraphNode> getCallerList() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.callerList;
 	}
 
 	
 	@Override
 	public List<? extends GraphNode> getCalleeList() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.calleeList;
 	}
 	
 	public void addCaller(UnitMemberWrapper member){

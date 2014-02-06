@@ -5,11 +5,15 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.dom.CompilationUnit;
+
 import Jama.Matrix;
 import reflexactoring.diagram.action.ModelMapper;
 import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -21,7 +25,6 @@ public class GeneticOptimizer {
 	
 	private Matrix weightVector;
 	private Matrix x0Vector;
-	private FitnessComputingFactor computingFactor;
 	private ArrayList<int[]> relationMap;
 	
 	public ArrayList<int[]> getRelationMap(){
@@ -41,13 +44,6 @@ public class GeneticOptimizer {
 		
 		return x0;
 	}
-	
-	/**
-	 * @return the computingFactor
-	 */
-	public FitnessComputingFactor getComputingFactor() {
-		return computingFactor;
-	}
 
 	public Genotype optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
 		//double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
@@ -62,15 +58,42 @@ public class GeneticOptimizer {
 			
 		}
 		
+		FitnessComputingFactor computingFactor = buildComputingFactor(similarityTable, modules, units);
+		
+		Genotype gene = computeOptimalResult(computingFactor);
+		
+		return gene;
+	}
+	
+	public Genotype optimize(UnitMemberWrapperList members, ArrayList<ModuleWrapper> modules){
+		double[][] similarityTable = new double[modules.size()][members.size()];
+		
+		FitnessComputingFactor computingFactor = buildComputingFactor(similarityTable, modules, members);
+		
+		Genotype gene = computeOptimalResult(computingFactor);
+		
+		return gene;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private FitnessComputingFactor buildComputingFactor(double[][] similarityTable, ArrayList<ModuleWrapper> modules, 
+			ArrayList<? extends GraphNode> lowLevelUnits){
 		/**
-		 * In this method, the weight vector and x0 vector will be initialized as well.
+		 * In the method as extract*LevelRelation, the weight vector and x0 vector will be initialized as well.
 		 */
-		Matrix relationMatrix = extractRelation(similarityTable, modules, units);
+		Matrix relationMatrix;
+		if(lowLevelUnits.get(0) instanceof ICompilationUnitWrapper){
+			relationMatrix = extractClassLevelRelation(similarityTable, modules, (ArrayList<ICompilationUnitWrapper>)lowLevelUnits);
+		}
+		else{
+			relationMatrix = extractMemberLevelRelation(similarityTable, modules, (ArrayList<UnitMemberWrapper>)lowLevelUnits);
+		}
+		
 		
 		System.out.println("The variable number is: " + this.weightVector.getColumnDimension());
 		
 		Matrix highLevelMatrix = extractGraph(modules);
-		Matrix lowLevelMatrix = extractGraph(units);
+		Matrix lowLevelMatrix = extractGraph(lowLevelUnits);
 		
 		FitnessComputingFactor computingFactor = new FitnessComputingFactor();
 		computingFactor.setHighLevelMatrix(highLevelMatrix);
@@ -79,11 +102,7 @@ public class GeneticOptimizer {
 		computingFactor.setWeightVector(weightVector);
 		computingFactor.setX0Vector(x0Vector);
 		
-		this.computingFactor = computingFactor;
-		
-		Genotype gene = computeOptimalResult(computingFactor);
-		
-		return gene;
+		return computingFactor;
 	}
 	
 	/**
@@ -283,7 +302,7 @@ public class GeneticOptimizer {
 	 * @param units
 	 * @return
 	 */
-	private Matrix extractRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<ICompilationUnitWrapper> units){
+	private Matrix extractClassLevelRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<ICompilationUnitWrapper> units){
 		int highLevelNumber = modules.size();
 		int lowLevelNumber = units.size();
 		
@@ -327,7 +346,44 @@ public class GeneticOptimizer {
 		return relationMatrix;
 	}
 	
-	
+	private Matrix extractMemberLevelRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<UnitMemberWrapper> members){
+		int highLevelNumber = modules.size();
+		int lowLevelNumber = members.size();
+		
+		Matrix relationMatrix = new Matrix(highLevelNumber, lowLevelNumber);
+		
+		ArrayList<Double> weightVectorList = new ArrayList<>();
+		ArrayList<Integer> x0VectorList = new ArrayList<>();
+		ArrayList<int[]> relationMap = new ArrayList<>();
+		
+		for(int i=0; i<highLevelNumber; i++){
+			for(int j=0; j<lowLevelNumber; j++){
+				relationMatrix.set(i, j, 1);
+				relationMap.add(new int[]{i, j});
+				/**
+				 * initial weight
+				 */
+				weightVectorList.add(similarityTable[i][j]);
+				/**
+				 * initial x0
+				 */
+				ICompilationUnitWrapper unit = members.get(j).getUnitWrapper();
+				ModuleWrapper module = modules.get(i);
+				if(module.equals(unit.getMappingModule())){
+					x0VectorList.add(1);
+				}
+				else{
+					x0VectorList.add(0);
+				}
+			}
+		}
+		
+		this.weightVector = GeneticUtil.convertRowVectorToMatrix(weightVectorList);
+		this.x0Vector = GeneticUtil.convertColumnVectorToMatrx(x0VectorList);
+		this.relationMap = relationMap;
+		
+		return relationMatrix;
+	}
 	
 	private Matrix extractGraph(ArrayList<? extends GraphNode> nodes){
 		
