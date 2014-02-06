@@ -11,7 +11,7 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.view.RefactoringSuggestionView;
 
-public class RecommendRefactoringAction implements
+public class ClassRecommendAction implements
 		IWorkbenchWindowActionDelegate {
 	
 	@Override
@@ -19,7 +19,7 @@ public class RecommendRefactoringAction implements
 		
 		RefactoringRecommender recommender = new RefactoringRecommender();
 		
-		ArrayList<Suggestion> suggestions = recommender.recommend();
+		ArrayList<Suggestion> suggestions = recommender.recommendStartByClass();
 		
 		
 		RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().

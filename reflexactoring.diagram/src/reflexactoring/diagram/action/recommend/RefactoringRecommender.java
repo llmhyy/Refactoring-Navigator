@@ -46,7 +46,7 @@ public class RefactoringRecommender {
 		
 	}
 	
-	public ArrayList<Suggestion> recommend(){
+	public ArrayList<Suggestion> recommendStartByClass(){
 		
 		ArrayList<ICompilationUnitWrapper> unmappedUnits = checkUnmappedCompilationUnits();
 		if(unmappedUnits.size() != 0 && !Settings.isSkipUnMappedTypes){
@@ -97,6 +97,32 @@ public class RefactoringRecommender {
 		}
 		
 		return new ArrayList<Suggestion>();
+	}
+	
+	public ArrayList<Suggestion> recommendStartByMember(){
+		
+		ArrayList<ModuleWrapper> moduleList;
+		try {
+			moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			
+			GeneticOptimizer optimizer = new GeneticOptimizer();
+			
+			UnitMemberExtractor extractor = new UnitMemberExtractor();
+			UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
+			
+			Genotype memberGene = optimizer.optimize(members, moduleList);
+			
+			ArrayList<Suggestion> suggestions = generateMemberLevelSuggestions(memberGene, optimizer, 
+					moduleList, members);
+			
+			return suggestions;
+			
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return null;
 	}
 	
 	private ArrayList<Suggestion> generateMemberLevelSuggestions(Genotype gene, GeneticOptimizer optimizer, 

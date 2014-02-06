@@ -625,10 +625,21 @@
                tooltip="Decide the scope of refactoring">
          </action>
          <action
-               class="reflexactoring.diagram.action.recommend.RecommendRefactoringAction"
+               class="reflexactoring.diagram.action.recommend.MemberRecommendAction"
+               icon="icons/menu/recommend_member.gif"
+               id="reflexactoring.diagram.action.MemberRecommend"
+               label="Start by Member Level (Recommend)"
+               menubarPath="reflexactoring.diagram.menu/process"
+               style="push"
+               toolbarPath="process"
+               tooltip="Split Direct on Fields and Methods">
+            >
+         </action>
+         <action
+               class="reflexactoring.diagram.action.recommend.ClassRecommendAction"
                icon="icons/menu/recommend.gif"
                id="reflexactoring.diagram.action.recommendRefacotring"
-               label="Recommend Refactoring"
+               label="Start by Class Level (Recommend)"
                menubarPath="reflexactoring.diagram.menu/process"
                style="push"
                toolbarPath="process">
