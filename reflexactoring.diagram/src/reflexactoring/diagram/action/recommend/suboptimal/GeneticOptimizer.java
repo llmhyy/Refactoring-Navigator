@@ -4,6 +4,7 @@
 package reflexactoring.diagram.action.recommend.suboptimal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -195,10 +196,13 @@ public class GeneticOptimizer {
 	 */
 	private Population crossoverAndMutate(Population selectedPopulation, FitnessComputingFactor computingFactor) {
 		
-		Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
+		//Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
+		Crossoverer crossoverer = new SinglePointCrossoverer(computingFactor);
+		
+		//Collections.sort(selectedPopulation, new GeneComparator());
 		
 		Population crosssoverPopulation = new Population();
-		crosssoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
+		
 		
 		for(int i=0; i<selectedPopulation.size(); i=i+2){
 			Genotype gene1 = selectedPopulation.get(i);
@@ -212,9 +216,20 @@ public class GeneticOptimizer {
 			crosssoverPopulation.add(subPair.getGene2());
 		}
 		
-		crosssoverPopulation.updateOptimalGene();
+		crosssoverPopulation.addAll(selectedPopulation);
 		
-		return crosssoverPopulation;
+		Collections.sort(crosssoverPopulation, new GeneComparator());
+		
+		Population newCrossoverPopulation = new Population();
+		
+		for(int i=0; i<crosssoverPopulation.size()/2; i++){
+			newCrossoverPopulation.add(crosssoverPopulation.get(i));
+		}
+		
+		newCrossoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
+		newCrossoverPopulation.updateOptimalGene();
+		
+		return newCrossoverPopulation;
 	}
 
 
