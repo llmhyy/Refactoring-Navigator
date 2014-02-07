@@ -43,94 +43,7 @@ public class GeneticOptimizer {
 	private ArrayList<int[]> relationMap;
 	private HashMap<ModuleUnitCorrespondence, Integer> reverseRelationMap;
 	
-	public class ModuleUnitCorrespondence{
-		private int moduleIndex;
-		private int unitIndex;
-		
-		
-		/**
-		 * @param moduleIndex
-		 * @param unitIndex
-		 */
-		public ModuleUnitCorrespondence(int moduleIndex, int unitIndex) {
-			super();
-			this.moduleIndex = moduleIndex;
-			this.unitIndex = unitIndex;
-		}
-		
-		
-		
-		/* (non-Javadoc)
-		 * @see java.lang.Object#hashCode()
-		 */
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result + moduleIndex;
-			result = prime * result + unitIndex;
-			return result;
-		}
-
-
-
-		/* (non-Javadoc)
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			ModuleUnitCorrespondence other = (ModuleUnitCorrespondence) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (moduleIndex != other.moduleIndex)
-				return false;
-			if (unitIndex != other.unitIndex)
-				return false;
-			return true;
-		}
-
-
-
-		/**
-		 * @return the moduleIndex
-		 */
-		public int getModuleIndex() {
-			return moduleIndex;
-		}
-		/**
-		 * @param moduleIndex the moduleIndex to set
-		 */
-		public void setModuleIndex(int moduleIndex) {
-			this.moduleIndex = moduleIndex;
-		}
-		/**
-		 * @return the unitIndex
-		 */
-		public int getUnitIndex() {
-			return unitIndex;
-		}
-		/**
-		 * @param unitIndex the unitIndex to set
-		 */
-		public void setUnitIndex(int unitIndex) {
-			this.unitIndex = unitIndex;
-		}
-
-
-
-		private GeneticOptimizer getOuterType() {
-			return GeneticOptimizer.this;
-		}
-		
-		
-	}
+	
 	
 	public ArrayList<int[]> getRelationMap(){
 		return this.relationMap;
@@ -214,7 +127,11 @@ public class GeneticOptimizer {
 	private Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
 			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, double[][] similarityTable) {
 		
-		Population population = generatePopulation(computingFactor, modules, lowLevelNodes, similarityTable);
+		int dimension = computingFactor.getX0Vector().getRowDimension();
+		SeedGenerator seedGenerator = new ConstrainedSeedGenerator(dimension, modules, lowLevelNodes, 
+				similarityTable, reverseRelationMap);
+		
+		Population population = generatePopulation(computingFactor, seedGenerator);
 		System.out.println(population.getOptimalGene().getFitness());
 		
 		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getIterationNumber()); i++){
@@ -225,17 +142,16 @@ public class GeneticOptimizer {
 		return population.getOptimalGene();
 	}
 	
-	private Population generatePopulation(FitnessComputingFactor computingFactor,
-			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, double[][] similarityTable){
+	private Population generatePopulation(FitnessComputingFactor computingFactor, SeedGenerator seedGenerator){
 		
-		int dimension = computingFactor.getX0Vector().getRowDimension();
+		//int dimension = computingFactor.getX0Vector().getRowDimension();
 		
 		Population population = new Population();
 		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getPopulationSize()); i++){
 			
 			//int[] seed = randomSeed(dimension);
 			
-			int[] seed = randomSeedConformedToHardConstraints(dimension, lowLevelNodes, modules, similarityTable);
+			int[] seed = seedGenerator.generateSeed();
 			
 			Genotype gene = new Genotype(seed);
 			gene.setFitness(gene.computeFitness(computingFactor));
@@ -248,93 +164,7 @@ public class GeneticOptimizer {
 		return population;
 	}
 	
-	private int[] randomSeedConformedToHardConstraints(int dimension, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, 
-			ArrayList<ModuleWrapper> modules, double[][] similarityTable){
-		int[] seed = new int[dimension];
-		
-		@SuppressWarnings("unchecked")
-		ArrayList<LowLevelGraphNode>[] buckets = new ArrayList[modules.size()];
-		for(int i=0; i<buckets.length; i++){
-			buckets[i] = new ArrayList<>();
-		}
-		
-		do{
-			seed = new int[dimension];
-			for(int i=0; i<buckets.length; i++){
-				buckets[i].clear();
-			}
-			
-			
-			for(int q=0; q<lowLevelNodes.size(); q++){
-				ArrayList<Integer> validModuleIndex = new ArrayList<>();
-				
-				/**
-				 * find all the valid modules to assign units
-				 */
-				for(int p=0; p<modules.size(); p++){
-					if(similarityTable[p][q] > Double.valueOf(ReflexactoringUtil.getMappingThreshold())){
-						validModuleIndex.add(p);
-					}
-				}
-				assert(validModuleIndex.size() > 0);
-				
-				/**
-				 * In all the buckets (modules), if there are some buckets which have not been assigned
-				 * any units (low level nodes), the algorithm will favor them some priority to be assigned
-				 * first.
-				 */
-				if(isSomeBucketEmpty(buckets)){
-					Iterator<Integer> iterator = validModuleIndex.iterator();
-					while(iterator.hasNext()){
-						Integer moduleIndex = iterator.next();
-						if(buckets[moduleIndex].size() != 0){
-							iterator.remove();
-						}
-					}
-				}
-				assert(validModuleIndex.size() > 0);
-				
-				double random = Math.random();
-				
-				int randomIndex = (int)(random*validModuleIndex.size());
-				int chosenModule = validModuleIndex.get(randomIndex);
-				int chosenUnit = q;
-				
-				ModuleUnitCorrespondence chosenPair = new ModuleUnitCorrespondence(chosenModule, chosenUnit);
-				buckets[chosenModule].add(lowLevelNodes.get(chosenUnit));
-				
-				Integer componentIndex = this.reverseRelationMap.get(chosenPair);
-				seed[componentIndex] = 1;
-			}
-		}while(isSomeBucketEmpty(buckets));
-		
-		
-		return seed;
-	}
 	
-	private boolean isSomeBucketEmpty(ArrayList<? extends LowLevelGraphNode>[] buckets){
-		for(ArrayList<? extends LowLevelGraphNode> bucket: buckets){
-			if(bucket.size() == 0){
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	private int[] randomSeed(int dimension){
-		int[] seed = new int[dimension];
-		for(int j=0; j<dimension; j++){
-			if(Math.random()>=0.5){
-				seed[j] = 1;
-			}
-			else{
-				seed[j] = 0;
-			}
-		}
-		
-		return seed;
-	}
 	
 	/**
 	 * assume that the number of population is even.
