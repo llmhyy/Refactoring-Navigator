@@ -11,6 +11,8 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -62,8 +64,14 @@ public class RefactoringSuggestionView extends ViewPart {
 		String content = generateCSS(suggestions);
 		
 		text.setText(content, true, false);
+		text.addHyperlinkListener(new HyperlinkAdapter() {
+			public void linkActivated(HyperlinkEvent e) {
+				  System.out.println("Link active: "+e.getHref());
+			}
+		});
 		text.getParent().layout();
 		text.getParent().redraw();
+		form.reflow(false);
 		//form.getBody().layout();
 		//form.getBody().redraw();
 	}
@@ -76,7 +84,8 @@ public class RefactoringSuggestionView extends ViewPart {
 			
 			buffer.append("<li>");
 			buffer.append(suggestion.toString());
-			buffer.append("</li>");
+			buffer.append("<a href=\"\">execute</a>");
+			buffer.append("</li>");			
 			
 		}
 		
