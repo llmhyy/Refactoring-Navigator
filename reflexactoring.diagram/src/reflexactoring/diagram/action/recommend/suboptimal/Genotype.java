@@ -5,8 +5,10 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 
 import java.util.ArrayList;
 
+import cern.colt.matrix.impl.SparseDoubleMatrix1D;
+import cern.colt.matrix.impl.SparseDoubleMatrix2D;
+import cern.colt.matrix.linalg.Algebra;
 import reflexactoring.diagram.util.Settings;
-import Jama.Matrix;
 
 /**
  * This class is used for DNA, or gene, for genetic algorithm.
@@ -82,8 +84,8 @@ public class Genotype {
 	}
 	
 	public double computeFitness(FitnessComputingFactor computingFactor){
-		Matrix weightVector = computingFactor.getWeightVector();
-		Matrix x0Vector = computingFactor.getX0Vector();
+		SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
+		SparseDoubleMatrix1D x0Vector = computingFactor.getX0Vector();
 		
 		
 		
@@ -95,25 +97,28 @@ public class Genotype {
 	
 	private int getViolatedConstraintsNumber(FitnessComputingFactor computingFactor){
 		
-		Matrix relationMatrix = computingFactor.getRelationMatrix();
-		Matrix lowLevelMatrix = computingFactor.getLowLevelMatrix();
-		Matrix highLevelMatrix = computingFactor.getHighLevelMatrix();
+		SparseDoubleMatrix2D relationMatrix = computingFactor.getRelationMatrix();
+		SparseDoubleMatrix2D lowLevelMatrix = computingFactor.getLowLevelMatrix();
+		SparseDoubleMatrix2D highLevelMatrix = computingFactor.getHighLevelMatrix();
 		
 		int violatedNum = 0;
 		
-		Matrix x = GeneticUtil.convertColumnVectorToMatrx(this.getDNA());
+		SparseDoubleMatrix1D x = GeneticUtil.convertArrayToVector(this.getDNA());
 		
-		Matrix edgeVertexMatrix;
-		Matrix A_h;
-		Matrix A_l;
+		SparseDoubleMatrix2D edgeVertexMatrix;
+		SparseDoubleMatrix2D A_h;
+		SparseDoubleMatrix2D A_l;
 		
 		if(computingFactor.getEdgeVertexMatrix() == null){
 			edgeVertexMatrix = convertToEdgeVertexMatrix(relationMatrix);
-			int highLevelNum = relationMatrix.getRowDimension();
+			int highLevelNum = relationMatrix.rows();
 			//int lowLevelNum = relationMatrix.getColumnDimension();
 			
-			A_h = edgeVertexMatrix.getMatrix(0, highLevelNum-1, 0, edgeVertexMatrix.getColumnDimension()-1);
-			A_l = edgeVertexMatrix.getMatrix(highLevelNum, edgeVertexMatrix.getRowDimension()-1, 0, edgeVertexMatrix.getColumnDimension()-1);
+			Algebra alg = new Algebra();
+			A_h = (SparseDoubleMatrix2D) alg.subMatrix(edgeVertexMatrix, 0, highLevelNum-1, 0, edgeVertexMatrix.columns()-1);
+			A_l = (SparseDoubleMatrix2D) alg.subMatrix(edgeVertexMatrix, highLevelNum, edgeVertexMatrix.rows()-1, 0, edgeVertexMatrix.columns()-1);
+			//A_h = edgeVertexMatrix.getMatrix(0, highLevelNum-1, 0, edgeVertexMatrix.columns()-1);
+			//A_l = edgeVertexMatrix.getMatrix(highLevelNum, edgeVertexMatrix.getRowDimension()-1, 0, edgeVertexMatrix.getColumnDimension()-1);
 			
 			computingFactor.setEdgeVertexMatrix(edgeVertexMatrix);
 			computingFactor.setA_h(A_h);
@@ -128,9 +133,11 @@ public class Genotype {
 		/**
 		 * A_h.x >= 1
 		 */
-		Matrix result = A_h.times(x);
-		for(int i=0; i<result.getRowDimension(); i++){
-			if(result.get(i, 0) < 1){
+		//result = A_h.times(x);
+		SparseDoubleMatrix1D result = new SparseDoubleMatrix1D(A_h.rows());
+		result = (SparseDoubleMatrix1D) A_h.zMult(x, result, 1, 0, false);
+		for(int i=0; i<result.size(); i++){
+			if(result.get(i) < 1){
 				violatedNum++;
 			}
 		}
@@ -138,19 +145,21 @@ public class Genotype {
 		/**
 		 * A_l.x = 1
 		 */
-		result = A_l.times(x);
-		for(int i=0; i<result.getRowDimension(); i++){
-			if(result.get(i, 0) != 1){
+		//result = A_l.times(x);
+		result = new SparseDoubleMatrix1D(A_l.rows());
+		result = (SparseDoubleMatrix1D) A_l.zMult(x, result, 1, 0, false);
+		for(int i=0; i<result.size(); i++){
+			if(result.get(i) != 1){
 				violatedNum++;
 			}
 		}
 		
 		int count = 0;
-		Matrix mappingMatrix = new Matrix(relationMatrix.getRowDimension(), relationMatrix.getColumnDimension());
-		for(int i=0; i<relationMatrix.getRowDimension(); i++){
-			for(int j=0; j<relationMatrix.getColumnDimension(); j++){
+		SparseDoubleMatrix2D mappingMatrix = new SparseDoubleMatrix2D(relationMatrix.rows(), relationMatrix.columns());
+		for(int i=0; i<relationMatrix.rows(); i++){
+			for(int j=0; j<relationMatrix.columns(); j++){
 				if(relationMatrix.get(i, j) != 0){
-					mappingMatrix.set(i, j, x.get(count++, 0));
+					mappingMatrix.set(i, j, x.get(count++));
 				}
 			}
 		}
@@ -158,14 +167,21 @@ public class Genotype {
 		/**
 		 * R*L*R' ~ H
 		 */
-		result = mappingMatrix.times(lowLevelMatrix).times(mappingMatrix.transpose());
-		for(int i=0; i<result.getRowDimension(); i++){
-			for(int j=0; j<result.getColumnDimension(); j++){
+		Algebra alg = new Algebra();
+		
+		SparseDoubleMatrix2D tmp = new SparseDoubleMatrix2D(mappingMatrix.rows(), lowLevelMatrix.columns());
+		tmp = (SparseDoubleMatrix2D) mappingMatrix.zMult(lowLevelMatrix, tmp, 1, 0, false, false);
+		
+		SparseDoubleMatrix2D softConstaintResult = new SparseDoubleMatrix2D(mappingMatrix.rows(), mappingMatrix.rows());
+		softConstaintResult = (SparseDoubleMatrix2D)tmp.zMult(alg.transpose(mappingMatrix), softConstaintResult, 1, 0, false, false);	
+				
+		for(int i=0; i<softConstaintResult.rows(); i++){
+			for(int j=0; j<softConstaintResult.columns(); j++){
 				if(i!=j){
-					if(highLevelMatrix.get(i, j) == 0 && result.get(i, j) != 0){
+					if(highLevelMatrix.get(i, j) == 0 && softConstaintResult.get(i, j) != 0){
 						violatedNum++;
 					}
-					else if(highLevelMatrix.get(i, j) != 0 && result.get(i, j) == 0){
+					else if(highLevelMatrix.get(i, j) != 0 && softConstaintResult.get(i, j) == 0){
 						violatedNum++;
 					}
 				}
@@ -179,20 +195,20 @@ public class Genotype {
 	 * @param relationMatrix
 	 * @return
 	 */
-	private Matrix convertToEdgeVertexMatrix(Matrix relationMatrix) {
-		int highNum = relationMatrix.getRowDimension();
-		int lowNum = relationMatrix.getColumnDimension();
+	private SparseDoubleMatrix2D convertToEdgeVertexMatrix(SparseDoubleMatrix2D relationMatrix) {
+		int highNum = relationMatrix.rows();
+		int lowNum = relationMatrix.columns();
 		
 		ArrayList<int[]> map = new ArrayList<>(); 
-		for(int i=0; i<relationMatrix.getRowDimension(); i++){
-			for(int j=0; j<relationMatrix.getColumnDimension(); j++){
+		for(int i=0; i<relationMatrix.rows(); i++){
+			for(int j=0; j<relationMatrix.columns(); j++){
 				if(relationMatrix.get(i, j) != 0){
 					map.add(new int[]{i, j});
 				}
 			}
 		}
 		
-		Matrix edgeVertexMatrix = new Matrix(highNum+lowNum, map.size());
+		SparseDoubleMatrix2D edgeVertexMatrix = new SparseDoubleMatrix2D(highNum+lowNum, map.size());
 		for(int j=0; j<map.size(); j++){
 			int moduleIndex = map.get(j)[0];
 			int unitIndex = map.get(j)[1] + highNum;
@@ -207,28 +223,25 @@ public class Genotype {
 
 
 
-	private double getObjectiveValue(Matrix weightVector, Matrix x0Vector){
+	private double getObjectiveValue(SparseDoubleMatrix1D weightVector, SparseDoubleMatrix1D x0Vector){
 		
 		int length = this.getDNA().length;
 		
-		Matrix x = GeneticUtil.convertColumnVectorToMatrx(this.getDNA());
-		Matrix totalWeight = weightVector.times(x);
+		double totalWeight = weightVector.zDotProduct(x0Vector);
 		
-		double euclideanDis = computeEuclideanDistance(x, x0Vector);
+		double euclideanDis = computeEuclideanDistance(GeneticUtil.convertArrayToVector(this.getDNA()), x0Vector);
 		
-		double objectiveValue = Settings.alpha*totalWeight.get(0, 0)/length
+		double objectiveValue = Settings.alpha*totalWeight/length
 				+ Settings.beta*(1-euclideanDis/Math.sqrt(length));
 		
 		return objectiveValue;
 	}
 	
-	private double computeEuclideanDistance(Matrix v1, Matrix v2){
-		double[][] vector1 = v1.getArray();
-		double[][] vector2 = v2.getArray();
+	private double computeEuclideanDistance(SparseDoubleMatrix1D v1, SparseDoubleMatrix1D v2){
 		
 		double sum = 0;
-		for(int i=0; i<vector1.length; i++){
-			sum += (vector1[i][0]-vector2[i][0])*(vector1[i][0]-vector2[i][0]);
+		for(int i=0; i<v1.size(); i++){
+			sum += (v1.get(i)-v2.get(i))*(v1.get(i)-v2.get(i));
 		}
 		
 		return Math.sqrt(sum);

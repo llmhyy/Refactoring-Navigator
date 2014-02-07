@@ -3,27 +3,29 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
-import Jama.Matrix;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import cern.colt.matrix.impl.SparseDoubleMatrix1D;
+import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 
 /**
  * @author linyun
  * 
  */
 public class FitnessComputingFactor {
-	private Matrix weightVector;
-	private Matrix x0Vector;
-	private Matrix relationMatrix;
-	private Matrix lowLevelMatrix;
-	private Matrix highLevelMatrix;
+	private SparseDoubleMatrix1D weightVector;
+	private SparseDoubleMatrix1D x0Vector;
+	private SparseDoubleMatrix2D relationMatrix;
+	private SparseDoubleMatrix2D lowLevelMatrix;
+	private SparseDoubleMatrix2D highLevelMatrix;
 
-	private Matrix edgeVertexMatrix;
-	private Matrix A_h;
-	private Matrix A_l;
+	private SparseDoubleMatrix2D edgeVertexMatrix;
+	private SparseDoubleMatrix2D A_h;
+	private SparseDoubleMatrix2D A_l;
 
 	/**
 	 * @return the weightVector
 	 */
-	public Matrix getWeightVector() {
+	public SparseDoubleMatrix1D getWeightVector() {
 		return weightVector;
 	}
 
@@ -31,14 +33,14 @@ public class FitnessComputingFactor {
 	 * @param weightVector
 	 *            the weightVector to set
 	 */
-	public void setWeightVector(Matrix weightVector) {
+	public void setWeightVector(SparseDoubleMatrix1D weightVector) {
 		this.weightVector = weightVector;
 	}
 
 	/**
 	 * @return the x0Vector
 	 */
-	public Matrix getX0Vector() {
+	public SparseDoubleMatrix1D getX0Vector() {
 		return x0Vector;
 	}
 
@@ -46,14 +48,14 @@ public class FitnessComputingFactor {
 	 * @param x0Vector
 	 *            the x0Vector to set
 	 */
-	public void setX0Vector(Matrix x0Vector) {
+	public void setX0Vector(SparseDoubleMatrix1D x0Vector) {
 		this.x0Vector = x0Vector;
 	}
 
 	/**
 	 * @return the relationMatrix
 	 */
-	public Matrix getRelationMatrix() {
+	public SparseDoubleMatrix2D getRelationMatrix() {
 		return relationMatrix;
 	}
 
@@ -61,14 +63,14 @@ public class FitnessComputingFactor {
 	 * @param relationMatrix
 	 *            the relationMatrix to set
 	 */
-	public void setRelationMatrix(Matrix relationMatrix) {
+	public void setRelationMatrix(SparseDoubleMatrix2D relationMatrix) {
 		this.relationMatrix = relationMatrix;
 	}
 
 	/**
 	 * @return the lowLevelMatrix
 	 */
-	public Matrix getLowLevelMatrix() {
+	public SparseDoubleMatrix2D getLowLevelMatrix() {
 		return lowLevelMatrix;
 	}
 
@@ -76,14 +78,14 @@ public class FitnessComputingFactor {
 	 * @param lowLevelMatrix
 	 *            the lowLevelMatrix to set
 	 */
-	public void setLowLevelMatrix(Matrix lowLevelMatrix) {
+	public void setLowLevelMatrix(SparseDoubleMatrix2D lowLevelMatrix) {
 		this.lowLevelMatrix = lowLevelMatrix;
 	}
 
 	/**
 	 * @return the highLevelMatrix
 	 */
-	public Matrix getHighLevelMatrix() {
+	public SparseDoubleMatrix2D getHighLevelMatrix() {
 		return highLevelMatrix;
 	}
 
@@ -91,14 +93,14 @@ public class FitnessComputingFactor {
 	 * @param highLevelMatrix
 	 *            the highLevelMatrix to set
 	 */
-	public void setHighLevelMatrix(Matrix highLevelMatrix) {
+	public void setHighLevelMatrix(SparseDoubleMatrix2D highLevelMatrix) {
 		this.highLevelMatrix = highLevelMatrix;
 	}
 
 	/**
 	 * @return the edgeVertexMatrix
 	 */
-	public Matrix getEdgeVertexMatrix() {
+	public SparseDoubleMatrix2D getEdgeVertexMatrix() {
 		return edgeVertexMatrix;
 	}
 
@@ -106,14 +108,14 @@ public class FitnessComputingFactor {
 	 * @param edgeVertexMatrix
 	 *            the edgeVertexMatrix to set
 	 */
-	public void setEdgeVertexMatrix(Matrix edgeVertexMatrix) {
+	public void setEdgeVertexMatrix(SparseDoubleMatrix2D edgeVertexMatrix) {
 		this.edgeVertexMatrix = edgeVertexMatrix;
 	}
 
 	/**
 	 * @return the a_h
 	 */
-	public Matrix getA_h() {
+	public SparseDoubleMatrix2D getA_h() {
 		return A_h;
 	}
 
@@ -121,14 +123,14 @@ public class FitnessComputingFactor {
 	 * @param a_h
 	 *            the a_h to set
 	 */
-	public void setA_h(Matrix a_h) {
+	public void setA_h(SparseDoubleMatrix2D a_h) {
 		A_h = a_h;
 	}
 
 	/**
 	 * @return the a_l
 	 */
-	public Matrix getA_l() {
+	public SparseDoubleMatrix2D getA_l() {
 		return A_l;
 	}
 
@@ -136,7 +138,7 @@ public class FitnessComputingFactor {
 	 * @param a_l
 	 *            the a_l to set
 	 */
-	public void setA_l(Matrix a_l) {
+	public void setA_l(SparseDoubleMatrix2D a_l) {
 		A_l = a_l;
 	}
 

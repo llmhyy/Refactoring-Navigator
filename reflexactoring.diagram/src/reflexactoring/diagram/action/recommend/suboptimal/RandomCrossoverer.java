@@ -43,9 +43,9 @@ public class RandomCrossoverer implements Crossoverer {
 			}
 			else{
 				double fitness1 = computingFactor.normalizeFitnessValue(gene1.getFitness(), 
-						computingFactor.getHighLevelMatrix().getRowDimension(), computingFactor.getLowLevelMatrix().getRowDimension());
+						computingFactor.getHighLevelMatrix().rows(), computingFactor.getLowLevelMatrix().columns());
 				double fitness2 =  computingFactor.normalizeFitnessValue(gene2.getFitness(), 
-						computingFactor.getHighLevelMatrix().getRowDimension(), computingFactor.getLowLevelMatrix().getRowDimension());
+						computingFactor.getHighLevelMatrix().rows(), computingFactor.getLowLevelMatrix().columns());
 				
 				double flipPoint = fitness1/(fitness1 + fitness2);
 				childDNA1[j] = (Math.random()<=flipPoint)? 1 : 0;

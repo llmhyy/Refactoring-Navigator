@@ -9,7 +9,9 @@ import java.util.Iterator;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import Jama.Matrix;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import cern.colt.matrix.impl.SparseDoubleMatrix1D;
+import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import reflexactoring.diagram.action.ModelMapper;
 import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
@@ -26,8 +28,8 @@ import reflexactoring.diagram.util.Settings;
  */
 public class GeneticOptimizer {
 	
-	private Matrix weightVector;
-	private Matrix x0Vector;
+	private SparseDoubleMatrix1D weightVector;
+	private SparseDoubleMatrix1D x0Vector;
 	
 	/**
 	 * The below two variables stand for the map relation between a solution and its corresponding module-unit pair.
@@ -54,10 +56,10 @@ public class GeneticOptimizer {
 	 * @return
 	 */
 	public int[] getX0(){
-		int[] x0 = new int[x0Vector.getRowDimension()];
+		int[] x0 = new int[x0Vector.size()];
 		
-		for(int i=0; i<x0Vector.getRowDimension(); i++){
-			x0[i] = (int) x0Vector.get(i, 0);
+		for(int i=0; i<x0Vector.size(); i++){
+			x0[i] = (int) x0Vector.get(i);
 		}
 		
 		return x0;
@@ -104,12 +106,12 @@ public class GeneticOptimizer {
 		/**
 		 * In the method as extractRelation, the weight vector and x0 vector will be initialized as well.
 		 */
-		Matrix relationMatrix = extractRelation(similarityTable, modules, lowLevelUnits);
+		SparseDoubleMatrix2D relationMatrix = extractRelation(similarityTable, modules, lowLevelUnits);
 		
-		System.out.println("The variable number is: " + this.weightVector.getColumnDimension());
+		System.out.println("The variable number is: " + this.weightVector.size());
 		
-		Matrix highLevelMatrix = extractGraph(modules);
-		Matrix lowLevelMatrix = extractGraph(lowLevelUnits);
+		SparseDoubleMatrix2D highLevelMatrix = extractGraph(modules);
+		SparseDoubleMatrix2D lowLevelMatrix = extractGraph(lowLevelUnits);
 		
 		FitnessComputingFactor computingFactor = new FitnessComputingFactor();
 		computingFactor.setHighLevelMatrix(highLevelMatrix);
@@ -127,7 +129,7 @@ public class GeneticOptimizer {
 	private Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
 			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, double[][] similarityTable) {
 		
-		int dimension = computingFactor.getX0Vector().getRowDimension();
+		int dimension = computingFactor.getX0Vector().size();
 		SeedGenerator seedGenerator = new ConstrainedSeedGenerator(dimension, modules, lowLevelNodes, 
 				similarityTable, reverseRelationMap);
 		
@@ -223,8 +225,8 @@ public class GeneticOptimizer {
 	 */
 	private Population selectPopulation(Population population, FitnessComputingFactor computingFactor){
 		
-		int highNum = computingFactor.getHighLevelMatrix().getRowDimension(); 
-		int lowNum = computingFactor.getLowLevelMatrix().getRowDimension();
+		int highNum = computingFactor.getHighLevelMatrix().rows(); 
+		int lowNum = computingFactor.getLowLevelMatrix().rows();
 		
 		Population selectedPopluation = new Population();
 		selectedPopluation.setOptimalGene(population.getOptimalGene());
@@ -268,14 +270,14 @@ public class GeneticOptimizer {
 	 * @param units
 	 * @return
 	 */
-	private Matrix extractRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes){
+	private SparseDoubleMatrix2D extractRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes){
 		int highLevelNumber = modules.size();
 		int lowLevelNumber = lowLevelNodes.size();
 		
-		Matrix relationMatrix = new Matrix(highLevelNumber, lowLevelNumber);
+		SparseDoubleMatrix2D relationMatrix = new SparseDoubleMatrix2D(highLevelNumber, lowLevelNumber);
 		
 		ArrayList<Double> weightVectorList = new ArrayList<>();
-		ArrayList<Integer> x0VectorList = new ArrayList<>();
+		ArrayList<Double> x0VectorList = new ArrayList<>();
 		ArrayList<int[]> relationMap = new ArrayList<>();
 		HashMap<ModuleUnitCorrespondence, Integer> reverseRelationMap = new HashMap<>();
 		
@@ -298,20 +300,17 @@ public class GeneticOptimizer {
 					LowLevelGraphNode node = lowLevelNodes.get(j);
 					ModuleWrapper module = modules.get(i);
 					if(module.equals(node.getMappingModule())){
-						x0VectorList.add(1);
+						x0VectorList.add(1d);
 					}
 					else{
-						x0VectorList.add(0);
+						x0VectorList.add(0d);
 					}
-				}
-				else{
-					relationMatrix.set(i, j, 0);
 				}
 			}
 		}
 		
-		this.weightVector = GeneticUtil.convertRowVectorToMatrix(weightVectorList);
-		this.x0Vector = GeneticUtil.convertColumnVectorToMatrx(x0VectorList);
+		this.weightVector = GeneticUtil.convertVectorToMatrix(weightVectorList);
+		this.x0Vector = GeneticUtil.convertVectorToMatrix(x0VectorList);
 		this.relationMap = relationMap;
 		this.reverseRelationMap = reverseRelationMap;
 		
@@ -357,10 +356,10 @@ public class GeneticOptimizer {
 		return relationMatrix;
 	}*/
 	
-	private Matrix extractGraph(ArrayList<? extends GraphNode> nodes){
+	private SparseDoubleMatrix2D extractGraph(ArrayList<? extends GraphNode> nodes){
 		
 		int dimension = nodes.size();
-		Matrix graphMatrix = new Matrix(dimension, dimension);
+		SparseDoubleMatrix2D graphMatrix = new SparseDoubleMatrix2D(dimension, dimension);
 		
 		for(int i=0; i<dimension; i++){
 			for(int j=0; j<dimension; j++){
@@ -370,9 +369,6 @@ public class GeneticOptimizer {
 					
 					if(nodeI.getCalleeList().contains(nodeJ)){
 						graphMatrix.set(i, j, 1);
-					}
-					else{
-						graphMatrix.set(i, j, 0);
 					}
 				}
 			}
