@@ -176,7 +176,7 @@ public class GeneticOptimizer {
 		/**
 		 * selector: roulette wheel selection
 		 */
-		Population selectedPopulation = selectPopulation(population, computingFactor.getHighLevelMatrix().getRowDimension(), computingFactor.getLowLevelMatrix().getRowDimension());
+		Population selectedPopulation = selectPopulation(population, computingFactor);
 		
 		/**
 		 * crossover and mutate
@@ -193,6 +193,8 @@ public class GeneticOptimizer {
 	 */
 	private Population crossoverAndMutate(Population selectedPopulation, FitnessComputingFactor computingFactor) {
 		
+		Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
+		
 		Population crosssoverPopulation = new Population();
 		crosssoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
 		
@@ -200,60 +202,17 @@ public class GeneticOptimizer {
 			Genotype gene1 = selectedPopulation.get(i);
 			Genotype gene2 = selectedPopulation.get(i+1);
 			
-			int[] DNA1 = gene1.getDNA();
-			int[] DNA2 = gene2.getDNA();
+			GenoTypePair pair = new GenoTypePair(gene1, gene2);
 			
-			int[] childDNA1 = new int[DNA1.length];
-			int[] childDNA2 = new int[DNA2.length];
+			GenoTypePair subPair = crossoverer.crossNewPair(pair);
 			
-			for(int j=0; j<DNA1.length; j++){
-				if(DNA1[j] == DNA2[j]){
-					childDNA1[j] = DNA1[j];
-					childDNA2[j] = DNA2[j];
-				}
-				else{
-					double fitness1 = normalizeFitnessValue(gene1.getFitness(), 
-							computingFactor.getHighLevelMatrix().getRowDimension(), computingFactor.getLowLevelMatrix().getRowDimension());
-					double fitness2 = normalizeFitnessValue(gene2.getFitness(), 
-							computingFactor.getHighLevelMatrix().getRowDimension(), computingFactor.getLowLevelMatrix().getRowDimension());
-					
-					double flipPoint = fitness1/(fitness1 + fitness2);
-					childDNA1[j] = (Math.random()<=flipPoint)? 1 : 0;
-					childDNA2[j] = (Math.random()>flipPoint)? 1 : 0;
-				}
-				
-				/**
-				 * mutate
-				 */
-				if(Math.random() <= Settings.mutationRate){
-					childDNA1[j] = flip(childDNA1[j]);
-				}
-				if(Math.random() <= Settings.mutationRate){
-					childDNA2[j] = flip(childDNA2[j]);
-				}
-			}
-			
-			Genotype subGene1 = new Genotype(childDNA1);
-			subGene1.setFitness(subGene1.computeFitness(computingFactor));
-			Genotype subGene2 = new Genotype(childDNA2);
-			subGene2.setFitness(subGene2.computeFitness(computingFactor));
-			
-			crosssoverPopulation.add(subGene1);
-			crosssoverPopulation.add(subGene2);
+			crosssoverPopulation.add(subPair.getGene1());
+			crosssoverPopulation.add(subPair.getGene2());
 		}
 		
 		crosssoverPopulation.updateOptimalGene();
 		
 		return crosssoverPopulation;
-	}
-
-	private int flip(int code){
-		if(code == 0){
-			return 1;
-		}
-		else{
-			return 0;
-		}
 	}
 
 
@@ -262,7 +221,11 @@ public class GeneticOptimizer {
 	 * @param population
 	 * @return
 	 */
-	private Population selectPopulation(Population population, int highNum, int lowNum){
+	private Population selectPopulation(Population population, FitnessComputingFactor computingFactor){
+		
+		int highNum = computingFactor.getHighLevelMatrix().getRowDimension(); 
+		int lowNum = computingFactor.getLowLevelMatrix().getRowDimension();
+		
 		Population selectedPopluation = new Population();
 		selectedPopluation.setOptimalGene(population.getOptimalGene());
 
@@ -271,7 +234,7 @@ public class GeneticOptimizer {
 		bin[0] = 0;
 		for(int i=0; i<population.size(); i++){
 			double fitness = population.get(i).getFitness();
-			sum += normalizeFitnessValue(fitness, highNum, lowNum);
+			sum += computingFactor.normalizeFitnessValue(fitness, highNum, lowNum);
 			bin[i+1] = sum;
 		}
 		
@@ -295,22 +258,6 @@ public class GeneticOptimizer {
 		
 		return selectedPopluation;
 	}
-	
-	/**
-	 * since the fitness function will be negative, therefore, I normalize the value
-	 * to positive by adding the number of all constraints, that is, h+l+(h^2-h)=l+h^2.
-	 * 
-	 * By this means, all the fitness value will be positive.
-	 * 
-	 * @param fitness
-	 * @param highNum
-	 * @param lowNum
-	 * @return
-	 */
-	private double normalizeFitnessValue(double fitness, int highNum, int lowNum){
-		return fitness + highNum*highNum + lowNum;
-	}
-	
 	
 
 	/**

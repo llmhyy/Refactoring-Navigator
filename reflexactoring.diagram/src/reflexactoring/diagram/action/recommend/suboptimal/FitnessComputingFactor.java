@@ -140,4 +140,19 @@ public class FitnessComputingFactor {
 		A_l = a_l;
 	}
 
+	
+	/**
+	 * since the fitness function will be negative, therefore, I normalize the value
+	 * to positive by adding the number of all constraints, that is, h+l+(h^2-h)=l+h^2.
+	 * 
+	 * By this means, all the fitness value will be positive.
+	 * 
+	 * @param fitness
+	 * @param highNum
+	 * @param lowNum
+	 * @return
+	 */
+	public double normalizeFitnessValue(double fitness, int highNum, int lowNum){
+		return fitness + highNum*highNum + lowNum;
+	}
 }

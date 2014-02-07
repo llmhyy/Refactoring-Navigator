@@ -128,22 +128,22 @@ public class Genotype {
 		/**
 		 * A_h.x >= 1
 		 */
-		/*Matrix result = A_h.times(x);
+		Matrix result = A_h.times(x);
 		for(int i=0; i<result.getRowDimension(); i++){
 			if(result.get(i, 0) < 1){
 				violatedNum++;
 			}
-		}*/
+		}
 		
 		/**
 		 * A_l.x = 1
 		 */
-		/*result = A_l.times(x);
+		result = A_l.times(x);
 		for(int i=0; i<result.getRowDimension(); i++){
 			if(result.get(i, 0) != 1){
 				violatedNum++;
 			}
-		}*/
+		}
 		
 		int count = 0;
 		Matrix mappingMatrix = new Matrix(relationMatrix.getRowDimension(), relationMatrix.getColumnDimension());
@@ -158,7 +158,7 @@ public class Genotype {
 		/**
 		 * R*L*R' ~ H
 		 */
-		Matrix result = mappingMatrix.times(lowLevelMatrix).times(mappingMatrix.transpose());
+		result = mappingMatrix.times(lowLevelMatrix).times(mappingMatrix.transpose());
 		for(int i=0; i<result.getRowDimension(); i++){
 			for(int j=0; j<result.getColumnDimension(); j++){
 				if(i!=j){
