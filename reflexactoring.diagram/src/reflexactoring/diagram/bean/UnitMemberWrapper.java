@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.IMember;
  * @author linyun
  *
  */
-public abstract class UnitMemberWrapper implements LowLevelSuggestionObject, GraphNode {
+public abstract class UnitMemberWrapper implements LowLevelSuggestionObject, LowLevelGraphNode {
 	protected ICompilationUnitWrapper unitWrapper;
 	protected ArrayList<UnitMemberWrapper> callerList = new ArrayList<>();
 	protected ArrayList<UnitMemberWrapper> calleeList = new ArrayList<>();
@@ -68,4 +68,11 @@ public abstract class UnitMemberWrapper implements LowLevelSuggestionObject, Gra
 		this.calleeList.add(member);
 	}
 	
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.LowLevelGraphNode#getMappingModule()
+	 */
+	@Override
+	public ModuleWrapper getMappingModule() {
+		return this.unitWrapper.getMappingModule();
+	}
 }

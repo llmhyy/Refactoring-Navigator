@@ -23,7 +23,7 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  * @author linyun
  *
  */
-public class ICompilationUnitWrapper implements LowLevelSuggestionObject, GraphNode{
+public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLevelGraphNode{
 	private ICompilationUnit compilationUnit;
 	private ModuleWrapper mappingModule;
 	private CompilationUnit javaUnit;
@@ -128,6 +128,8 @@ public class ICompilationUnitWrapper implements LowLevelSuggestionObject, GraphN
 	public void setCompilationUnit(ICompilationUnit compilationUnit) {
 		this.compilationUnit = compilationUnit;
 	}
+	
+	@Override
 	/**
 	 * @return the mappingModule
 	 */

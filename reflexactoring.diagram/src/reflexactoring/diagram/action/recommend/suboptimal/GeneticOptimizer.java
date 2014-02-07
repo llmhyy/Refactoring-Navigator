@@ -11,6 +11,7 @@ import Jama.Matrix;
 import reflexactoring.diagram.action.ModelMapper;
 import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
@@ -77,18 +78,11 @@ public class GeneticOptimizer {
 	
 	@SuppressWarnings("unchecked")
 	private FitnessComputingFactor buildComputingFactor(double[][] similarityTable, ArrayList<ModuleWrapper> modules, 
-			ArrayList<? extends GraphNode> lowLevelUnits){
+			ArrayList<? extends LowLevelGraphNode> lowLevelUnits){
 		/**
 		 * In the method as extract*LevelRelation, the weight vector and x0 vector will be initialized as well.
 		 */
-		Matrix relationMatrix;
-		if(lowLevelUnits.get(0) instanceof ICompilationUnitWrapper){
-			relationMatrix = extractClassLevelRelation(similarityTable, modules, (ArrayList<ICompilationUnitWrapper>)lowLevelUnits);
-		}
-		else{
-			relationMatrix = extractMemberLevelRelation(similarityTable, modules, (ArrayList<UnitMemberWrapper>)lowLevelUnits);
-		}
-		
+		Matrix relationMatrix = extractRelation(similarityTable, modules, lowLevelUnits);
 		
 		System.out.println("The variable number is: " + this.weightVector.getColumnDimension());
 		
@@ -121,7 +115,10 @@ public class GeneticOptimizer {
 		return population.getOptimalGene();
 	}
 	
-	private Population generatePopulation(FitnessComputingFactor computingFactor){
+	private Population generatePopulation(FitnessComputingFactor computingFactor/*, ArrayList<ModuleWrapper> modules, ArrayList<? extends GraphNode> lowLevelNodes*/){
+		
+		//assert(lowLevelNodes != null && lowLevelNodes.size() > 0);
+		
 		int dimension = computingFactor.getX0Vector().getRowDimension();
 		
 		Population population = new Population();
@@ -302,9 +299,9 @@ public class GeneticOptimizer {
 	 * @param units
 	 * @return
 	 */
-	private Matrix extractClassLevelRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<ICompilationUnitWrapper> units){
+	private Matrix extractRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes){
 		int highLevelNumber = modules.size();
-		int lowLevelNumber = units.size();
+		int lowLevelNumber = lowLevelNodes.size();
 		
 		Matrix relationMatrix = new Matrix(highLevelNumber, lowLevelNumber);
 		
@@ -324,9 +321,9 @@ public class GeneticOptimizer {
 					/**
 					 * initial x0
 					 */
-					ICompilationUnitWrapper unit = units.get(j);
+					LowLevelGraphNode node = lowLevelNodes.get(j);
 					ModuleWrapper module = modules.get(i);
-					if(module.equals(unit.getMappingModule())){
+					if(module.equals(node.getMappingModule())){
 						x0VectorList.add(1);
 					}
 					else{
@@ -346,7 +343,7 @@ public class GeneticOptimizer {
 		return relationMatrix;
 	}
 	
-	private Matrix extractMemberLevelRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<UnitMemberWrapper> members){
+	/*private Matrix extractMemberLevelRelation(double[][] similarityTable, ArrayList<ModuleWrapper> modules, ArrayList<UnitMemberWrapper> members){
 		int highLevelNumber = modules.size();
 		int lowLevelNumber = members.size();
 		
@@ -360,13 +357,13 @@ public class GeneticOptimizer {
 			for(int j=0; j<lowLevelNumber; j++){
 				relationMatrix.set(i, j, 1);
 				relationMap.add(new int[]{i, j});
-				/**
+				*//**
 				 * initial weight
-				 */
+				 *//*
 				weightVectorList.add(similarityTable[i][j]);
-				/**
+				*//**
 				 * initial x0
-				 */
+				 *//*
 				ICompilationUnitWrapper unit = members.get(j).getUnitWrapper();
 				ModuleWrapper module = modules.get(i);
 				if(module.equals(unit.getMappingModule())){
@@ -383,7 +380,7 @@ public class GeneticOptimizer {
 		this.relationMap = relationMap;
 		
 		return relationMatrix;
-	}
+	}*/
 	
 	private Matrix extractGraph(ArrayList<? extends GraphNode> nodes){
 		
