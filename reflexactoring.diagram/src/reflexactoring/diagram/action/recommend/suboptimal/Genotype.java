@@ -138,12 +138,12 @@ public class Genotype {
 		//result = A_h.times(x);
 		//SparseDoubleMatrix1D result = new SparseDoubleMatrix1D(A_h.rows());
 		//result = (SparseDoubleMatrix1D) A_h.zMult(x, result, 1, 0, false);
-		DoubleMatrix1D result_h = alg.mult(A_h, x);
+		/*DoubleMatrix1D result_h = alg.mult(A_h, x);
 		for(int i=0; i<result_h.size(); i++){
 			if(result_h.get(i) < 1){
 				violatedNum++;
 			}
-		}
+		}*/
 		
 		/**
 		 * A_l.x = 1
@@ -151,7 +151,7 @@ public class Genotype {
 		//result = A_l.times(x);
 		//result = new SparseDoubleMatrix1D(A_l.rows());
 		//result = (SparseDoubleMatrix1D) A_l.zMult(x, result, 1, 0, false);
-		DoubleMatrix1D result_l = alg.mult(A_l, x);
+		/*DoubleMatrix1D result_l = alg.mult(A_l, x);
 		for(int i=0; i<result_l.size(); i++){
 			if(result_l.get(i) != 1){
 				violatedNum++;
@@ -160,7 +160,7 @@ public class Genotype {
 		
 		if(violatedNum > 0){
 			System.err.println("should not violate hard constraints here");
-		}
+		}*/
 		
 		int count = 0;
 		SparseDoubleMatrix2D mappingMatrix = new SparseDoubleMatrix2D(relationMatrix.rows(), relationMatrix.columns());
