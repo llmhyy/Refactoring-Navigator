@@ -18,8 +18,8 @@ import reflexactoring.diagram.util.Settings;
  *
  */
 public class Genotype {
-	int[] DNA;
-	double fitness;
+	private int[] DNA;
+	private double fitness;
 	
 	public Genotype(){
 		
@@ -156,6 +156,10 @@ public class Genotype {
 			if(result_l.get(i) != 1){
 				violatedNum++;
 			}
+		}
+		
+		if(violatedNum > 0){
+			System.err.println("should not violate hard constraints here");
 		}
 		
 		int count = 0;

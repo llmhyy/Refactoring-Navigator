@@ -137,6 +137,7 @@ public class GeneticOptimizer {
 		Population population = generatePopulation(computingFactor, seedGenerator);
 		System.out.println(population.getOptimalGene().getFitness());
 		
+		//Integer.valueOf(ReflexactoringUtil.getIterationNumber())
 		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getIterationNumber()); i++){
 			population = generateNextGeneration(population, computingFactor);
 			System.out.println(population.getOptimalGene().getFitness());
@@ -197,7 +198,8 @@ public class GeneticOptimizer {
 	private Population crossoverAndMutate(Population selectedPopulation, FitnessComputingFactor computingFactor) {
 		
 		//Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
-		Crossoverer crossoverer = new SinglePointCrossoverer(computingFactor);
+		//Crossoverer crossoverer = new SinglePointCrossoverer(computingFactor);
+		Crossoverer crossoverer = new RandomWalkerCrossoverer(computingFactor);
 		
 		//Collections.sort(selectedPopulation, new GeneComparator());
 		
