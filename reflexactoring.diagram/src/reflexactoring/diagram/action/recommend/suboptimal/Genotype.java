@@ -5,6 +5,7 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 
 import java.util.ArrayList;
 
+import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
@@ -130,14 +131,16 @@ public class Genotype {
 			A_l = computingFactor.getA_l();
 		}
 		
+		Algebra alg = new Algebra();
 		/**
 		 * A_h.x >= 1
 		 */
 		//result = A_h.times(x);
-		SparseDoubleMatrix1D result = new SparseDoubleMatrix1D(A_h.rows());
-		result = (SparseDoubleMatrix1D) A_h.zMult(x, result, 1, 0, false);
-		for(int i=0; i<result.size(); i++){
-			if(result.get(i) < 1){
+		//SparseDoubleMatrix1D result = new SparseDoubleMatrix1D(A_h.rows());
+		//result = (SparseDoubleMatrix1D) A_h.zMult(x, result, 1, 0, false);
+		DoubleMatrix1D result_h = alg.mult(A_h, x);
+		for(int i=0; i<result_h.size(); i++){
+			if(result_h.get(i) < 1){
 				violatedNum++;
 			}
 		}
@@ -146,10 +149,11 @@ public class Genotype {
 		 * A_l.x = 1
 		 */
 		//result = A_l.times(x);
-		result = new SparseDoubleMatrix1D(A_l.rows());
-		result = (SparseDoubleMatrix1D) A_l.zMult(x, result, 1, 0, false);
-		for(int i=0; i<result.size(); i++){
-			if(result.get(i) != 1){
+		//result = new SparseDoubleMatrix1D(A_l.rows());
+		//result = (SparseDoubleMatrix1D) A_l.zMult(x, result, 1, 0, false);
+		DoubleMatrix1D result_l = alg.mult(A_l, x);
+		for(int i=0; i<result_l.size(); i++){
+			if(result_l.get(i) != 1){
 				violatedNum++;
 			}
 		}
@@ -167,7 +171,6 @@ public class Genotype {
 		/**
 		 * R*L*R' ~ H
 		 */
-		Algebra alg = new Algebra();
 		
 		SparseDoubleMatrix2D tmp = new SparseDoubleMatrix2D(mappingMatrix.rows(), lowLevelMatrix.columns());
 		tmp = (SparseDoubleMatrix2D) mappingMatrix.zMult(lowLevelMatrix, tmp, 1, 0, false, false);
