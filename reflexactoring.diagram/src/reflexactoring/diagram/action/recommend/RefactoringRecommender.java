@@ -60,6 +60,13 @@ public class RefactoringRecommender {
 			 * need to gain the dependencies amongst modules
 			 */
 			
+			String msg = checkPossible(moduleList, Settings.scope.getScopeCompilationUnitList());
+			
+			if(!msg.equals("OK")){
+				MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Problem", msg);
+				return new ArrayList<Suggestion>();
+			}
+			
 			GeneticOptimizer optimizer = new GeneticOptimizer();
 			Genotype unitGene = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList);
 			
@@ -69,12 +76,13 @@ public class RefactoringRecommender {
 			}
 			else{
 				String title = "Cannot find a solution";
-				String message = "Moving classes among modules may not achieve the conformance, \n"
-						+ "may I try moving methods among classes? Click OK to confirm, otherwise, I "
+				String message = "Please try moving methods among classes, I "
 						+ "will show you the best solutions (still infeasible yet)";
-				boolean confirm = MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
+				MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
 				
-				if(confirm){
+				ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(unitGene, optimizer, moduleList);
+				return suggestions;
+				/*if(confirm){
 					UnitMemberExtractor extractor = new UnitMemberExtractor();
 					UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
 					
@@ -86,9 +94,8 @@ public class RefactoringRecommender {
 					return suggestions;
 				}
 				else{
-					ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(unitGene, optimizer, moduleList);
-					return suggestions;
-				}
+					
+				}*/
 			}
 			
 			
@@ -97,6 +104,43 @@ public class RefactoringRecommender {
 		}
 		
 		return new ArrayList<Suggestion>();
+	}
+	
+	private String checkPossible(ArrayList<ModuleWrapper> modules, ArrayList<ICompilationUnitWrapper> units){
+		if(units.size() < modules.size()){
+			return "The number of java file is less than the number of module.";
+		}
+		
+		double[][] similarityTable = ReflexactoringUtil.convertModuleUnitsSimilarityTableToRawTable(Settings.similarityTable);
+		for(int i=0; i<modules.size(); i++){
+			boolean hasSomeUnitToMatch = false;
+			for(int j=0; j<units.size(); j++){
+				if(similarityTable[i][j] >= Double.valueOf(ReflexactoringUtil.getMappingThreshold())){
+					hasSomeUnitToMatch = true;
+				}
+			}
+			
+			if(!hasSomeUnitToMatch){
+				ModuleWrapper module = modules.get(i);
+				return "The module " + module.getName() + " is not able to match any java file.";
+			}
+		}
+		
+		for(int j=0; j<units.size(); j++){
+			boolean hasSomeModuleToMatch = false;
+			for(int i=0; i<modules.size(); i++){
+				if(similarityTable[i][j] >= Double.valueOf(ReflexactoringUtil.getMappingThreshold())){
+					hasSomeModuleToMatch = true;
+				}
+			}
+			
+			if(!hasSomeModuleToMatch){
+				ICompilationUnitWrapper unit = units.get(j);
+				return "The java file " + unit.getName() + " is not able to match any module.";
+			}
+		}
+		
+		return "OK";
 	}
 	
 	public ArrayList<Suggestion> recommendStartByMember(){
