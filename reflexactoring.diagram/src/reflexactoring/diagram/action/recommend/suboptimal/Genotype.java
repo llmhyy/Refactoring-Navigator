@@ -4,6 +4,8 @@
 package reflexactoring.diagram.action.recommend.suboptimal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
@@ -18,6 +20,9 @@ import reflexactoring.diagram.util.Settings;
  *
  */
 public class Genotype {
+	
+	private static HashMap<Genotype, Double> storage = new HashMap<>();
+	
 	private int[] DNA;
 	private double fitness;
 	
@@ -31,6 +36,36 @@ public class Genotype {
 	public Genotype(int[] dNA) {
 		super();
 		DNA = dNA;
+	}
+
+	
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(DNA);
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Genotype other = (Genotype) obj;
+		if (!Arrays.equals(DNA, other.DNA))
+			return false;
+		return true;
 	}
 
 	/**
@@ -85,15 +120,31 @@ public class Genotype {
 	}
 	
 	public double computeFitness(FitnessComputingFactor computingFactor){
+		/*Double d = storage.get(this);
+		if(d != null){
+			return d;
+		}
+		else{
+			SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
+			SparseDoubleMatrix1D x0Vector = computingFactor.getX0Vector();
+			
+			double objectiveValue = getObjectiveValue(weightVector, x0Vector);
+			int voilatedNum = getViolatedConstraintsNumber(computingFactor);
+			
+			d = new Double(objectiveValue - voilatedNum);
+			storage.put(this, d);
+			
+			return d;
+		}*/
+		
 		SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
 		SparseDoubleMatrix1D x0Vector = computingFactor.getX0Vector();
-		
-		
 		
 		double objectiveValue = getObjectiveValue(weightVector, x0Vector);
 		int voilatedNum = getViolatedConstraintsNumber(computingFactor);
 		
 		return objectiveValue - voilatedNum;
+		
 	}
 	
 	private int getViolatedConstraintsNumber(FitnessComputingFactor computingFactor){
@@ -175,13 +226,19 @@ public class Genotype {
 		/**
 		 * R*L*R' ~ H
 		 */
+		/*long t11 = System.currentTimeMillis();
+		SparseDoubleMatrix2D tmp = new SparseDoubleMatrix2D(lowLevelMatrix.columns(), mappingMatrix.rows());
+		tmp = (SparseDoubleMatrix2D) alg.transpose(lowLevelMatrix).zMult(alg.transpose(mappingMatrix), tmp, 1, 0, false, false);
+		tmp = (SparseDoubleMatrix2D) alg.transpose(tmp);
+		long t12 = System.currentTimeMillis();
+		System.out.println(t12-t11);*/
 		
 		SparseDoubleMatrix2D tmp = new SparseDoubleMatrix2D(mappingMatrix.rows(), lowLevelMatrix.columns());
 		tmp = (SparseDoubleMatrix2D) mappingMatrix.zMult(lowLevelMatrix, tmp, 1, 0, false, false);
 		
 		SparseDoubleMatrix2D softConstaintResult = new SparseDoubleMatrix2D(mappingMatrix.rows(), mappingMatrix.rows());
 		softConstaintResult = (SparseDoubleMatrix2D)tmp.zMult(alg.transpose(mappingMatrix), softConstaintResult, 1, 0, false, false);	
-				
+		
 		for(int i=0; i<softConstaintResult.rows(); i++){
 			for(int j=0; j<softConstaintResult.columns(); j++){
 				if(i!=j){
