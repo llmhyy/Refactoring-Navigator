@@ -22,6 +22,7 @@ import reflexactoring.diagram.util.Settings;
 public class Genotype {
 	
 	private static HashMap<Genotype, Double> storage = new HashMap<>();
+	private ArrayList<Violation> violationList = new ArrayList<>();
 	
 	private int[] DNA;
 	private double fitness;
@@ -239,18 +240,25 @@ public class Genotype {
 		SparseDoubleMatrix2D softConstaintResult = new SparseDoubleMatrix2D(mappingMatrix.rows(), mappingMatrix.rows());
 		softConstaintResult = (SparseDoubleMatrix2D)tmp.zMult(alg.transpose(mappingMatrix), softConstaintResult, 1, 0, false, false);	
 		
+		ArrayList<Violation> violationList = new ArrayList<>();
 		for(int i=0; i<softConstaintResult.rows(); i++){
 			for(int j=0; j<softConstaintResult.columns(); j++){
 				if(i!=j){
 					if(highLevelMatrix.get(i, j) == 0 && softConstaintResult.get(i, j) != 0){
-						violatedNum++;
+						Violation violation = new Violation(i, j, Violation.DISONANCE);
+						violationList.add(violation);
+						violatedNum += softConstaintResult.get(i, j);
 					}
 					else if(highLevelMatrix.get(i, j) != 0 && softConstaintResult.get(i, j) == 0){
+						Violation violation = new Violation(i, j, Violation.ABSENCE);
+						violationList.add(violation);
 						violatedNum++;
 					}
 				}
 			}
 		}
+		
+		this.violationList = violationList;
 		
 		return violatedNum;
 	}
@@ -310,5 +318,19 @@ public class Genotype {
 		
 		return Math.sqrt(sum);
 		
+	}
+
+	/**
+	 * @return the violationList
+	 */
+	public ArrayList<Violation> getViolationList() {
+		return violationList;
+	}
+
+	/**
+	 * @param violationList the violationList to set
+	 */
+	public void setViolationList(ArrayList<Violation> violationList) {
+		this.violationList = violationList;
 	}
 }
