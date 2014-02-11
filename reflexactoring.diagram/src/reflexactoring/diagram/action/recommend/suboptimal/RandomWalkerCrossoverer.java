@@ -107,7 +107,6 @@ public class RandomWalkerCrossoverer implements Crossoverer {
 		GenoTypePair newPair = new GenoTypePair(childGenes[0], childGenes[1]);
 		return newPair;
 	}
-	
 
 	/**
 	 * @param dNA

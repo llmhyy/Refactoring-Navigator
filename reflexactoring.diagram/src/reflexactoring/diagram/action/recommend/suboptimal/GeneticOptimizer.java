@@ -199,10 +199,10 @@ public class GeneticOptimizer {
 	 */
 	private Population crossoverAndMutate(Population selectedPopulation, FitnessComputingFactor computingFactor) {
 		
-		//Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
+		Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
 		//Crossoverer crossoverer = new SinglePointCrossoverer(computingFactor);
-		Crossoverer crossoverer = new RandomWalkerCrossoverer(computingFactor);
-		
+		//Crossoverer crossoverer = new RandomWalkerCrossoverer(computingFactor);
+		//Crossoverer crossoverer = new ViolationReductionOrientedCrossoverer(computingFactor);
 		
 		
 		Population crosssoverPopulation = new Population();
