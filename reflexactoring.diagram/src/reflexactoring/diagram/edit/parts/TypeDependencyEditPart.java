@@ -63,20 +63,20 @@ public class TypeDependencyEditPart extends ConnectionNodeEditPart implements
 	public class TypeDependencyFigure extends PolylineConnectionEx {
 
 		/**
-		 * @generated
+		 * @not generated
 		 */
 		public TypeDependencyFigure() {
-			this.setLineWidth(2);
+			this.setLineWidth(1);
 
 			setTargetDecoration(createTargetDecoration());
 		}
 
 		/**
-		 * @generated
+		 * @not generated
 		 */
 		private RotatableDecoration createTargetDecoration() {
 			PolylineDecoration df = new PolylineDecoration();
-			df.setLineWidth(2);
+			df.setLineWidth(1);
 			return df;
 		}
 
