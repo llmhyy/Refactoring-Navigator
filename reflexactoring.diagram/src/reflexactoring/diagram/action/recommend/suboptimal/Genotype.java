@@ -273,29 +273,29 @@ public class Genotype {
 		 */
 		else{
 			
-			//long t11 = System.currentTimeMillis();
+			/*long t11 = System.currentTimeMillis();
 			SparseDoubleMatrix2D tmp0 = new SparseDoubleMatrix2D(mappingMatrix.rows(), lowLevelMatrix.columns());
 			tmp0 = (SparseDoubleMatrix2D) mappingMatrix.zMult(lowLevelMatrix, tmp0, 1, 0, false, false);
-			//long t12 = System.currentTimeMillis();
-			//System.out.println(t12-t11);
+			long t12 = System.currentTimeMillis();
+			System.out.println(t12-t11);*/
 			
 			//long t21 = System.currentTimeMillis();
 			tmp = incrementalCompute(previousTmpMatrix, lowLevelMatrix, maps);
 			//long t22 = System.currentTimeMillis();
 			//System.out.println(t22-t21);
 			
+			//System.currentTimeMillis();
 			
-			for(int i=0; i<tmp.rows(); i++){
+			/*for(int i=0; i<tmp.rows(); i++){
 				for(int j=0; j<tmp.columns(); j++){
 					if(tmp0.get(i, j) != tmp.get(i, j)){
 						System.currentTimeMillis();
 					}
 				}
-			}
+			}*/
 			
 			//tmp = incrementalCompute(previousTmpMatrix, lowLevelMatrix, maps);
 			
-			System.currentTimeMillis();
 		}
 		
 		
