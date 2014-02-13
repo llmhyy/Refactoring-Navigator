@@ -9,7 +9,7 @@ import reflexactoring.diagram.util.Settings;
  * @author linyun
  *
  */
-public class SinglePointCrossoverer implements Crossoverer {
+public class SinglePointCrossoverer extends AbstractSexualCrossoverer implements SexualCrossoverer {
 
 	private FitnessComputingFactor computingFactor;
 	/**
@@ -23,7 +23,7 @@ public class SinglePointCrossoverer implements Crossoverer {
 	 * @see reflexactoring.diagram.action.recommend.suboptimal.Crossoverer#crossNewPair(reflexactoring.diagram.action.recommend.suboptimal.GenoTypePair)
 	 */
 	@Override
-	public GenoTypePair crossNewPair(GenoTypePair pair) {
+	public GenoTypePair produceOffString(GenoTypePair pair) {
 		Genotype gene1 = pair.getGene1();
 		Genotype gene2 = pair.getGene2();
 		

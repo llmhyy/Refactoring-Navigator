@@ -1,0 +1,59 @@
+/**
+ * 
+ */
+package reflexactoring.diagram.action.recommend.suboptimal;
+
+import java.util.Collections;
+
+/**
+ * @author linyun
+ * 
+ */
+public abstract class AbstractAsexualCrossoverer implements AsexualCrossoverer {
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see reflexactoring.diagram.action.recommend.suboptimal.Crossoverer#
+	 * crossoverAndMutate
+	 * (reflexactoring.diagram.action.recommend.suboptimal.Population,
+	 * reflexactoring
+	 * .diagram.action.recommend.suboptimal.FitnessComputingFactor)
+	 */
+	@Override
+	public Population crossoverAndMutate(Population selectedPopulation,
+			FitnessComputingFactor computingFactor) {
+		// Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
+		// Crossoverer crossoverer = new
+		// SinglePointCrossoverer(computingFactor);
+		// Crossoverer crossoverer = new
+		// RandomWalkerCrossoverer(computingFactor);
+		// Crossoverer crossoverer = new
+		// ViolationReductionOrientedCrossoverer(computingFactor);
+
+		Population crosssoverPopulation = new Population();
+
+		for (int i = 0; i < selectedPopulation.size(); i++) {
+			Genotype gene = selectedPopulation.get(i);
+			// long t1 = System.currentTimeMillis();
+			Genotype childGene = produceOffSpring(gene);
+			// long t2 = System.currentTimeMillis();
+			// System.out.println(t2-t1);
+
+			crosssoverPopulation.add(childGene);
+		}
+
+		crosssoverPopulation.addAll(selectedPopulation);
+		Collections.sort(crosssoverPopulation, new GeneComparator());
+		Population newCrossoverPopulation = new Population();
+		for (int i = 0; i < crosssoverPopulation.size()/2; i++) {
+			newCrossoverPopulation.add(crosssoverPopulation.get(i));
+		}
+
+		newCrossoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
+		newCrossoverPopulation.updateOptimalGene();
+
+		return newCrossoverPopulation;
+	}
+
+}

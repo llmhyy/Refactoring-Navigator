@@ -8,5 +8,5 @@ package reflexactoring.diagram.action.recommend.suboptimal;
  *
  */
 public interface Crossoverer {
-	public GenoTypePair crossNewPair(GenoTypePair pair);
+	public Population crossoverAndMutate(Population selectedPopulation, FitnessComputingFactor computingFactor);
 }

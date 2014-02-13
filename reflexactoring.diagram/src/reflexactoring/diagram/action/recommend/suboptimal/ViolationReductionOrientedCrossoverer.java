@@ -12,7 +12,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  * @author linyun
  *
  */
-public class ViolationReductionOrientedCrossoverer implements Crossoverer {
+public class ViolationReductionOrientedCrossoverer extends AbstractAsexualCrossoverer implements AsexualCrossoverer {
 
 	private FitnessComputingFactor computingFactor;
 	
@@ -24,63 +24,52 @@ public class ViolationReductionOrientedCrossoverer implements Crossoverer {
 	 * @see reflexactoring.diagram.action.recommend.suboptimal.Crossoverer#crossNewPair(reflexactoring.diagram.action.recommend.suboptimal.GenoTypePair)
 	 */
 	@Override
-	public GenoTypePair crossNewPair(GenoTypePair pair) {
-		Genotype[] genes = new Genotype[2];
-		genes[0] = pair.getGene1();
-		genes[1] = pair.getGene2();
+	public Genotype produceOffSpring(Genotype oldGene) {
 		
-		Genotype[] childGenes = new Genotype[2];
+		int[] DNA = oldGene.getDNA();
 		
-		for(int k=0; k<genes.length; k++){
+		if(oldGene.getViolationList().size() == 0){
+			/**
+			 * random move
+			 */
+			return oldGene;
+		}
+		else{
+			SparseDoubleMatrix2D highLevelMatrix = computingFactor.getHighLevelMatrix();
 			
-			int[] DNA = genes[k].getDNA();
+			/**
+			 * randomly pick up a violation.
+			 */
+			ArrayList<Violation> violationList = oldGene.getViolationList();
+			int violationIndex = (int)(Math.random()*violationList.size());
+			Violation violation = violationList.get(violationIndex);
 			
-			if(genes[k].getViolationList().size() == 0){
-				/**
-				 * random move
-				 */
-				childGenes[k] = genes[k];
+			//System.out.println();
+			
+			ArrayList<MoveStep> candidateMoveSteps = null;
+			SparseDoubleMatrix2D currentMappingRelation = getCurrentMappingRelation(DNA, computingFactor.getRelationMatrix());
+			if(violation.getType() == Violation.ABSENCE){
+				candidateMoveSteps = findAllRelevantNodesForAbsenceViolation(violation, computingFactor, currentMappingRelation);
+			}
+			else if(violation.getType() == Violation.DISONANCE){
+				candidateMoveSteps = findAllRelevantNodesForDissonanceViolation(violation, computingFactor, currentMappingRelation);
 			}
 			else{
-				SparseDoubleMatrix2D highLevelMatrix = computingFactor.getHighLevelMatrix();
+				System.err.println("There are some other violation type or violation type has never been assigned.");
+			}
+			
+			if(candidateMoveSteps.size() !=0){
+				MoveStep step = findBestMove(candidateMoveSteps, oldGene, currentMappingRelation);
+				//int[] childDNA = generateNewDNA(step, DNA);
 				
-				/**
-				 * randomly pick up a violation.
-				 */
-				ArrayList<Violation> violationList = genes[k].getViolationList();
-				int violationIndex = (int)(Math.random()*violationList.size());
-				Violation violation = violationList.get(violationIndex);
-				
-				//System.out.println();
-				
-				ArrayList<MoveStep> candidateMoveSteps = null;
-				SparseDoubleMatrix2D currentMappingRelation = getCurrentMappingRelation(DNA, computingFactor.getRelationMatrix());
-				if(violation.getType() == Violation.ABSENCE){
-					candidateMoveSteps = findAllRelevantNodesForAbsenceViolation(violation, computingFactor, currentMappingRelation);
-				}
-				else if(violation.getType() == Violation.DISONANCE){
-					candidateMoveSteps = findAllRelevantNodesForDissonanceViolation(violation, computingFactor, currentMappingRelation);
-				}
-				else{
-					System.err.println("There are some other violation type or violation type has never been assigned.");
-				}
-				
-				if(candidateMoveSteps.size() !=0){
-					MoveStep step = findBestMove(candidateMoveSteps, genes[k], currentMappingRelation);
-					//int[] childDNA = generateNewDNA(step, DNA);
-					
-					childGenes[k] = step.getResultingGene();
-				}
-				else{
-					childGenes[k] = genes[k];
-				}
-				
+				Genotype newGene = step.getResultingGene();
+				return newGene;
+			}
+			else{
+				return oldGene;
 			}
 			
 		}
-	
-		GenoTypePair newPair = new GenoTypePair(childGenes[0], childGenes[1]);
-		return newPair;
 	}
 
 	private MoveStep findBestMove(ArrayList<MoveStep> candidateMoveSteps, Genotype oldGene, SparseDoubleMatrix2D currentMappingRelation) {

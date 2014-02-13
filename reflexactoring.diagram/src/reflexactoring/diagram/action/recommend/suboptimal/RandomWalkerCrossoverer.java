@@ -12,7 +12,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  * @author linyun
  *
  */
-public class RandomWalkerCrossoverer implements Crossoverer {
+public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implements Crossoverer {
 
 	private FitnessComputingFactor computingFactor;
 	
@@ -21,91 +21,84 @@ public class RandomWalkerCrossoverer implements Crossoverer {
 	}
 	
 	@Override
-	public GenoTypePair crossNewPair(GenoTypePair pair) {
-		Genotype[] genes = new Genotype[2];
-		genes[0] = pair.getGene1();
-		genes[1] = pair.getGene2();
+	public Genotype produceOffSpring(Genotype oldGene) {
 		
-		Genotype[] childGenes = new Genotype[2];
-		
-		for(int k=0; k<genes.length; k++){
-			int moduleSize = computingFactor.getHighLevelMatrix().rows();
-			/**
-			 * The module partition contains the number of correspondable units for each module.
-			 */
-			int[] modulePartition = new int[moduleSize];
-			SparseDoubleMatrix2D moduleUnitCorrespondingMatrix = computingFactor.getA_h();
-			for(int i=0; i<modulePartition.length; i++){
-				SparseDoubleMatrix1D moduleVector = (SparseDoubleMatrix1D) moduleUnitCorrespondingMatrix.viewRow(i);
-				modulePartition[i] = moduleVector.cardinality();
-			}
-			
-			
-			int sourceModuleIndex;
-			int destModuleIndex;
-			int moduleTrialNum = 10;
-			do{
-				sourceModuleIndex = (int)(Math.random()*moduleSize);
-				destModuleIndex = (int)(Math.random()*moduleSize);
-				moduleTrialNum--;
-			}while(sourceModuleIndex == destModuleIndex && moduleTrialNum>0);
-			
-			if(sourceModuleIndex == destModuleIndex){
-				childGenes[k] = genes[k];
-				continue;
-			}
-			
-			/**
-			 * the units that both source module and dest module can be mapped to.
-			 */
-			Integer[] movableUnitIndexInSourceModule = getMovableUnitIndex(computingFactor.getRelationMatrix(), sourceModuleIndex, destModuleIndex);
-			
-			if(movableUnitIndexInSourceModule != null && movableUnitIndexInSourceModule.length != 0){
-				
-				int unitIndexTrialNum = 10;
-				int[] DNA = genes[k].getDNA();
-				do{
-					int index = (int)(movableUnitIndexInSourceModule.length*Math.random());
-					int chosenMovableLowLevelNodeIndex = movableUnitIndexInSourceModule[index];
-					
-					int correspondingIndexInSourceModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), sourceModuleIndex, chosenMovableLowLevelNodeIndex);
-					int correspondingIndexInDestModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), destModuleIndex, chosenMovableLowLevelNodeIndex);
-					
-					int vectorIndexOfSource = convertToVectorIndex(modulePartition, sourceModuleIndex, correspondingIndexInSourceModule);
-					int vectorIndexOfDest = convertToVectorIndex(modulePartition, destModuleIndex, correspondingIndexInDestModule);
-					
-					if(genes[k].getDNA()[vectorIndexOfSource]==1 && genes[k].getDNA()[vectorIndexOfDest]==1){
-						System.err.println("Random Walk Crossoverer does not allow the hard constraints to "
-								+ "be broken, more specifically, a unit/mehtod/field is mapped to at least two modules.");
-						childGenes[k] = genes[k];
-						break;
-					}
-					else{
-						DNA = flip(genes[k], vectorIndexOfSource, vectorIndexOfDest);
-						
-						if(isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
-							Genotype newGene = new Genotype(DNA);
-							newGene.setFitness(newGene.computeFitness(computingFactor));
-							childGenes[k] = newGene;						
-						}
-						
-					}
-					
-					unitIndexTrialNum--;
-				}while(!isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition) && unitIndexTrialNum>0);
-				
-				if(!isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
-					childGenes[k] = genes[k];
-				}
-				
-			}
-			else{
-				childGenes[k] = genes[k];
-			}
+		int moduleSize = computingFactor.getHighLevelMatrix().rows();
+		/**
+		 * The module partition contains the number of correspondable units for each module.
+		 */
+		int[] modulePartition = new int[moduleSize];
+		SparseDoubleMatrix2D moduleUnitCorrespondingMatrix = computingFactor.getA_h();
+		for(int i=0; i<modulePartition.length; i++){
+			SparseDoubleMatrix1D moduleVector = (SparseDoubleMatrix1D) moduleUnitCorrespondingMatrix.viewRow(i);
+			modulePartition[i] = moduleVector.cardinality();
 		}
 		
-		GenoTypePair newPair = new GenoTypePair(childGenes[0], childGenes[1]);
-		return newPair;
+		
+		int sourceModuleIndex;
+		int destModuleIndex;
+		int moduleTrialNum = 10;
+		do{
+			sourceModuleIndex = (int)(Math.random()*moduleSize);
+			destModuleIndex = (int)(Math.random()*moduleSize);
+			moduleTrialNum--;
+		}while(sourceModuleIndex == destModuleIndex && moduleTrialNum>0);
+		
+		if(sourceModuleIndex == destModuleIndex){
+			return oldGene;
+		}
+		
+		/**
+		 * the units that both source module and dest module can be mapped to.
+		 */
+		Integer[] movableUnitIndexInSourceModule = getMovableUnitIndex(computingFactor.getRelationMatrix(), oldGene.getDNA(), sourceModuleIndex, destModuleIndex);
+		
+		if(movableUnitIndexInSourceModule != null && movableUnitIndexInSourceModule.length != 0){
+			
+			int unitIndexTrialNum = 10;
+			int[] DNA = oldGene.getDNA();
+			do{
+				int index = (int)(movableUnitIndexInSourceModule.length*Math.random());
+				int chosenMovableLowLevelNodeIndex = movableUnitIndexInSourceModule[index];
+				
+				int correspondingIndexInSourceModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), sourceModuleIndex, chosenMovableLowLevelNodeIndex);
+				int correspondingIndexInDestModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), destModuleIndex, chosenMovableLowLevelNodeIndex);
+				
+				int vectorIndexOfSource = convertToVectorIndex(modulePartition, sourceModuleIndex, correspondingIndexInSourceModule);
+				int vectorIndexOfDest = convertToVectorIndex(modulePartition, destModuleIndex, correspondingIndexInDestModule);
+				
+				if(oldGene.getDNA()[vectorIndexOfSource]==1 && oldGene.getDNA()[vectorIndexOfDest]==1){
+					System.err.println("Random Walk Crossoverer does not allow the hard constraints to "
+							+ "be broken, more specifically, a unit/mehtod/field is mapped to at least two modules.");
+					return oldGene;
+				}
+				else{
+					DNA = flip(oldGene, vectorIndexOfSource, vectorIndexOfDest);
+					
+					if(isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
+						
+						Genotype newGene = new Genotype(DNA);
+						newGene.setPreviousMappingMatrix(oldGene.getMappingMatrix());
+						newGene.setPreviousTmpMatrix(oldGene.getTmpMatrix());
+						newGene.setFitness(newGene.computeFitness(computingFactor));
+						return newGene;						
+					}
+					
+				}
+				
+				unitIndexTrialNum--;
+			}while(!isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition) && unitIndexTrialNum>0);
+			
+			/*if(!isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
+				return oldGene;
+			}*/
+			
+		}
+		else{
+			return oldGene;
+		}
+		
+		return oldGene;
 	}
 
 	/**
@@ -186,12 +179,24 @@ public class RandomWalkerCrossoverer implements Crossoverer {
 	 * @param destModuleIndex
 	 * @return
 	 */
-	private Integer[] getMovableUnitIndex(SparseDoubleMatrix2D relationMatrix,
+	private Integer[] getMovableUnitIndex(SparseDoubleMatrix2D relationMatrix, int[] DNA,
 			int sourceModuleIndex, int destModuleIndex) {
+		
+		SparseDoubleMatrix2D currentMapMatrix = new SparseDoubleMatrix2D(relationMatrix.rows(), relationMatrix.columns());
+		int count = 0;
+		for(int i=0; i<currentMapMatrix.rows(); i++){
+			for(int j=0; j<currentMapMatrix.columns(); j++){
+				if(relationMatrix.get(i, j) != 0){
+					currentMapMatrix.set(i, j, DNA[count++]);
+				}
+			}
+		}
+		
 		ArrayList<Integer> movableLowLevelNodeIndexes = new ArrayList<>();
 		
 		for(int j=0; j<relationMatrix.columns(); j++){
-			if(relationMatrix.get(sourceModuleIndex, j) == 1 && relationMatrix.get(destModuleIndex, j)==1){
+			if(relationMatrix.get(sourceModuleIndex, j) == 1 && relationMatrix.get(destModuleIndex, j)==1 
+					&& currentMapMatrix.get(sourceModuleIndex, j) == 1){
 				movableLowLevelNodeIndexes.add(j);
 			}
 		}

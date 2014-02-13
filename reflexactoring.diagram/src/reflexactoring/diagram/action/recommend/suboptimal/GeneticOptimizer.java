@@ -186,70 +186,17 @@ public class GeneticOptimizer {
 		 * crossover and mutate
 		 */
 		//long t1 = System.currentTimeMillis();
-		Population crossedPopulation = crossoverAndMutate(population, computingFactor);
+		//Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
+		//Crossoverer crossoverer = new SinglePointCrossoverer(computingFactor);
+		Crossoverer crossoverer = new RandomWalkerCrossoverer(computingFactor);
+		//Crossoverer crossoverer = new ViolationReductionOrientedCrossoverer(computingFactor);
+				
+		Population crossedPopulation = crossoverer.crossoverAndMutate(population, computingFactor);
+		//Population crossedPopulation = crossoverAndMutate(population, computingFactor);
 		//long t2 = System.currentTimeMillis();
 		//System.out.println(t2-t1);
 		
 		return crossedPopulation;
-	}
-	
-	/**
-	 * @param selectedPopulation
-	 * @return
-	 */
-	private Population crossoverAndMutate(Population selectedPopulation, FitnessComputingFactor computingFactor) {
-		
-		Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
-		//Crossoverer crossoverer = new SinglePointCrossoverer(computingFactor);
-		//Crossoverer crossoverer = new RandomWalkerCrossoverer(computingFactor);
-		//Crossoverer crossoverer = new ViolationReductionOrientedCrossoverer(computingFactor);
-		
-		
-		Population crosssoverPopulation = new Population();
-		
-		
-		for(int i=0; i<selectedPopulation.size(); i=i+2){
-			Genotype gene1 = selectedPopulation.get(i);
-			Genotype gene2 = selectedPopulation.get(i+1);
-			
-			GenoTypePair pair = new GenoTypePair(gene1, gene2);
-			
-			//long t1 = System.currentTimeMillis();
-			GenoTypePair subPair = crossoverer.crossNewPair(pair);
-			//long t2 = System.currentTimeMillis();
-			//System.out.println(t2-t1);
-			
-			
-			crosssoverPopulation.add(subPair.getGene1());
-			crosssoverPopulation.add(subPair.getGene2());
-		}
-		
-		//Collections.sort(selectedPopulation, new GeneComparator());
-		crosssoverPopulation.addAll(selectedPopulation);
-		
-		Collections.sort(crosssoverPopulation, new GeneComparator());
-		
-		Population newCrossoverPopulation = new Population();
-		
-		int quater = crosssoverPopulation.size()/4;
-		for(int i=0; i<2*quater; i++){
-			if(i<quater){
-				newCrossoverPopulation.add(crosssoverPopulation.get(i));
-			}
-			else{
-				newCrossoverPopulation.add(crosssoverPopulation.get(quater+i));
-			}
-		}
-		
-		newCrossoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
-		newCrossoverPopulation.updateOptimalGene();
-		
-		return newCrossoverPopulation;
-		
-		
-		/*crosssoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
-		crosssoverPopulation.updateOptimalGene();
-		return crosssoverPopulation;*/
 	}
 
 

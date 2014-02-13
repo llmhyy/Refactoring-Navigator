@@ -3,13 +3,15 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
+import java.util.Collections;
+
 import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
  *
  */
-public class RandomCrossoverer implements Crossoverer {
+public class RandomCrossoverer extends AbstractSexualCrossoverer implements SexualCrossoverer {
 
 	private FitnessComputingFactor computingFactor;
 	
@@ -25,7 +27,7 @@ public class RandomCrossoverer implements Crossoverer {
 	 * @see reflexactoring.diagram.action.recommend.suboptimal.Crossoverer#crossNewPair(reflexactoring.diagram.action.recommend.suboptimal.GenoTypePair)
 	 */
 	@Override
-	public GenoTypePair crossNewPair(GenoTypePair pair) {
+	public GenoTypePair produceOffString(GenoTypePair pair) {
 		
 		Genotype gene1 = pair.getGene1();
 		Genotype gene2 = pair.getGene2();
@@ -64,8 +66,13 @@ public class RandomCrossoverer implements Crossoverer {
 		}
 		
 		Genotype subGene1 = new Genotype(childDNA1);
+		//subGene1.setPreviousMappingMatrix(gene1.getMappingMatrix());
+		//subGene1.setPreviousTmpMatrix(gene1.getTmpMatrix());
 		subGene1.setFitness(subGene1.computeFitness(computingFactor));
+		
 		Genotype subGene2 = new Genotype(childDNA2);
+		//subGene2.setPreviousMappingMatrix(gene2.getMappingMatrix());
+		//subGene2.setPreviousTmpMatrix(gene2.getTmpMatrix());
 		subGene2.setFitness(subGene2.computeFitness(computingFactor));
 		
 		GenoTypePair subPair = new GenoTypePair(subGene1, subGene2);
