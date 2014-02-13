@@ -25,6 +25,16 @@ public class Genotype {
 	private ArrayList<Violation> violationList = new ArrayList<>();
 	
 	private int[] DNA;
+	
+	/**
+	 * The previous R in R*L*R'~H.
+	 */
+	private SparseDoubleMatrix2D previousMappingMatrix;
+	private SparseDoubleMatrix2D previousTmpMatrix;
+	
+	private SparseDoubleMatrix2D mappingMatrix;
+	private SparseDoubleMatrix2D tmpMatrix;
+	
 	private double fitness;
 	
 	public Genotype(){
@@ -203,23 +213,39 @@ public class Genotype {
 		//result = A_l.times(x);
 		//result = new SparseDoubleMatrix1D(A_l.rows());
 		//result = (SparseDoubleMatrix1D) A_l.zMult(x, result, 1, 0, false);
-		/*DoubleMatrix1D result_l = alg.mult(A_l, x);
+		DoubleMatrix1D result_l = alg.mult(A_l, x);
 		for(int i=0; i<result_l.size(); i++){
 			if(result_l.get(i) != 1){
 				violatedNum++;
 			}
-		}*/
+		}
 		
 		/*if(violatedNum > 0){
 			System.err.println("should not violate hard constraints here");
 		}*/
 		
+		
+		ArrayList<HighLevelLowLevelMap> maps = new ArrayList<>();
 		int count = 0;
 		SparseDoubleMatrix2D mappingMatrix = new SparseDoubleMatrix2D(relationMatrix.rows(), relationMatrix.columns());
 		for(int i=0; i<relationMatrix.rows(); i++){
 			for(int j=0; j<relationMatrix.columns(); j++){
 				if(relationMatrix.get(i, j) != 0){
 					mappingMatrix.set(i, j, x.get(count++));
+					
+					/**
+					 * If we have recorded the previous mapping matrix, we need to compute the delta between new and previous
+					 * mapping in order to compute the fitness function more efficiently.
+					 */
+					if(previousMappingMatrix != null){
+						if(previousMappingMatrix.get(i, j) != mappingMatrix.get(i, j)){
+							int type = (previousMappingMatrix.get(i, j) > mappingMatrix.get(i, j))? 
+									HighLevelLowLevelMap.REMOVED : HighLevelLowLevelMap.ADDED ;
+							
+							HighLevelLowLevelMap map = new HighLevelLowLevelMap(i, j, type);
+							maps.add(map);
+						}
+					}
 				}
 			}
 		}
@@ -234,8 +260,47 @@ public class Genotype {
 		long t12 = System.currentTimeMillis();
 		System.out.println(t12-t11);*/
 		
-		SparseDoubleMatrix2D tmp = new SparseDoubleMatrix2D(mappingMatrix.rows(), lowLevelMatrix.columns());
-		tmp = (SparseDoubleMatrix2D) mappingMatrix.zMult(lowLevelMatrix, tmp, 1, 0, false, false);
+		/*SparseDoubleMatrix2D tmp = new SparseDoubleMatrix2D(mappingMatrix.rows(), lowLevelMatrix.columns());
+		tmp = (SparseDoubleMatrix2D) mappingMatrix.zMult(lowLevelMatrix, tmp, 1, 0, false, false);*/
+		
+		SparseDoubleMatrix2D tmp; 
+		if(previousTmpMatrix == null || previousMappingMatrix == null){
+			tmp = new SparseDoubleMatrix2D(mappingMatrix.rows(), lowLevelMatrix.columns());
+			tmp = (SparseDoubleMatrix2D) mappingMatrix.zMult(lowLevelMatrix, tmp, 1, 0, false, false);
+		}
+		/**
+		 * perform incremental computation.
+		 */
+		else{
+			
+			//long t11 = System.currentTimeMillis();
+			SparseDoubleMatrix2D tmp0 = new SparseDoubleMatrix2D(mappingMatrix.rows(), lowLevelMatrix.columns());
+			tmp0 = (SparseDoubleMatrix2D) mappingMatrix.zMult(lowLevelMatrix, tmp0, 1, 0, false, false);
+			//long t12 = System.currentTimeMillis();
+			//System.out.println(t12-t11);
+			
+			//long t21 = System.currentTimeMillis();
+			tmp = incrementalCompute(previousTmpMatrix, lowLevelMatrix, maps);
+			//long t22 = System.currentTimeMillis();
+			//System.out.println(t22-t21);
+			
+			
+			for(int i=0; i<tmp.rows(); i++){
+				for(int j=0; j<tmp.columns(); j++){
+					if(tmp0.get(i, j) != tmp.get(i, j)){
+						System.currentTimeMillis();
+					}
+				}
+			}
+			
+			//tmp = incrementalCompute(previousTmpMatrix, lowLevelMatrix, maps);
+			
+			System.currentTimeMillis();
+		}
+		
+		
+		this.tmpMatrix = tmp;
+		this.mappingMatrix = mappingMatrix;
 		
 		SparseDoubleMatrix2D softConstaintResult = new SparseDoubleMatrix2D(mappingMatrix.rows(), mappingMatrix.rows());
 		softConstaintResult = (SparseDoubleMatrix2D)tmp.zMult(alg.transpose(mappingMatrix), softConstaintResult, 1, 0, false, false);	
@@ -261,6 +326,70 @@ public class Genotype {
 		this.violationList = violationList;
 		
 		return violatedNum;
+	}
+	
+	/**
+	 * @param tmpMatrix2
+	 * @param maps
+	 * @return
+	 */
+	private SparseDoubleMatrix2D incrementalCompute(
+			SparseDoubleMatrix2D tmpMatrix, SparseDoubleMatrix2D lowLevelMatrix,
+			ArrayList<HighLevelLowLevelMap> maps) {
+		if(maps.size() == 0){
+			return tmpMatrix;
+		}
+		else{
+			for(int i=0; i<tmpMatrix.rows(); i++){
+				ArrayList<HighLevelLowLevelMap> changingEntryInThisRow = new ArrayList<>();
+				for(HighLevelLowLevelMap map: maps){
+					if(map.i == i){
+						changingEntryInThisRow.add(map);
+					}
+				}
+				
+				if(changingEntryInThisRow.size() == 0){
+					continue;
+				}
+				
+				for(int j=0; j<tmpMatrix.columns(); j++){
+					int deltaSum = 0;
+					for(HighLevelLowLevelMap changingMap: changingEntryInThisRow){
+						double valueInTmpMatrix = lowLevelMatrix.get(changingMap.j, j);
+						if(valueInTmpMatrix == 1){
+							int delta = (changingMap.type == HighLevelLowLevelMap.ADDED)?
+									1 : -1;
+							deltaSum += delta;
+						}
+					}
+					
+					double value = tmpMatrix.get(i, j);
+					tmpMatrix.set(i, j, value+deltaSum);
+				}
+			}
+			
+			return tmpMatrix;
+		}
+	}
+
+	class HighLevelLowLevelMap{
+		public int i;
+		public int j;
+		public int type;
+		
+		public final static int REMOVED = 1;
+		public final static int ADDED = 2;
+		/**
+		 * @param i
+		 * @param j
+		 * @param type
+		 */
+		public HighLevelLowLevelMap(int i, int j, int type) {
+			super();
+			this.i = i;
+			this.j = j;
+			this.type = type;
+		}
 	}
 	
 	/**
@@ -333,4 +462,49 @@ public class Genotype {
 	public void setViolationList(ArrayList<Violation> violationList) {
 		this.violationList = violationList;
 	}
+
+
+	/**
+	 * @return the tmpMatrix
+	 */
+	public SparseDoubleMatrix2D getTmpMatrix() {
+		SparseDoubleMatrix2D matrix = new SparseDoubleMatrix2D(tmpMatrix.rows(), tmpMatrix.columns());
+		for(int i=0; i<matrix.rows(); i++){
+			for(int j=0; j<matrix.columns(); j++){
+				matrix.set(i, j, tmpMatrix.get(i, j));
+			}
+		}
+		return matrix;
+	}
+	
+	/**
+	 * @return the mappingMatrix
+	 */
+	public SparseDoubleMatrix2D getMappingMatrix() {
+		SparseDoubleMatrix2D matrix = new SparseDoubleMatrix2D(mappingMatrix.rows(), mappingMatrix.columns());
+		for(int i=0; i<matrix.rows(); i++){
+			for(int j=0; j<matrix.columns(); j++){
+				matrix.set(i, j, mappingMatrix.get(i, j));
+			}
+		}
+		return matrix;
+	}
+
+	/**
+	 * @param previousMappingMatrix the previousMappingMatrix to set
+	 */
+	public void setPreviousMappingMatrix(SparseDoubleMatrix2D previousMappingMatrix) {
+		this.previousMappingMatrix = previousMappingMatrix;
+	}
+	
+	/**
+	 * @param previoustTmpMatrix the previoustTmpMatrix to set
+	 */
+	public void setPreviousTmpMatrix(SparseDoubleMatrix2D previoustTmpMatrix) {
+		this.previousTmpMatrix = previoustTmpMatrix;
+	}
+
+	
+	
+	
 }

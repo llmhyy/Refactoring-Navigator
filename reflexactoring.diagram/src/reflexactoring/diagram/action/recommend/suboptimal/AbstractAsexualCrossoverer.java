@@ -37,7 +37,7 @@ public abstract class AbstractAsexualCrossoverer implements Crossoverer {
 			crosssoverPopulation.add(childGene);
 		}
 
-		/*crosssoverPopulation.addAll(selectedPopulation);
+		crosssoverPopulation.addAll(selectedPopulation);
 		Collections.sort(crosssoverPopulation, new GeneComparator());
 		Population newCrossoverPopulation = new Population();
 		for (int i = 0; i < crosssoverPopulation.size()/2; i++) {
@@ -47,11 +47,11 @@ public abstract class AbstractAsexualCrossoverer implements Crossoverer {
 		newCrossoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
 		newCrossoverPopulation.updateOptimalGene();
 
-		return newCrossoverPopulation;*/
+		return newCrossoverPopulation;
 		
-		crosssoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
+		/*crosssoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
 		crosssoverPopulation.updateOptimalGene();
-		return crosssoverPopulation;
+		return crosssoverPopulation;*/
 	}
 
 }
