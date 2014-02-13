@@ -13,7 +13,7 @@ import reflexactoring.Type;
  * @author linyun
  *
  */
-public class Scope {
+public class Scope{
 	private ArrayList<ICompilationUnitWrapper> scopeCompilationUnitList = new ArrayList<>();
 
 	/**
