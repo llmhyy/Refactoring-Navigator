@@ -10,7 +10,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.recommend.action.AddModuleAction;
-import reflexactoring.diagram.action.recommend.optimal.GlobalOptimizer;
 import reflexactoring.diagram.action.recommend.suboptimal.GeneticOptimizer;
 import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
