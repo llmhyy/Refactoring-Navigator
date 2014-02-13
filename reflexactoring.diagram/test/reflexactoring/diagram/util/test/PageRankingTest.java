@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import reflexactoring.diagram.action.PageRanker;
+import reflexactoring.diagram.action.MatlabPageRanker;
 
 import com.mathworks.toolbox.javabuilder.MWArray;
 import com.mathworks.toolbox.javabuilder.MWClassID;
@@ -97,7 +97,7 @@ public class PageRankingTest {
 		
 		double[] expectedResult = {0.03, 0.053, 0.027, 0.061, 0.162, 0.283, 0.241, 0.139};
 		
-		PageRanker ranker = new PageRanker();
+		MatlabPageRanker ranker = new MatlabPageRanker();
 		double[] resultVector = ranker.getPageRankingResultVector(calleeNodeIndexes, callerNodeIndexes, graphSize, x0);
 		
 		assertArrayEquals(expectedResult, resultVector, 0.001);

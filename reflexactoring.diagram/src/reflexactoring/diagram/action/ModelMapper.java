@@ -216,7 +216,8 @@ public class ModelMapper {
 		
 		for(int i=0; i<similarityTable.length; i++){
 			double[] initialVector = semanticSimilarityTable[i];
-			double[] resultVector = new PageRanker().generateResultVector(initialVector, compilationUnitList);
+			//double[] resultVector = new MatlabPageRanker().generateResultVector(initialVector, compilationUnitList);
+			double[] resultVector = new HeuristicPageRanker().generateResultVector(initialVector, compilationUnitList);
 			
 			for(int j=0; j<initialVector.length; j++){
 				similarityTable[i][j] = resultVector[j];
