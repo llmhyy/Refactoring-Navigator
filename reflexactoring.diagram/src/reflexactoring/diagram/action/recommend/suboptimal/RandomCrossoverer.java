@@ -11,7 +11,7 @@ import reflexactoring.diagram.util.Settings;
  * @author linyun
  *
  */
-public class RandomCrossoverer extends AbstractSexualCrossoverer implements SexualCrossoverer {
+public class RandomCrossoverer extends AbstractSexualCrossoverer{
 
 	private FitnessComputingFactor computingFactor;
 	

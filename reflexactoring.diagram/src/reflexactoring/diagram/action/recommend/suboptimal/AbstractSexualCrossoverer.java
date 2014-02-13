@@ -9,8 +9,8 @@ import java.util.Collections;
  * @author linyun
  *
  */
-public abstract class AbstractSexualCrossoverer implements SexualCrossoverer {
-
+public abstract class AbstractSexualCrossoverer implements Crossoverer {
+	public abstract GenoTypePair produceOffString(GenoTypePair pair);
 	/* (non-Javadoc)
 	 * @see reflexactoring.diagram.action.recommend.suboptimal.Crossoverer#crossoverAndMutate(reflexactoring.diagram.action.recommend.suboptimal.Population, reflexactoring.diagram.action.recommend.suboptimal.FitnessComputingFactor)
 	 */

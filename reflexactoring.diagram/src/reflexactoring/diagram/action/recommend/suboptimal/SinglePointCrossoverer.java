@@ -9,7 +9,7 @@ import reflexactoring.diagram.util.Settings;
  * @author linyun
  *
  */
-public class SinglePointCrossoverer extends AbstractSexualCrossoverer implements SexualCrossoverer {
+public class SinglePointCrossoverer extends AbstractSexualCrossoverer{
 
 	private FitnessComputingFactor computingFactor;
 	/**

@@ -9,8 +9,9 @@ import java.util.Collections;
  * @author linyun
  * 
  */
-public abstract class AbstractAsexualCrossoverer implements AsexualCrossoverer {
+public abstract class AbstractAsexualCrossoverer implements Crossoverer {
 
+	public abstract Genotype produceOffSpring(Genotype gene);
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -23,13 +24,6 @@ public abstract class AbstractAsexualCrossoverer implements AsexualCrossoverer {
 	@Override
 	public Population crossoverAndMutate(Population selectedPopulation,
 			FitnessComputingFactor computingFactor) {
-		// Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
-		// Crossoverer crossoverer = new
-		// SinglePointCrossoverer(computingFactor);
-		// Crossoverer crossoverer = new
-		// RandomWalkerCrossoverer(computingFactor);
-		// Crossoverer crossoverer = new
-		// ViolationReductionOrientedCrossoverer(computingFactor);
 
 		Population crosssoverPopulation = new Population();
 
@@ -43,7 +37,7 @@ public abstract class AbstractAsexualCrossoverer implements AsexualCrossoverer {
 			crosssoverPopulation.add(childGene);
 		}
 
-		crosssoverPopulation.addAll(selectedPopulation);
+		/*crosssoverPopulation.addAll(selectedPopulation);
 		Collections.sort(crosssoverPopulation, new GeneComparator());
 		Population newCrossoverPopulation = new Population();
 		for (int i = 0; i < crosssoverPopulation.size()/2; i++) {
@@ -53,7 +47,11 @@ public abstract class AbstractAsexualCrossoverer implements AsexualCrossoverer {
 		newCrossoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
 		newCrossoverPopulation.updateOptimalGene();
 
-		return newCrossoverPopulation;
+		return newCrossoverPopulation;*/
+		
+		crosssoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
+		crosssoverPopulation.updateOptimalGene();
+		return crosssoverPopulation;
 	}
 
 }

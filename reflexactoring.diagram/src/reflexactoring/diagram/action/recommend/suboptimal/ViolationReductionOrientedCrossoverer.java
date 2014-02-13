@@ -12,7 +12,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
  * @author linyun
  *
  */
-public class ViolationReductionOrientedCrossoverer extends AbstractAsexualCrossoverer implements AsexualCrossoverer {
+public class ViolationReductionOrientedCrossoverer extends AbstractAsexualCrossoverer{
 
 	private FitnessComputingFactor computingFactor;
 	
