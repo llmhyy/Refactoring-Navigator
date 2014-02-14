@@ -50,4 +50,11 @@ public class Settings {
 	public static double mutationRate = 0.01;
 	public static int geneticIterationNum = 1000;
 	public static int populationSize = 50;
+	
+	//=============================================================
+	/**
+	 * The following is the parameters for k-step optimization
+	 */
+	public static int kStep = 3;
+	public static int bucketSize = 10;
 }
