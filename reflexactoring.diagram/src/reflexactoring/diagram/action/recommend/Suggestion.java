@@ -40,6 +40,7 @@ public class Suggestion {
 	}
 	
 	public String generateTagedText(){
+		//TODO
 		return null;
 	}
 
