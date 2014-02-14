@@ -141,4 +141,12 @@ public class ModuleWrapper implements SuggestionObject, GraphNode{
 	public List<? extends GraphNode> getCalleeList() {
 		return this.calleeModuleList;
 	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.SuggestionObject#getNameWithTag()
+	 */
+	@Override
+	public String getNameWithTag() {
+		return "<a href=\"Module\">" + getName() + "</a>";
+	}
 }

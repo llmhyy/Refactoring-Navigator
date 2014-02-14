@@ -64,4 +64,12 @@ public class FieldWrapper extends UnitMemberWrapper{
 	public String getTypeName() {
 		return "field";
 	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.SuggestionObject#getNameWithTag()
+	 */
+	@Override
+	public String getNameWithTag() {
+		return "<a href=\"Field\">" + getName() + "</a>";
+	}
 }

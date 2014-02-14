@@ -47,9 +47,9 @@ public abstract class DirectOrientedAction extends RefactoringAction {
 	@Override
 	public String getDetailedDescription() {
 		
-		String from = (origin == null)? "canvas" : origin.getName(); 
+		String from = (origin == null)? "canvas" : origin.getNameWithTag(); 
 		
-		String desc = "from " + from + " to " + destination.getName();
+		String desc = "from " + from + " to " + destination.getNameWithTag();
 		return desc;
 	}
 }

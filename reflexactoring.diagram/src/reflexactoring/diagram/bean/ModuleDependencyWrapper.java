@@ -77,4 +77,13 @@ public class ModuleDependencyWrapper implements SuggestionObject{
 	public String getName() {
 		return "edge";
 	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.SuggestionObject#getNameWithTag()
+	 */
+	@Override
+	public String getNameWithTag() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

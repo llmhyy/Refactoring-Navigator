@@ -4,8 +4,10 @@
 package reflexactoring.diagram.action.recommend;
 
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.LowLevelSuggestionObject;
 import reflexactoring.diagram.bean.SuggestionObject;
+import reflexactoring.diagram.bean.UnitMemberWrapper;
 
 /**
  * @author linyun
@@ -40,8 +42,23 @@ public class Suggestion {
 	}
 	
 	public String generateTagedText(){
-		//TODO
-		return null;
+		String suggestionObjType = "";
+		if(suggeestionObject instanceof LowLevelSuggestionObject){
+			suggestionObjType = " " + ((LowLevelSuggestionObject)suggeestionObject).getTypeName();
+		}
+		
+		String suggestionObjName = (this.suggeestionObject == null)? "modules ": this.suggeestionObject.getNameWithTag();
+		
+		if(suggeestionObject instanceof UnitMemberWrapper){
+			UnitMemberWrapper member = (UnitMemberWrapper)suggeestionObject;
+			ICompilationUnitWrapper type = member.getUnitWrapper();
+			String location = "(" + type.getNameWithTag() + ") ";
+			suggestionObjName += location;
+		}
+		
+		return this.action.getActionName() + 
+				suggestionObjType + " " + suggestionObjName + " " +
+				this.action.getDetailedDescription() + " ";
 	}
 
 	/**

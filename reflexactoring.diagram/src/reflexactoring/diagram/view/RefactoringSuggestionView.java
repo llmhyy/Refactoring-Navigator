@@ -9,12 +9,18 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
@@ -55,43 +61,60 @@ public class RefactoringSuggestionView extends ViewPart {
 	}
 	
 	public void refreshSuggestionsOnUI(ArrayList<Suggestion> suggestions){
+		for(Control control: form.getBody().getChildren()){
+			control.dispose();
+		}
+		
+		FormText headerText = toolkit.createFormText(form.getBody(), true);
+		headerText.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
+		headerText.setText(refactoringDesc, false, false);
 		
 		
 		if(suggestions == null){
 			return;
 		}
 		
-		String content = generateCSS(suggestions);
+		generateSuggestionsOnUI(suggestions);
 		
-		text.setText(content, true, false);
-		text.addHyperlinkListener(new HyperlinkAdapter() {
-			public void linkActivated(HyperlinkEvent e) {
-				  System.out.println("Link active: "+e.getHref());
-			}
-		});
-		text.getParent().layout();
-		text.getParent().redraw();
 		form.reflow(false);
-		//form.getBody().layout();
-		//form.getBody().redraw();
 	}
 	
-	private String generateCSS(ArrayList<Suggestion> list){
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("<form>");
-		buffer.append("<p>"+ refactoringDesc /*+ "hello "*/ + "</p>");
+	private void generateSuggestionsOnUI(ArrayList<Suggestion> list){
 		for(Suggestion suggestion: list){
+			final FormText text = toolkit.createFormText(form.getBody(), true);
+			text.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
 			
+			StringBuffer buffer = new StringBuffer();
+			buffer.append("<form>");
 			buffer.append("<li>");
-			buffer.append(suggestion.toString());
-			buffer.append("<a href=\"\">execute</a>");
+			buffer.append(suggestion.generateTagedText());
+			buffer.append("<a href=\"Exec\">Execute</a>");
 			buffer.append("</li>");			
 			
+			buffer.append("</form>");
+			
+			text.setText(buffer.toString(), true, false);
+			text.setData(suggestion);
+			text.addHyperlinkListener(new HyperlinkAdapter() {
+				public void linkActivated(HyperlinkEvent e) {
+					Suggestion suggestion = (Suggestion) text.getData();
+					if(e.getHref().equals("Module")){
+						System.out.println(suggestion);
+					}
+					else if(e.getHref().equals("Type")){
+						System.out.println(suggestion);
+					}
+					else if(e.getHref().equals("Method")){
+						System.out.println(suggestion);
+					}
+					else if(e.getHref().equals("Field")){
+						System.out.println(suggestion);
+					}
+				}
+			});
+			text.getParent().layout();
+			text.getParent().redraw();
 		}
-		
-		buffer.append("</form>");
-		
-		return buffer.toString();
 	}
 
 	@SuppressWarnings("restriction")

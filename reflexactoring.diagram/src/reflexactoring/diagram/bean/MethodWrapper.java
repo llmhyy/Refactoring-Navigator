@@ -58,4 +58,12 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public String getTypeName() {
 		return "method";
 	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.SuggestionObject#getNameWithTag()
+	 */
+	@Override
+	public String getNameWithTag() {
+		return "<a href=\"Method\">" + getName() + "</a>";
+	}
 }

@@ -266,4 +266,12 @@ public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLev
 	public String getTypeName() {
 		return "Java type";
 	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.SuggestionObject#getNameWithTag()
+	 */
+	@Override
+	public String getNameWithTag() {
+		return "<a href=\"Type\" value=\"test\">" + getName() + "</a>";
+	}
 }

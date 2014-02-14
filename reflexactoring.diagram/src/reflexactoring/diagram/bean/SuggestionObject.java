@@ -9,4 +9,5 @@ package reflexactoring.diagram.bean;
  */
 public interface SuggestionObject {
 	public String getName();
+	public String getNameWithTag();
 }
