@@ -114,6 +114,7 @@ public abstract class Suboptimizer {
 		computingFactor.setRelationMatrix(relationMatrix);
 		computingFactor.setWeightVector(weightVector);
 		computingFactor.setX0Vector(x0Vector);
+		computingFactor.initializeEdgeVertexMatrix();
 		
 		return computingFactor;
 	}

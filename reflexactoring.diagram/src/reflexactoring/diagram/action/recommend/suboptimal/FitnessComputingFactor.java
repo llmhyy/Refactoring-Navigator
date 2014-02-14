@@ -3,9 +3,12 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
+import java.util.ArrayList;
+
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
+import cern.colt.matrix.linalg.Algebra;
 
 /**
  * @author linyun
@@ -96,20 +99,43 @@ public class FitnessComputingFactor {
 	public void setHighLevelMatrix(SparseDoubleMatrix2D highLevelMatrix) {
 		this.highLevelMatrix = highLevelMatrix;
 	}
-
+	
 	/**
-	 * @return the edgeVertexMatrix
+	 * @param relationMatrix
+	 * @return
 	 */
-	public SparseDoubleMatrix2D getEdgeVertexMatrix() {
+	private SparseDoubleMatrix2D convertToEdgeVertexMatrix(SparseDoubleMatrix2D relationMatrix) {
+		int highNum = relationMatrix.rows();
+		int lowNum = relationMatrix.columns();
+		
+		ArrayList<int[]> map = new ArrayList<>(); 
+		for(int i=0; i<relationMatrix.rows(); i++){
+			for(int j=0; j<relationMatrix.columns(); j++){
+				if(relationMatrix.get(i, j) != 0){
+					map.add(new int[]{i, j});
+				}
+			}
+		}
+		
+		SparseDoubleMatrix2D edgeVertexMatrix = new SparseDoubleMatrix2D(highNum+lowNum, map.size());
+		for(int j=0; j<map.size(); j++){
+			int moduleIndex = map.get(j)[0];
+			int unitIndex = map.get(j)[1] + highNum;
+			
+			edgeVertexMatrix.set(moduleIndex, j, 1);
+			edgeVertexMatrix.set(unitIndex, j, 1);
+		}
+		
 		return edgeVertexMatrix;
 	}
-
-	/**
-	 * @param edgeVertexMatrix
-	 *            the edgeVertexMatrix to set
-	 */
-	public void setEdgeVertexMatrix(SparseDoubleMatrix2D edgeVertexMatrix) {
-		this.edgeVertexMatrix = edgeVertexMatrix;
+	
+	public void initializeEdgeVertexMatrix(){
+		this.edgeVertexMatrix = convertToEdgeVertexMatrix(relationMatrix);
+		int highLevelNum = relationMatrix.rows();
+		
+		Algebra alg = new Algebra();
+		this.A_h = (SparseDoubleMatrix2D) alg.subMatrix(edgeVertexMatrix, 0, highLevelNum-1, 0, edgeVertexMatrix.columns()-1);
+		this.A_l = (SparseDoubleMatrix2D) alg.subMatrix(edgeVertexMatrix, highLevelNum, edgeVertexMatrix.rows()-1, 0, edgeVertexMatrix.columns()-1);
 	}
 
 	/**

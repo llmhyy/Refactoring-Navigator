@@ -161,6 +161,7 @@ public class Genotype {
 			tmpMatrixTable.put(this, this.tmpMatrix);
 			mappingMatrixTable.put(this, this.mappingMatrix);
 			
+			this.fitness = d;
 			//return d;
 		}
 		
@@ -184,30 +185,9 @@ public class Genotype {
 		
 		SparseDoubleMatrix1D x = GeneticUtil.convertArrayToVector(this.getDNA());
 		
-		SparseDoubleMatrix2D edgeVertexMatrix;
-		SparseDoubleMatrix2D A_h;
-		SparseDoubleMatrix2D A_l;
-		
-		if(computingFactor.getEdgeVertexMatrix() == null){
-			edgeVertexMatrix = convertToEdgeVertexMatrix(relationMatrix);
-			int highLevelNum = relationMatrix.rows();
-			//int lowLevelNum = relationMatrix.getColumnDimension();
-			
-			Algebra alg = new Algebra();
-			A_h = (SparseDoubleMatrix2D) alg.subMatrix(edgeVertexMatrix, 0, highLevelNum-1, 0, edgeVertexMatrix.columns()-1);
-			A_l = (SparseDoubleMatrix2D) alg.subMatrix(edgeVertexMatrix, highLevelNum, edgeVertexMatrix.rows()-1, 0, edgeVertexMatrix.columns()-1);
-			//A_h = edgeVertexMatrix.getMatrix(0, highLevelNum-1, 0, edgeVertexMatrix.columns()-1);
-			//A_l = edgeVertexMatrix.getMatrix(highLevelNum, edgeVertexMatrix.getRowDimension()-1, 0, edgeVertexMatrix.getColumnDimension()-1);
-			
-			computingFactor.setEdgeVertexMatrix(edgeVertexMatrix);
-			computingFactor.setA_h(A_h);
-			computingFactor.setA_l(A_l);
-		}
-		else{
-			edgeVertexMatrix = computingFactor.getEdgeVertexMatrix();
-			A_h = computingFactor.getA_h();
-			A_l = computingFactor.getA_l();
-		}
+		//SparseDoubleMatrix2D edgeVertexMatrix = computingFactor.getEdgeVertexMatrix();
+		SparseDoubleMatrix2D A_h = computingFactor.getA_h();
+		SparseDoubleMatrix2D A_l = computingFactor.getA_l();
 		
 		Algebra alg = new Algebra();
 		/**
@@ -407,38 +387,6 @@ public class Genotype {
 			this.type = type;
 		}
 	}
-	
-	/**
-	 * @param relationMatrix
-	 * @return
-	 */
-	private SparseDoubleMatrix2D convertToEdgeVertexMatrix(SparseDoubleMatrix2D relationMatrix) {
-		int highNum = relationMatrix.rows();
-		int lowNum = relationMatrix.columns();
-		
-		ArrayList<int[]> map = new ArrayList<>(); 
-		for(int i=0; i<relationMatrix.rows(); i++){
-			for(int j=0; j<relationMatrix.columns(); j++){
-				if(relationMatrix.get(i, j) != 0){
-					map.add(new int[]{i, j});
-				}
-			}
-		}
-		
-		SparseDoubleMatrix2D edgeVertexMatrix = new SparseDoubleMatrix2D(highNum+lowNum, map.size());
-		for(int j=0; j<map.size(); j++){
-			int moduleIndex = map.get(j)[0];
-			int unitIndex = map.get(j)[1] + highNum;
-			
-			edgeVertexMatrix.set(moduleIndex, j, 1);
-			edgeVertexMatrix.set(unitIndex, j, 1);
-		}
-		
-		return edgeVertexMatrix;
-	}
-
-
-
 
 	private double getObjectiveValue(SparseDoubleMatrix1D weightVector, SparseDoubleMatrix1D x0Vector){
 		

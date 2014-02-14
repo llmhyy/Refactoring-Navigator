@@ -28,11 +28,6 @@ import reflexactoring.diagram.util.Settings;
  *
  */
 public class GeneticOptimizer extends Suboptimizer{
-
-	
-	
-	
-	
 	/**
 	 * 
 	 */
