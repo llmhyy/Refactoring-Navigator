@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -142,8 +143,57 @@ public class UnitMemberExtractor {
 						
 						return true;
 					}
+					
+					public boolean visit(ClassInstanceCreation creation){
+						
+						IMethodBinding methodBinding = creation.resolveConstructorBinding();
+						//IJavaElement element = methodBinding.getJavaElement();
+						methodBinding.getDeclaringClass();
+						String key = methodBinding.getKey();
+						
+						for(UnitMemberWrapper calleeMember: members){
+							if(calleeMember instanceof MethodWrapper){
+								MethodWrapper methodWrapper = (MethodWrapper)calleeMember;
+								String methodKey = methodWrapper.getMethod().resolveBinding().getKey();
+								
+								if(key.equals(methodKey)){
+									member.addCallee(calleeMember);
+									calleeMember.addCaller(member);
+								}
+							}
+						}
+						
+						return true;
+					}
 				});
 				
+			}
+			else if(member instanceof FieldWrapper){
+				((FieldWrapper) member).getField().accept(new ASTVisitor() {
+					public boolean visit(ClassInstanceCreation creation){
+						
+						IMethodBinding methodBinding = creation.resolveConstructorBinding();
+						//IJavaElement element = methodBinding.getJavaElement();
+						methodBinding.getDeclaringClass();
+						String key = methodBinding.getKey();
+						
+						//System.currentTimeMillis();
+						
+						for(UnitMemberWrapper calleeMember: members){
+							if(calleeMember instanceof MethodWrapper){
+								MethodWrapper methodWrapper = (MethodWrapper)calleeMember;
+								String methodKey = methodWrapper.getMethod().resolveBinding().getKey();
+								
+								if(key.equals(methodKey)){
+									member.addCallee(calleeMember);
+									calleeMember.addCaller(member);
+								}
+							}
+						}
+						
+						return true;
+					}
+				});
 			}
 		}
 		

@@ -171,7 +171,8 @@ public class Genotype {
 		double objectiveValue = getObjectiveValue(weightVector, x0Vector);
 		int voilatedNum = getViolatedConstraintsNumber(computingFactor);
 		
-		this.fitness = objectiveValue - voilatedNum;*/
+		d = new Double(objectiveValue - voilatedNum);
+		this.fitness = d;*/
 		
 	}
 	
