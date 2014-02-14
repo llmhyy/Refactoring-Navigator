@@ -290,12 +290,10 @@ public class ViolationReductionOrientedCrossoverer extends AbstractAsexualCrosso
 			int[] newDNA = move(oldGene.getDNA(), currentMappingRelation, computingFactor.getRelationMatrix());
 			
 			Genotype newGene = new Genotype(newDNA);
-			double fitness = newGene.computeFitness(computingFactor);
-			
-			newGene.setFitness(fitness);
+			newGene.computeFitness(computingFactor);
 			this.setResultingGene(newGene);
 			
-			double diff = fitness - oldGene.getFitness();
+			double diff = newGene.getFitness() - oldGene.getFitness();
 			
 			return diff;
 		}

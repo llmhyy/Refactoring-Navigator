@@ -21,7 +21,10 @@ import reflexactoring.diagram.util.Settings;
  */
 public class Genotype {
 	
-	private static HashMap<Genotype, Double> storage = new HashMap<>();
+	private static HashMap<Genotype, Double> fitnessTable = new HashMap<>();
+	private static HashMap<Genotype, SparseDoubleMatrix2D> tmpMatrixTable = new HashMap<>();
+	private static HashMap<Genotype, SparseDoubleMatrix2D> mappingMatrixTable = new HashMap<>();
+	
 	private ArrayList<Violation> violationList = new ArrayList<>();
 	
 	private int[] DNA;
@@ -130,10 +133,20 @@ public class Genotype {
 		this.fitness = fitness;
 	}
 	
-	public double computeFitness(FitnessComputingFactor computingFactor){
-		/*Double d = storage.get(this);
+	/**
+	 * The consequence of invoking this method:
+	 * 1) the fitness of gene will be set.
+	 * 2) the tmpMatrix and mappingMatrix will be set as well.
+	 * @param computingFactor
+	 */
+	public void computeFitness(FitnessComputingFactor computingFactor){
+		Double d = fitnessTable.get(this);
 		if(d != null){
-			return d;
+			this.fitness = d;
+			this.tmpMatrix = tmpMatrixTable.get(this);
+			this.mappingMatrix = mappingMatrixTable.get(this);
+			
+			//return d;
 		}
 		else{
 			SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
@@ -143,18 +156,21 @@ public class Genotype {
 			int voilatedNum = getViolatedConstraintsNumber(computingFactor);
 			
 			d = new Double(objectiveValue - voilatedNum);
-			storage.put(this, d);
 			
-			return d;
-		}*/
+			fitnessTable.put(this, d);
+			tmpMatrixTable.put(this, this.tmpMatrix);
+			mappingMatrixTable.put(this, this.mappingMatrix);
+			
+			//return d;
+		}
 		
-		SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
+		/*SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
 		SparseDoubleMatrix1D x0Vector = computingFactor.getX0Vector();
 		
 		double objectiveValue = getObjectiveValue(weightVector, x0Vector);
 		int voilatedNum = getViolatedConstraintsNumber(computingFactor);
 		
-		return objectiveValue - voilatedNum;
+		this.fitness = objectiveValue - voilatedNum;*/
 		
 	}
 	

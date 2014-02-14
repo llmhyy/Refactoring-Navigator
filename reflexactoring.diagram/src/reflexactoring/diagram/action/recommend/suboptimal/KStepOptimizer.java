@@ -158,8 +158,7 @@ public class KStepOptimizer extends Suboptimizer{
 		}
 		Genotype gene = new Genotype(DNA);
 		
-		double fitness = gene.computeFitness(computingFactor);
-		gene.setFitness(fitness);
+		gene.computeFitness(computingFactor);
 		
 		return gene;
 	}

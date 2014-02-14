@@ -68,12 +68,12 @@ public class RandomCrossoverer extends AbstractSexualCrossoverer{
 		Genotype subGene1 = new Genotype(childDNA1);
 		//subGene1.setPreviousMappingMatrix(gene1.getMappingMatrix());
 		//subGene1.setPreviousTmpMatrix(gene1.getTmpMatrix());
-		subGene1.setFitness(subGene1.computeFitness(computingFactor));
+		subGene1.computeFitness(computingFactor);
 		
 		Genotype subGene2 = new Genotype(childDNA2);
 		//subGene2.setPreviousMappingMatrix(gene2.getMappingMatrix());
 		//subGene2.setPreviousTmpMatrix(gene2.getTmpMatrix());
-		subGene2.setFitness(subGene2.computeFitness(computingFactor));
+		subGene2.computeFitness(computingFactor);
 		
 		GenoTypePair subPair = new GenoTypePair(subGene1, subGene2);
 

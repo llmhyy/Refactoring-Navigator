@@ -58,9 +58,9 @@ public class SinglePointCrossoverer extends AbstractSexualCrossoverer{
 		}
 		
 		Genotype subGene1 = new Genotype(childDNA1);
-		subGene1.setFitness(subGene1.computeFitness(computingFactor));
+		subGene1.computeFitness(computingFactor);
 		Genotype subGene2 = new Genotype(childDNA2);
-		subGene2.setFitness(subGene2.computeFitness(computingFactor));
+		subGene2.computeFitness(computingFactor);
 		
 		GenoTypePair subPair = new GenoTypePair(subGene1, subGene2);
 

@@ -80,7 +80,7 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 						Genotype newGene = new Genotype(DNA);
 						newGene.setPreviousMappingMatrix(oldGene.getMappingMatrix());
 						newGene.setPreviousTmpMatrix(oldGene.getTmpMatrix());
-						newGene.setFitness(newGene.computeFitness(computingFactor));
+						newGene.computeFitness(computingFactor);
 						return newGene;						
 					}
 					

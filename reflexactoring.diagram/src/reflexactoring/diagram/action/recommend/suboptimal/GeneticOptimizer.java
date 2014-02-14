@@ -40,9 +40,10 @@ public class GeneticOptimizer extends Suboptimizer{
 	protected Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
 			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, double[][] similarityTable) {
 		
-		int dimension = computingFactor.getX0Vector().size();
+		/*int dimension = computingFactor.getX0Vector().size();
 		SeedGenerator seedGenerator = new ConstrainedSeedGenerator(dimension, modules, lowLevelNodes, 
-				similarityTable, reverseRelationMap);
+				similarityTable, reverseRelationMap);*/
+		SeedGenerator seedGenerator = new OriginOrientedSeedGenerator(computingFactor);
 		
 		Population population = generatePopulation(computingFactor, seedGenerator);
 		System.out.println(population.getOptimalGene().getFitness());
@@ -69,7 +70,7 @@ public class GeneticOptimizer extends Suboptimizer{
 			int[] seed = seedGenerator.generateSeed();
 			
 			Genotype gene = new Genotype(seed);
-			gene.setFitness(gene.computeFitness(computingFactor));
+			gene.computeFitness(computingFactor);
 			
 			population.add(gene);
 		}
