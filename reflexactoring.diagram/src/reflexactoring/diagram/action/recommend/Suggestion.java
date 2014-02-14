@@ -38,6 +38,10 @@ public class Suggestion {
 				suggestionObjType + " " + suggestionObjName + " " +
 				this.action.getDetailedDescription();
 	}
+	
+	public String generateTagedText(){
+		return null;
+	}
 
 	/**
 	 * @return the suggeestionObject
