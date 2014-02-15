@@ -38,15 +38,13 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 				compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
 			}
 			compilationUnitWrapperList = buildStructuralDependency(compilationUnitWrapperList);*/
-			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList 
-				= Settings.scope.getScopeCompilationUnitList();
 			
 			ModelMapper mapper = new ModelMapper();
 			
-			double[][] similarityTable = mapper.generateMappingRelation(moduleList, compilationUnitWrapperList);
+			double[][] similarityTable = mapper.generateMappingRelation(moduleList, Settings.scope.getScopeCompilationUnitList());
 			//double[][] similarityTable = mapper.computeSimilarityTableWithRegardToHeurisitcRules(moduleList, compilationUnitWrapperList);
 			ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(similarityTable, 
-					moduleList, compilationUnitWrapperList);
+					moduleList, Settings.scope.getScopeCompilationUnitList());
 			Settings.similarityTable = table;
 			
 			ModuleUnitsSimilarityView view = (ModuleUnitsSimilarityView)PlatformUI.getWorkbench().
@@ -58,7 +56,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 			
 			
 			
-			new DiagramUpdater().generateReflexionModel(moduleList, compilationUnitWrapperList);
+			new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
 			
 			/**
 			 * after all, the recompute settings should be set false to improve efficiency

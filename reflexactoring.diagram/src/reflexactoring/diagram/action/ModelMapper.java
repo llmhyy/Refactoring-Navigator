@@ -43,13 +43,15 @@ public class ModelMapper {
 			overallSimilarityTable = ReflexactoringUtil.convertModuleUnitsSimilarityTableToRawTable(Settings.similarityTable);
 		}
 		
+		clearMappingRelation(moduleList, compilationUnitList);
+		
+		
 		/**
 		 * should take care that one compilation unit can be mapped to only one module,
 		 * on the contrary, one module can be mapped to many compilation units.
 		 */
 		for(int j=0; j<compilationUnitList.size(); j++){
 			ICompilationUnitWrapper unit = compilationUnitList.get(j);
-			
 			/**
 			 * see whether user has specified mapping rules for such a compilation unit.
 			 */
@@ -85,6 +87,21 @@ public class ModelMapper {
 		return overallSimilarityTable;
 	}
 	
+	/**
+	 * @param moduleList
+	 * @param compilationUnitList
+	 */
+	private void clearMappingRelation(ArrayList<ModuleWrapper> moduleList,
+			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
+		for(ModuleWrapper module: moduleList){
+			module.getMappingList().clear();
+		}
+		
+		for(ICompilationUnitWrapper unit: compilationUnitList){
+			unit.setMappingModule(null);
+		}
+	}
+
 	public double[][] computeSimilarityTableWithRegardToHeurisitcRules(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitList){
 		
