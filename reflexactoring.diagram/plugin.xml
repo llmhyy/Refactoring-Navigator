@@ -75,6 +75,46 @@
                label="Edit Name or Description">
          </action>
       </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.removeClassOnCanvas"
+            objectClass="reflexactoring.diagram.edit.parts.ClassEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
+               id="reflexactoring.diagram.action.removeClassOnCanvas"
+               label="Remove from Scope">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.removeClassOnModule"
+            objectClass="reflexactoring.diagram.edit.parts.Class2EditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
+               id="reflexactoring.diagram.action.removeClassOnModule"
+               label="Remove from Scope">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.removeInterfaceOnCanvas"
+            objectClass="reflexactoring.diagram.edit.parts.InterfaceEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
+               id="reflexactoring.diagram.action.removeIntefaceOnCanvas"
+               label="Remove from Scope">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.removeInterfaceOnModule"
+            objectClass="reflexactoring.diagram.edit.parts.Interface2EditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
+               id="reflexactoring.diagram.action.removeIntefaceOnModule"
+               label="Remove from Scope">
+         </action>
+      </objectContribution>
    </extension>
 	
    <extension point="org.eclipse.gmf.runtime.common.ui.services.action.globalActionHandlerProviders" id="global-actions">

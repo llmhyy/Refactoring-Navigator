@@ -24,7 +24,6 @@ import reflexactoring.diagram.util.Settings;
 public class EditModuleDescriptionAction extends AbstractActionDelegate implements IObjectActionDelegate{
 
 	public EditModuleDescriptionAction() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override
