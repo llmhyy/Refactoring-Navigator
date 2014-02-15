@@ -117,22 +117,22 @@
       </objectContribution>
       <objectContribution
             adaptable="false"
-            id="reflexactoring.diagram.highlightContribution"
-            objectClass="reflexactoring.diagram.edit.parts.ModuleDependencyEditPart">
-         <action
-               class="reflexactoring.diagram.action.popup.HighlightContributionAction"
-               id="reflexactoring.diagram.action.highlightContribution"
-               label="Highlight Contribution">
-         </action>
-      </objectContribution>
-      <objectContribution
-            adaptable="false"
             id="reflexactoring.diagram.hideContribution"
             objectClass="reflexactoring.diagram.edit.parts.ModuleDependencyEditPart">
          <action
                class="reflexactoring.diagram.action.popup.HideContributionAction"
                id="reflexactoring.diagram.action.hideContribution"
                label="Hide Contribution">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.highlightContribution"
+            objectClass="reflexactoring.diagram.edit.parts.ModuleDependencyEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.HighlightContributionAction"
+               id="reflexactoring.diagram.action.highlightContribution"
+               label="Highlight Contribution">
          </action>
       </objectContribution>
    </extension>
