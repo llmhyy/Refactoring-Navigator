@@ -110,6 +110,11 @@ public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLev
 	}
 	
 	public boolean equals(Object obj){
+		
+		if(obj == null){
+			return false;
+		}
+		
 		if(obj instanceof ICompilationUnitWrapper){
 			ICompilationUnitWrapper type = (ICompilationUnitWrapper)obj;
 			return type.getFullQualifiedName().equals(this.getFullQualifiedName());

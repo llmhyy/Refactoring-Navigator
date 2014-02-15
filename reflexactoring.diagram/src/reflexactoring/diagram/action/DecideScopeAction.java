@@ -35,9 +35,11 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.Activator;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
+import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
+import reflexactoring.diagram.view.HeuristicMappingView;
 
 /**
  * @author linyun
@@ -92,6 +94,14 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			UnitMemberExtractor memberExtractor = new UnitMemberExtractor();
 			UnitMemberWrapperList members = memberExtractor.extract(Settings.scope.getScopeCompilationUnitList());
 			Settings.scope.setScopeMemberList(members);
+			/**
+			 * Clear heuristic mapping relation.
+			 */
+			Settings.heuristicModuleUnitMapList.clear();
+			HeuristicMappingView view = (HeuristicMappingView)PlatformUI.getWorkbench().
+					getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW);
+			view.getViewer().setInput(Settings.heuristicModuleUnitMapList);
+			view.getViewer().refresh();
 			
 			Settings.isCompliationUnitChanged = true;
 		}
