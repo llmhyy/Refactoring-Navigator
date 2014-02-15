@@ -38,6 +38,8 @@ public class ClassStructureBuilder {
 						if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
 							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
 							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
+							
+							refererCompilationUnit.putReferringDetail(refereeCompilationUnit, type);
 						}
 					}
 					
@@ -50,6 +52,8 @@ public class ClassStructureBuilder {
 						if(fullQulifiedName.equals(refereeCompilationUnit.getFullQualifiedName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
 							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
 							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
+							
+							refererCompilationUnit.putReferringDetail(refereeCompilationUnit, declaration);
 						}
 					}
 					
@@ -64,6 +68,8 @@ public class ClassStructureBuilder {
 							if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
 								refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
 								refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
+								
+								refererCompilationUnit.putReferringDetail(refereeCompilationUnit, type);
 							}
 						}
 					}

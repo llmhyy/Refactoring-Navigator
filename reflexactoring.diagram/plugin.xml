@@ -135,6 +135,16 @@
                label="Highlight Contribution">
          </action>
       </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.showReferenceDetail"
+            objectClass="reflexactoring.diagram.edit.parts.TypeDependencyEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.ShowReferenceDetailAction"
+               id="reflexactoring.diagram.action.showReferenceDetail"
+               label="Show Reference Detail">
+         </action>
+      </objectContribution>
    </extension>
 	
    <extension point="org.eclipse.gmf.runtime.common.ui.services.action.globalActionHandlerProviders" id="global-actions">
@@ -744,6 +754,14 @@
             icon="icons/view/module_type_similarity.gif"
             id="reflexactoring.diagram.view.moduleTypeSimilarity"
             name="Similarity Table"
+            restorable="true">
+      </view>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.ReferenceDetailView"
+            icon="icons/view/reference_detail.gif"
+            id="reflexactoring.diagram.view.referenceDetail"
+            name="Reference Detail"
             restorable="true">
       </view>
    </extension>

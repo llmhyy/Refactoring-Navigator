@@ -10,11 +10,13 @@ import java.util.List;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -32,6 +34,9 @@ public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLev
 	private HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList = new HashMap<>();
 	private HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList = new HashMap<>();
 	
+	private HashMap<ICompilationUnitWrapper, ArrayList<ASTNode>> referingDetails
+		= new HashMap<>();
+	
 	private ArrayList<UnitMemberWrapper> members = new ArrayList<>();
 	
 	/**
@@ -46,7 +51,7 @@ public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLev
 		this.compilationUnit = compilationUnit;
 		if(extractDesc){
 			
-			ASTParser parser = ASTParser.newParser(AST.JLS3);
+			ASTParser parser = ASTParser.newParser(AST.JLS4);
 			parser.setKind(ASTParser.K_COMPILATION_UNIT);
 			parser.setResolveBindings(true);
 			//parser.setSource(doc.get().toCharArray());
@@ -294,5 +299,28 @@ public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLev
 	 */
 	public void setMembers(ArrayList<UnitMemberWrapper> members) {
 		this.members = members;
+	}
+
+	/**
+	 * @return the referingDetails
+	 */
+	public HashMap<ICompilationUnitWrapper, ArrayList<ASTNode>> getReferingDetails() {
+		return referingDetails;
+	}
+
+	/**
+	 * @param refereeCompilationUnit
+	 * @param type
+	 */
+	public void putReferringDetail(
+			ICompilationUnitWrapper refereeCompilationUnit, ASTNode node) {
+		ArrayList<ASTNode> nodeList = this.referingDetails.get(refereeCompilationUnit);
+		if(nodeList == null){
+			nodeList = new ArrayList<>();
+		}
+		if(!nodeList.contains(node)){
+			nodeList.add(node);			
+		}
+		this.referingDetails.put(refereeCompilationUnit, nodeList);
 	}
 }
