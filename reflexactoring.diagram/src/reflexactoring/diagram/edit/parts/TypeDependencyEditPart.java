@@ -58,10 +58,12 @@ public class TypeDependencyEditPart extends ConnectionNodeEditPart implements
 	}
 
 	/**
-	 * @generated
+	 * @not generated
 	 */
 	public class TypeDependencyFigure extends PolylineConnectionEx {
-
+		
+		private PolylineDecoration polylineDecoration;
+		
 		/**
 		 * @not generated
 		 */
@@ -77,9 +79,25 @@ public class TypeDependencyEditPart extends ConnectionNodeEditPart implements
 		private RotatableDecoration createTargetDecoration() {
 			PolylineDecoration df = new PolylineDecoration();
 			df.setLineWidth(1);
+			
+			this.setPolylineDecoration(df);
+			
 			return df;
 		}
 
+		/**
+		 * @return the polylineDecoration
+		 */
+		public PolylineDecoration getPolylineDecoration() {
+			return polylineDecoration;
+		}
+
+		/**
+		 * @param polylineDecoration the polylineDecoration to set
+		 */
+		public void setPolylineDecoration(PolylineDecoration polylineDecoration) {
+			this.polylineDecoration = polylineDecoration;
+		}
 	}
 
 }
