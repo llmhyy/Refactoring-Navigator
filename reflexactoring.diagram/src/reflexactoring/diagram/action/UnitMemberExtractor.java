@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reflexactoring.diagram.action.recommend;
+package reflexactoring.diagram.action;
 
 import java.util.ArrayList;
 
@@ -51,6 +51,7 @@ public class UnitMemberExtractor {
 			unit.accept(new ASTVisitor() {
 				public boolean visit(FieldDeclaration fd){
 					FieldWrapper fieldWrapper = new FieldWrapper(fd, unitWrapper);
+					unitWrapper.getMembers().add(fieldWrapper);
 					memberList.add(fieldWrapper);
 					
 					return false;
@@ -58,6 +59,7 @@ public class UnitMemberExtractor {
 				
 				public boolean visit(MethodDeclaration md){
 					MethodWrapper methodWrapper = new MethodWrapper(md, unitWrapper);
+					unitWrapper.getMembers().add(methodWrapper);
 					memberList.add(methodWrapper);
 					
 					return true;

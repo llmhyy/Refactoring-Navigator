@@ -34,6 +34,7 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Activator;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
@@ -83,11 +84,14 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			}
 			
 			/**
-			 * Build dependencies amongst java types in scope.
+			 * Build dependencies amongst java types and its corresponding members in scope.
 			 */
 			ArrayList<ICompilationUnitWrapper> list = 
-					ReflexactoringUtil.buildStructuralDependency(Settings.scope.getScopeCompilationUnitList());
+					new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList());
 			Settings.scope.setScopeCompilationUnitList(list);
+			UnitMemberExtractor memberExtractor = new UnitMemberExtractor();
+			UnitMemberWrapperList members = memberExtractor.extract(Settings.scope.getScopeCompilationUnitList());
+			Settings.scope.setScopeMemberList(members);
 			
 			Settings.isCompliationUnitChanged = true;
 		}

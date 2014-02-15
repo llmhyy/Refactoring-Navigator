@@ -54,6 +54,9 @@ public class RemoveFromScopeAction extends AbstractActionDelegate implements IOb
 				selEditPart instanceof InterfaceEditPart ||
 				selEditPart instanceof Interface2EditPart){
 			
+			/**
+			 * remove it on graph.
+			 */
 			IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			ReflexactoringDiagramEditor editor = (ReflexactoringDiagramEditor)workbenchPage.getActiveEditor();
 			DiagramGraphicalViewer diagram = (DiagramGraphicalViewer)editor.getDiagramGraphicalViewer();
@@ -69,13 +72,12 @@ public class RemoveFromScopeAction extends AbstractActionDelegate implements IOb
 			DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
 			getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(destroyCommand));
 			
-			
+			/**
+			 * remove it on memory.
+			 */
 			ICompilationUnitWrapper unit = Settings.scope.findUnit(type);
 			Settings.scope.removeUnit(unit);
 			
-			/**
-			 * remove the corresponding members
-			 */
 		}
 	}
 	

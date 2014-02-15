@@ -9,6 +9,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.diagram.action.UnitMemberExtractor;
 import reflexactoring.diagram.action.recommend.action.AddModuleAction;
 import reflexactoring.diagram.action.recommend.suboptimal.GeneticOptimizer;
 import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
@@ -150,8 +151,9 @@ public class RefactoringRecommender {
 			
 			GeneticOptimizer optimizer = new GeneticOptimizer();
 			
-			UnitMemberExtractor extractor = new UnitMemberExtractor();
-			UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
+			//UnitMemberExtractor extractor = new UnitMemberExtractor();
+			//UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
+			UnitMemberWrapperList members = Settings.scope.getScopeMemberList();
 			
 			Genotype memberGene = optimizer.optimize(members, moduleList);
 			

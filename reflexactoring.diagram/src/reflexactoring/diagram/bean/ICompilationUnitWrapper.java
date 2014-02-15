@@ -32,6 +32,8 @@ public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLev
 	private HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList = new HashMap<>();
 	private HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList = new HashMap<>();
 	
+	private ArrayList<UnitMemberWrapper> members = new ArrayList<>();
+	
 	/**
 	 * @param compilationUnit
 	 */
@@ -273,5 +275,19 @@ public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLev
 	@Override
 	public String getNameWithTag() {
 		return "<a href=\"Type\" value=\"test\">" + getName() + "</a>";
+	}
+
+	/**
+	 * @return the members
+	 */
+	public ArrayList<UnitMemberWrapper> getMembers() {
+		return members;
+	}
+
+	/**
+	 * @param members the members to set
+	 */
+	public void setMembers(ArrayList<UnitMemberWrapper> members) {
+		this.members = members;
 	}
 }

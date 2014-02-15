@@ -15,7 +15,7 @@ import reflexactoring.Type;
  */
 public class Scope{
 	private ArrayList<ICompilationUnitWrapper> scopeCompilationUnitList = new ArrayList<>();
-
+	private UnitMemberWrapperList scopeMemberList = new UnitMemberWrapperList();
 	/**
 	 * @return the scopeCompilationUnitList
 	 */
@@ -59,7 +59,46 @@ public class Scope{
 		return findUnit(identifier);
 	}
 	
-	public void removeUnit(ICompilationUnitWrapper unitWrapper){
-		this.scopeCompilationUnitList.remove(unitWrapper);
+	public void removeUnit(ICompilationUnitWrapper toBeRemovedUnit){
+		this.scopeCompilationUnitList.remove(toBeRemovedUnit);
+		for(ICompilationUnitWrapper unit: this.scopeCompilationUnitList){
+			unit.getCalleeCompilationUnitList().remove(toBeRemovedUnit);
+			unit.getCallerCompilationUnitList().remove(toBeRemovedUnit);
+		}
+		
+		/**
+		 * remove corresponding method and dependency relation.
+		 */
+		ArrayList<UnitMemberWrapper> toBeRemovedOnes = new ArrayList<>();
+		for(UnitMemberWrapper member: this.scopeMemberList){
+			if(member.getUnitWrapper().equals(toBeRemovedUnit)){
+				toBeRemovedOnes.add(member);
+			}
+		}
+		
+		for(UnitMemberWrapper member: toBeRemovedOnes){
+			this.scopeMemberList.remove(member);
+		}
+		
+		for(UnitMemberWrapper member: this.scopeMemberList){
+			for(UnitMemberWrapper toBeRemovedMember: toBeRemovedOnes){
+				member.getCalleeList().remove(toBeRemovedMember);
+				member.getCallerList().remove(toBeRemovedMember);
+			}
+		}
+	}
+
+	/**
+	 * @return the scopeMemberList
+	 */
+	public UnitMemberWrapperList getScopeMemberList() {
+		return scopeMemberList;
+	}
+
+	/**
+	 * @param scopeMemberList the scopeMemberList to set
+	 */
+	public void setScopeMemberList(UnitMemberWrapperList scopeMemberList) {
+		this.scopeMemberList = scopeMemberList;
 	}
 }

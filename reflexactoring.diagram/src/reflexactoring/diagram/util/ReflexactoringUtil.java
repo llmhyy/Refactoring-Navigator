@@ -330,63 +330,6 @@ public class ReflexactoringUtil {
 		return compilationUnitWrapperList;
 	}*/
 	
-	/**
-	 * Identifying the reference relations in classes/interfaces in scope.
-	 * @param compilationUnitList
-	 * @return
-	 */
-	public static ArrayList<ICompilationUnitWrapper> buildStructuralDependency(final ArrayList<ICompilationUnitWrapper> compilationUnitList){
-		for(final ICompilationUnitWrapper refererCompilationUnit: compilationUnitList){
-			final CompilationUnit compilationUnit = refererCompilationUnit.getJavaUnit();
-			compilationUnit.accept(new ASTVisitor() {
-				/**
-				 * Currently, I just simplify the problem by considering only SimpleType. It could be extended to
-				 * other subclasses of Type.
-				 */
-				public boolean visit(SimpleType type){
-					String typeName = type.getName().getFullyQualifiedName();
-					for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
-						if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
-							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
-							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
-						}
-					}
-					
-					return true;
-				}
-				
-				public boolean visit(ImportDeclaration declaration){
-					String fullQulifiedName = declaration.getName().getFullyQualifiedName();
-					for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
-						if(fullQulifiedName.equals(refereeCompilationUnit.getFullQualifiedName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
-							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
-							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
-						}
-					}
-					
-					return true;
-				}
-				
-				public boolean visit(ClassInstanceCreation creation){
-					Type type = creation.getType();
-					if(type instanceof SimpleType){
-						String typeName = ((SimpleType)type).getName().getFullyQualifiedName();
-						for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
-							if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
-								refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
-								refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
-							}
-						}
-					}
-					
-					return true;
-				}
-			});
-		}
-		
-		return compilationUnitList;
-	}
-	
 	public static ModuleUnitsSimilarityTable convertRawTableToModuleUnitsSimilarityTable(double[][] similarityTable, ArrayList<ModuleWrapper> modules,
 			ArrayList<ICompilationUnitWrapper> units){
 		ModuleUnitsSimilarityTable table = new ModuleUnitsSimilarityTable();
