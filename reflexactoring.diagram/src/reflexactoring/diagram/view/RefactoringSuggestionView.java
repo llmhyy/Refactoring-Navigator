@@ -57,7 +57,7 @@ public class RefactoringSuggestionView extends ViewPart {
 		text.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
 		text.setText("<form>" + initialDesc +"</form>", true, false);
 		
-		hookActionsOnToolBar();
+		//hookActionsOnToolBar();
 	}
 	
 	public void refreshSuggestionsOnUI(ArrayList<Suggestion> suggestions){
