@@ -99,6 +99,24 @@ public class ReflexactoringUtil {
 		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.MUTATION_RATE, mutationRate);
 	}
 	
+	public static String getAlpha() {
+		String string = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.ALPHA);
+		return (string == null || string.length() == 0)? String.valueOf(Settings.alpha) : string;
+	}
+	
+	public static void setAlpha(String alpha){
+		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.ALPHA, alpha);
+	}
+	
+	public static String getBeta() {
+		String string = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.BETA);
+		return (string == null || string.length() == 0)? String.valueOf(Settings.beta) : string;
+	}
+	
+	public static void setBeta(String beta){
+		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.BETA, beta);
+	}
+	
 	public static String getDictPath(){
 		if(Activator.getDefault() == null){
 			return "C:\\Program Files (x86)\\WordNet\\2.1\\dict";

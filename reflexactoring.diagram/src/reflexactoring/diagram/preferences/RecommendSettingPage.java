@@ -82,8 +82,24 @@ public class RecommendSettingPage extends PreferencePage implements
 		mutationRateText = new Text(composite, SWT.BORDER);
 		mutationRateText.setText(ReflexactoringUtil.getMutationRate());
 		GridData mutationRateData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		iterationNumberData.horizontalSpan = 2;
+		mutationRateData.horizontalSpan = 2;
 		mutationRateText.setLayoutData(mutationRateData);
+		
+		Label alphaLabel = new Label(composite, SWT.NONE);
+		alphaLabel.setText("alpha");
+		alphaText = new Text(composite, SWT.BORDER);
+		alphaText.setText(ReflexactoringUtil.getAlpha());
+		GridData alphaData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		alphaData.horizontalSpan = 2;
+		alphaText.setLayoutData(alphaData);
+		
+		Label betaLabel = new Label(composite, SWT.NONE);
+		betaLabel.setText("beta");
+		betaText = new Text(composite, SWT.BORDER);
+		betaText.setText(ReflexactoringUtil.getMutationRate());
+		GridData betaData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		iterationNumberData.horizontalSpan = 2;
+		betaText.setLayoutData(betaData);
 		
 		
 		return composite;
@@ -105,10 +121,14 @@ public class RecommendSettingPage extends PreferencePage implements
 		preferences.put(ITERATION_NUMBER, this.iterationNumberText.getText());
 		preferences.put(POPULATION_SIZE, this.populationSizeText.getText());
 		preferences.put(MUTATION_RATE, this.mutationRateText.getText());
+		preferences.put(ALPHA, this.alphaText.getText());
+		preferences.put(BETA, this.betaText.getText());
 		
 		ReflexactoringUtil.setIterationNumber(this.iterationNumberText.getText());
 		ReflexactoringUtil.setPopulationSize(this.populationSizeText.getText());
 		ReflexactoringUtil.setMutationRate(this.mutationRateText.getText());
+		ReflexactoringUtil.setAlpha(this.alphaText.getText());
+		ReflexactoringUtil.setBeta(this.betaText.getText());
 		
 		return true;
 	}
