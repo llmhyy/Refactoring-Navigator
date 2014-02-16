@@ -5,6 +5,7 @@ package reflexactoring.diagram.action;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -13,6 +14,7 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
@@ -22,10 +24,14 @@ public class ClassStructureBuilder {
 	/**
 	 * Identifying the reference relations in classes/interfaces in scope.
 	 * @param compilationUnitList
-	 * @return
+	 * 
 	 */
-	public ArrayList<ICompilationUnitWrapper> buildStructuralDependency(final ArrayList<ICompilationUnitWrapper> compilationUnitList){
+	public void buildStructuralDependency(final ArrayList<ICompilationUnitWrapper> compilationUnitList,
+			IProgressMonitor monitor, int scale){
+		
 		for(final ICompilationUnitWrapper refererCompilationUnit: compilationUnitList){
+			monitor.worked(scale);
+			
 			final CompilationUnit compilationUnit = refererCompilationUnit.getJavaUnit();
 			compilationUnit.accept(new ASTVisitor() {
 				/**
@@ -79,6 +85,7 @@ public class ClassStructureBuilder {
 			});
 		}
 		
-		return compilationUnitList;
+		Settings.scope.setScopeCompilationUnitList(compilationUnitList);
+		//return compilationUnitList;
 	}
 }

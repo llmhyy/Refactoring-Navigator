@@ -3,6 +3,7 @@
  */
 package reflexactoring.diagram.action;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import org.eclipse.core.internal.resources.Project;
@@ -10,7 +11,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -22,6 +27,8 @@ import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jdt.internal.core.PackageFragmentRoot;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -34,6 +41,7 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Activator;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
@@ -45,9 +53,27 @@ import reflexactoring.diagram.view.HeuristicMappingView;
  * @author linyun
  *
  */
-public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
-
+public class DecideScopeAction implements IWorkbenchWindowActionDelegate {	
 	private Object[] previousSelections = null;
+	
+	class ProgramStructureExtractor implements IRunnableWithProgress{
+
+		private int totalWork;
+		
+		public ProgramStructureExtractor(int totalWork){
+			this.totalWork = totalWork;
+		}
+		
+		@Override
+		public void run(IProgressMonitor monitor)
+				throws InvocationTargetException, InterruptedException {
+			int scale = 50;
+			monitor.beginTask("build structural information", 4*totalWork*scale);
+			new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
+			new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
+		}
+		
+	}
 	
 	@Override
 	public void run(IAction action) {
@@ -85,15 +111,19 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 				//Settings.scopeCompilationUnitList.add(selectedObjects[i]);
 			}
 			
+			
 			/**
 			 * Build dependencies amongst java types and its corresponding members in scope.
 			 */
-			ArrayList<ICompilationUnitWrapper> list = 
-					new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList());
-			Settings.scope.setScopeCompilationUnitList(list);
-			UnitMemberExtractor memberExtractor = new UnitMemberExtractor();
-			UnitMemberWrapperList members = memberExtractor.extract(Settings.scope.getScopeCompilationUnitList());
-			Settings.scope.setScopeMemberList(members);
+			ProgressMonitorDialog dialog;
+			ProgramStructureExtractor extractor = new ProgramStructureExtractor(Settings.scope.getScopeCompilationUnitList().size());
+			try {
+				dialog = new ProgressMonitorDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+				dialog.run(false, true, extractor);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 			/**
 			 * Clear heuristic mapping relation.
 			 */
@@ -104,6 +134,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			view.getViewer().refresh();
 			
 			Settings.isCompliationUnitChanged = true;
+			
 		}
 		
 	}

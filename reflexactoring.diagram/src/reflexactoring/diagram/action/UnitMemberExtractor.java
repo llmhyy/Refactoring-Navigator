@@ -3,8 +3,10 @@
  */
 package reflexactoring.diagram.action;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
@@ -26,12 +28,17 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.text.reconciler.MonoReconciler;
+import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
@@ -39,15 +46,17 @@ import reflexactoring.diagram.bean.UnitMemberWrapperList;
  */
 public class UnitMemberExtractor {
 	
-	public UnitMemberWrapperList extract(ArrayList<ICompilationUnitWrapper> units){
+	public void extract(ArrayList<ICompilationUnitWrapper> units, IProgressMonitor monitor, int scale){
 		/**
 		 * initialize the members
 		 */
 		final ArrayList<UnitMemberWrapper> memberList = new ArrayList<>();
 		
 		for(final ICompilationUnitWrapper unitWrapper: units){
-			CompilationUnit unit = unitWrapper.getJavaUnit();
+			monitor.worked(scale);
 			
+			
+			CompilationUnit unit = unitWrapper.getJavaUnit();
 			unit.accept(new ASTVisitor() {
 				public boolean visit(FieldDeclaration fd){
 					FieldWrapper fieldWrapper = new FieldWrapper(fd, unitWrapper);
@@ -87,22 +96,28 @@ public class UnitMemberExtractor {
 		/**
 		 * build their relationships
 		 */
-		UnitMemberWrapperList members = constructRelations(memberList);
-		
-		return members;
+		UnitMemberWrapperList members = constructRelations(memberList, monitor, scale, units.size());
+		Settings.scope.setScopeMemberList(members);
 	}
 
 	/**
 	 * @param memberList
 	 * @return
 	 */
-	private UnitMemberWrapperList constructRelations(ArrayList<UnitMemberWrapper> memberList) {
+	private UnitMemberWrapperList constructRelations(ArrayList<UnitMemberWrapper> memberList, IProgressMonitor monitor, int scale, int typeNum) {
 		final UnitMemberWrapperList members = new UnitMemberWrapperList();
 		for(UnitMemberWrapper wrapper: memberList){
 			members.add(wrapper);
 		}
 		
+		int unitScale = 2*scale*typeNum/members.size();
+		
 		for(final UnitMemberWrapper member: members){
+			monitor.worked(unitScale);
+			if(monitor.isCanceled()){
+				break;
+			}
+			
 			if(member instanceof MethodWrapper){
 				MethodWrapper methodWrapper = (MethodWrapper)member;
 				
@@ -201,4 +216,6 @@ public class UnitMemberExtractor {
 		
 		return members;
 	}
+	
+	
 }

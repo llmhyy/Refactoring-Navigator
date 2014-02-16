@@ -73,7 +73,9 @@ public class TokenExtractor {
 		});
 
 		String content = buffer.toString();
-		content = content.substring(0, content.length() - 1);
+		if(content.length() > 0){
+			content = content.substring(0, content.length() - 1);			
+		}
 
 		return content;
 	}

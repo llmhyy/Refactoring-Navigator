@@ -51,6 +51,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.gmf.runtime.notation,
  org.eclipse.gmf.runtime.emf.type.core,
  org.eclipse.emf.transaction,
- org.eclipse.swt
+ org.eclipse.swt,
+ org.eclipse.core.jobs
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
