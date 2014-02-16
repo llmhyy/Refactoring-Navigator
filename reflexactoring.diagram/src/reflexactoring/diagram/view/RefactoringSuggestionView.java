@@ -88,8 +88,8 @@ public class RefactoringSuggestionView extends ViewPart {
 			buffer.append("<form>");
 			buffer.append("<li>");
 			buffer.append(suggestion.generateTagedText());
-			buffer.append("<a href=\"Exec\">Execute</a>");
-			buffer.append("<a href=\"Undo\">Undo</a>");
+			buffer.append("<b>[</b><a href=\"Exec\">Execute</a>, ");
+			buffer.append("<a href=\"Undo\">Undo</a><b>]</b>");
 			buffer.append("</li>");			
 			
 			buffer.append("</form>");
