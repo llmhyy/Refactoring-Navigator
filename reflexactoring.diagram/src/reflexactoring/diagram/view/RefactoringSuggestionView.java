@@ -110,6 +110,9 @@ public class RefactoringSuggestionView extends ViewPart {
 					else if(e.getHref().equals("Field")){
 						System.out.println(suggestion);
 					}
+					else if(e.getHref().equals("Exec")){
+						suggestion.apply();
+					}
 				}
 			});
 			text.getParent().layout();

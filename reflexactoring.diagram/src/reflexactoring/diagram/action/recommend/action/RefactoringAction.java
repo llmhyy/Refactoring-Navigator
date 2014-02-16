@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.action.recommend.action;
 
+import reflexactoring.diagram.bean.SuggestionObject;
+
 /**
  * @author linyun
  *
@@ -33,4 +35,6 @@ public abstract class RefactoringAction {
 	}
 	
 	public abstract String getDetailedDescription();
+	public abstract void execute(SuggestionObject suggestionObj);
+	public abstract void undoExecute(SuggestionObject suggestionObj);
 }

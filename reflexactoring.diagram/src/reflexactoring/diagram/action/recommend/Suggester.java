@@ -6,8 +6,9 @@ package reflexactoring.diagram.action.recommend;
 import java.util.ArrayList;
 
 import reflexactoring.diagram.action.recommend.action.MoveAction;
+import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
+import reflexactoring.diagram.action.recommend.action.MoveTypeAction;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -36,13 +37,15 @@ public class Suggester {
 				ModuleWrapper tobeMappedmodule = modules.get(moduleIndex);
 				SuggestionObject suggestionObject = suggestionObjects.get(unitIndex);
 				
-				MoveAction action = new MoveAction();
+				MoveAction action = null;
 				
 				if(suggestionObject instanceof ICompilationUnitWrapper){
+					action = new MoveTypeAction();
 					action.setOrigin(((ICompilationUnitWrapper)suggestionObject).getMappingModule());					
 				}
 				else if(suggestionObject instanceof UnitMemberWrapper){
-					action.setOrigin(((UnitMemberWrapper)suggestionObject).getUnitWrapper().getMappingModule());
+					action = new MoveMemberAction();
+					action.setOrigin(((UnitMemberWrapper)suggestionObject).getMappingModule());
 				}
 				
 				action.setDestination(tobeMappedmodule);

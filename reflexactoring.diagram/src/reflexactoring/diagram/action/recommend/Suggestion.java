@@ -89,6 +89,11 @@ public class Suggestion {
 		this.action = action;
 	}
 	
+	public void apply(){
+		
+	}
 	
-	
+	public void undoApply(){
+		
+	}
 }

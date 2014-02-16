@@ -6,6 +6,7 @@ package reflexactoring.diagram.action.recommend.action;
 import java.util.ArrayList;
 
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.SuggestionObject;
 
 /**
  * @author linyun
@@ -46,6 +47,24 @@ public class AddModuleAction extends RefactoringAction {
 		}
 		
 		return buffer.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.action.recommend.action.RefactoringAction#execute(reflexactoring.diagram.bean.SuggestionObject)
+	 */
+	@Override
+	public void execute(SuggestionObject suggestionObj) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.action.recommend.action.RefactoringAction#undoExecute(reflexactoring.diagram.bean.SuggestionObject)
+	 */
+	@Override
+	public void undoExecute(SuggestionObject suggestionObj) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
