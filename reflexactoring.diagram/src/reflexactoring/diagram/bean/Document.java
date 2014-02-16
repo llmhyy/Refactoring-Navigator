@@ -6,6 +6,8 @@ package reflexactoring.diagram.bean;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import reflexactoring.diagram.util.ReflexactoringUtil;
+
 /**
  * When considering the similarity between a module and a class/method/field,
  * the number of shared words is the key factor. Therefore, class, interface,
@@ -23,6 +25,7 @@ public abstract class Document {
 	 * @param content
 	 */
 	public void extractTermFrequency(String content){
+		content = ReflexactoringUtil.performStemmingAndRemovingStopWord(content);
 		String[] list = content.split(" ");
 		for(String keyword: list){
 			Integer freq = termFrequency.get(keyword);
@@ -51,8 +54,11 @@ public abstract class Document {
 			Integer thatFreq = doc.getTermFrequency().get(key);
 			thatFreq = (thatFreq == null)? 0 : thatFreq;
 			
-			if((thisFreq == 0 && thatFreq != 0) || (thisFreq != 0 && thatFreq == 0)){
+			if(thisFreq == 0 && thatFreq != 0){
 				denominator += thatFreq;
+			}
+			else if(thisFreq != 0 && thatFreq == 0){
+				denominator += thisFreq;
 			}
 			else{
 				double value = (thisFreq >= thatFreq)? thisFreq : thatFreq;

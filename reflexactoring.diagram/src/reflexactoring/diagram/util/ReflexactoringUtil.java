@@ -138,10 +138,10 @@ public class ReflexactoringUtil {
 				}
 			}
 			
-			return filterStopList(stringList.toArray(new String[0]));
+			return stringList.toArray(new String[0]);
 		}
 		else{
-			return filterStopList(splitCamelString(s));
+			return splitCamelString(s);
 		}
 	}
 	
@@ -155,11 +155,12 @@ public class ReflexactoringUtil {
 	}
 
 	/**
-	 * Filter words from stop list.
+	 * Filter words from stop list. Assume that the content is formatted with white-space-seperation.
 	 * @param s
 	 * @return
 	 */
-	public static String[] filterStopList(String[] s){
+	public static String removeStopWord(String content){
+		String[] s = content.split(" ");
 		String stopString = ReflexactoringUtil.getStopList();
 		String[] stopStrings = stopString.split(" ");
 		
@@ -175,7 +176,12 @@ public class ReflexactoringUtil {
 			}
 		}
 		
-		return filteredList.toArray(new String[0]);
+		String[] result = filteredList.toArray(new String[0]);
+		StringBuffer buffer = new StringBuffer();
+		for(String word: result){
+			buffer.append(word + " ");
+		}
+		return buffer.toString();
 	}
 	
 	/**
@@ -234,6 +240,12 @@ public class ReflexactoringUtil {
 		
 		String stemString = buffer.toString();
 		return stemString.substring(0, stemString.length()-1);
+	}
+	
+	public static String performStemmingAndRemovingStopWord(String description){
+		String result = performStemming(description);
+		result = removeStopWord(result);
+		return result;
 	}
 	
 	/**

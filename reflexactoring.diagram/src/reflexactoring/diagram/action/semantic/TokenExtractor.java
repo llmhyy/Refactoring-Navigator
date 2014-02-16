@@ -68,6 +68,8 @@ public class TokenExtractor {
 
 		        return true;
 			}
+			
+			
 		});
 
 		String content = buffer.toString();
