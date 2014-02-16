@@ -85,8 +85,6 @@ public class ReferenceDetailView extends ViewPart {
 				} catch (JavaModelException e) {
 					e.printStackTrace();
 				}
-				
-				System.currentTimeMillis();
 			}
 		});
 	}

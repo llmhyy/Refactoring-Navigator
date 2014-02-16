@@ -67,7 +67,7 @@
       </objectContribution>
       <objectContribution
             adaptable="false"
-            id="reflexactoring.diagram.moduleEdit"
+            id="reflexactoring.diagram.module"
             objectClass="reflexactoring.diagram.edit.parts.ModuleEditPart">
          <action
                class="reflexactoring.diagram.action.popup.EditModuleDescriptionAction"
@@ -77,58 +77,73 @@
       </objectContribution>
       <objectContribution
             adaptable="false"
-            id="reflexactoring.diagram.removeClassOnCanvas"
+            id="reflexactoring.diagram.classOnCanvas"
             objectClass="reflexactoring.diagram.edit.parts.ClassEditPart">
          <action
                class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
                id="reflexactoring.diagram.action.removeClassOnCanvas"
                label="Remove from Scope">
          </action>
+         <action
+               class="reflexactoring.diagram.action.popup.OpenSourceAction"
+               id="reflexactoring.diagram.action.open"
+               label="Open Source">
+         </action>
       </objectContribution>
       <objectContribution
             adaptable="false"
-            id="reflexactoring.diagram.removeClassOnModule"
+            id="reflexactoring.diagram.classInModule"
             objectClass="reflexactoring.diagram.edit.parts.Class2EditPart">
          <action
                class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
                id="reflexactoring.diagram.action.removeClassOnModule"
                label="Remove from Scope">
          </action>
+         <action
+               class="reflexactoring.diagram.action.popup.OpenSourceAction"
+               id="reflexactoring.diagram.action.open"
+               label="Open Source">
+         </action>
       </objectContribution>
       <objectContribution
             adaptable="false"
-            id="reflexactoring.diagram.removeInterfaceOnCanvas"
+            id="reflexactoring.diagram.interfaceOnCanvas"
             objectClass="reflexactoring.diagram.edit.parts.InterfaceEditPart">
          <action
                class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
                id="reflexactoring.diagram.action.removeIntefaceOnCanvas"
                label="Remove from Scope">
          </action>
+         <action
+               class="reflexactoring.diagram.action.popup.OpenSourceAction"
+               id="reflexactoring.diagram.action.open"
+               label="Open Source">
+         </action>
       </objectContribution>
       <objectContribution
             adaptable="false"
-            id="reflexactoring.diagram.removeInterfaceOnModule"
+            id="reflexactoring.diagram.interfaceInModule"
             objectClass="reflexactoring.diagram.edit.parts.Interface2EditPart">
          <action
                class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
                id="reflexactoring.diagram.action.removeIntefaceOnModule"
                label="Remove from Scope">
          </action>
+         <action
+               class="reflexactoring.diagram.action.popup.OpenSourceAction"
+               id="reflexactoring.diagram.action.open"
+               label="Open Source">
+         </action>
       </objectContribution>
       <objectContribution
             adaptable="false"
-            id="reflexactoring.diagram.hideContribution"
+            id="reflexactoring.diagram.moduleDependency"
             objectClass="reflexactoring.diagram.edit.parts.ModuleDependencyEditPart">
          <action
                class="reflexactoring.diagram.action.popup.HideContributionAction"
                id="reflexactoring.diagram.action.hideContribution"
                label="Hide Contribution">
          </action>
-      </objectContribution>
-      <objectContribution
-            adaptable="false"
-            id="reflexactoring.diagram.highlightContribution"
-            objectClass="reflexactoring.diagram.edit.parts.ModuleDependencyEditPart">
          <action
                class="reflexactoring.diagram.action.popup.HighlightContributionAction"
                id="reflexactoring.diagram.action.highlightContribution"
@@ -137,7 +152,7 @@
       </objectContribution>
       <objectContribution
             adaptable="false"
-            id="reflexactoring.diagram.showReferenceDetail"
+            id="reflexactoring.diagram.typeDependency"
             objectClass="reflexactoring.diagram.edit.parts.TypeDependencyEditPart">
          <action
                class="reflexactoring.diagram.action.popup.ShowReferenceDetailAction"
