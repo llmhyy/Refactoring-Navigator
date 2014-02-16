@@ -89,6 +89,7 @@ public class RefactoringSuggestionView extends ViewPart {
 			buffer.append("<li>");
 			buffer.append(suggestion.generateTagedText());
 			buffer.append("<a href=\"Exec\">Execute</a>");
+			buffer.append("<a href=\"Undo\">Undo</a>");
 			buffer.append("</li>");			
 			
 			buffer.append("</form>");
@@ -112,6 +113,9 @@ public class RefactoringSuggestionView extends ViewPart {
 					}
 					else if(e.getHref().equals("Exec")){
 						suggestion.apply();
+					}
+					else if(e.getHref().equals("Undo")){
+						suggestion.undoApply();
 					}
 				}
 			});

@@ -16,8 +16,19 @@ public class HeuristicModuleUnitMapList extends ArrayList<HeuristicModuleUnitMap
 	 */
 	private static final long serialVersionUID = 5077806055903361433L;
 	
+	/**
+	 * when adding a map, this method will first automatically remove other maps corresponding to
+	 * the unit in to-be-added map. And then, the new map will be added.
+	 * @param map
+	 */
 	public void addMap(HeuristicModuleUnitMap map){
 		if(!this.contains(map)){
+			
+			HeuristicModuleUnitMap conflictMap = findHeuristicMapping(map.getUnit());
+			if(conflictMap != null){
+				this.remove(conflictMap);
+			}
+			
 			this.add(map);
 		}
 	}

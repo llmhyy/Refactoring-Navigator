@@ -90,10 +90,10 @@ public class Suggestion {
 	}
 	
 	public void apply(){
-		
+		this.action.execute(suggeestionObject);
 	}
 	
 	public void undoApply(){
-		
+		this.action.undoExecute(suggeestionObject);
 	}
 }
