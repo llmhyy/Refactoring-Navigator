@@ -35,7 +35,7 @@ public class ModelMapper {
 			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
 		
 		double[][] overallSimilarityTable; 
-		
+		//overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
 		if(ReflexactoringUtil.isNeedReComputeSimilarity()){
 			overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
 		}
@@ -146,7 +146,7 @@ public class ModelMapper {
 	 */
 	private double[][] initializeOverallSimilarityTable(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitList){
-		double[][] semanticSimilarityTable = generateSemanticSimilarityTable(moduleList, compilationUnitList);
+		double[][] semanticSimilarityTable = generateSemanticSimilarityTableWithBags(moduleList, compilationUnitList);
 		double[][] structuralSimilarityTable = generateStructuralSimilarityTable(semanticSimilarityTable, moduleList, compilationUnitList);
 		
 		/**
@@ -159,7 +159,7 @@ public class ModelMapper {
 		for(int i=0; i<m; i++){
 			for(int j=0; j<n; j++){
 				overallSimilarity[i][j] = (semanticSimilarityTable[i][j] + structuralSimilarityTable[i][j])/2;
-
+				
 				DecimalFormat df = new DecimalFormat("#.###");
 				overallSimilarity[i][j] = Double.parseDouble(df.format(overallSimilarity[i][j]));
 			}
@@ -168,13 +168,31 @@ public class ModelMapper {
 		return overallSimilarity;
 	}
 	
+	private double[][] generateSemanticSimilarityTableWithBags(ArrayList<ModuleWrapper> moduleList,
+			ArrayList<ICompilationUnitWrapper> compilationUnitList){
+		double[][] similarityTable = new double[moduleList.size()][compilationUnitList.size()];
+		
+		for(int i=0; i<moduleList.size(); i++){
+			ModuleWrapper module = moduleList.get(i);
+			module.extractTermFrequency(ReflexactoringUtil.removeDelimit(module.getDescription()));
+			for(int j=0; j<compilationUnitList.size(); j++){
+				ICompilationUnitWrapper unit = compilationUnitList.get(j);
+				double similarity = unit.computeSimilarity(module);
+				similarityTable[i][j] = similarity;
+			}
+		}
+		
+		return similarityTable;
+	}
+	
+	
 	/**
 	 * calculate the semantic (lexical) similarities between modules and compilation units.
 	 * @param moduleList
 	 * @param compilationUnitList
 	 * @return
 	 */
-	private double[][] generateSemanticSimilarityTable(ArrayList<ModuleWrapper> moduleList,
+	private double[][] generateSemanticSimilarityTableWithTFIDF(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitList){
 		double[][] similarityTable = new double[moduleList.size()][compilationUnitList.size()];
 		

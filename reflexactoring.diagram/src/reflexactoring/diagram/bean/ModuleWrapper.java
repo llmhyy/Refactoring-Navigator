@@ -12,7 +12,7 @@ import reflexactoring.Module;
  * @author linyun
  *
  */
-public class ModuleWrapper implements SuggestionObject, GraphNode{
+public class ModuleWrapper extends Document implements SuggestionObject, GraphNode{
 	
 	private Module module;
 	private ArrayList<ModuleWrapper> calleeModuleList = new ArrayList<>();

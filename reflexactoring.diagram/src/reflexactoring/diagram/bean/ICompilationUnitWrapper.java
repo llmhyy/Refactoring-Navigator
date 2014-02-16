@@ -12,11 +12,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SimpleType;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -25,11 +21,10 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  * @author linyun
  *
  */
-public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLevelGraphNode{
+public class ICompilationUnitWrapper extends Document implements LowLevelSuggestionObject, LowLevelGraphNode{
 	private ICompilationUnit compilationUnit;
 	private ModuleWrapper mappingModule;
 	private CompilationUnit javaUnit;
-	private String description;
 	
 	private HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList = new HashMap<>();
 	private HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList = new HashMap<>();
@@ -43,28 +38,21 @@ public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLev
 	 * @param compilationUnit
 	 */
 	public ICompilationUnitWrapper(ICompilationUnit compilationUnit) {
-		this(compilationUnit, true);
-	}
-	
-	public ICompilationUnitWrapper(ICompilationUnit compilationUnit, boolean extractDesc){
 		super();
 		this.compilationUnit = compilationUnit;
-		if(extractDesc){
-			
-			ASTParser parser = ASTParser.newParser(AST.JLS4);
-			parser.setKind(ASTParser.K_COMPILATION_UNIT);
-			parser.setResolveBindings(true);
-			//parser.setSource(doc.get().toCharArray());
-			parser.setSource(compilationUnit);
-			CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-			
-			setJavaUnit(cu);
-			String content = new TokenExtractor().extractTokens(compilationUnit);
-			
-			content = content + generateTitle();
-			
-			this.setDescription(content);
-		}
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setResolveBindings(true);
+		
+		parser.setSource(compilationUnit);
+		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+		setJavaUnit(cu);
+		
+		String content = new TokenExtractor(this).extractTokens(cu);
+		content = content + generateTitle();
+		
+		this.setDescription(content);
+		this.extractTermFrequency(content);
 	}
 	
 	/**
@@ -154,26 +142,6 @@ public class ICompilationUnitWrapper implements LowLevelSuggestionObject, LowLev
 	public void setMappingModule(ModuleWrapper mappingModule) {
 		this.mappingModule = mappingModule;
 	}
-
-
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-
-
-	/**
-	 * @param description the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-
 
 	/**
 	 * @return the javaUnit

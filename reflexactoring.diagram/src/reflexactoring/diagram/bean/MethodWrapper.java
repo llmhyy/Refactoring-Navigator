@@ -4,8 +4,9 @@
 package reflexactoring.diagram.bean;
 
 import org.eclipse.jdt.core.IMember;
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+
+import reflexactoring.diagram.action.semantic.TokenExtractor;
 
 /**
  * @author linyun
@@ -16,8 +17,13 @@ public class MethodWrapper extends UnitMemberWrapper {
 	private MethodDeclaration method;
 	
 	public MethodWrapper(MethodDeclaration method, ICompilationUnitWrapper unitWrapper){
+		super(unitWrapper);
 		this.setMethod(method);
-		this.setUnitWrapper(unitWrapper);
+		
+		String content = new TokenExtractor(unitWrapper).extractTokens(method);
+		this.extractTermFrequency(content);
+		
+		System.currentTimeMillis();
 	}
 	
 	@Override
@@ -66,4 +72,5 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public String getNameWithTag() {
 		return "<a href=\"Method\">" + getName() + "</a>";
 	}
+
 }

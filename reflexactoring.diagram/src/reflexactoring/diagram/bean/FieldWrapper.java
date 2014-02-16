@@ -3,13 +3,11 @@
  */
 package reflexactoring.diagram.bean;
 
-import java.util.List;
-
-import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IMember;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
+
+import reflexactoring.diagram.action.semantic.TokenExtractor;
 
 /**
  * @author linyun
@@ -20,8 +18,11 @@ public class FieldWrapper extends UnitMemberWrapper{
 	private FieldDeclaration field;
 	
 	public FieldWrapper(FieldDeclaration field, ICompilationUnitWrapper unitWrapper){
+		super(unitWrapper);
 		this.setField(field);
-		this.setUnitWrapper(unitWrapper);
+		
+		String content = new TokenExtractor(unitWrapper).extractTokens(field);
+		this.extractTermFrequency(content);
 	}
 	
 	@Override

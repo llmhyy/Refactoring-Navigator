@@ -8,15 +8,21 @@ import java.util.List;
 
 import org.eclipse.jdt.core.IMember;
 
+import reflexactoring.diagram.action.semantic.TokenExtractor;
+
 /**
  * @author linyun
  *
  */
-public abstract class UnitMemberWrapper implements LowLevelSuggestionObject, LowLevelGraphNode {
+public abstract class UnitMemberWrapper extends Document implements LowLevelSuggestionObject, LowLevelGraphNode {
 	protected ICompilationUnitWrapper unitWrapper;
 	protected ArrayList<UnitMemberWrapper> callerList = new ArrayList<>();
 	protected ArrayList<UnitMemberWrapper> calleeList = new ArrayList<>();
 
+	public UnitMemberWrapper(ICompilationUnitWrapper unitWrapper){
+		this.setUnitWrapper(unitWrapper);
+	}
+	
 	/**
 	 * get the the java element they wrap
 	 * @return
@@ -75,4 +81,5 @@ public abstract class UnitMemberWrapper implements LowLevelSuggestionObject, Low
 	public ModuleWrapper getMappingModule() {
 		return this.unitWrapper.getMappingModule();
 	}
+	
 }
