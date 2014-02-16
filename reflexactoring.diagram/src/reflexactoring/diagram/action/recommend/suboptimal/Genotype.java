@@ -11,6 +11,7 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -397,8 +398,8 @@ public class Genotype {
 		
 		double euclideanDis = computeEuclideanDistance(GeneticUtil.convertArrayToVector(this.getDNA()), x0Vector);
 		
-		double objectiveValue = Settings.alpha*totalWeight/length
-				+ Settings.beta*(1-euclideanDis/Math.sqrt(length));
+		double objectiveValue = Double.valueOf(ReflexactoringUtil.getAlpha())*totalWeight/length
+				+ Double.valueOf(ReflexactoringUtil.getBeta())*(1-euclideanDis/Math.sqrt(length));
 		
 		return objectiveValue;
 	}
