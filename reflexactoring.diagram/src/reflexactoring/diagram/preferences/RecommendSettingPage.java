@@ -96,7 +96,7 @@ public class RecommendSettingPage extends PreferencePage implements
 		Label betaLabel = new Label(composite, SWT.NONE);
 		betaLabel.setText("beta");
 		betaText = new Text(composite, SWT.BORDER);
-		betaText.setText(ReflexactoringUtil.getMutationRate());
+		betaText.setText(ReflexactoringUtil.getBeta());
 		GridData betaData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		iterationNumberData.horizontalSpan = 2;
 		betaText.setLayoutData(betaData);
