@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -29,12 +31,19 @@ import org.eclipse.ui.part.ViewPart;
 import org.osgi.framework.Bundle;
 
 import reflexactoring.Activator;
+import reflexactoring.Module;
 import reflexactoring.diagram.action.recommend.Suggestion;
+import reflexactoring.diagram.action.recommend.action.MoveTypeAction;
+import reflexactoring.diagram.action.recommend.action.RefactoringAction;
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
+import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.edit.parts.ModuleEditPart;
+import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
+import reflexactoring.diagram.util.GEFDiagramUtil;
 import reflexactoring.diagram.util.Settings;
 
 public class RefactoringSuggestionView extends ViewPart {
@@ -105,7 +114,32 @@ public class RefactoringSuggestionView extends ViewPart {
 				public void linkActivated(HyperlinkEvent e) {
 					Suggestion suggestion = (Suggestion) text.getData();
 					if(e.getHref().equals("Module")){
-						System.out.println(suggestion);
+						RefactoringAction action = suggestion.getAction();
+						if(action instanceof MoveTypeAction){
+							MoveTypeAction moveTypeAction = (MoveTypeAction)action;
+							ModuleWrapper sourceModule = moveTypeAction.getOrigin();
+							ModuleWrapper targetModule = moveTypeAction.getDestination();
+							
+							if(sourceModule.getName().equals(e.getLabel()) || targetModule.getName().equals(e.getLabel())){
+								DiagramRootEditPart rootPart = GEFDiagramUtil.getRootEditPart();
+								for(Object partObj: rootPart.getChildren()){
+									if(partObj instanceof ReflexactoringEditPart){
+										for(Object modulePart: ((ReflexactoringEditPart)partObj).getChildren()){
+											if(modulePart instanceof ModuleEditPart){
+												ModuleEditPart moduleEditPart = (ModuleEditPart)modulePart;
+												Module module = (Module)moduleEditPart.resolveSemanticElement();
+												if(module.getName().equals(e.getLabel())){
+													//moduleEditPart.setSelected(EditPart.SELECTED);
+													moduleEditPart.setFocus(true);
+													
+													moduleEditPart.getViewer().setFocus(moduleEditPart);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 					else if(e.getHref().equals("Type")){
 						SuggestionObject obj = suggestion.getSuggeestionObject();

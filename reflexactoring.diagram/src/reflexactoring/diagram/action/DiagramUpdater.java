@@ -75,6 +75,7 @@ import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorUtil;
 import reflexactoring.diagram.providers.ReflexactoringElementTypes;
+import reflexactoring.diagram.util.GEFDiagramUtil;
 import reflexactoring.impl.ReflexactoringImpl;
 import reflexactoring.provider.ReflexactoringEditPlugin;
 
@@ -115,7 +116,7 @@ public class DiagramUpdater {
 	}
 
 	protected void clearCanvas(DiagramRootEditPart diagramRoot){
-		Reflexactoring reflexactoring = findReflexactoring(diagramRoot);
+		Reflexactoring reflexactoring = GEFDiagramUtil.findReflexactoring(diagramRoot);
 		
 		/**
 		 * delete all the types first. Here, there will be a concurrent modification exception if you
@@ -144,17 +145,17 @@ public class DiagramUpdater {
 		for(int i=0; i<count; i++){
 			ModuleDependency dependency = reflexactoring.getModuleDenpencies().get(index);
 			if(dependency.getName().equals(ModuleDependencyWrapper.DIVERGENCE)){
-				Edge edge = (Edge)findViewOfSpecificModuleDependency(diagramRoot, dependency);
+				Edge edge = (Edge)GEFDiagramUtil.findViewOfSpecificModuleDependency(diagramRoot, dependency);
 				
 				DestroyElementRequest destroyRequest = new DestroyElementRequest(dependency, false);
 				DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
-				DeleteCommand deleteCommand = new DeleteCommand(getRootEditPart(diagramRoot).getEditingDomain(), edge);
+				DeleteCommand deleteCommand = new DeleteCommand(GEFDiagramUtil.getRootEditPart(diagramRoot).getEditingDomain(), edge);
 				
 				CompoundCommand comCommand = new CompoundCommand();
 				comCommand.add(new ICommandProxy(destroyCommand));
 				comCommand.add(new ICommandProxy(deleteCommand));
 				
-				getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(comCommand);
+				GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(comCommand);
 				
 			}
 			else{
@@ -168,7 +169,7 @@ public class DiagramUpdater {
 	private void deleteElementOnCanvas(DiagramRootEditPart diagramRoot, EObject eObj){
 		DestroyElementRequest destroyRequest = new DestroyElementRequest(eObj, false);
 		DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
-		getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(destroyCommand));
+		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(destroyCommand));
 	}
 	
 	/**
@@ -184,7 +185,7 @@ public class DiagramUpdater {
 			IType type = unit.getTypes()[0];
 			
 			if(mappingModuleWrapper != null){
-				Module module = findModule(diagramRoot, mappingModuleWrapper.getModule());
+				Module module = GEFDiagramUtil.findModule(diagramRoot, mappingModuleWrapper.getModule());
 				IElementType elementType = type.isClass() ? 
 						ReflexactoringElementTypes.Class_3001 : ReflexactoringElementTypes.Interface_3002;
 				
@@ -192,34 +193,34 @@ public class DiagramUpdater {
 				
 				if(type.isClass()){
 					Class2CreateCommand createTypeCommand = new Class2CreateCommand(req);
-					getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));					
+					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));					
 				}
 				else{
 					Interface2CreateCommand createTypeCommand = new Interface2CreateCommand(req);
-					getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));
+					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));
 				}
 				
-				setTypeValue(req.getNewElement(), unitWrapper, getRootEditPart(diagramRoot).getDiagramEditDomain());
+				setTypeValue(req.getNewElement(), unitWrapper, GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain());
 				
 			}
 			/**
 			 * such a compilation unit belongs to no module, so I draw it on original canvas.
 			 */
 			else{
-				Reflexactoring reflexactoring = findReflexactoring(diagramRoot);
+				Reflexactoring reflexactoring = GEFDiagramUtil.findReflexactoring(diagramRoot);
 				IElementType elementType = type.isClass() ? 
 						ReflexactoringElementTypes.Class_2001 : ReflexactoringElementTypes.Interface_2002;
 				CreateElementRequest req = new CreateElementRequest(reflexactoring, elementType);
 				if(type.isClass()){
 					ClassCreateCommand createTypeCommand = new ClassCreateCommand(req);
-					getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));					
+					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));					
 				}
 				else{
 					InterfaceCreateCommand createTypeCommand = new InterfaceCreateCommand(req);
-					getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));
+					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));
 				}
 				
-				setTypeValue(req.getNewElement(), unitWrapper, getRootEditPart(diagramRoot).getDiagramEditDomain());
+				setTypeValue(req.getNewElement(), unitWrapper, GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain());
 			}
 		}
 	}
@@ -233,8 +234,8 @@ public class DiagramUpdater {
 		for(ICompilationUnitWrapper callerWrapper: compilationUnitWrapperList){
 			for(ICompilationUnitWrapper calleeWrapper: callerWrapper.getCalleeCompilationUnitList().keySet()){
 				if(callerWrapper != calleeWrapper){
-					Type callerType = findType(diagramRoot, callerWrapper);
-					Type calleeType = findType(diagramRoot, calleeWrapper);
+					Type callerType = GEFDiagramUtil.findType(diagramRoot, callerWrapper);
+					Type calleeType = GEFDiagramUtil.findType(diagramRoot, calleeWrapper);
 					
 					IElementType relationType = ReflexactoringElementTypes.TypeDependency_4003;
 					CreateRelationshipRequest req = new CreateRelationshipRequest(callerType, calleeType, relationType);
@@ -247,8 +248,8 @@ public class DiagramUpdater {
 					CreateConnectionViewAndElementRequest request = new CreateConnectionViewAndElementRequest(
 							viewDescriptor);
 					
-					View callerView = findViewOfSepcificType(diagramRoot, callerType);
-					View calleeView = findViewOfSepcificType(diagramRoot, calleeType);
+					View callerView = GEFDiagramUtil.findViewOfSepcificType(diagramRoot, callerType);
+					View calleeView = GEFDiagramUtil.findViewOfSepcificType(diagramRoot, calleeType);
 					
 					ICommand createRelationCommand = new DeferredCreateConnectionViewAndElementCommand(
 							request, new EObjectAdapter(callerView),
@@ -256,7 +257,7 @@ public class DiagramUpdater {
 							diagramRoot.getViewer());
 					CompoundCommand c = new CompoundCommand();
 					c.add(new ICommandProxy(createRelationCommand));
-					getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);	
+					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);	
 				}
 			}
 		}
@@ -275,7 +276,7 @@ public class DiagramUpdater {
 		 * Prepare the comparing material -- two sets of connections, one for conceived connections while the 
 		 * other one for realistic connections.
 		 */
-		Reflexactoring root = findReflexactoring(diagramRoot);
+		Reflexactoring root = GEFDiagramUtil.findReflexactoring(diagramRoot);
 		HashSet<ModuleDependencyWrapper> conceivedConnectionList = new HashSet<>();
 		for(ModuleDependency connection: root.getModuleDenpencies()){
 			ModuleWrapper sourceModule = new ModuleWrapper(connection.getOrigin());
@@ -333,8 +334,8 @@ public class DiagramUpdater {
 	}
 	
 	private ModuleDependencyFigure createDependency(DiagramRootEditPart diagramRoot, ModuleDependencyWrapper connection){
-		Module sourceModule = findModule(diagramRoot, connection.getSourceModule().getModule());
-		Module targetModule = findModule(diagramRoot, connection.getTargetModule().getModule());
+		Module sourceModule = GEFDiagramUtil.findModule(diagramRoot, connection.getSourceModule().getModule());
+		Module targetModule = GEFDiagramUtil.findModule(diagramRoot, connection.getTargetModule().getModule());
 		
 		IElementType connectionType = ReflexactoringElementTypes.ModuleDependency_4001;
 		CreateRelationshipRequest req = new CreateRelationshipRequest(sourceModule, targetModule, connectionType);
@@ -348,8 +349,8 @@ public class DiagramUpdater {
 				viewDescriptor);
 		
 		
-		View callerView = findViewOfSpecificModule(diagramRoot, sourceModule);
-		View calleeView = findViewOfSpecificModule(diagramRoot, targetModule);
+		View callerView = GEFDiagramUtil.findViewOfSpecificModule(diagramRoot, sourceModule);
+		View calleeView = GEFDiagramUtil.findViewOfSpecificModule(diagramRoot, targetModule);
 		
 		ICommand createRelationCommand = new DeferredCreateConnectionViewAndElementCommand(
 				request, new EObjectAdapter(callerView),
@@ -358,7 +359,7 @@ public class DiagramUpdater {
 		CompoundCommand c = new CompoundCommand();
 		c.add(new ICommandProxy(createRelationCommand));
 		
-		getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);	
+		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);	
 		
 		ModuleDependencyFigure connectionFigure = findCorrespondingDepedencyEditPart(diagramRoot, connection).getPrimaryShape();
 		
@@ -434,176 +435,8 @@ public class DiagramUpdater {
 	private void setDependencyType(DiagramRootEditPart diagramRoot, EObject dependency, String connectionType){
 		SetRequest req = new SetRequest(dependency, ReflexactoringPackage.eINSTANCE.getModuleDependency_Name(), connectionType);
 		SetValueCommand setCommand = new SetValueCommand(req);
-		getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(setCommand));
+		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(setCommand));
 	}
 
-	private ReflexactoringEditPart getRootEditPart(DiagramRootEditPart diagramRoot){
-		for(Object obj: diagramRoot.getChildren()){
-			if(obj instanceof ReflexactoringEditPart){
-				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
-				return rootEditPart; 
-			}
-		}
-		
-		return null;
-	}
 	
-	private View findViewOfSpecificModule(DiagramRootEditPart diagramRoot, Module module){
-		for(Object obj: diagramRoot.getChildren()){
-			if(obj instanceof ReflexactoringEditPart){
-				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
-				List views = ((View)rootEditPart.getModel()).getChildren();
-				for(Object objView: views){
-					View view = (View)objView;
-					EObject eObj = view.getElement();
-					if(eObj instanceof Module){
-						Module m = (Module)eObj;
-						if(m.getName().equals(module.getName()) && m.getDescription().equals(module.getDescription())){
-							return view;
-						}
-					}
-				}
-			}
-		}
-		
-		return null;
-	}
-	
-	private View findViewOfSpecificModuleDependency(DiagramRootEditPart diagramRoot, ModuleDependency dependency){
-		for(Object obj: diagramRoot.getChildren()){
-			if(obj instanceof ReflexactoringEditPart){
-				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
-				List<?> connectionList = rootEditPart.getConnections();
-				for(Object connObj: connectionList){
-					ModuleDependencyEditPart dependencyPart = (ModuleDependencyEditPart)connObj;
-					EObject eObj = dependencyPart.resolveSemanticElement();
-					if(eObj instanceof ModuleDependency){
-						ModuleDependency d = (ModuleDependency)eObj;
-						if(d.getName().equals(dependency.getName()) &&
-								d.getDestination().getDescription().equals(dependency.getDestination().getDescription()) &&
-								d.getOrigin().getDescription().equals(dependency.getOrigin().getDescription())){
-							return dependencyPart.getPrimaryView();
-						}
-					}
-				}
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * @param diagramRoot
-	 * @param type
-	 * @return
-	 */
-	private View findViewOfSepcificType(DiagramRootEditPart diagramRoot,
-			Type type) {
-		for(Object obj: diagramRoot.getChildren()){
-			if(obj instanceof ReflexactoringEditPart){
-				ReflexactoringEditPart editPart = (ReflexactoringEditPart)obj;
-				
-				List<?> editPartList = editPart.getChildren();
-				
-				for(int i=0; i<editPartList.size(); i++){
-					EditPart part = (EditPart) editPartList.get(i);
-					View view = (View)part.getModel();
-					EObject eObj = view.getElement();
-					if(eObj instanceof Type){
-						Type t = (Type)eObj;
-						if(t.getName().equals(type.getName())
-								&& t.getPackageName().equals(type.getPackageName())){
-							return view;
-						}
-					}
-					else if(eObj instanceof Module){
-						List<?> subEditPartList = part.getChildren();
-						for(Object typePart: ((EditPart) subEditPartList.get(1)).getChildren()){
-							EditPart subPart = (EditPart)typePart;
-							View subView = (View)subPart.getModel();
-							EObject eSubObj = subView.getElement();
-							if(eSubObj instanceof Type){
-								Type t = (Type)eSubObj;
-								if(t.getName().equals(type.getName())
-										&& t.getPackageName().equals(type.getPackageName())){
-									return subView;
-								}
-							}
-							
-						}
-					}
-				}
-			}
-		}
-		
-		
-		return null;
-	}
-
-	private Module findModule(DiagramRootEditPart diagramRoot, Module module){
-		for(Object obj: diagramRoot.getChildren()){
-			if(obj instanceof ReflexactoringEditPart){
-				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
-				List views = ((View)rootEditPart.getModel()).getChildren();
-				for(Object objView: views){
-					View view = (View)objView;
-					EObject eObj = view.getElement();
-					if(eObj instanceof Module){
-						Module currentModule = (Module)eObj;
-						if(module.getName().equals(currentModule.getName())){
-							return currentModule;
-						}
-					}
-				}
-			}
-		}
-		
-		return null;
-	}
-	
-	
-	
-	private Type findType(DiagramRootEditPart diagramRoot, ICompilationUnitWrapper unit){
-		for(Object obj: diagramRoot.getChildren()){
-			if(obj instanceof ReflexactoringEditPart){
-				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
-				List views = ((View)rootEditPart.getModel()).getChildren();
-				for(Object objView: views){
-					View view = (View)objView;
-					EObject eObj = view.getElement();
-					if(eObj instanceof Type){
-						Type type = (Type)eObj;
-						
-						String fullName = type.getPackageName() + "." + type.getName();
-						if(unit.getFullQualifiedName().equals(fullName)){
-							return type;
-						}
-					}
-					else if(eObj instanceof Module){
-						Module module = (Module)eObj;
-						for(Type type: module.getMappingTypes()){
-							String fullName = type.getPackageName() + "." + type.getName();
-							if(unit.getFullQualifiedName().equals(fullName)){
-								return type;
-							}
-						}
-					}
-				}
-			}
-			
-		}
-		
-		return null;
-	}
-	
-	private Reflexactoring findReflexactoring(DiagramRootEditPart diagramRoot){
-		for(Object obj: diagramRoot.getChildren()){
-			if(obj instanceof ReflexactoringEditPart){
-				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
-				return (Reflexactoring)rootEditPart.resolveSemanticElement();
-			}
-		}
-		
-		return null;
-	}
 }
