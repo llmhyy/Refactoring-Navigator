@@ -4,6 +4,7 @@
 package reflexactoring.diagram.action.recommend;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import reflexactoring.diagram.action.recommend.action.MoveAction;
 import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
@@ -60,6 +61,8 @@ public class Suggester {
 				
 			}*/
 		}
+		
+		Collections.sort(suggestions, new SuggestionComparator());
 		
 		return suggestions;
 	}

@@ -134,7 +134,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			view.getViewer().refresh();
 			
 			Settings.isCompliationUnitChanged = true;
-			
+			Settings.isNeedClearCache = true;
 		}
 		
 	}

@@ -37,6 +37,7 @@ public class Settings {
 	
 	public static boolean isSkipUnMappedTypes = false;
 	public static boolean isCompliationUnitChanged = true;
+	public static boolean isNeedClearCache = true;
 		
 	public static String diagramPath = "/refactoring/default.reflexactoring";
 	public static double largeSimilarityValue = 1.0d;

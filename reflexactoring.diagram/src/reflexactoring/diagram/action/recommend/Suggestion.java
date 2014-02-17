@@ -3,9 +3,12 @@
  */
 package reflexactoring.diagram.action.recommend;
 
+import reflexactoring.diagram.action.recommend.action.MoveAction;
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
+import reflexactoring.diagram.bean.Document;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.LowLevelSuggestionObject;
+import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 
@@ -25,6 +28,20 @@ public class Suggestion {
 		super();
 		this.suggeestionObject = suggeestionObject;
 		this.action = action;
+	}
+	
+	public double computeConfidence(){
+		if(action instanceof MoveAction){
+			MoveAction moveAction = (MoveAction)action;
+			ModuleWrapper module = moveAction.getDestination();
+			
+			if(suggeestionObject instanceof Document){
+				Document doc = (Document)suggeestionObject;
+				return module.computeSimilarity(doc);
+			}
+		}
+		
+		return 1;
 	}
 	
 	public String toString(){

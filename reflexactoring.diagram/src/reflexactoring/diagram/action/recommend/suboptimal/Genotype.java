@@ -141,6 +141,18 @@ public class Genotype {
 	 * @param computingFactor
 	 */
 	public void computeFitness(FitnessComputingFactor computingFactor){
+		/**
+		 * if the source code has changed, the original correspondence become meaningless, therefore,
+		 * I should clear the hash tables then. The mark of *isNeedClearCache* is set true when the scope
+		 * is reset, after that, it will be set false here.
+		 */
+		if(Settings.isNeedClearCache){
+			fitnessTable.clear();
+			tmpMatrixTable.clear();
+			mappingMatrixTable.clear();
+			Settings.isNeedClearCache = false;
+		}
+		
 		Double d = fitnessTable.get(this);
 		if(d != null){
 			this.fitness = d;
