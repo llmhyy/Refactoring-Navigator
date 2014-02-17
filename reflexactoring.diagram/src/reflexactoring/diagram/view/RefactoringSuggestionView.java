@@ -129,7 +129,7 @@ public class RefactoringSuggestionView extends ViewPart {
 												ModuleEditPart moduleEditPart = (ModuleEditPart)modulePart;
 												Module module = (Module)moduleEditPart.resolveSemanticElement();
 												if(module.getName().equals(e.getLabel())){
-													//moduleEditPart.setSelected(EditPart.SELECTED);
+													//TODO for Adi
 													moduleEditPart.setFocus(true);
 													
 													moduleEditPart.getViewer().setFocus(moduleEditPart);
