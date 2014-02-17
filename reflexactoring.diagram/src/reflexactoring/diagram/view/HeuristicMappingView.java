@@ -9,6 +9,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -28,6 +30,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import reflexactoring.diagram.action.MappingDialog;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
+import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
 import reflexactoring.diagram.util.Settings;
 
 public class HeuristicMappingView extends ViewPart {
@@ -51,6 +54,34 @@ public class HeuristicMappingView extends ViewPart {
 		searchText.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 
+		searchText.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub				
+			}  
+		    @Override  
+		    public void keyReleased(KeyEvent e) {
+		    	if (e.keyCode == 13) {  
+		    		String searchString = searchText.getText().toLowerCase();
+		    		if(searchString == null || searchString.trim().equals("")){
+		    			tableViewer.setInput(Settings.heuristicModuleUnitMapList);
+						tableViewer.refresh();
+		    		}else{
+		    			HeuristicModuleUnitMapList filteredHeuristicModuleUnitMapList
+		    			= new HeuristicModuleUnitMapList();
+		    			for(HeuristicModuleUnitMap map: Settings.heuristicModuleUnitMapList){
+		    				if(map.getUnit().getFullQualifiedName().toLowerCase().indexOf(searchString) != -1 ||
+		    						map.getModule().getName().toLowerCase().indexOf(searchString) != -1){
+			    				filteredHeuristicModuleUnitMapList.add(map);		    					
+		    				}
+		    			}
+		    			tableViewer.setInput(filteredHeuristicModuleUnitMapList);
+						tableViewer.refresh();
+		    		}
+		    	}  
+		    }
+		});
+		
 		createTableViewer(parent);
 		
 		hookActionsOnBars();
