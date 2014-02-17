@@ -35,6 +35,10 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public String toString(){
 		return getName();
 	}
+	
+	public boolean isConstructor(){
+		return this.method.resolveBinding().isConstructor();
+	}
 
 	/**
 	 * @return the method

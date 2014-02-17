@@ -10,6 +10,7 @@ import reflexactoring.diagram.action.ModelMapper;
 import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
+import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
@@ -72,6 +73,22 @@ public abstract class Suboptimizer {
 			module.extractTermFrequency(module.getDescription());
 			for(int j=0; j<members.size(); j++){
 				UnitMemberWrapper member = members.get(j);
+				
+				if(member instanceof MethodWrapper){
+					MethodWrapper methodWrapper = (MethodWrapper)member;
+					/**
+					 * we cannot move constructor out of a class.
+					 */
+					if(methodWrapper.isConstructor()){
+						String moduleName = modules.get(i).getName();
+						String correspondModuleName = methodWrapper.getUnitWrapper().getMappingModule().getName();
+						if(!moduleName.equals(correspondModuleName)){
+							similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) - 1;
+							continue;
+						}
+					}
+				}
+				
 				double similarity = module.computeSimilarity(member);
 				
 				similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) + similarity;
