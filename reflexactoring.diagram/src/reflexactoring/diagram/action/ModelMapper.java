@@ -158,7 +158,7 @@ public class ModelMapper {
 		double[][] overallSimilarity = new double[m][n];
 		for(int i=0; i<m; i++){
 			for(int j=0; j<n; j++){
-				overallSimilarity[i][j] = (semanticSimilarityTable[i][j] + structuralSimilarityTable[i][j])/2;
+				overallSimilarity[i][j] = 0.8*semanticSimilarityTable[i][j] + 0.2*structuralSimilarityTable[i][j];
 				
 				DecimalFormat df = new DecimalFormat("#.###");
 				overallSimilarity[i][j] = Double.parseDouble(df.format(overallSimilarity[i][j]));

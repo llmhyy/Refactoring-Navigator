@@ -5,6 +5,12 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 
 import java.util.ArrayList;
 
+import org.eclipse.ui.PartInitException;
+
+import reflexactoring.diagram.bean.LowLevelGraphNode;
+import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.util.ReflexactoringUtil;
+import reflexactoring.diagram.util.Settings;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 
@@ -15,9 +21,11 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implements Crossoverer {
 
 	private FitnessComputingFactor computingFactor;
+	private ArrayList<int[]> relationMap;
 	
-	public RandomWalkerCrossoverer(FitnessComputingFactor computingFactor){
+	public RandomWalkerCrossoverer(FitnessComputingFactor computingFactor, ArrayList<int[]> relationMap){
 		this.computingFactor = computingFactor;
+		this.relationMap = relationMap;
 	}
 	
 	@Override
@@ -99,6 +107,21 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 		}
 		
 		return oldGene;
+	}
+	
+	private ModuleWrapper showModuleWrapper(int moduleIndex){
+		try {
+			return ReflexactoringUtil.getModuleList(Settings.diagramPath).get(moduleIndex);
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private LowLevelGraphNode showLowLevelNode(int nodeIndex){
+		return Settings.scope.getScopeMemberList().get(nodeIndex);
+		//return Settings.scope.getScopeCompilationUnitList().get(nodeIndex);
 	}
 
 	/**

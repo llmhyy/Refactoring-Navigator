@@ -33,7 +33,8 @@ public class GeneticOptimizer extends Suboptimizer{
 	 */
 	@Override
 	protected Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
-			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, double[][] similarityTable) {
+			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, 
+			double[][] similarityTable, ArrayList<int[]> relationMap) {
 		
 		/*int dimension = computingFactor.getX0Vector().size();
 		SeedGenerator seedGenerator = new ConstrainedSeedGenerator(dimension, modules, lowLevelNodes, 
@@ -45,7 +46,7 @@ public class GeneticOptimizer extends Suboptimizer{
 		
 		//Integer.valueOf(ReflexactoringUtil.getIterationNumber())
 		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getIterationNumber()); i++){
-			population = generateNextGeneration(population, computingFactor);
+			population = generateNextGeneration(population, computingFactor, relationMap);
 			System.out.println(population.getOptimalGene().getFitness());
 		}
 		
@@ -53,7 +54,8 @@ public class GeneticOptimizer extends Suboptimizer{
 	}
 	
 	
-	private Population generatePopulation(FitnessComputingFactor computingFactor, SeedGenerator seedGenerator){
+	private Population generatePopulation(FitnessComputingFactor computingFactor, 
+			SeedGenerator seedGenerator){
 		
 		//int dimension = computingFactor.getX0Vector().getRowDimension();
 		
@@ -82,7 +84,8 @@ public class GeneticOptimizer extends Suboptimizer{
 	 * @param population
 	 * @return
 	 */
-	private Population generateNextGeneration(Population population, FitnessComputingFactor computingFactor){
+	private Population generateNextGeneration(Population population, 
+			FitnessComputingFactor computingFactor, ArrayList<int[]> relationMap){
 		
 		/**
 		 * selector: roulette wheel selection
@@ -95,7 +98,7 @@ public class GeneticOptimizer extends Suboptimizer{
 		//long t1 = System.currentTimeMillis();
 		//Crossoverer crossoverer = new RandomCrossoverer(computingFactor);
 		//Crossoverer crossoverer = new SinglePointCrossoverer(computingFactor);
-		Crossoverer crossoverer = new RandomWalkerCrossoverer(computingFactor);
+		Crossoverer crossoverer = new RandomWalkerCrossoverer(computingFactor, relationMap);
 		//Crossoverer crossoverer = new ViolationReductionOrientedCrossoverer(computingFactor);
 				
 		Population crossedPopulation = crossoverer.crossoverAndMutate(population, computingFactor);

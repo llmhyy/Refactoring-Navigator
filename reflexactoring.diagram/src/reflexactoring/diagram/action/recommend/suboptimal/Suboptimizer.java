@@ -41,7 +41,8 @@ public abstract class Suboptimizer {
 	protected HashMap<ModuleUnitCorrespondence, Integer> reverseRelationMap;
 	
 	protected abstract Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
-			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, double[][] similarityTable);
+			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, 
+			double[][] similarityTable, ArrayList<int[]> relationMap);
 	
 	public Genotype optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
 		//double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
@@ -58,7 +59,7 @@ public abstract class Suboptimizer {
 		
 		FitnessComputingFactor computingFactor = buildComputingFactor(similarityTable, modules, units);
 		
-		Genotype gene = computeOptimalResult(computingFactor, modules, units, similarityTable);
+		Genotype gene = computeOptimalResult(computingFactor, modules, units, similarityTable, relationMap);
 		
 		return gene;
 	}
@@ -79,7 +80,7 @@ public abstract class Suboptimizer {
 		
 		FitnessComputingFactor computingFactor = buildComputingFactor(similarityTable, modules, members);
 		
-		Genotype gene = computeOptimalResult(computingFactor, modules, members, similarityTable);
+		Genotype gene = computeOptimalResult(computingFactor, modules, members, similarityTable, relationMap);
 		
 		return gene;
 	}

@@ -28,7 +28,7 @@ public class KStepOptimizer extends Suboptimizer{
 	@Override
 	protected Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
 			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes,
-			double[][] similarityTable) {
+			double[][] similarityTable, ArrayList<int[]> relationMap) {
 
 		int depth = Settings.kStep - 1;
 		
