@@ -30,6 +30,11 @@ import org.osgi.framework.Bundle;
 
 import reflexactoring.Activator;
 import reflexactoring.diagram.action.recommend.Suggestion;
+import reflexactoring.diagram.bean.FieldWrapper;
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.MethodWrapper;
+import reflexactoring.diagram.bean.SuggestionObject;
+import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.util.Settings;
 
 public class RefactoringSuggestionView extends ViewPart {
@@ -103,13 +108,30 @@ public class RefactoringSuggestionView extends ViewPart {
 						System.out.println(suggestion);
 					}
 					else if(e.getHref().equals("Type")){
-						System.out.println(suggestion);
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						if(obj instanceof ICompilationUnitWrapper){
+							ICompilationUnitWrapper unitWrapper = (ICompilationUnitWrapper)obj;
+							unitWrapper.openInEditor();
+						}
+						else if(obj instanceof UnitMemberWrapper){
+							UnitMemberWrapper memberWrapper = (UnitMemberWrapper)obj;
+							memberWrapper.getUnitWrapper().openInEditor();
+						}
 					}
 					else if(e.getHref().equals("Method")){
-						System.out.println(suggestion);
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						if(obj instanceof MethodWrapper){
+							MethodWrapper methodWrapper = (MethodWrapper)obj;
+							methodWrapper.openInEditor();
+						}
+						
 					}
 					else if(e.getHref().equals("Field")){
-						System.out.println(suggestion);
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						if(obj instanceof FieldWrapper){
+							FieldWrapper fieldWrapper = (FieldWrapper)obj;
+							fieldWrapper.openInEditor();
+						}
 					}
 					else if(e.getHref().equals("Exec")){
 						suggestion.apply();

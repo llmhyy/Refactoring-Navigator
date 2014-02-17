@@ -6,9 +6,18 @@ package reflexactoring.diagram.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PartInitException;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
+import reflexactoring.diagram.util.JavaCodeUtil;
 
 /**
  * @author linyun
@@ -21,6 +30,26 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 
 	public UnitMemberWrapper(ICompilationUnitWrapper unitWrapper){
 		this.setUnitWrapper(unitWrapper);
+	}
+	
+	protected abstract ASTNode getJavaElement();
+	
+	public void openInEditor(){
+		IEditorPart javaEditor;
+		try {
+			CompilationUnit cu = this.unitWrapper.getJavaUnit();
+			int lineNumber = cu.getLineNumber(getJavaElement().getStartPosition());
+			
+			ICompilationUnit unit = this.unitWrapper.getCompilationUnit();
+			javaEditor = JavaUI.openInEditor(unit);
+			JavaUI.revealInEditor(javaEditor,
+					(IJavaElement) unit);
+			JavaCodeUtil.goToLine(javaEditor, lineNumber, lineNumber+1);
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

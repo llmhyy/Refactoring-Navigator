@@ -4,6 +4,7 @@
 package reflexactoring.diagram.bean;
 
 import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
@@ -71,6 +72,14 @@ public class MethodWrapper extends UnitMemberWrapper {
 	@Override
 	public String getNameWithTag() {
 		return "<a href=\"Method\">" + getName() + "</a>";
+	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.UnitMemberWrapper#getJavaElement()
+	 */
+	@Override
+	protected ASTNode getJavaElement() {
+		return getMethod();
 	}
 
 }

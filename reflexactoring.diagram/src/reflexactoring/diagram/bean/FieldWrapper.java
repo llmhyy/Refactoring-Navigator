@@ -4,6 +4,7 @@
 package reflexactoring.diagram.bean;
 
 import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
@@ -72,5 +73,10 @@ public class FieldWrapper extends UnitMemberWrapper{
 	@Override
 	public String getNameWithTag() {
 		return "<a href=\"Field\">" + getName() + "</a>";
+	}
+
+	@Override
+	protected ASTNode getJavaElement() {
+		return getField();
 	}
 }

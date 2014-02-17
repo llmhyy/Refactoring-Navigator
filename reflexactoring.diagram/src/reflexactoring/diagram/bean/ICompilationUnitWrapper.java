@@ -8,11 +8,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PartInitException;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -76,6 +80,19 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	
 	public String toString(){
 		return this.compilationUnit.getElementName();
+	}
+	
+	public void openInEditor(){
+		IEditorPart javaEditor;
+		try {
+			javaEditor = JavaUI.openInEditor(this.compilationUnit);
+			JavaUI.revealInEditor(javaEditor,
+					(IJavaElement) this.compilationUnit);
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public String getSimpleName(){

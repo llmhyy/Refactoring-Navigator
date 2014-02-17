@@ -34,6 +34,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import reflexactoring.diagram.action.popup.ReferenceDetailMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.util.JavaCodeUtil;
 
 public class ReferenceDetailView extends ViewPart {
 
@@ -79,7 +80,7 @@ public class ReferenceDetailView extends ViewPart {
 					javaEditor = JavaUI.openInEditor(unit);
 					JavaUI.revealInEditor(javaEditor,
 							(IJavaElement) unit);
-					goToLine(javaEditor, lineNumber, lineNumber+1);
+					JavaCodeUtil.goToLine(javaEditor, lineNumber, lineNumber+1);
 				} catch (PartInitException e) {
 					e.printStackTrace();
 				} catch (JavaModelException e) {
@@ -87,36 +88,6 @@ public class ReferenceDetailView extends ViewPart {
 				}
 			}
 		});
-	}
-	
-	private void goToLine(IEditorPart editorPart, int startLine, int endLine) {
-
-		if (!(editorPart instanceof ITextEditor)) {
-			return;
-		}
-
-		ITextEditor editor = (ITextEditor) editorPart;
-		IDocument document = editor.getDocumentProvider().getDocument(
-				editor.getEditorInput());
-		if (document != null) {
-			
-			IRegion startLineInfo = null;
-			IRegion endLineInfo = null;
-			try {
-				// line count internally starts with 0, and not with 1 like in
-				// GUI
-				startLineInfo = document.getLineInformation(startLine - 1);
-				endLineInfo = document.getLineInformation(endLine - 1);
-			} catch (BadLocationException e) {
-				// ignored because line number may not really exist in document,
-				// we guess this...
-				e.printStackTrace();
-			}
-			if (startLineInfo != null && endLineInfo != null) {
-				editor.selectAndReveal(startLineInfo.getOffset(),
-						(endLineInfo.getOffset() - startLineInfo.getOffset() + endLineInfo.getLength()));
-			}
-		}
 	}
 
 	@Override
