@@ -6,17 +6,22 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
+import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
@@ -43,6 +48,7 @@ import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
+import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.util.GEFDiagramUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -130,9 +136,17 @@ public class RefactoringSuggestionView extends ViewPart {
 												Module module = (Module)moduleEditPart.resolveSemanticElement();
 												if(module.getName().equals(e.getLabel())){
 													//TODO for Adi
-													moduleEditPart.setFocus(true);
 													
+													IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+													ReflexactoringDiagramEditor editor = (ReflexactoringDiagramEditor)workbenchPage.getActiveEditor();
+													editor.setFocus();
+													
+													moduleEditPart.setSelected(EditPart.SELECTED_PRIMARY);
+													moduleEditPart.setFocus(true);
 													moduleEditPart.getViewer().setFocus(moduleEditPart);
+													moduleEditPart.getViewer().select(moduleEditPart);
+													//moduleEditPart.getViewer().setSelection(new StructuredSelection(moduleEditPart));
+													moduleEditPart.getViewer().reveal(moduleEditPart);
 												}
 											}
 										}
