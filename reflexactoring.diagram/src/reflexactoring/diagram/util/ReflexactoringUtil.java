@@ -450,5 +450,16 @@ public class ReflexactoringUtil {
 		return true;
 	}
 
+	public static ArrayList<ICompilationUnitWrapper> getUnitListFromModule(ModuleWrapper module){
+		ArrayList<ICompilationUnitWrapper> unitList = new ArrayList<>();
+		
+		for(ICompilationUnitWrapper unit: Settings.scope.getScopeCompilationUnitList()){
+			if(unit.getMappingModule().equals(module)){
+				unitList.add(unit);
+			}
+		}
+		
+		return unitList;
+	}
 	
 }
