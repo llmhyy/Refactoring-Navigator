@@ -65,9 +65,10 @@ public class ModuleTypeContainerDropEditPolicy extends
 					unitWrapper.setMappingModule(new ModuleWrapper(module));
 					
 					if(type != null){
-						insertMappingRelation(module, type);
+						ModuleWrapper moduleWrapper = insertMappingRelation(module, type);
+						refreshHeuristicView();		
 						
-						refreshHeuristicView();				
+						unitWrapper.setMappingModule(moduleWrapper);
 					}
 				}
 			}
@@ -123,7 +124,7 @@ public class ModuleTypeContainerDropEditPolicy extends
 	
 	
 	
-	private void insertMappingRelation(Module module, Type type){
+	private ModuleWrapper insertMappingRelation(Module module, Type type){
 		String packageName = type.getPackageName();
 		String typeName = type.getName();
 		String identifier = packageName + "." + typeName;
@@ -135,8 +136,14 @@ public class ModuleTypeContainerDropEditPolicy extends
 			if (extantMap != null) {
 				Settings.heuristicModuleUnitMapList.remove(extantMap);
 			}
-			HeuristicModuleUnitMap map = new HeuristicModuleUnitMap(new ModuleWrapper(module), unitWrapper);
-			Settings.heuristicModuleUnitMapList.addMap(map);			
+			
+			ModuleWrapper moduleWrapper = new ModuleWrapper(module);
+			HeuristicModuleUnitMap map = new HeuristicModuleUnitMap(moduleWrapper, unitWrapper);
+			Settings.heuristicModuleUnitMapList.addMap(map);	
+			
+			return moduleWrapper;
 		}
+		
+		return null;
 	}
 }

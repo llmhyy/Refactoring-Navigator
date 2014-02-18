@@ -59,7 +59,7 @@ public class ModelMapper {
 			if(map != null){
 				ModuleWrapper module = map.getModule();
 				unit.setMappingModule(module);
-				module.getMappingList().add(unit);
+				//module.getMappingList().add(unit);
 				
 				continue;
 			}
@@ -80,7 +80,7 @@ public class ModelMapper {
 			if(maxValue != -1.0){
 				ModuleWrapper module = moduleList.get(index);
 				unit.setMappingModule(module);
-				module.getMappingList().add(unit);
+				//module.getMappingList().add(unit);
 			}
 		}
 		
@@ -93,9 +93,9 @@ public class ModelMapper {
 	 */
 	private void clearMappingRelation(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
-		for(ModuleWrapper module: moduleList){
+		/*for(ModuleWrapper module: moduleList){
 			module.getMappingList().clear();
-		}
+		}*/
 		
 		for(ICompilationUnitWrapper unit: compilationUnitList){
 			unit.setMappingModule(null);
