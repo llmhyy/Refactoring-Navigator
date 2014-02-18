@@ -89,7 +89,13 @@ public abstract class Suboptimizer {
 					}
 				}
 				
+				System.out.println(member.getUnitWrapper().getSimpleName()+"."+member);
+				System.out.println(member.getTermFrequency());
+				System.out.println(module);
+				System.out.println(module.getTermFrequency());
+				
 				double similarity = module.computeSimilarity(member);
+				System.out.println("similarity:"+similarity);
 				
 				similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) + similarity;
 			}

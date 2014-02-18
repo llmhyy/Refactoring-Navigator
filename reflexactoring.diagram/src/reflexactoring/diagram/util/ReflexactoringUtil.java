@@ -194,9 +194,8 @@ public class ReflexactoringUtil {
 			}
 		}
 		
-		String[] result = filteredList.toArray(new String[0]);
 		StringBuffer buffer = new StringBuffer();
-		for(String word: result){
+		for(String word: filteredList){
 			buffer.append(word + " ");
 		}
 		return buffer.toString();
@@ -257,6 +256,7 @@ public class ReflexactoringUtil {
 		}
 		
 		String stemString = buffer.toString();
+		stemString = stemString.toLowerCase();
 		return stemString.substring(0, stemString.length()-1);
 	}
 	
@@ -275,7 +275,12 @@ public class ReflexactoringUtil {
 	 * @return
 	 */
 	public static String removeDelimit(String descrption){
-		Pattern p = Pattern.compile("[.,;:?()\\[\\]{}\'\"\\\\]");		  
+		//descrption = "Represents a mathema*tical opera\rtion.";
+		descrption = descrption.replace('\r', ' ');
+		descrption = descrption.replace('\n', ' ');
+		descrption = descrption.replace('*', ' ');
+		Pattern p = Pattern.compile("[.,;:?()\\[\\]{}\'\"\\\\@+-]");
+		//Pattern p = Pattern.compile("\\.");
         Matcher m = p.matcher(descrption);   
         String resultString = m.replaceAll(" ");
         p = Pattern.compile(" {2,}");

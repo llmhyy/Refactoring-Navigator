@@ -10,9 +10,11 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.BlockComment;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.LineComment;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.TagElement;
 
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -49,20 +51,27 @@ public class TokenExtractor {
 					}
 				}
 
-				return false;
+				return true;
 			}
 			
-			public boolean visit(BlockComment comment){
+			public boolean visit(Javadoc doc){
 				String source;
 				try {
 					source = relevantCompilationUnit.getCompilationUnit().getSource();
-					String content = source.substring(comment.getStartPosition(), comment.getStartPosition() + comment.getLength());
 					
-					content = ReflexactoringUtil.removeDelimit(content);
-					content = ReflexactoringUtil.performStemming(content);
+					for(Object obj: doc.tags()){
+						TagElement element = (TagElement)obj;
+						
+						String content = source.substring(element.getStartPosition(), element.getStartPosition() + element.getLength());
+						content = ReflexactoringUtil.removeDelimit(content);
+						content = ReflexactoringUtil.removeStopWord(content);
+						content = ReflexactoringUtil.performStemming(content);
+						
+						buffer.append(content + " ");
+						
+					}
 					
-					buffer.append(content + " ");
-				} catch (JavaModelException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
