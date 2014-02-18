@@ -44,6 +44,8 @@ public class MoveTypeAction extends MoveAction {
 			
 			move(unitWrapper, this.getDestination());
 			refreshHeuristicMapUI(unitWrapper, this.getDestination());	
+			
+			unitWrapper.setMappingModule(this.getDestination());
 		}
 	}
 
@@ -53,7 +55,9 @@ public class MoveTypeAction extends MoveAction {
 			ICompilationUnitWrapper unitWrapper = (ICompilationUnitWrapper)suggestionObj;
 			
 			move(unitWrapper, this.getOrigin());
-			refreshHeuristicMapUI(unitWrapper, this.getOrigin());			
+			refreshHeuristicMapUI(unitWrapper, this.getOrigin());	
+			
+			unitWrapper.setMappingModule(this.getOrigin());
 		}
 
 	}
