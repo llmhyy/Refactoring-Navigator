@@ -17,7 +17,7 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	private Module module;
 	private ArrayList<ModuleWrapper> calleeModuleList = new ArrayList<>();
 	private ArrayList<ModuleWrapper> callerModuleList = new ArrayList<>();
-	private ArrayList<ICompilationUnitWrapper> mappingList = new ArrayList<>();
+	//private ArrayList<ICompilationUnitWrapper> mappingList = new ArrayList<>();
 	
 	/**
 	 * @param module
@@ -53,16 +53,16 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	}
 	/**
 	 * @return the mappingList
-	 */
+	 *//*
 	public ArrayList<ICompilationUnitWrapper> getMappingList() {
 		return mappingList;
 	}
-	/**
+	*//**
 	 * @param mappingList the mappingList to set
-	 */
+	 *//*
 	public void setMappingList(ArrayList<ICompilationUnitWrapper> mappingList) {
 		this.mappingList = mappingList;
-	}
+	}*/
 	
 	public String getDescription(){
 		return this.module.getDescription();
