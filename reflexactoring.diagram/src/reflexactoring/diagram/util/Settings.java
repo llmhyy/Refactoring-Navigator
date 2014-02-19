@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 
+import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
@@ -28,6 +29,9 @@ public class Settings {
 	 */
 	public static HeuristicModuleUnitMapList heuristicModuleUnitMapList
 		= new HeuristicModuleUnitMapList();
+	
+	public static HeuristicModuleMemberStopMapList heuristicStopMapList
+		= new HeuristicModuleMemberStopMapList();
 	
 	/**
 	 * It is used to keep user-specified module-type similarity value. For each pair

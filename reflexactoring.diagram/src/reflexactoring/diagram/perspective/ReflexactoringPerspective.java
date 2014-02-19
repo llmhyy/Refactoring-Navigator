@@ -11,6 +11,7 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 	public static String REFACTORING_SUGGESTION = "reflexactoring.diagram.view.suggestion";
 	public static String MODULE_TYPE_SIMILARITY_VIEW = "reflexactoring.diagram.view.moduleTypeSimilarity";
 	public static String REFERENCE_DETAIL_VIEW = "reflexactoring.diagram.view.referenceDetail";
+	public static String FORBIDDEN_VIEW = "reflexactoring.diagram.view.forbidMap";
 	
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
@@ -23,6 +24,7 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 		bottom.addView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW);
 		bottom.addView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
 		bottom.addView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW);
+		bottom.addView(ReflexactoringPerspective.FORBIDDEN_VIEW);
 		
 		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT, 0.7f, editorArea);
 		right.addView(ReflexactoringPerspective.REFACTORING_SUGGESTION);

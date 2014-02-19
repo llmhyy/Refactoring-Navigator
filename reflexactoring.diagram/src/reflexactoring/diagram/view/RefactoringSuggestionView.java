@@ -38,9 +38,11 @@ import org.osgi.framework.Bundle;
 import reflexactoring.Activator;
 import reflexactoring.Module;
 import reflexactoring.diagram.action.recommend.Suggestion;
+import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
 import reflexactoring.diagram.action.recommend.action.MoveTypeAction;
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
 import reflexactoring.diagram.bean.FieldWrapper;
+import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -49,7 +51,9 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
+import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.GEFDiagramUtil;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 public class RefactoringSuggestionView extends ViewPart {
@@ -108,8 +112,12 @@ public class RefactoringSuggestionView extends ViewPart {
 			buffer.append("<form>");
 			buffer.append("<li>");
 			buffer.append(suggestion.generateTagedText());
-			buffer.append("<b>[</b><a href=\"Exec\">Execute</a>, ");
-			buffer.append("<a href=\"Undo\">Undo</a><b>]</b>");
+			buffer.append("<b>[</b><a href=\"Exec\">Execute</a> ");
+			buffer.append("<a href=\"Undo\">Undo</a> ");
+			if(suggestion.getAction() instanceof MoveMemberAction){
+				buffer.append("<a href=\"Forbid\">Forbid</a>");				
+			}
+			buffer.append("<b>]</b>");
 			buffer.append("</li>");			
 			
 			buffer.append("</form>");
@@ -135,8 +143,6 @@ public class RefactoringSuggestionView extends ViewPart {
 												ModuleEditPart moduleEditPart = (ModuleEditPart)modulePart;
 												Module module = (Module)moduleEditPart.resolveSemanticElement();
 												if(module.getName().equals(e.getLabel())){
-													//TODO for Adi
-													
 													IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 													ReflexactoringDiagramEditor editor = (ReflexactoringDiagramEditor)workbenchPage.getActiveEditor();
 													editor.setFocus();
@@ -179,6 +185,21 @@ public class RefactoringSuggestionView extends ViewPart {
 						if(obj instanceof FieldWrapper){
 							FieldWrapper fieldWrapper = (FieldWrapper)obj;
 							fieldWrapper.openInEditor();
+						}
+					}
+					else if(e.getHref().equals("Forbid")){
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof UnitMemberWrapper && action instanceof MoveMemberAction){
+							UnitMemberWrapper memberWrapper = (UnitMemberWrapper)obj;
+							MoveMemberAction moveMemberAction = (MoveMemberAction)action;
+							HeuristicModuleMemberStopMap stopMap = new HeuristicModuleMemberStopMap(moveMemberAction.getDestination(), memberWrapper);
+							
+							Settings.heuristicStopMapList.add(stopMap);
+							ForbiddenView view = (ForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+									getActivePage().findView(ReflexactoringPerspective.FORBIDDEN_VIEW);
+							view.getViewer().setInput(Settings.heuristicStopMapList);
+							view.getViewer().refresh();
 						}
 					}
 					else if(e.getHref().equals("Exec")){

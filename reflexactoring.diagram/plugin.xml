@@ -779,6 +779,14 @@
             name="Reference Detail"
             restorable="true">
       </view>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.ForbiddenView"
+            icon="icons/view/forbid.gif"
+            id="reflexactoring.diagram.view.forbidMap"
+            name="Forbid View"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">

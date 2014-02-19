@@ -27,6 +27,17 @@ public class FieldWrapper extends UnitMemberWrapper{
 	}
 	
 	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof FieldWrapper){
+			FieldWrapper fieldWrapper = (FieldWrapper)obj;
+			return fieldWrapper.getName().equals(this.getName())
+					&& fieldWrapper.getUnitWrapper().equals(this.getUnitWrapper());
+		}
+		
+		return false;
+	}
+	
+	@Override
 	public String getName() {
 		return ((VariableDeclaration)field.fragments().get(0)).getName().getIdentifier();
 	}

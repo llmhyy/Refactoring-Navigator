@@ -5,6 +5,7 @@ package reflexactoring.diagram.action;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -14,20 +15,25 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
+import org.eclipse.jdt.internal.corext.callhierarchy.CallerMethodWrapper;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.reconciler.MonoReconciler;
@@ -118,11 +124,15 @@ public class UnitMemberExtractor {
 				break;
 			}
 			
+			/*if(member.getName().contains("createOperationPanel")){
+				System.currentTimeMillis();
+			}*/
+			
 			if(member instanceof MethodWrapper){
 				MethodWrapper methodWrapper = (MethodWrapper)member;
 				
 				methodWrapper.getMethod().accept(new ASTVisitor() {
-					public boolean visit(FieldAccess access){
+					/*public boolean visit(FieldAccess access){
 						
 						IVariableBinding fieldBinding = access.resolveFieldBinding();
 						IJavaElement element = fieldBinding.getJavaElement();
@@ -159,6 +169,20 @@ public class UnitMemberExtractor {
 						}
 						
 						return true;
+					}*/
+					public boolean visit(SimpleName name){
+						IBinding binding = name.resolveBinding();
+						IJavaElement element = binding.getJavaElement();
+						if(element != null && (binding instanceof IMethodBinding || binding instanceof IVariableBinding)){
+							for(UnitMemberWrapper calleeMember: members){
+								if(element.equals(calleeMember.getJavaMember()) && !member.equals(calleeMember)){
+									member.addCallee(calleeMember);
+									calleeMember.addCaller(member);
+								}
+							}							
+						}
+						
+						return false;
 					}
 					
 					public boolean visit(ClassInstanceCreation creation){
@@ -187,6 +211,20 @@ public class UnitMemberExtractor {
 			}
 			else if(member instanceof FieldWrapper){
 				((FieldWrapper) member).getField().accept(new ASTVisitor() {
+					public boolean visit(SimpleName name){
+						IBinding binding = name.resolveBinding();
+						IJavaElement element = binding.getJavaElement();
+						if(element != null && (binding instanceof IMethodBinding || binding instanceof IVariableBinding)){
+							for(UnitMemberWrapper calleeMember: members){
+								if(element.equals(calleeMember.getJavaMember()) && !member.equals(calleeMember)){
+									member.addCallee(calleeMember);
+									calleeMember.addCaller(member);
+								}
+							}							
+						}
+						
+						return false;
+					}
 					public boolean visit(ClassInstanceCreation creation){
 						
 						IMethodBinding methodBinding = creation.resolveConstructorBinding();
@@ -211,6 +249,12 @@ public class UnitMemberExtractor {
 						return true;
 					}
 				});
+			}
+		}
+		
+		for(UnitMemberWrapper member: members){
+			if(member.getName().contains("unary_op_listener")){
+				System.currentTimeMillis();
 			}
 		}
 		

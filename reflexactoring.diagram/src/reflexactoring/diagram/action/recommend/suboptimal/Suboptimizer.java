@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import reflexactoring.diagram.action.ModelMapper;
+import reflexactoring.diagram.action.recommend.MemberModuleValidityExaminer;
 import reflexactoring.diagram.bean.GraphNode;
+import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.MethodWrapper;
@@ -66,6 +68,8 @@ public abstract class Suboptimizer {
 	}
 	
 	public Genotype optimize(UnitMemberWrapperList members, ArrayList<ModuleWrapper> modules){
+		
+		MemberModuleValidityExaminer examiner = new MemberModuleValidityExaminer();
 		double[][] similarityTable = new double[modules.size()][members.size()];
 		
 		for(int i=0; i<modules.size(); i++){
@@ -73,31 +77,24 @@ public abstract class Suboptimizer {
 			module.extractTermFrequency(module.getDescription());
 			for(int j=0; j<members.size(); j++){
 				UnitMemberWrapper member = members.get(j);
-				
-				if(member instanceof MethodWrapper){
-					MethodWrapper methodWrapper = (MethodWrapper)member;
-					/**
-					 * we cannot move constructor out of a class.
-					 */
-					if(methodWrapper.isConstructor()){
-						String moduleName = modules.get(i).getName();
-						String correspondModuleName = methodWrapper.getUnitWrapper().getMappingModule().getName();
-						if(!moduleName.equals(correspondModuleName)){
-							similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) - 1;
-							continue;
-						}
-					}
+				if(member.getName().contains("calculate")){
+					System.currentTimeMillis();
+				}
+				if(examiner.isValid(member, module)){
+					double similarity = module.computeSimilarity(member);
+					System.currentTimeMillis();
+					similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) + similarity;					
+				}
+				else{
+					similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) - 1;
 				}
 				
-				double similarity = module.computeSimilarity(member);
-				
-				/*System.out.println(member.getUnitWrapper().getSimpleName()+"."+member);
+				System.out.println(member.getUnitWrapper().getSimpleName()+"."+member);
 				System.out.println(member.getTermFrequency());
 				System.out.println(module);
 				System.out.println(module.getTermFrequency());
-				System.out.println("similarity:"+similarity);*/
+				//System.out.println("similarity:"+similarity);
 				
-				similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) + similarity;
 			}
 		}
 		

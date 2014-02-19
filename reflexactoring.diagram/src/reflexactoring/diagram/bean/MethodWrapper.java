@@ -3,9 +3,16 @@
  */
 package reflexactoring.diagram.bean;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Type;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
 
@@ -25,6 +32,60 @@ public class MethodWrapper extends UnitMemberWrapper {
 		this.extractTermFrequency(content);
 		
 		System.currentTimeMillis();
+	}
+	
+	
+	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof MethodWrapper){
+			MethodWrapper methodWrapper = (MethodWrapper)obj;
+			if(methodWrapper.getName().equals(this.getName())
+					&& methodWrapper.getUnitWrapper().equals(this.getUnitWrapper())){
+				return this.hasSameParameters(methodWrapper);
+			};
+		}
+		
+		return false;
+	}
+	
+	public ArrayList<String> getParameterTypes(){
+		ArrayList<String> parameterTypes = new ArrayList<>();
+		
+		Object obj = this.getMethod().getStructuralProperty(MethodDeclaration.PARAMETERS_PROPERTY);
+		List list = (List)obj;
+		for(Object node: list){
+			if(node instanceof ASTNode){
+				ASTNode astNode = (ASTNode)node;
+				SingleVariableDeclaration svd = (SingleVariableDeclaration)astNode;
+				Type type = svd.getType();
+				if(type instanceof SimpleType){
+					String typeName = ((SimpleType)type).getName().getFullyQualifiedName();
+					parameterTypes.add(typeName);
+				}
+			}
+		}
+		
+		return parameterTypes;
+	}
+	
+	private boolean hasSameParameters(MethodWrapper methodWrapper){
+		ArrayList<String> thisParameters = getParameterTypes();
+		ArrayList<String> thatParameters = methodWrapper.getParameterTypes();
+		
+		if(thisParameters.size() != thatParameters.size()){
+			return false;
+		}
+		
+		Collections.sort(thisParameters);
+		Collections.sort(thatParameters);
+		
+		for(int i=0; i<thisParameters.size(); i++){
+			if(!thisParameters.get(i).equals(thatParameters.get(i))){
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	@Override
