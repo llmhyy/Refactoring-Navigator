@@ -70,6 +70,7 @@ public class ForbiddenView extends ViewPart {
 		    			= new HeuristicModuleMemberStopMapList();
 		    			for(HeuristicModuleMemberStopMap map: Settings.heuristicStopMapList){
 		    				if(map.getMember().getName().toLowerCase().indexOf(searchString) != -1 ||
+		    						map.getMember().getUnitWrapper().getFullQualifiedName().toLowerCase().indexOf(searchString) != -1 ||
 		    						map.getModule().getName().toLowerCase().indexOf(searchString) != -1){
 			    				filteredHeuristicStopMapList.add(map);		    					
 		    				}
