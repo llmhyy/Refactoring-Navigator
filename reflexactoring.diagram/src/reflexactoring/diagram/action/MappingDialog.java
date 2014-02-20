@@ -3,7 +3,6 @@
  */
 package reflexactoring.diagram.action;
 
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;

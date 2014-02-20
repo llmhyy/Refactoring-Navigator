@@ -49,11 +49,10 @@ public class HeuristicModuleMemberStopMapList extends ArrayList<HeuristicModuleM
 		Iterator<HeuristicModuleMemberStopMap> iterator = this.iterator();
 		while(iterator.hasNext()){
 			HeuristicModuleMemberStopMap stopMap = iterator.next();
-			if(stopMap.getMember().equals(map.getModule()) 
+			if(stopMap.getModule().equals(map.getModule()) 
 					&& stopMap.getMember().equals(map.getMember())){
 				iterator.remove();
 			}
 		}
-		
 	}
 }
