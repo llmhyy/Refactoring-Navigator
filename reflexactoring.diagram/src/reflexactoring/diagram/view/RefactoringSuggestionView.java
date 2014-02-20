@@ -3,17 +3,29 @@ package reflexactoring.diagram.view;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
+import org.eclipse.jdt.internal.ui.wizards.NewClassCreationWizard;
+import org.eclipse.jdt.ui.wizards.NewClassWizardPage;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -43,6 +55,7 @@ import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
 import reflexactoring.diagram.action.recommend.action.MoveTypeAction;
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
+import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
@@ -233,6 +246,7 @@ public class RefactoringSuggestionView extends ViewPart {
 					}
 					else if(e.getHref().equals("Allow")){
 						//TODO for Adi
+						//new JavaClassCreator().createClass();
 					}
 				}
 			});
