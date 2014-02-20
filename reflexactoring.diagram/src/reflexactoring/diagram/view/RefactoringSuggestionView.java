@@ -116,10 +116,13 @@ public class RefactoringSuggestionView extends ViewPart {
 			buffer.append(suggestion.generateTagedText());
 			buffer.append("<b>[</b><a href=\"Exec\">Execute</a> ");
 			buffer.append("<a href=\"Undo\">Undo</a> ");
-			if(suggestion.getAction() instanceof MoveMemberAction){
-				buffer.append("<a href=\"Forbid\">Forbid</a>");				
-			}
 			buffer.append("<b>]</b>");
+			if(suggestion.getAction() instanceof MoveMemberAction){
+				buffer.append("<b>[</b>");
+				buffer.append("<a href=\"Forbid\">Forbid</a> ");	
+				buffer.append("<a href=\"Allow\">Allow</a>");	
+				buffer.append("<b>]</b>");
+			}
 			buffer.append("</li>");			
 			
 			buffer.append("</form>");
@@ -227,6 +230,9 @@ public class RefactoringSuggestionView extends ViewPart {
 						t.setForeground(colors.getColor("black"));
 						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
 						t.setBackground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("Allow")){
+						//TODO for Adi
 					}
 				}
 			});
