@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
@@ -34,7 +35,7 @@ public class GeneticOptimizer extends Suboptimizer{
 	@Override
 	protected Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
 			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, 
-			double[][] similarityTable, ArrayList<int[]> relationMap) {
+			double[][] similarityTable, ArrayList<int[]> relationMap, IProgressMonitor monitor) {
 		
 		/*int dimension = computingFactor.getX0Vector().size();
 		SeedGenerator seedGenerator = new ConstrainedSeedGenerator(dimension, modules, lowLevelNodes, 
@@ -48,6 +49,11 @@ public class GeneticOptimizer extends Suboptimizer{
 		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getIterationNumber()); i++){
 			population = generateNextGeneration(population, computingFactor, relationMap);
 			System.out.println(population.getOptimalGene().getFitness());
+			
+			monitor.worked(1);
+			if(monitor.isCanceled()){
+				break;
+			}
 		}
 		
 		return population.getOptimalGene();

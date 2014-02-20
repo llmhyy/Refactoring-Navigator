@@ -2,13 +2,19 @@ package reflexactoring.diagram.action.recommend;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.view.RefactoringSuggestionView;
 
 public class ClassRecommendAction implements
@@ -17,14 +23,34 @@ public class ClassRecommendAction implements
 	@Override
 	public void run(IAction action) {
 		
-		RefactoringRecommender recommender = new RefactoringRecommender();
-		
-		ArrayList<Suggestion> suggestions = recommender.recommendStartByClass();
-		
-		
-		RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().
+		final RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().
 				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTION);
-		view.refreshSuggestionsOnUI(suggestions);
+		
+		
+		Job job = new Job("Searching for solutions by moving types"){
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				
+				Double iterNum = Double.valueOf(ReflexactoringUtil.getIterationNumber());
+				monitor.beginTask("Searching Solution...", iterNum.intValue());
+				
+				RefactoringRecommender recommender = new RefactoringRecommender();
+				final ArrayList<Suggestion> suggestions = recommender.recommendStartByClass(monitor);
+				
+				Display.getDefault().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						view.refreshSuggestionsOnUI(suggestions);
+						
+					}
+				});
+				
+				return Status.OK_STATUS;
+			}
+			
+		};
+		job.schedule();
 		
 	}
 

@@ -6,6 +6,8 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import reflexactoring.diagram.action.ModelMapper;
 import reflexactoring.diagram.action.recommend.MemberModuleValidityExaminer;
 import reflexactoring.diagram.bean.GraphNode;
@@ -45,9 +47,9 @@ public abstract class Suboptimizer {
 	
 	protected abstract Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
 			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, 
-			double[][] similarityTable, ArrayList<int[]> relationMap);
+			double[][] similarityTable, ArrayList<int[]> relationMap, IProgressMonitor monitor);
 	
-	public Genotype optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules){
+	public Genotype optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules, IProgressMonitor monitor){
 		//double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
 		double[][] similarityTable;
 		
@@ -62,12 +64,12 @@ public abstract class Suboptimizer {
 		
 		FitnessComputingFactor computingFactor = buildComputingFactor(similarityTable, modules, units);
 		
-		Genotype gene = computeOptimalResult(computingFactor, modules, units, similarityTable, relationMap);
+		Genotype gene = computeOptimalResult(computingFactor, modules, units, similarityTable, relationMap, monitor);
 		
 		return gene;
 	}
 	
-	public Genotype optimize(UnitMemberWrapperList members, ArrayList<ModuleWrapper> modules){
+	public Genotype optimize(UnitMemberWrapperList members, ArrayList<ModuleWrapper> modules, IProgressMonitor monitor){
 		
 		MemberModuleValidityExaminer examiner = new MemberModuleValidityExaminer();
 		double[][] similarityTable = new double[modules.size()][members.size()];
@@ -98,7 +100,7 @@ public abstract class Suboptimizer {
 		
 		FitnessComputingFactor computingFactor = buildComputingFactor(similarityTable, modules, members);
 		
-		Genotype gene = computeOptimalResult(computingFactor, modules, members, similarityTable, relationMap);
+		Genotype gene = computeOptimalResult(computingFactor, modules, members, similarityTable, relationMap, monitor);
 		
 		return gene;
 	}

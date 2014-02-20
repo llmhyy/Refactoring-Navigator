@@ -12,8 +12,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.UIJob;
 
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.view.RefactoringSuggestionView;
 
 public class MemberRecommendAction implements IWorkbenchWindowActionDelegate {
@@ -25,30 +27,38 @@ public class MemberRecommendAction implements IWorkbenchWindowActionDelegate {
 			
 			@Override
 			public void run() {
-				RefactoringRecommender recommender = new RefactoringRecommender();
-				ArrayList<Suggestion> suggestions = recommender.recommendStartByMember();
 				
-				RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().
+				final RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().
 						getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTION);
-				view.refreshSuggestionsOnUI(suggestions);
+				
+				Job job = new Job("Searching for solutions by moving methods"){
+					@Override
+					protected IStatus run(IProgressMonitor monitor) {
+						
+						Double iterNum = Double.valueOf(ReflexactoringUtil.getIterationNumber());
+						monitor.beginTask("Searching Solution...", iterNum.intValue());
+						
+						RefactoringRecommender recommender = new RefactoringRecommender();
+						final ArrayList<Suggestion> suggestions = recommender.recommendStartByMember(monitor);
+						
+						Display.getDefault().asyncExec(new Runnable() {
+							
+							@Override
+							public void run() {
+								view.refreshSuggestionsOnUI(suggestions);
+								
+							}
+						});
+						
+						return Status.OK_STATUS;
+					}
+					
+				};
+				job.schedule();
 				
 			}
 		});
 		
-
-		/*Job job = new Job("Searching for solutions by moving methods"){
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				
-				
-				return Status.OK_STATUS;
-			}
-			
-		};
-		job.schedule();*/
-		
-
 	}
 
 	@Override

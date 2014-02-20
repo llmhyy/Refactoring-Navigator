@@ -6,6 +6,8 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 
@@ -28,7 +30,7 @@ public class KStepOptimizer extends Suboptimizer{
 	@Override
 	protected Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
 			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes,
-			double[][] similarityTable, ArrayList<int[]> relationMap) {
+			double[][] similarityTable, ArrayList<int[]> relationMap, IProgressMonitor monitor) {
 
 		int depth = Settings.kStep - 1;
 		

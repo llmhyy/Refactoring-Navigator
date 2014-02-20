@@ -5,6 +5,9 @@ package reflexactoring.diagram.action.recommend;
 
 import java.util.ArrayList;
 
+import javax.swing.ProgressMonitor;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -46,7 +49,7 @@ public class RefactoringRecommender {
 		
 	}
 	
-	public ArrayList<Suggestion> recommendStartByClass(){
+	public ArrayList<Suggestion> recommendStartByClass(IProgressMonitor monitor){
 		
 		ArrayList<ICompilationUnitWrapper> unmappedUnits = checkUnmappedCompilationUnits();
 		if(unmappedUnits.size() != 0 && !Settings.isSkipUnMappedTypes){
@@ -68,7 +71,7 @@ public class RefactoringRecommender {
 			}
 			
 			GeneticOptimizer optimizer = new GeneticOptimizer();
-			Genotype unitGene = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList);
+			Genotype unitGene = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList, monitor);
 			
 			if(unitGene.isFeasible()){
 				ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(unitGene, optimizer, moduleList);
@@ -82,20 +85,6 @@ public class RefactoringRecommender {
 				
 				ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(unitGene, optimizer, moduleList);
 				return suggestions;
-				/*if(confirm){
-					UnitMemberExtractor extractor = new UnitMemberExtractor();
-					UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
-					
-					Genotype memberGene = optimizer.optimize(members, moduleList);
-					
-					ArrayList<Suggestion> suggestions = generateMemberLevelSuggestions(memberGene, optimizer, 
-							moduleList, members);
-					
-					return suggestions;
-				}
-				else{
-					
-				}*/
 			}
 			
 			
@@ -143,7 +132,7 @@ public class RefactoringRecommender {
 		return "OK";
 	}
 	
-	public ArrayList<Suggestion> recommendStartByMember(){
+	public ArrayList<Suggestion> recommendStartByMember(IProgressMonitor monitor){
 		
 		ArrayList<ModuleWrapper> moduleList;
 		try {
@@ -155,7 +144,7 @@ public class RefactoringRecommender {
 			//UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
 			UnitMemberWrapperList members = Settings.scope.getScopeMemberList();
 			
-			Genotype memberGene = optimizer.optimize(members, moduleList);
+			Genotype memberGene = optimizer.optimize(members, moduleList, monitor);
 			
 			ArrayList<Suggestion> suggestions = generateMemberLevelSuggestions(memberGene, optimizer, 
 					moduleList, members);
