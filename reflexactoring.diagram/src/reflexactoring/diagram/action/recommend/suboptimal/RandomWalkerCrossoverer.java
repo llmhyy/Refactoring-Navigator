@@ -90,9 +90,11 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 					
 					if(isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
 						
-						Genotype newGene = new Genotype(DNA);
+						/*Genotype newGene = new Genotype(DNA);
 						newGene.setPreviousMappingMatrix(oldGene.getMappingMatrix());
-						newGene.setPreviousTmpMatrix(oldGene.getTmpMatrix());
+						newGene.setPreviousTmpMatrix(oldGene.getTmpMatrix());*/
+						Genotype newGene = oldGene.clone();
+						newGene.setDNA(DNA);
 						newGene.computeFitness(computingFactor);
 						//System.out.println(newGene.getFitness());
 						return newGene;						

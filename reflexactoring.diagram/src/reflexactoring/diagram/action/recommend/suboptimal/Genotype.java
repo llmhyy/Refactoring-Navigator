@@ -22,9 +22,12 @@ import reflexactoring.diagram.util.Settings;
  */
 public class Genotype {
 	
-	private static HashMap<Genotype, Double> fitnessTable = new HashMap<>();
-	private static HashMap<Genotype, SparseDoubleMatrix2D> tmpMatrixTable = new HashMap<>();
-	private static HashMap<Genotype, SparseDoubleMatrix2D> mappingMatrixTable = new HashMap<>();
+	/**
+	 * essentially, it is the map from int[] to genotype, I write it in this form just for some convenience.
+	 */
+	private static HashMap<Genotype, Genotype> fitnessTable = new HashMap<>();
+	//private static HashMap<Genotype, SparseDoubleMatrix2D> tmpMatrixTable = new HashMap<>();
+	//private static HashMap<Genotype, SparseDoubleMatrix2D> mappingMatrixTable = new HashMap<>();
 	
 	private ArrayList<Violation> violationList = new ArrayList<>();
 	
@@ -33,8 +36,8 @@ public class Genotype {
 	/**
 	 * The previous R in R*L*R'~H.
 	 */
-	private SparseDoubleMatrix2D previousMappingMatrix;
-	private SparseDoubleMatrix2D previousTmpMatrix;
+	//private SparseDoubleMatrix2D previousMappingMatrix;
+	//private SparseDoubleMatrix2D previousTmpMatrix;
 	
 	private SparseDoubleMatrix2D mappingMatrix;
 	private SparseDoubleMatrix2D tmpMatrix;
@@ -81,6 +84,22 @@ public class Genotype {
 		if (!Arrays.equals(DNA, other.DNA))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public Genotype clone(){
+		Genotype clonedGene = new Genotype(this.DNA);
+		
+		SparseDoubleMatrix2D tmpMatrix = this.getTmpMatrix();
+		SparseDoubleMatrix2D mappingMatrix = this.getMappingMatrix();
+		ArrayList<Violation> violationList = this.getViolationList();
+		
+		clonedGene.setTmpMatrix(tmpMatrix);
+		clonedGene.setMappingMatrix(mappingMatrix);
+		clonedGene.setViolationList(violationList);
+		clonedGene.setFitness(this.fitness);
+		
+		return clonedGene;
 	}
 
 	/**
@@ -148,16 +167,16 @@ public class Genotype {
 		 */
 		if(Settings.isNeedClearCache){
 			fitnessTable.clear();
-			tmpMatrixTable.clear();
-			mappingMatrixTable.clear();
+			//tmpMatrixTable.clear();
+			//mappingMatrixTable.clear();
 			Settings.isNeedClearCache = false;
 		}
 		
-		Double d = fitnessTable.get(this);
-		if(d != null){
-			this.fitness = d;
-			this.tmpMatrix = tmpMatrixTable.get(this);
-			this.mappingMatrix = mappingMatrixTable.get(this);
+		Genotype t = fitnessTable.get(this);
+		if(t != null){
+			this.fitness = t.getFitness();
+			//this.tmpMatrix = tmpMatrixTable.get(this);
+			//this.mappingMatrix = mappingMatrixTable.get(this);
 			
 			//return d;
 		}
@@ -167,14 +186,11 @@ public class Genotype {
 			
 			double objectiveValue = getObjectiveValue(weightVector, x0Vector);
 			double voilatedNum = getViolatedConstraintsNumber(computingFactor);
+			this.fitness = objectiveValue - voilatedNum;
 			
-			d = new Double(objectiveValue - voilatedNum);
-			
-			fitnessTable.put(this, d);
-			tmpMatrixTable.put(this, this.tmpMatrix);
-			mappingMatrixTable.put(this, this.mappingMatrix);
-			
-			this.fitness = d;
+			fitnessTable.put(this, this);
+			//tmpMatrixTable.put(this, this.tmpMatrix);
+			//mappingMatrixTable.put(this, this.mappingMatrix);
 			//return d;
 		}
 		
@@ -247,9 +263,9 @@ public class Genotype {
 					 * If we have recorded the previous mapping matrix, we need to compute the delta between new and previous
 					 * mapping in order to compute the fitness function more efficiently.
 					 */
-					if(previousMappingMatrix != null){
-						if(previousMappingMatrix.get(i, j) != mappingMatrix.get(i, j)){
-							int type = (previousMappingMatrix.get(i, j) > mappingMatrix.get(i, j))? 
+					if(this.mappingMatrix != null){
+						if(this.mappingMatrix.get(i, j) != mappingMatrix.get(i, j)){
+							int type = (this.mappingMatrix.get(i, j) > mappingMatrix.get(i, j))? 
 									HighLevelLowLevelMap.REMOVED : HighLevelLowLevelMap.ADDED ;
 							
 							HighLevelLowLevelMap map = new HighLevelLowLevelMap(i, j, type);
@@ -274,7 +290,7 @@ public class Genotype {
 		tmp = (SparseDoubleMatrix2D) mappingMatrix.zMult(lowLevelMatrix, tmp, 1, 0, false, false);*/
 		
 		SparseDoubleMatrix2D tmp; 
-		if(previousTmpMatrix == null || previousMappingMatrix == null){
+		if(this.tmpMatrix == null || this.mappingMatrix == null){
 			tmp = new SparseDoubleMatrix2D(mappingMatrix.rows(), lowLevelMatrix.columns());
 			tmp = (SparseDoubleMatrix2D) mappingMatrix.zMult(lowLevelMatrix, tmp, 1, 0, false, false);
 		}
@@ -290,7 +306,7 @@ public class Genotype {
 			System.out.println(t12-t11);*/
 			
 			//long t21 = System.currentTimeMillis();
-			tmp = incrementalCompute(previousTmpMatrix, lowLevelMatrix, maps);
+			tmp = incrementalCompute(this.tmpMatrix, lowLevelMatrix, maps);
 			//long t22 = System.currentTimeMillis();
 			//System.out.println(t22-t21);
 			
@@ -454,6 +470,9 @@ public class Genotype {
 	 * @return the tmpMatrix
 	 */
 	public SparseDoubleMatrix2D getTmpMatrix() {
+		
+		if(tmpMatrix == null)return null;
+		
 		SparseDoubleMatrix2D matrix = new SparseDoubleMatrix2D(tmpMatrix.rows(), tmpMatrix.columns());
 		for(int i=0; i<matrix.rows(); i++){
 			for(int j=0; j<matrix.columns(); j++){
@@ -463,10 +482,16 @@ public class Genotype {
 		return matrix;
 	}
 	
+	private void setTmpMatrix(SparseDoubleMatrix2D tmpMatrix){
+		this.tmpMatrix = tmpMatrix;
+	}
+	
 	/**
 	 * @return the mappingMatrix
 	 */
 	public SparseDoubleMatrix2D getMappingMatrix() {
+		if(mappingMatrix == null)return null;
+		
 		SparseDoubleMatrix2D matrix = new SparseDoubleMatrix2D(mappingMatrix.rows(), mappingMatrix.columns());
 		for(int i=0; i<matrix.rows(); i++){
 			for(int j=0; j<matrix.columns(); j++){
@@ -475,20 +500,24 @@ public class Genotype {
 		}
 		return matrix;
 	}
+	
+	private void setMappingMatrix(SparseDoubleMatrix2D mappingMatrix){
+		this.mappingMatrix = mappingMatrix;
+	}
 
 	/**
 	 * @param previousMappingMatrix the previousMappingMatrix to set
-	 */
+	 *//*
 	public void setPreviousMappingMatrix(SparseDoubleMatrix2D previousMappingMatrix) {
 		this.previousMappingMatrix = previousMappingMatrix;
 	}
 	
-	/**
+	*//**
 	 * @param previoustTmpMatrix the previoustTmpMatrix to set
-	 */
+	 *//*
 	public void setPreviousTmpMatrix(SparseDoubleMatrix2D previoustTmpMatrix) {
 		this.previousTmpMatrix = previoustTmpMatrix;
-	}
+	}*/
 
 	
 	
