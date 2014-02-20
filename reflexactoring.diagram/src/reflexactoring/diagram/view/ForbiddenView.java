@@ -28,10 +28,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import reflexactoring.diagram.action.MappingDialog;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
-import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
-import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
+import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
 import reflexactoring.diagram.util.Settings;
 
 public class ForbiddenView extends ViewPart {
@@ -65,19 +63,18 @@ public class ForbiddenView extends ViewPart {
 		    	if (e.keyCode == 13) {  
 		    		String searchString = searchText.getText().toLowerCase();
 		    		if(searchString == null || searchString.trim().equals("")){
-		    			tableViewer.setInput(Settings.heuristicModuleUnitMapList);
+		    			tableViewer.setInput(Settings.heuristicStopMapList);
 						tableViewer.refresh();
 		    		}else{
-		    			//TODO for Adi
-		    			HeuristicModuleUnitMapList filteredHeuristicModuleUnitMapList
-		    			= new HeuristicModuleUnitMapList();
-		    			for(HeuristicModuleUnitMap map: Settings.heuristicModuleUnitMapList){
-		    				if(map.getUnit().getFullQualifiedName().toLowerCase().indexOf(searchString) != -1 ||
+		    			HeuristicModuleMemberStopMapList filteredHeuristicStopMapList
+		    			= new HeuristicModuleMemberStopMapList();
+		    			for(HeuristicModuleMemberStopMap map: Settings.heuristicStopMapList){
+		    				if(map.getMember().getName().toLowerCase().indexOf(searchString) != -1 ||
 		    						map.getModule().getName().toLowerCase().indexOf(searchString) != -1){
-			    				filteredHeuristicModuleUnitMapList.add(map);		    					
+			    				filteredHeuristicStopMapList.add(map);		    					
 		    				}
 		    			}
-		    			tableViewer.setInput(filteredHeuristicModuleUnitMapList);
+		    			tableViewer.setInput(filteredHeuristicStopMapList);
 						tableViewer.refresh();
 		    		}
 		    	}  
@@ -121,7 +118,7 @@ public class ForbiddenView extends ViewPart {
 					TableItem[] ti = tableViewer.getTable().getSelection();
 					if (ti != null && ti.length > 0) { 
 						for(int i = 0; i < ti.length; i++){
-							Settings.heuristicStopMapList.removeMap((HeuristicModuleMemberStopMap) ti[i].getData());	
+							Settings.heuristicStopMapList.removeMap((HeuristicModuleMemberStopMap) ti[i].getData());							
 						}						
 						tableViewer.setInput(Settings.heuristicStopMapList);
 						tableViewer.refresh();
@@ -196,19 +193,19 @@ public class ForbiddenView extends ViewPart {
 		IActionBars actionBars = getViewSite().getActionBars();
 		IToolBarManager toolBar = actionBars.getToolBarManager();
 		
-		Action createMapAction = new Action("Create a heuristic map") {
+		Action createMapAction = new Action("Stop a heuristic map") {
 			public void run(){
-				//TODO for Adi
-				MappingDialog dialog = new MappingDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
-				dialog.create();
-				if(dialog.open() == Window.OK){
-					HeuristicModuleUnitMap map = dialog.getHeuristicModuleUnitMap();
-					if(map != null){
-						Settings.heuristicModuleUnitMapList.addMap(map);
-						tableViewer.setInput(Settings.heuristicModuleUnitMapList);
-						tableViewer.refresh();
-					}
-				}
+				//TODO
+//				StopMappingDialog dialog = new StopMappingDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+//				dialog.create();
+//				if(dialog.open() == Window.OK){
+//					HeuristicModuleMemberStopMap map = dialog.getHeuristicModuleMemberStopMap();
+//					if(map != null){
+//						Settings.heuristicStopMapList.add(map);
+//						tableViewer.setInput(Settings.heuristicStopMapList);
+//						tableViewer.refresh();
+//					}
+//				}
 			}
 		};
 		createMapAction.setImageDescriptor(
