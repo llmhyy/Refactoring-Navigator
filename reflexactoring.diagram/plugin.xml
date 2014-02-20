@@ -784,7 +784,23 @@
             class="reflexactoring.diagram.view.ForbiddenView"
             icon="icons/view/forbid.gif"
             id="reflexactoring.diagram.view.forbidMap"
-            name="Forbid View"
+            name="Forbidden List"
+            restorable="true">
+      </view>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.ConstraintConfidenceView"
+            icon="icons/view/constraint_confidence.gif"
+            id="reflexactoring.diagram.view.constraintConfidence"
+            name="Constraint Confidence"
+            restorable="true">
+      </view>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.MapingFixView"
+            icon="icons/view/fix.gif"
+            id="reflexactoring.diagram.mappingFix"
+            name="Fix Mapping"
             restorable="true">
       </view>
    </extension>
