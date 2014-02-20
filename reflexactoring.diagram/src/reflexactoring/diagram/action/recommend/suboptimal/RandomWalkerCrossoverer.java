@@ -55,6 +55,9 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 		if(sourceModuleIndex == destModuleIndex){
 			return oldGene;
 		}
+		//sourceModuleIndex = 0;
+		//destModuleIndex = 1;
+		//System.out.println(showModuleWrapper(sourceModuleIndex) + "=>" + showModuleWrapper(destModuleIndex));
 		
 		/**
 		 * the units that both source module and dest module can be mapped to.
@@ -68,6 +71,8 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 			do{
 				int index = (int)(movableUnitIndexInSourceModule.length*Math.random());
 				int chosenMovableLowLevelNodeIndex = movableUnitIndexInSourceModule[index];
+				
+				//System.out.println(showLowLevelNode(chosenMovableLowLevelNodeIndex));
 				
 				int correspondingIndexInSourceModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), sourceModuleIndex, chosenMovableLowLevelNodeIndex);
 				int correspondingIndexInDestModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), destModuleIndex, chosenMovableLowLevelNodeIndex);
@@ -89,6 +94,7 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 						newGene.setPreviousMappingMatrix(oldGene.getMappingMatrix());
 						newGene.setPreviousTmpMatrix(oldGene.getTmpMatrix());
 						newGene.computeFitness(computingFactor);
+						//System.out.println(newGene.getFitness());
 						return newGene;						
 					}
 					

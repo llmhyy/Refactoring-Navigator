@@ -32,6 +32,8 @@ import reflexactoring.ModuleDependency;
 import reflexactoring.Reflexactoring;
 import reflexactoring.diagram.action.semantic.WordNetDict;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ModuleDependencyConfidence;
+import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.bean.ModuleDependencyWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarity;
@@ -365,6 +367,32 @@ public class ReflexactoringUtil {
 		return compilationUnitWrapperList;
 	}*/
 	
+	public static void getModuleDependencyConfidenceTable(){
+		
+		if(isReflexionModelChanged()){
+			try {
+				ModuleDependencyConfidenceTable table = new ModuleDependencyConfidenceTable();
+				
+				ArrayList<ModuleWrapper> moduleList = getModuleList(Settings.diagramPath);
+				
+				for(ModuleWrapper moduleWrapper: moduleList){
+					double[] confidenceList = new double[moduleList.size()];
+					for(int i=0; i<confidenceList.length; i++){
+						confidenceList[i] = 0.5;
+					}
+					
+					ModuleDependencyConfidence confidence = 
+							new ModuleDependencyConfidence(moduleWrapper, moduleList, confidenceList);
+					table.add(confidence);
+				}
+				
+				Settings.confidenceTable = table;
+			} catch (PartInitException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public static ModuleUnitsSimilarityTable convertRawTableToModuleUnitsSimilarityTable(double[][] similarityTable, ArrayList<ModuleWrapper> modules,
 			ArrayList<ICompilationUnitWrapper> units){
 		ModuleUnitsSimilarityTable table = new ModuleUnitsSimilarityTable();
@@ -377,24 +405,6 @@ public class ReflexactoringUtil {
 		}
 		
 		return table;
-	}
-	
-	public static double[][] convertModuleUnitsSimilarityTableToRawTable(ModuleUnitsSimilarityTable table){
-		if(table == null || table.size() == 0){
-			return new double[0][0];
-		}
-		
-		int width = table.get(0).getValues().length;
-		double[][] similarityTable = new double[table.size()][width];
-		
-		for(int i=0; i<table.size(); i++){
-			ModuleUnitsSimilarity similarity = table.get(i);
-			for(int j=0; j<similarity.getValues().length; j++){
-				similarityTable[i][j] = similarity.getValues()[j];
-			}
-		}
-		
-		return similarityTable;
 	}
 	
 	public static boolean checkNumber(String string){
@@ -443,7 +453,7 @@ public class ReflexactoringUtil {
 	 * 3) similarity has never been computed yet
 	 * @return
 	 */
-	public static boolean isNeedReComputeSimilarity(){
+	public static boolean isReflexionModelChanged(){
 		try {
 			return Settings.isCompliationUnitChanged || isModuleChaged(getModuleList(Settings.diagramPath))
 					|| Settings.similarityTable.size()==0;

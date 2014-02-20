@@ -166,7 +166,7 @@ public class Genotype {
 			SparseDoubleMatrix1D x0Vector = computingFactor.getX0Vector();
 			
 			double objectiveValue = getObjectiveValue(weightVector, x0Vector);
-			int voilatedNum = getViolatedConstraintsNumber(computingFactor);
+			double voilatedNum = getViolatedConstraintsNumber(computingFactor);
 			
 			d = new Double(objectiveValue - voilatedNum);
 			
@@ -189,13 +189,13 @@ public class Genotype {
 		
 	}
 	
-	private int getViolatedConstraintsNumber(FitnessComputingFactor computingFactor){
+	private double getViolatedConstraintsNumber(FitnessComputingFactor computingFactor){
 		
 		SparseDoubleMatrix2D relationMatrix = computingFactor.getRelationMatrix();
 		SparseDoubleMatrix2D lowLevelMatrix = computingFactor.getLowLevelMatrix();
 		SparseDoubleMatrix2D highLevelMatrix = computingFactor.getHighLevelMatrix();
 		
-		int violatedNum = 0;
+		double violatedNum = 0;
 		
 		SparseDoubleMatrix1D x = GeneticUtil.convertArrayToVector(this.getDNA());
 		
@@ -322,7 +322,15 @@ public class Genotype {
 					if(highLevelMatrix.get(i, j) == 0 && softConstaintResult.get(i, j) != 0){
 						Violation violation = new Violation(i, j, Violation.DISONANCE);
 						violationList.add(violation);
-						violatedNum += softConstaintResult.get(i, j);
+						
+						double vio = softConstaintResult.get(i, j);
+						/**
+						 *  exam the confidence of violation
+						 */
+						double confidence = Settings.confidenceTable.get(i).getConfidenceList()[j];
+						vio *= confidence;
+						
+						violatedNum += vio;
 					}
 					else if(highLevelMatrix.get(i, j) != 0 && softConstaintResult.get(i, j) == 0){
 						Violation violation = new Violation(i, j, Violation.ABSENCE);

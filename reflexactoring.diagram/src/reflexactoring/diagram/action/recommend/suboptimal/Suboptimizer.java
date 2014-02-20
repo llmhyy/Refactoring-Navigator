@@ -51,12 +51,12 @@ public abstract class Suboptimizer {
 		//double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
 		double[][] similarityTable;
 		
-		if(ReflexactoringUtil.isNeedReComputeSimilarity()){
+		if(ReflexactoringUtil.isReflexionModelChanged()){
 			similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
 		}
 		else{
-			similarityTable	= ReflexactoringUtil.
-					convertModuleUnitsSimilarityTableToRawTable(Settings.similarityTable);
+			similarityTable	= Settings.similarityTable.
+					convertModuleUnitsSimilarityTableToRawTable();
 			
 		}
 		
@@ -77,9 +77,7 @@ public abstract class Suboptimizer {
 			module.extractTermFrequency(module.getDescription());
 			for(int j=0; j<members.size(); j++){
 				UnitMemberWrapper member = members.get(j);
-				if(member.getName().contains("calculate")){
-					System.currentTimeMillis();
-				}
+				
 				if(examiner.isValid(member, module)){
 					double similarity = module.computeSimilarity(member);
 					System.currentTimeMillis();

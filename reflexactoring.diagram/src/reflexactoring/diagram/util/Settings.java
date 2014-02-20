@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
+import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.Scope;
 
@@ -25,11 +26,15 @@ public class Settings {
 	public static Scope scope = new Scope();
 	
 	/**
-	 * It is used for keep user-specified module-type(unit) mapping relation.
+	 * It is used for keeping user-specified module-type(unit) mapping relation.
 	 */
 	public static HeuristicModuleUnitMapList heuristicModuleUnitMapList
 		= new HeuristicModuleUnitMapList();
 	
+	/**
+	 * It is used for keeping user-specified forbidden list indicating which member can never
+	 * be mapped to which module.
+	 */
 	public static HeuristicModuleMemberStopMapList heuristicStopMapList
 		= new HeuristicModuleMemberStopMapList();
 	
@@ -38,6 +43,13 @@ public class Settings {
 	 * of module and type, there is a similarity between them.
 	 */
 	public static ModuleUnitsSimilarityTable similarityTable = new ModuleUnitsSimilarityTable();
+	
+	/**
+	 * It is used to record module-module dependency confidence. If the confidence is low, e.g., 0.1,
+	 * it means user is not quite confident in such a dependency constraint, which will lead 
+	 * my algorithm considering tolerating some violation.
+	 */
+	public static ModuleDependencyConfidenceTable confidenceTable = new ModuleDependencyConfidenceTable();
 	
 	public static boolean isSkipUnMappedTypes = false;
 	public static boolean isCompliationUnitChanged = true;

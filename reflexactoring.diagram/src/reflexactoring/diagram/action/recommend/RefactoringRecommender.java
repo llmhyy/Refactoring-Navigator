@@ -111,7 +111,7 @@ public class RefactoringRecommender {
 			return "The number of java file is less than the number of module.";
 		}
 		
-		double[][] similarityTable = ReflexactoringUtil.convertModuleUnitsSimilarityTableToRawTable(Settings.similarityTable);
+		double[][] similarityTable = Settings.similarityTable.convertModuleUnitsSimilarityTableToRawTable();
 		for(int i=0; i<modules.size(); i++){
 			boolean hasSomeUnitToMatch = false;
 			for(int j=0; j<units.size(); j++){
