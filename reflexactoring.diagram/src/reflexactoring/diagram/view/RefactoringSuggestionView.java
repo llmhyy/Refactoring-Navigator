@@ -17,11 +17,13 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.forms.FormColors;
 import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
@@ -201,12 +203,30 @@ public class RefactoringSuggestionView extends ViewPart {
 							view.getViewer().setInput(Settings.heuristicStopMapList);
 							view.getViewer().refresh();
 						}
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("gray", new RGB(207,207,207));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("gray"));
+						t.setForeground(colors.getColor("white"));
 					}
 					else if(e.getHref().equals("Exec")){
 						suggestion.apply();
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("green", new RGB(154,205,50));
+						t.setForeground(colors.getColor("green"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
 					}
 					else if(e.getHref().equals("Undo")){
 						suggestion.undoApply();
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+						t.setForeground(colors.getColor("black"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
 					}
 				}
 			});
