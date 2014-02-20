@@ -417,12 +417,25 @@ public class ReflexactoringUtil {
 	}
 	
 	public static boolean isModuleChaged(ArrayList<ModuleWrapper> newModuleList){
-		if(Settings.similarityTable.size() != newModuleList.size()){
+		if(Settings.similarityTable.size() != newModuleList.size() 
+				|| Settings.confidenceTable.size() != newModuleList.size()){
 			return true;
 		}
 		
 		for(ModuleUnitsSimilarity moduleSimilarity: Settings.similarityTable){
 			ModuleWrapper originalModule = moduleSimilarity.getModule();
+			ModuleWrapper newModule = findCorrespondingModule(originalModule, newModuleList);
+			
+			if(newModule == null){
+				return true;
+			}
+			else if(!newModule.getDescription().equals(originalModule.getDescription())){
+				return true;
+			}
+		}
+		
+		for(ModuleDependencyConfidence moduleConfidence: Settings.confidenceTable){
+			ModuleWrapper originalModule = moduleConfidence.getModule();
 			ModuleWrapper newModule = findCorrespondingModule(originalModule, newModuleList);
 			
 			if(newModule == null){
@@ -456,7 +469,7 @@ public class ReflexactoringUtil {
 	public static boolean isReflexionModelChanged(){
 		try {
 			return Settings.isCompliationUnitChanged || isModuleChaged(getModuleList(Settings.diagramPath))
-					|| Settings.similarityTable.size()==0;
+					|| Settings.similarityTable.size()==0 || Settings.confidenceTable.size()==0;
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
