@@ -115,14 +115,31 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			/**
 			 * Build dependencies amongst java types and its corresponding members in scope.
 			 */
-			ProgressMonitorDialog dialog;
+			/*ProgressMonitorDialog dialog;
 			ProgramStructureExtractor extractor = new ProgramStructureExtractor(Settings.scope.getScopeCompilationUnitList().size());
 			try {
 				dialog = new ProgressMonitorDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 				dialog.run(false, true, extractor);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
+			final int totalWork = Settings.scope.getScopeCompilationUnitList().size();
+			Job job = new Job("Building program structure") {
+				
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					int scale = 50;
+					monitor.beginTask("build class structural information", 2*totalWork*scale);
+					new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
+					
+					monitor.beginTask("build method/field structure inforamtion", 2*totalWork*scale);
+					new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
+					
+					return Status.OK_STATUS;
+				}
+			};
+			job.schedule();
+			
 			
 			/**
 			 * Clear heuristic mapping relation.
