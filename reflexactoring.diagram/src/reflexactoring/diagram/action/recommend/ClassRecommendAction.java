@@ -15,6 +15,7 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.ReflexactoringUtil;
+import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.RefactoringSuggestionView;
 
 public class ClassRecommendAction implements
@@ -23,6 +24,7 @@ public class ClassRecommendAction implements
 	@Override
 	public void run(IAction action) {
 		
+		Settings.isNeedClearCache = true;
 		final RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().
 				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTION);
 		

@@ -10,6 +10,8 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.util.Settings;
 
 /**
+ * 
+ * This class is aimed to check whether a member and a module could be mapped or not.
  * @author linyun
  * 
  */

@@ -16,6 +16,7 @@ import org.eclipse.ui.progress.UIJob;
 
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.ReflexactoringUtil;
+import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.RefactoringSuggestionView;
 
 public class MemberRecommendAction implements IWorkbenchWindowActionDelegate {
@@ -27,7 +28,7 @@ public class MemberRecommendAction implements IWorkbenchWindowActionDelegate {
 			
 			@Override
 			public void run() {
-				
+				Settings.isNeedClearCache = true;
 				final RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().
 						getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTION);
 				
