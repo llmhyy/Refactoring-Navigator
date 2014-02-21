@@ -122,7 +122,7 @@ public class Genotype {
 	}
 	
 	public boolean isFeasible(){
-		return fitness >= 0;
+		return violationList.size() == 0;
 	}
 
 	/**

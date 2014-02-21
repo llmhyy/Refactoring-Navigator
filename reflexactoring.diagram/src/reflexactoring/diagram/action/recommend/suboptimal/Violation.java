@@ -8,7 +8,13 @@ package reflexactoring.diagram.action.recommend.suboptimal;
  *
  */
 public class Violation {
+	/**
+	 * a dependency exist in high level model but not in low level model.
+	 */
 	public final static int ABSENCE = 1;
+	/**
+	 * a dependency exist in low level model but not in high level model.
+	 */
 	public final static int DISONANCE = 2;
 	
 	private int sourceModuleIndex;

@@ -84,6 +84,6 @@ public class ModuleDependencyWrapper implements SuggestionObject{
 	@Override
 	public String getNameWithTag() {
 		// TODO Auto-generated method stub
-		return null;
+		return "dependency";
 	}
 }

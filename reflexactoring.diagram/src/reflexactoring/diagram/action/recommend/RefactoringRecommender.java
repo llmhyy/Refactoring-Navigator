@@ -13,10 +13,15 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.UnitMemberExtractor;
+import reflexactoring.diagram.action.recommend.action.AddDependencyAction;
 import reflexactoring.diagram.action.recommend.action.AddModuleAction;
+import reflexactoring.diagram.action.recommend.action.DeleteDependencyAction;
+import reflexactoring.diagram.action.recommend.action.DependencyAction;
 import reflexactoring.diagram.action.recommend.suboptimal.GeneticOptimizer;
 import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
+import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ModuleDependencyWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -45,6 +50,9 @@ import reflexactoring.diagram.util.Settings;
  */
 public class RefactoringRecommender {
 	
+	private String title = "Cannot find a solution";
+	private String message = "I will show you the best solutions (still infeasible yet)";
+	
 	public RefactoringRecommender(){
 		
 	}
@@ -72,19 +80,17 @@ public class RefactoringRecommender {
 			
 			GeneticOptimizer optimizer = new GeneticOptimizer();
 			Genotype unitGene = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList, monitor);
+			ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(unitGene, optimizer, moduleList);
 			
 			if(unitGene.isFeasible()){
-				ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(unitGene, optimizer, moduleList);
 				return suggestions;
 			}
 			else{
-				String title = "Cannot find a solution";
-				String message = "Please try moving methods among classes, I "
-						+ "will show you the best solutions (still infeasible yet)";
 				MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
 				
-				ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(unitGene, optimizer, moduleList);
-				return suggestions;
+				ArrayList<Suggestion> highLevelSuggestions = findHighLevelModificationSuggestion(unitGene, moduleList);
+				highLevelSuggestions.addAll(suggestions);
+				return highLevelSuggestions;
 			}
 			
 			
@@ -95,6 +101,72 @@ public class RefactoringRecommender {
 		return new ArrayList<Suggestion>();
 	}
 	
+	public ArrayList<Suggestion> recommendStartByMember(IProgressMonitor monitor){
+		
+		ArrayList<ModuleWrapper> moduleList;
+		try {
+			moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			
+			GeneticOptimizer optimizer = new GeneticOptimizer();
+			
+			//UnitMemberExtractor extractor = new UnitMemberExtractor();
+			//UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
+			UnitMemberWrapperList members = Settings.scope.getScopeMemberList();
+			
+			Genotype memberGene = optimizer.optimize(members, moduleList, monitor);
+			ArrayList<Suggestion> suggestions = generateMemberLevelSuggestions(memberGene, optimizer, 
+					moduleList, members);				
+			
+			if(memberGene.isFeasible()){
+				return suggestions;
+			}
+			else{
+				ArrayList<Suggestion> highLevelSuggestions = findHighLevelModificationSuggestion(memberGene, moduleList);
+				highLevelSuggestions.addAll(suggestions);
+				return highLevelSuggestions;
+			}
+			
+			
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return null;
+	}
+	
+	private ArrayList<Suggestion> findHighLevelModificationSuggestion(Genotype bestGene, ArrayList<ModuleWrapper> moduleList){
+		ArrayList<Suggestion> suggestions = new ArrayList<>();
+		
+		ArrayList<Violation> violations = bestGene.getViolationList();
+		for(Violation violation: violations){
+			if(Settings.confidenceTable.get(violation.getSourceModuleIndex()).
+					getConfidenceList()[violation.getDestModuleIndex()] < 1){
+				ModuleWrapper sourceModule = moduleList.get(violation.getSourceModuleIndex());
+				ModuleWrapper targetModule = moduleList.get(violation.getDestModuleIndex());
+				
+				DependencyAction action = null;
+				
+				if(violation.getType() == Violation.ABSENCE){
+					action = new DeleteDependencyAction();
+					action.setOrigin(sourceModule);
+					action.setDestination(targetModule);
+				}
+				else if(violation.getType() == Violation.DISONANCE){
+					action = new AddDependencyAction();
+					action.setOrigin(sourceModule);
+					action.setDestination(targetModule);	
+				}
+				
+				ModuleDependencyWrapper dependency = new ModuleDependencyWrapper(sourceModule, targetModule);
+				Suggestion suggestion = new Suggestion(dependency, action);
+				suggestions.add(suggestion);
+			}
+		}
+		
+		return suggestions;
+	}
+
 	private String checkPossible(ArrayList<ModuleWrapper> modules, ArrayList<ICompilationUnitWrapper> units){
 		if(units.size() < modules.size()){
 			return "The number of java file is less than the number of module.";
@@ -130,33 +202,6 @@ public class RefactoringRecommender {
 		}
 		
 		return "OK";
-	}
-	
-	public ArrayList<Suggestion> recommendStartByMember(IProgressMonitor monitor){
-		
-		ArrayList<ModuleWrapper> moduleList;
-		try {
-			moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
-			
-			GeneticOptimizer optimizer = new GeneticOptimizer();
-			
-			//UnitMemberExtractor extractor = new UnitMemberExtractor();
-			//UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
-			UnitMemberWrapperList members = Settings.scope.getScopeMemberList();
-			
-			Genotype memberGene = optimizer.optimize(members, moduleList, monitor);
-			
-			ArrayList<Suggestion> suggestions = generateMemberLevelSuggestions(memberGene, optimizer, 
-					moduleList, members);
-			
-			return suggestions;
-			
-		} catch (PartInitException e) {
-			e.printStackTrace();
-		}
-		
-		
-		return null;
 	}
 	
 	private ArrayList<Suggestion> generateMemberLevelSuggestions(Genotype gene, GeneticOptimizer optimizer, 
