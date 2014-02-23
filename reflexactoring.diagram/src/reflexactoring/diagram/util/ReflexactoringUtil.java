@@ -346,7 +346,7 @@ public class ReflexactoringUtil {
 		return null;
 	}
 	
-	private static ModuleWrapper findModule(ArrayList<ModuleWrapper> list, Module module){
+	public static ModuleWrapper findModule(ArrayList<ModuleWrapper> list, Module module){
 		for(ModuleWrapper wrapper: list){
 			if(wrapper.getName().equals(module.getName())
 					&& wrapper.getDescription().equals(module.getDescription())){
@@ -369,7 +369,7 @@ public class ReflexactoringUtil {
 	
 	public static void getModuleDependencyConfidenceTable(){
 		
-		if(isReflexionModelChanged()){
+		if(Settings.confidenceTable.size() == 0){
 			try {
 				ModuleDependencyConfidenceTable table = new ModuleDependencyConfidenceTable();
 				

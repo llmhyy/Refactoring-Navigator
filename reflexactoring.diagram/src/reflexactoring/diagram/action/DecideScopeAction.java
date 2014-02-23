@@ -34,6 +34,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -48,6 +49,7 @@ import reflexactoring.diagram.preferences.ProjectInfoPage;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.HeuristicMappingView;
+import reflexactoring.diagram.view.ViewUpdater;
 
 /**
  * @author linyun
@@ -95,7 +97,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		//scopeDialog.setInitialElementSelections(Settings.scopeCompilationUnitList);
 		scopeDialog.setTitle("Define Refactoring Scope");
 		scopeDialog.setMessage("Please select the refactoring scope.");
-		if(scopeDialog.open() == scopeDialog.OK){
+		if(scopeDialog.open() == Window.OK){
 			
 			
 			Settings.scope.getScopeCompilationUnitList().clear();
@@ -142,13 +144,22 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			
 			
 			/**
-			 * Clear heuristic mapping relation.
+			 * Merging previous user input into the new reflexion model.
 			 */
-			Settings.heuristicModuleUnitMapList.clear();
-			HeuristicMappingView view = (HeuristicMappingView)PlatformUI.getWorkbench().
-					getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW);
-			view.getViewer().setInput(Settings.heuristicModuleUnitMapList);
-			view.getViewer().refresh();
+			UserInputMerger inputMerger = new UserInputMerger();
+			inputMerger.mergeHeuristicMappingTable();
+			inputMerger.mergeHeuristicFixMemberMappingTable();
+			inputMerger.mergeForbiddenModuleMemberTable();
+			inputMerger.mergeConfidenceTable();
+			
+			/**
+			 * refresh above four view
+			 */
+			ViewUpdater viewUpdater = new ViewUpdater();
+			viewUpdater.updateView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW, Settings.heuristicModuleUnitMapList);
+			viewUpdater.updateView(ReflexactoringPerspective.MAPPING_FIX_VIEW, Settings.fixedMemberModuleUnitList);
+			viewUpdater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList);
+			viewUpdater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable);
 			
 			Settings.isCompliationUnitChanged = true;
 			Settings.isNeedClearCache = true;

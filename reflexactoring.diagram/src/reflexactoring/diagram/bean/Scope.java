@@ -39,10 +39,10 @@ public class Scope{
 		this.scopeCompilationUnitList = scopeCompilationUnitList;
 	}
 	
-	public ICompilationUnitWrapper findUnit(String identifier){
+	public ICompilationUnitWrapper findUnit(String fullQualifiedName){
 		for(ICompilationUnitWrapper unit: this.scopeCompilationUnitList){
 			//ICompilationUnitWrapper wrapper = new ICompilationUnitWrapper(unit, false);
-			if(unit.getFullQualifiedName().equals(identifier)){
+			if(unit.getFullQualifiedName().equals(fullQualifiedName)){
 				return unit;
 			}
 		}
@@ -86,6 +86,10 @@ public class Scope{
 				member.getCallerList().remove(toBeRemovedMember);
 			}
 		}
+	}
+	
+	public UnitMemberWrapper findMember(UnitMemberWrapper member){
+		return getScopeMemberList().findMember(member);
 	}
 
 	/**
