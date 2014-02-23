@@ -90,11 +90,11 @@ public abstract class Suboptimizer {
 				}
 				
 				System.out.println(member.getUnitWrapper().getSimpleName()+"."+member);
-				System.out.println(member.getTermFrequency());
+				//System.out.println(member.getTermFrequency());
 				System.out.println(module);
-				System.out.println(module.getTermFrequency());
-				//System.out.println("similarity:"+similarity);
-				
+				//System.out.println(module.getTermFrequency());
+				System.out.println("similarity:"+similarityTable[i][j]);
+				System.currentTimeMillis();
 			}
 		}
 		

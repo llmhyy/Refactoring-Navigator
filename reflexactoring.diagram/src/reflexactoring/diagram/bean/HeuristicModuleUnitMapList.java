@@ -21,7 +21,7 @@ public class HeuristicModuleUnitMapList extends ArrayList<HeuristicModuleUnitMap
 	 * the unit in to-be-added map. And then, the new map will be added.
 	 * @param map
 	 */
-	public void addMap(HeuristicModuleUnitMap map){
+	public boolean add(HeuristicModuleUnitMap map){
 		if(!this.contains(map)){
 			
 			HeuristicModuleUnitMap conflictMap = findHeuristicMapping(map.getUnit());
@@ -29,8 +29,10 @@ public class HeuristicModuleUnitMapList extends ArrayList<HeuristicModuleUnitMap
 				this.remove(conflictMap);
 			}
 			
-			this.add(map);
+			super.add(map);
 		}
+		
+		return true;
 	}
 	
 	public void removeMap(HeuristicModuleUnitMap map){

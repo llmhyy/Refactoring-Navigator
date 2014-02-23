@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 
+import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMapList;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
@@ -37,6 +38,13 @@ public class Settings {
 	 */
 	public static HeuristicModuleMemberStopMapList heuristicStopMapList
 		= new HeuristicModuleMemberStopMapList();
+	
+	/**
+	 * It is used for keeping user-defined fixed list. In other words, when user fix a module
+	 * and type, he/she force that all the members of a type can only be mapped to the module.
+	 */
+	public static HeuristicModuleUnitFixMemberMapList fixedMemberModuleUnitList
+		= new HeuristicModuleUnitFixMemberMapList();
 	
 	/**
 	 * It is used to keep user-specified module-type similarity value. For each pair

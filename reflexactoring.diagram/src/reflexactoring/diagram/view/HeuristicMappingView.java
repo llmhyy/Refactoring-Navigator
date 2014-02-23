@@ -39,7 +39,7 @@ public class HeuristicMappingView extends ViewPart {
 	private TableViewer tableViewer;
 
 	public HeuristicMappingView() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	@Override
@@ -202,7 +202,7 @@ public class HeuristicMappingView extends ViewPart {
 				if(dialog.open() == Window.OK){
 					HeuristicModuleUnitMap map = dialog.getHeuristicModuleUnitMap();
 					if(map != null){
-						Settings.heuristicModuleUnitMapList.addMap(map);
+						Settings.heuristicModuleUnitMapList.add(map);
 						tableViewer.setInput(Settings.heuristicModuleUnitMapList);
 						tableViewer.refresh();
 					}

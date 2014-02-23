@@ -4,6 +4,8 @@
 package reflexactoring.diagram.action.recommend;
 
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
+import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -21,7 +23,25 @@ public class MemberModuleValidityExaminer {
 	public boolean isValid(UnitMemberWrapper memberWrapper,
 			ModuleWrapper moduleWrapper) {
 		return contructorCannotMove(memberWrapper, moduleWrapper) &&
-				cannotContainedInForbiddenList(memberWrapper, moduleWrapper);
+				cannotContainedInForbiddenList(memberWrapper, moduleWrapper) &&
+				parentUnitWrapperFixedToRightModule(memberWrapper, moduleWrapper);
+	}
+
+	/**
+	 * @param memberWrapper
+	 * @param moduleWrapper
+	 * @return
+	 */
+	private boolean parentUnitWrapperFixedToRightModule(
+			UnitMemberWrapper memberWrapper, ModuleWrapper moduleWrapper) {
+		HeuristicModuleUnitFixMemberMap map = Settings.fixedMemberModuleUnitList.findMap(memberWrapper.getUnitWrapper());
+		
+		if(map == null){
+			return true;
+		}
+		else{
+			return moduleWrapper.equals(map.getModule());
+		}
 	}
 
 	private boolean contructorCannotMove(UnitMemberWrapper memberWrapper,

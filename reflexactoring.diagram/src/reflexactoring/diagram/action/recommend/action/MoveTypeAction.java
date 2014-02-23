@@ -77,7 +77,7 @@ public class MoveTypeAction extends MoveAction {
 	
 	private void refreshHeuristicMapUI(ICompilationUnitWrapper unitWrapper, ModuleWrapper targetModuleWrapper){
 		HeuristicModuleUnitMap map = new HeuristicModuleUnitMap(targetModuleWrapper, unitWrapper);
-		Settings.heuristicModuleUnitMapList.addMap(map);
+		Settings.heuristicModuleUnitMapList.add(map);
 		
 		HeuristicMappingView view = (HeuristicMappingView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 				getActivePage().findView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW);

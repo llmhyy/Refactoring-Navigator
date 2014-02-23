@@ -139,7 +139,7 @@ public class ModuleTypeContainerDropEditPolicy extends
 			
 			ModuleWrapper moduleWrapper = new ModuleWrapper(module);
 			HeuristicModuleUnitMap map = new HeuristicModuleUnitMap(moduleWrapper, unitWrapper);
-			Settings.heuristicModuleUnitMapList.addMap(map);	
+			Settings.heuristicModuleUnitMapList.add(map);	
 			
 			return moduleWrapper;
 		}

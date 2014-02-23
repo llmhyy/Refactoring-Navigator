@@ -104,6 +104,11 @@
                id="reflexactoring.diagram.action.open"
                label="Open Source">
          </action>
+         <action
+               class="reflexactoring.diagram.action.popup.FixMappingMemberAction"
+               id="reflexactoring.diagram.action.fixMember"
+               label="Fix Mapping Member">
+         </action>
       </objectContribution>
       <objectContribution
             adaptable="false"
@@ -797,7 +802,7 @@
       </view>
       <view
             category="reflexactoring.diagram.view.category"
-            class="reflexactoring.diagram.view.MapingFixView"
+            class="reflexactoring.diagram.view.MappingFixView"
             icon="icons/view/fix.gif"
             id="reflexactoring.diagram.mappingFix"
             name="Fix Mapping"
