@@ -3,7 +3,32 @@
  */
 package reflexactoring.diagram.action.recommend.action;
 
+import org.eclipse.gef.commands.CompoundCommand;
+import org.eclipse.gmf.runtime.common.core.command.ICommand;
+import org.eclipse.gmf.runtime.diagram.core.commands.DeleteCommand;
+import org.eclipse.gmf.runtime.diagram.core.edithelpers.CreateElementRequestAdapter;
+import org.eclipse.gmf.runtime.diagram.ui.commands.DeferredCreateConnectionViewAndElementCommand;
+import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElementRequest;
+import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElementRequest.ConnectionViewAndElementDescriptor;
+import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
+import org.eclipse.gmf.runtime.emf.type.core.IElementType;
+import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
+import org.eclipse.gmf.runtime.emf.type.core.commands.DestroyElementCommand;
+import org.eclipse.gmf.runtime.emf.type.core.requests.CreateRelationshipRequest;
+import org.eclipse.gmf.runtime.emf.type.core.requests.DestroyElementRequest;
+import org.eclipse.gmf.runtime.notation.Edge;
+import org.eclipse.gmf.runtime.notation.View;
+
+import reflexactoring.Module;
+import reflexactoring.ModuleDependency;
+import reflexactoring.Reflexactoring;
+import reflexactoring.diagram.bean.ModuleDependencyWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
+import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
+import reflexactoring.diagram.providers.ReflexactoringElementTypes;
+import reflexactoring.diagram.util.GEFDiagramUtil;
 
 /**
  * @author linyun
@@ -20,7 +45,12 @@ public class AddDependencyAction extends DependencyAction {
 	 */
 	@Override
 	public void execute(SuggestionObject suggestionObj) {
-		// TODO Auto-generated method stub
+		if(suggestionObj instanceof ModuleDependencyWrapper){
+			ModuleDependencyWrapper dependencyWrapper = (ModuleDependencyWrapper)suggestionObj;
+			
+			GEFDiagramUtil.addModuleDependency(dependencyWrapper.getSourceModule(), 
+					dependencyWrapper.getTargetModule());
+		}
 		
 	}
 
@@ -29,7 +59,12 @@ public class AddDependencyAction extends DependencyAction {
 	 */
 	@Override
 	public void undoExecute(SuggestionObject suggestionObj) {
-		// TODO Auto-generated method stub
+		if(suggestionObj instanceof ModuleDependencyWrapper){
+			ModuleDependencyWrapper dependencyWrapper = (ModuleDependencyWrapper)suggestionObj;
+			
+			GEFDiagramUtil.removeModuleDependency(dependencyWrapper.getSourceModule(), 
+					dependencyWrapper.getTargetModule());
+		}
 		
 	}
 

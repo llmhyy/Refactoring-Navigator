@@ -3,7 +3,9 @@
  */
 package reflexactoring.diagram.action.recommend.action;
 
+import reflexactoring.diagram.bean.ModuleDependencyWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
+import reflexactoring.diagram.util.GEFDiagramUtil;
 
 /**
  * @author linyun
@@ -19,7 +21,12 @@ public class DeleteDependencyAction extends DependencyAction {
 	 */
 	@Override
 	public void execute(SuggestionObject suggestionObj) {
-		// TODO Auto-generated method stub
+		if(suggestionObj instanceof ModuleDependencyWrapper){
+			ModuleDependencyWrapper dependencyWrapper = (ModuleDependencyWrapper)suggestionObj;
+			
+			GEFDiagramUtil.removeModuleDependency(dependencyWrapper.getSourceModule(), 
+					dependencyWrapper.getTargetModule());
+		}
 		
 	}
 
@@ -28,7 +35,12 @@ public class DeleteDependencyAction extends DependencyAction {
 	 */
 	@Override
 	public void undoExecute(SuggestionObject suggestionObj) {
-		// TODO Auto-generated method stub
+		if(suggestionObj instanceof ModuleDependencyWrapper){
+			ModuleDependencyWrapper dependencyWrapper = (ModuleDependencyWrapper)suggestionObj;
+			
+			GEFDiagramUtil.addModuleDependency(dependencyWrapper.getSourceModule(), 
+					dependencyWrapper.getTargetModule());
+		}
 		
 	}
 }

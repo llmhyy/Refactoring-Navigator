@@ -11,9 +11,9 @@ import reflexactoring.diagram.bean.SuggestionObject;
  */
 public abstract class RefactoringAction {
 	
-	protected static String ADD = "add";
-	protected static String DEL = "delete";
-	protected static String MOVE = "move";
+	protected static String ADD = "Add";
+	protected static String DEL = "Delete";
+	protected static String MOVE = "Move";
 	
 	protected String actionName;
 	

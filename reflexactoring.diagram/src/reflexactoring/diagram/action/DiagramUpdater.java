@@ -126,14 +126,14 @@ public class DiagramUpdater {
 		int count = reflexactoring.getTypes().size();
 		for(int i=0; i<count; i++){
 			Type type = reflexactoring.getTypes().get(0);
-			deleteElementOnCanvas(diagramRoot, type);
+			GEFDiagramUtil.deleteElementOnCanvas(diagramRoot, type);
 		}
 		
 		for(Module module: reflexactoring.getModules()){
 			int innerCount = module.getMappingTypes().size();
 			for(int j=0; j<innerCount; j++){
 				Type type = module.getMappingTypes().get(0);
-				deleteElementOnCanvas(diagramRoot, type);
+				GEFDiagramUtil.deleteElementOnCanvas(diagramRoot, type);
 			}
 		}
 		
@@ -164,12 +164,6 @@ public class DiagramUpdater {
 			}
 		}
 		
-	}
-	
-	private void deleteElementOnCanvas(DiagramRootEditPart diagramRoot, EObject eObj){
-		DestroyElementRequest destroyRequest = new DestroyElementRequest(eObj, false);
-		DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
-		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(destroyCommand));
 	}
 	
 	/**
@@ -248,8 +242,8 @@ public class DiagramUpdater {
 					CreateConnectionViewAndElementRequest request = new CreateConnectionViewAndElementRequest(
 							viewDescriptor);
 					
-					View callerView = GEFDiagramUtil.findViewOfSepcificType(diagramRoot, callerType);
-					View calleeView = GEFDiagramUtil.findViewOfSepcificType(diagramRoot, calleeType);
+					View callerView = GEFDiagramUtil.findViewOfSpecificType(diagramRoot, callerType);
+					View calleeView = GEFDiagramUtil.findViewOfSpecificType(diagramRoot, calleeType);
 					
 					ICommand createRelationCommand = new DeferredCreateConnectionViewAndElementCommand(
 							request, new EObjectAdapter(callerView),
