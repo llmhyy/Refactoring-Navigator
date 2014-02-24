@@ -5,6 +5,8 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 
 import java.util.ArrayList;
 
+import reflexactoring.Activator;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
@@ -15,6 +17,15 @@ import cern.colt.matrix.linalg.Algebra;
  * 
  */
 public class FitnessComputingFactor {
+	
+	public static int PLUGIN_MODE = 0;
+	public static int EXPERIMENT_MODE = 1;
+	
+	private int mode = PLUGIN_MODE;
+	
+	private double alpha;
+	private double beta;
+	
 	private SparseDoubleMatrix1D weightVector;
 	private SparseDoubleMatrix1D x0Vector;
 	private SparseDoubleMatrix2D relationMatrix;
@@ -182,5 +193,55 @@ public class FitnessComputingFactor {
 	 */
 	public double normalizeFitnessValue(double fitness, int highNum, int lowNum){
 		return fitness + highNum*highNum + lowNum;
+	}
+
+	/**
+	 * @return the mode
+	 */
+	public int getMode() {
+		return mode;
+	}
+
+	/**
+	 * @param mode the mode to set
+	 */
+	public void setMode(int mode) {
+		this.mode = mode;
+	}
+
+	/**
+	 * @param alpha the alpha to set
+	 */
+	public void setAlpha(double alpha) {
+		this.alpha = alpha;
+	}
+	
+	public double getAlpha(){
+		if(Activator.getDefault() == null){
+			return this.alpha;			
+		}
+		else{
+			return Double.valueOf(ReflexactoringUtil.getAlpha());
+		}
+	}
+
+	/**
+	 * @return the beta
+	 */
+	public double getBeta() {
+		if(Activator.getDefault() == null){
+			return beta;			
+		}
+		else{
+			return Double.valueOf(ReflexactoringUtil.getBeta());
+		}
+		
+	}
+
+	/**
+	 * @param beta the beta to set
+	 */
+	public void setBeta(double beta) {
+		this.beta = beta;
 	}
 }

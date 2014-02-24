@@ -184,7 +184,7 @@ public class Genotype {
 			SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
 			SparseDoubleMatrix1D x0Vector = computingFactor.getX0Vector();
 			
-			double objectiveValue = getObjectiveValue(weightVector, x0Vector);
+			double objectiveValue = getObjectiveValue(weightVector, x0Vector, computingFactor);
 			double voilatedNum = getViolatedConstraintsNumber(computingFactor);
 			this.fitness = objectiveValue - voilatedNum;
 			
@@ -343,8 +343,15 @@ public class Genotype {
 						/**
 						 *  exam the confidence of violation
 						 */
-						double confidence = Settings.confidenceTable.get(i).getConfidenceList()[j];
-						vio *= confidence;
+						double confidence;
+						if(Settings.confidenceTable.size() > 0){
+							confidence = Settings.confidenceTable.get(i).getConfidenceList()[j];
+							vio *= confidence;
+						}
+						else{
+							confidence = 1;
+						}
+						
 						
 						violatedNum += vio;
 					}
@@ -426,7 +433,8 @@ public class Genotype {
 		}
 	}
 
-	private double getObjectiveValue(SparseDoubleMatrix1D weightVector, SparseDoubleMatrix1D x0Vector){
+	private double getObjectiveValue(SparseDoubleMatrix1D weightVector, SparseDoubleMatrix1D x0Vector,
+			FitnessComputingFactor computingFactor){
 		
 		int length = this.getDNA().length;
 		
@@ -434,8 +442,8 @@ public class Genotype {
 		
 		double euclideanDis = computeEuclideanDistance(GeneticUtil.convertArrayToVector(this.getDNA()), x0Vector);
 		
-		double objectiveValue = Double.valueOf(ReflexactoringUtil.getAlpha())*totalWeight/length
-				+ Double.valueOf(ReflexactoringUtil.getBeta())*(1-euclideanDis/Math.sqrt(length));
+		double objectiveValue = computingFactor.getAlpha()*totalWeight/length
+				+ computingFactor.getBeta()*(1-euclideanDis/Math.sqrt(length));
 		
 		return objectiveValue;
 	}
