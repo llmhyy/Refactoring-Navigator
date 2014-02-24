@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reflexactoring.diagram.action.recommend.suboptimal;
+package reflexactoring.diagram.suboptimal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +11,8 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
+import reflexactoring.diagram.action.recommend.suboptimal.FitnessComputingFactor;
+import reflexactoring.diagram.action.recommend.suboptimal.GeneticUtil;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -20,16 +22,14 @@ import reflexactoring.diagram.util.Settings;
  * @author linyun
  *
  */
-public class Genotype {
+public class Solution {
 	
 	/**
 	 * essentially, it is the map from int[] to genotype, I write it in this form just for some convenience.
 	 */
-	private static HashMap<Genotype, Genotype> fitnessTable = new HashMap<>();
+	private static HashMap<Solution, Solution> fitnessTable = new HashMap<>();
 	//private static HashMap<Genotype, SparseDoubleMatrix2D> tmpMatrixTable = new HashMap<>();
 	//private static HashMap<Genotype, SparseDoubleMatrix2D> mappingMatrixTable = new HashMap<>();
-	
-	private ArrayList<Violation> violationList = new ArrayList<>();
 	
 	private int[] DNA;
 	
@@ -44,14 +44,14 @@ public class Genotype {
 	
 	private double fitness;
 	
-	public Genotype(){
+	public Solution(){
 		
 	}
 
 	/**
 	 * @param dNA
 	 */
-	public Genotype(int[] dNA) {
+	public Solution(int[] dNA) {
 		super();
 		DNA = dNA;
 	}
@@ -80,23 +80,21 @@ public class Genotype {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Genotype other = (Genotype) obj;
+		Solution other = (Solution) obj;
 		if (!Arrays.equals(DNA, other.DNA))
 			return false;
 		return true;
 	}
 	
 	@Override
-	public Genotype clone(){
-		Genotype clonedGene = new Genotype(this.DNA);
+	public Solution clone(){
+		Solution clonedGene = new Solution(this.DNA);
 		
 		SparseDoubleMatrix2D tmpMatrix = this.getTmpMatrix();
 		SparseDoubleMatrix2D mappingMatrix = this.getMappingMatrix();
-		ArrayList<Violation> violationList = this.getViolationList();
 		
 		clonedGene.setTmpMatrix(tmpMatrix);
 		clonedGene.setMappingMatrix(mappingMatrix);
-		clonedGene.setViolationList(violationList);
 		clonedGene.setFitness(this.fitness);
 		
 		return clonedGene;
@@ -106,7 +104,7 @@ public class Genotype {
 	 * @param dNA
 	 * @param fitness
 	 */
-	public Genotype(int[] dNA, double fitness) {
+	public Solution(int[] dNA, double fitness) {
 		super();
 		DNA = dNA;
 		this.fitness = fitness;
@@ -119,10 +117,6 @@ public class Genotype {
 			buffer.append(DNA[i]);
 		}
 		return buffer.toString();
-	}
-	
-	public boolean isFeasible(){
-		return violationList.size() == 0;
 	}
 
 	/**
@@ -172,7 +166,7 @@ public class Genotype {
 			Settings.isNeedClearCache = false;
 		}
 		
-		Genotype t = fitnessTable.get(this);
+		Solution t = fitnessTable.get(this);
 		if(t != null){
 			this.fitness = t.getFitness();
 			//this.tmpMatrix = tmpMatrixTable.get(this);
@@ -331,37 +325,21 @@ public class Genotype {
 		SparseDoubleMatrix2D softConstaintResult = new SparseDoubleMatrix2D(mappingMatrix.rows(), mappingMatrix.rows());
 		softConstaintResult = (SparseDoubleMatrix2D)tmp.zMult(alg.transpose(mappingMatrix), softConstaintResult, 1, 0, false, false);	
 		
-		ArrayList<Violation> violationList = new ArrayList<>();
 		for(int i=0; i<softConstaintResult.rows(); i++){
 			for(int j=0; j<softConstaintResult.columns(); j++){
 				if(i!=j){
 					if(highLevelMatrix.get(i, j) == 0 && softConstaintResult.get(i, j) != 0){
-						Violation violation = new Violation(i, j, Violation.DISONANCE);
-						violationList.add(violation);
 						
 						double vio = softConstaintResult.get(i, j);
-						/**
-						 *  exam the confidence of violation
-						 */
-						double confidence;
-						if(Settings.confidenceTable.size() > 0){
-							confidence = Settings.confidenceTable.get(i).getConfidenceList()[j];
-							vio *= confidence;
-						}	
 						
 						violatedNum += vio;
 					}
 					else if(highLevelMatrix.get(i, j) != 0 && softConstaintResult.get(i, j) == 0){
-						Violation violation = new Violation(i, j, Violation.ABSENCE);
-						violationList.add(violation);
 						violatedNum++;
 					}
 				}
 			}
 		}
-		
-		this.violationList = violationList;
-		
 		return violatedNum;
 	}
 	
@@ -453,20 +431,6 @@ public class Genotype {
 		
 		return Math.sqrt(sum);
 		
-	}
-
-	/**
-	 * @return the violationList
-	 */
-	public ArrayList<Violation> getViolationList() {
-		return violationList;
-	}
-
-	/**
-	 * @param violationList the violationList to set
-	 */
-	public void setViolationList(ArrayList<Violation> violationList) {
-		this.violationList = violationList;
 	}
 
 

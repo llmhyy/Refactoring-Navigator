@@ -27,7 +27,81 @@ public class Problem {
 		//run(highLevelNum, lowLevelNum, iterNum, populationNum);
 	}
 	
-	public void run(int highLevelNum, int lowLevelNum, int iterNum, int populationNum, double alpha, double beta){
+	public void runExact(int highLevelNum, int lowLevelNum, double alpha, double beta){
+		FitnessComputingFactor computingFactor = buildComputingFactor(highLevelNum, lowLevelNum);
+		computingFactor.setMode(FitnessComputingFactor.EXPERIMENT_MODE);
+		computingFactor.setAlpha(alpha);
+		computingFactor.setBeta(beta);
+		
+		int dimension = highLevelNum*lowLevelNum;
+		
+		ArrayList<ArrayList<Integer>> previousLevelList = null;
+		int level = 1;
+		for(int i=1; i<=dimension; i++){
+			ArrayList<Integer> array1 = new ArrayList<>();
+			ArrayList<Integer> array2 = new ArrayList<>();
+			array1.add(0);
+			array2.add(1);
+			if(level == 1){
+				ArrayList<ArrayList<Integer>> list = new ArrayList<>();
+				list.add(array1);
+				list.add(array2);
+				previousLevelList = list;
+			}
+			else{
+				ArrayList<ArrayList<Integer>> list = new ArrayList<>();
+				for(ArrayList<Integer> previousList: previousLevelList){
+					ArrayList<Integer> thisList1 = (ArrayList<Integer>) previousList.clone();
+					thisList1.add(0);
+					ArrayList<Integer> thisList2 = (ArrayList<Integer>) previousList.clone();
+					thisList2.add(1);
+					
+					list.add(thisList1);
+					list.add(thisList2);
+				}
+				
+				previousLevelList = list;
+			}
+			level++;
+		}
+		
+		
+		System.out.println(previousLevelList.size());
+		Double fitness = null; 
+		Solution previousSolution = null;
+		for(ArrayList<Integer> solution: previousLevelList){
+			int[] DNA = convert(solution);
+			if(fitness == null){
+				Solution sol = new Solution(DNA);
+				sol.computeFitness(computingFactor);
+				
+				fitness = sol.getFitness();
+				previousSolution = sol;
+			}
+			else{
+				Solution sol = previousSolution.clone();
+				sol.setDNA(DNA);
+				sol.computeFitness(computingFactor);
+				if(sol.getFitness() > fitness){
+					fitness = sol.getFitness();
+				}
+			}
+			System.out.println(fitness);
+		}
+		
+		System.out.println(fitness);
+	}
+	
+	private int[] convert(ArrayList<Integer> solution){
+		int[] DNA = new int[solution.size()];
+		for(int i=0; i<DNA.length; i++){
+			DNA[i] = solution.get(i);
+		}
+		
+		return DNA;
+	}
+	
+	public void runMetaHeuristic(int highLevelNum, int lowLevelNum, int iterNum, int populationNum, double alpha, double beta){
 		FitnessComputingFactor computingFactor = buildComputingFactor(highLevelNum, lowLevelNum);
 		computingFactor.setMode(FitnessComputingFactor.EXPERIMENT_MODE);
 		computingFactor.setAlpha(alpha);
@@ -145,6 +219,7 @@ public class Problem {
 	
 	public static void main(String[] args){
 		Problem problem = new Problem();
-		problem.run(4, 25, 2000, 20, 0.5, 0.5);
+		problem.runMetaHeuristic(3, 7, 1000, 10, 0.5, 0.5);
+		problem.runExact(3, 7, 0.5, 0.5);
 	}
 }
