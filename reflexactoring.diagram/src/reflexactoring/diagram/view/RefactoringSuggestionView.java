@@ -245,8 +245,25 @@ public class RefactoringSuggestionView extends ViewPart {
 						t.setBackground(colors.getColor("white"));
 					}
 					else if(e.getHref().equals("Allow")){
-						//TODO for Adi
-						//new JavaClassCreator().createClass();
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof UnitMemberWrapper && action instanceof MoveMemberAction){
+							UnitMemberWrapper memberWrapper = (UnitMemberWrapper)obj;
+							MoveMemberAction moveMemberAction = (MoveMemberAction)action;
+							HeuristicModuleMemberStopMap stopMap = new HeuristicModuleMemberStopMap(moveMemberAction.getDestination(), memberWrapper);
+							
+							Settings.heuristicStopMapList.removeMap(stopMap);
+							ForbiddenView view = (ForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+									getActivePage().findView(ReflexactoringPerspective.FORBIDDEN_VIEW);
+							view.getViewer().setInput(Settings.heuristicStopMapList);
+							view.getViewer().refresh();
+						}
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+						t.setForeground(colors.getColor("black"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
 					}
 				}
 			});
