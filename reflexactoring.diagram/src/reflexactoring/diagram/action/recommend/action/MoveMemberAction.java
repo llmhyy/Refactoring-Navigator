@@ -22,6 +22,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -31,7 +32,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.forms.FormColors;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 
+import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
@@ -47,33 +53,104 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
 public class MoveMemberAction extends MoveAction {
 	
 	private ICompilationUnitWrapper targetUnit;
+	private SuggestionObject curSuggestionObj;
+	private SelectTargetUnitDialog dialog;
+	private boolean dialogClosed = false;
 
 	@Override
 	public void execute(SuggestionObject suggestionObj) {
 		if(ReflexactoringUtil.getUnitListFromModule(this.getDestination()).size() != 0){
-			SelectTargetUnitDialog dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this.getDestination());
+			dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this.getDestination());
 			dialog.create();
-			if(dialog.open() == Window.OK){
+			curSuggestionObj = suggestionObj;
+
+			dialog.link.addHyperlinkListener(new HyperlinkAdapter() {
+				public void linkActivated(HyperlinkEvent e) {
+					ICompilationUnitWrapper target = new JavaClassCreator().createClass();
+					if(target != null){
+						targetUnit = target;			
+						//Move!
+						try {
+							IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+							IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
+							project.open(null);					
+							IJavaProject javaProject = JavaCore.create(project);
+							
+							if(curSuggestionObj instanceof UnitMemberWrapper){
+								IMember member = ((UnitMemberWrapper) curSuggestionObj).getJavaMember();						
+								IType targetType = javaProject.findType(target.getFullQualifiedName());
+								member.move(targetType, null, null, false, null);
+							}					
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+						
+						TitleAreaDialog doneDialog = new TitleAreaDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+						doneDialog.create();
+						doneDialog.setTitle("New unit created");
+						doneDialog.setMessage("Member has been moved to the new unit. Please reselect the scope.");
+						doneDialog.open();
+						dialog.close();
+						dialogClosed = true;
+					}
+				}
+			});
+			
+			if(!dialogClosed && dialog.open() == Window.OK){
 				ICompilationUnitWrapper target = dialog.getTargetUnit();
-				targetUnit = target;
-				
-				//Move!
-				try {
-					IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-					IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
-					project.open(null);					
-					IJavaProject javaProject = JavaCore.create(project);
+				if(target != null){
+					targetUnit = target;
 					
-					if(suggestionObj instanceof UnitMemberWrapper){
-						IMember member = ((UnitMemberWrapper) suggestionObj).getJavaMember();						
-						IType targetType = javaProject.findType(target.getFullQualifiedName());
-						member.move(targetType, null, null, false, null);
-					}					
-				} catch (Exception e) {
-					e.printStackTrace();
-				}			
-				
-			}			
+					//Move!
+					try {
+						IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+						IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
+						project.open(null);					
+						IJavaProject javaProject = JavaCore.create(project);
+						
+						if(suggestionObj instanceof UnitMemberWrapper){
+							IMember member = ((UnitMemberWrapper) suggestionObj).getJavaMember();						
+							IType targetType = javaProject.findType(target.getFullQualifiedName());
+							member.move(targetType, null, null, false, null);
+						}					
+					} catch (Exception e) {
+						e.printStackTrace();
+					}			
+				}				
+			}
+		}else{
+			//目标module为空, 弹出对话框创建类先
+			TitleAreaDialog dialog = new TitleAreaDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+			dialog.create();
+			dialog.setTitle("Create a new unit");
+			dialog.setMessage("The target module has no unit, click 'OK' to create a class or interface to move the method or field in.");
+			if(dialog.open() == Window.OK){
+				ICompilationUnitWrapper target = new JavaClassCreator().createClass();
+				if(target != null){
+					targetUnit = target;			
+					//Move!
+					try {
+						IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+						IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
+						project.open(null);					
+						IJavaProject javaProject = JavaCore.create(project);
+						
+						if(suggestionObj instanceof UnitMemberWrapper){
+							IMember member = ((UnitMemberWrapper) suggestionObj).getJavaMember();						
+							IType targetType = javaProject.findType(target.getFullQualifiedName());
+							member.move(targetType, null, null, false, null);
+						}					
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+					TitleAreaDialog doneDialog = new TitleAreaDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+					doneDialog.create();
+					doneDialog.setTitle("New unit created");
+					doneDialog.setMessage("Member has been moved to the new unit. Please reselect the scope.");
+					doneDialog.open();
+				}
+			}
 		}
 	}
 
@@ -121,6 +198,7 @@ public class MoveMemberAction extends MoveAction {
 	class SelectTargetUnitDialog extends TitleAreaDialog{
 		
 		private Combo unitCombo;
+		private Hyperlink link;
 		private ICompilationUnitWrapper unit;
 		private ModuleWrapper module;
 		
@@ -169,6 +247,12 @@ public class MoveMemberAction extends MoveAction {
 				unitCombo.add(unit.getFullQualifiedName());
 				unitCombo.setData(unit.getFullQualifiedName(), unit);
 			}
+			
+			
+			link = new Hyperlink(workArea, SWT.WRAP);
+			link.setText("Create a new class or interface to move the method or field in...");
+			link.setUnderlined(true);
+			link.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_BLUE));
 			
 			return workArea;
 		}

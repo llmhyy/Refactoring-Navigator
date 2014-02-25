@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.wizards.NewClassCreationWizard;
@@ -17,6 +18,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
@@ -25,7 +27,7 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  */
 public class JavaClassCreator {
 	
-	public void createClass(){
+	public ICompilationUnitWrapper createClass(){
 		NewClassWizardPage page =  new NewClassWizardPage();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root = workspace.getRoot();
@@ -57,6 +59,9 @@ public class JavaClassCreator {
 				getActiveWorkbenchWindow().getShell(), wizard);
 		
 		wizardDialog.open();
-		
+		if(wizard.getCreatedElement() != null){
+			return new ICompilationUnitWrapper(((IType)wizard.getCreatedElement()).getCompilationUnit());
+		}
+		return null;
 	}
 }
