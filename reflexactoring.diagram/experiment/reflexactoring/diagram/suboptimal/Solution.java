@@ -13,6 +13,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 import reflexactoring.diagram.action.recommend.suboptimal.FitnessComputingFactor;
 import reflexactoring.diagram.action.recommend.suboptimal.GeneticUtil;
+import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -22,14 +23,7 @@ import reflexactoring.diagram.util.Settings;
  * @author linyun
  *
  */
-public class Solution {
-	
-	/**
-	 * essentially, it is the map from int[] to genotype, I write it in this form just for some convenience.
-	 */
-	private static HashMap<Solution, Solution> fitnessTable = new HashMap<>();
-	//private static HashMap<Genotype, SparseDoubleMatrix2D> tmpMatrixTable = new HashMap<>();
-	//private static HashMap<Genotype, SparseDoubleMatrix2D> mappingMatrixTable = new HashMap<>();
+public class Solution extends Genotype{
 	
 	private int[] DNA;
 	
@@ -154,48 +148,12 @@ public class Solution {
 	 * @param computingFactor
 	 */
 	public void computeFitness(FitnessComputingFactor computingFactor){
-		/**
-		 * if the source code has changed, the original correspondence become meaningless, therefore,
-		 * I should clear the hash tables then. The mark of *isNeedClearCache* is set true when the scope
-		 * is reset, after that, it will be set false here.
-		 */
-		if(Settings.isNeedClearCache){
-			fitnessTable.clear();
-			//tmpMatrixTable.clear();
-			//mappingMatrixTable.clear();
-			Settings.isNeedClearCache = false;
-		}
-		
-		Solution t = fitnessTable.get(this);
-		if(t != null){
-			this.fitness = t.getFitness();
-			//this.tmpMatrix = tmpMatrixTable.get(this);
-			//this.mappingMatrix = mappingMatrixTable.get(this);
-			
-			//return d;
-		}
-		else{
-			SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
-			SparseDoubleMatrix1D x0Vector = computingFactor.getX0Vector();
-			
-			double objectiveValue = getObjectiveValue(weightVector, x0Vector, computingFactor);
-			double voilatedNum = getViolatedConstraintsNumber(computingFactor);
-			this.fitness = objectiveValue - voilatedNum;
-			
-			fitnessTable.put(this, this);
-			//tmpMatrixTable.put(this, this.tmpMatrix);
-			//mappingMatrixTable.put(this, this.mappingMatrix);
-			//return d;
-		}
-		
-		/*SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
+		SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
 		SparseDoubleMatrix1D x0Vector = computingFactor.getX0Vector();
 		
-		double objectiveValue = getObjectiveValue(weightVector, x0Vector);
-		int voilatedNum = getViolatedConstraintsNumber(computingFactor);
-		
-		d = new Double(objectiveValue - voilatedNum);
-		this.fitness = d;*/
+		double objectiveValue = getObjectiveValue(weightVector, x0Vector, computingFactor);
+		double voilatedNum = getViolatedConstraintsNumber(computingFactor);
+		this.fitness = objectiveValue - voilatedNum;
 		
 	}
 	

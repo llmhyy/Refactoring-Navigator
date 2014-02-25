@@ -48,10 +48,12 @@ public class Problem {
 			else{
 				ArrayList<ArrayList<Integer>> list = new ArrayList<>();
 				for(ArrayList<Integer> previousList: previousLevelList){
-					ArrayList<Integer> thisList1 = (ArrayList<Integer>) previousList.clone();
+					ArrayList<Integer> thisList1 = new ArrayList<>();
 					thisList1.add(0);
-					ArrayList<Integer> thisList2 = (ArrayList<Integer>) previousList.clone();
+					thisList1.addAll(previousList);
+					ArrayList<Integer> thisList2 = new ArrayList<>();
 					thisList2.add(1);
+					thisList2.addAll(previousList);
 					
 					list.add(thisList1);
 					list.add(thisList2);
@@ -153,7 +155,7 @@ public class Problem {
 		for(int i=0; i<Integer.valueOf(populationNum); i++){
 			int[] seed = seedGenerator.generateSeed();
 			
-			Genotype gene = new Genotype(seed);
+			Solution gene = new Solution(seed);
 			gene.computeFitness(computingFactor);
 			
 			population.add(gene);
@@ -213,14 +215,14 @@ public class Problem {
 	
 	public static void main(String[] args){
 		Problem problem = new Problem();
-		
+		System.out.println("Started");
 		FitnessComputingFactor computingFactor = problem.buildComputingFactor(3, 7);
 		computingFactor.setMode(FitnessComputingFactor.EXPERIMENT_MODE);
 		computingFactor.setAlpha(0.5);
 		computingFactor.setBeta(0.5);
 		
 		long t11 = System.currentTimeMillis();
-		double subOptimal = problem.runMetaHeuristic(200, 20, computingFactor);
+		double subOptimal = problem.runMetaHeuristic(50, 30, computingFactor);
 		long t12 = System.currentTimeMillis();
 		
 		long t21 = System.currentTimeMillis();
