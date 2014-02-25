@@ -369,7 +369,7 @@ public class ReflexactoringUtil {
 	
 	public static void getModuleDependencyConfidenceTable(){
 		
-		if(isReflexionModelChanged()){
+		if(Settings.confidenceTable.size() == 0){
 			try {
 				ModuleDependencyConfidenceTable table = new ModuleDependencyConfidenceTable();
 				

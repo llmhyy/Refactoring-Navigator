@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.recommend.Suggestion;
+import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
+import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 
 /**
@@ -19,10 +21,7 @@ public class ViewUpdater {
 		if(viewId.equals(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW)){
 			ConstraintConfidenceView view = (ConstraintConfidenceView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 					getActivePage().findView(viewId);
-			if(view.getViewer() != null){
-				view.getViewer().setInput(inputData);
-				view.getViewer().refresh();				
-			}
+			view.refreshUI((ModuleDependencyConfidenceTable) inputData);
 		}
 		else if(viewId.equals(ReflexactoringPerspective.FORBIDDEN_VIEW)){
 			ForbiddenView view = (ForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
@@ -45,8 +44,7 @@ public class ViewUpdater {
 		else if(viewId.equals(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW)){
 			ModuleUnitsSimilarityView view = (ModuleUnitsSimilarityView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 					getActivePage().findView(viewId);
-			view.getViewer().setInput(inputData);
-			view.getViewer().refresh();
+			view.refreshUI((ModuleUnitsSimilarityTable) inputData);
 		}
 		else if(viewId.equals(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW)){
 			ReferenceDetailView view = (ReferenceDetailView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
