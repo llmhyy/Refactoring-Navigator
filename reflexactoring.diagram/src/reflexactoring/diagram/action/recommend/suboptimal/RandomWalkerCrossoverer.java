@@ -148,7 +148,17 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 				int index = (int)(movableUnitIndexInSourceModule.length*Math.random());
 				int chosenMovableLowLevelNodeIndex = movableUnitIndexInSourceModule[index];
 				
-				//System.out.println(showLowLevelNode(chosenMovableLowLevelNodeIndex));
+				//ModuleWrapper source = showModuleWrapper(sourceModuleIndex);
+				//ModuleWrapper target = showModuleWrapper(destModuleIndex);
+				/*System.out.println(sourceModuleIndex + "=>" + destModuleIndex);
+				LowLevelGraphNode node = showMember(chosenMovableLowLevelNodeIndex);
+				System.out.println(node);
+				if(node.toString().contains("loadFunction")){
+					System.currentTimeMillis();
+				}*/
+				
+				//SparseDoubleMatrix1D xVector = computingFactor.convertToVectorMatrix(DNA);
+				//SparseDoubleMatrix2D mappingMatrix = computingFactor.getRealMappingMatrix(xVector, computingFactor.getRelationMatrix());
 				
 				int correspondingIndexInSourceModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), sourceModuleIndex, chosenMovableLowLevelNodeIndex);
 				int correspondingIndexInDestModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), destModuleIndex, chosenMovableLowLevelNodeIndex);

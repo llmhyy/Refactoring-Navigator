@@ -41,6 +41,10 @@ public abstract class AbstractAsexualCrossoverer implements Crossoverer {
 		Collections.sort(crosssoverPopulation, new GeneComparator());
 		Population newCrossoverPopulation = new Population();
 		
+		/*for (int i = 0; i < crosssoverPopulation.size()/2; i++) {
+			newCrossoverPopulation.add(crosssoverPopulation.get(i));
+		}*/
+		
 		int len = crosssoverPopulation.size()/4;
 		for (int i = 0; i < len; i++) {
 			newCrossoverPopulation.add(crosssoverPopulation.get(i));

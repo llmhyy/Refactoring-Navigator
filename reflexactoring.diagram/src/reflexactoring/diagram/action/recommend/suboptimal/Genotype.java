@@ -188,6 +188,8 @@ public class Genotype {
 			double voilatedNum = getViolatedConstraintsNumber(computingFactor);
 			this.fitness = objectiveValue - voilatedNum;
 			
+			//System.currentTimeMillis();
+			
 			fitnessTable.put(this, this);
 			//tmpMatrixTable.put(this, this.tmpMatrix);
 			//mappingMatrixTable.put(this, this.mappingMatrix);
@@ -434,13 +436,15 @@ public class Genotype {
 		
 		int length = this.getDNA().length;
 		
-		double totalWeight = weightVector.zDotProduct(x0Vector);
+		SparseDoubleMatrix1D xVector = computingFactor.convertToVectorMatrix(this.getDNA());
+		
+		double totalWeight = weightVector.zDotProduct(xVector);
 		
 		double euclideanDis = computeEuclideanDistance(GeneticUtil.convertArrayToVector(this.getDNA()), x0Vector);
 		
-		double objectiveValue = computingFactor.getAlpha()*totalWeight/length
-				+ computingFactor.getBeta()*(1-euclideanDis/Math.sqrt(length));
-		
+		//double objectiveValue = computingFactor.getAlpha()*totalWeight/length + computingFactor.getBeta()*(1-euclideanDis/Math.sqrt(length));
+		double objectiveValue = computingFactor.getAlpha()*totalWeight + computingFactor.getBeta()*(length-euclideanDis*euclideanDis);
+		//double objectiveValue = totalWeight;
 		return objectiveValue;
 	}
 	
