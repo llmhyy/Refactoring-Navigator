@@ -9,6 +9,7 @@ import javax.swing.ProgressMonitor;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
@@ -86,7 +87,14 @@ public class RefactoringRecommender {
 				return suggestions;
 			}
 			else{
-				MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
+				Display.getDefault().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
+						
+					}
+				});
 				
 				ArrayList<Suggestion> highLevelSuggestions = findHighLevelModificationSuggestion(unitGene, moduleList);
 				highLevelSuggestions.addAll(suggestions);
