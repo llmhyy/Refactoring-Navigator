@@ -75,6 +75,11 @@ public class ConstraintConfidenceView extends ViewPart {
 	 * @param confidenceTable
 	 */
 	public void refreshUI(ModuleDependencyConfidenceTable confidenceTable) {
+		
+		if(confidenceTable == null || confidenceTable.size() == 0){
+			return;
+		}
+		
 		for (Control control : this.composite.getChildren()) {
 			control.dispose();
 		}
