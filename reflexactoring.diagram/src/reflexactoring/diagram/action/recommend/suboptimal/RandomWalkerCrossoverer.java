@@ -28,6 +28,82 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 		this.relationMap = relationMap;
 	}
 	
+	/*public Genotype produceOffSpring(Genotype oldGene){
+		
+		int lowLevelNum = this.computingFactor.getLowLevelMatrix().rows();
+		int highLevelNum = this.computingFactor.getHighLevelMatrix().rows();
+		
+		int moduleSize = computingFactor.getHighLevelMatrix().rows();
+		*//**
+		 * The module partition contains the number of correspondable units for each module.
+		 *//*
+		int[] modulePartition = new int[moduleSize];
+		SparseDoubleMatrix2D moduleUnitCorrespondingMatrix = computingFactor.getA_h();
+		for(int i=0; i<modulePartition.length; i++){
+			SparseDoubleMatrix1D moduleVector = (SparseDoubleMatrix1D) moduleUnitCorrespondingMatrix.viewRow(i);
+			modulePartition[i] = moduleVector.cardinality();
+		}
+		
+		int chosenMovableLowLevelNodeIndex = (int)(Math.random() * lowLevelNum);
+		
+		SparseDoubleMatrix1D vectorMatrix = this.computingFactor.convertToVectorMatrix(oldGene.getDNA());
+		SparseDoubleMatrix2D realMappingMatrix = this.computingFactor.getRealMappingMatrix(vectorMatrix, computingFactor.getRelationMatrix());
+		
+		int sourceModuleIndex = getMappingModuleIndex(chosenMovableLowLevelNodeIndex, realMappingMatrix, highLevelNum, lowLevelNum);
+		int destModuleIndex = -1;
+		int moduleTrialNum = 10;
+		do{
+			destModuleIndex = (int)(Math.random()*moduleSize);
+			moduleTrialNum--;
+		}while(sourceModuleIndex == destModuleIndex && moduleTrialNum>0);
+		
+		if(sourceModuleIndex == destModuleIndex){
+			return oldGene;
+		}
+		
+		//ModuleWrapper source = showModuleWrapper(sourceModuleIndex);
+		//ModuleWrapper target = showModuleWrapper(destModuleIndex);
+		//LowLevelGraphNode node = showLowLevelNode(chosenMovableLowLevelNodeIndex);
+		if(sourceModuleIndex == -1){
+			System.currentTimeMillis();
+		}
+		
+		int correspondingIndexInSourceModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), sourceModuleIndex, chosenMovableLowLevelNodeIndex);
+		int correspondingIndexInDestModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), destModuleIndex, chosenMovableLowLevelNodeIndex);
+		
+		int vectorIndexOfSource = convertToVectorIndex(modulePartition, sourceModuleIndex, correspondingIndexInSourceModule);
+		int vectorIndexOfDest = convertToVectorIndex(modulePartition, destModuleIndex, correspondingIndexInDestModule);
+		
+		if(oldGene.getDNA()[vectorIndexOfSource]==1 && oldGene.getDNA()[vectorIndexOfDest]==1){
+			System.err.println("Random Walk Crossoverer does not allow the hard constraints to "
+					+ "be broken, more specifically, a unit/mehtod/field is mapped to at least two modules.");
+			System.err.println("Souce module index: " + sourceModuleIndex + "; target module index: " + destModuleIndex);
+			return oldGene;
+		}
+		else{
+			int[] DNA = flip(oldGene, vectorIndexOfSource, vectorIndexOfDest);
+			
+			Genotype newGene = oldGene.clone();
+			newGene.setDNA(DNA);
+			newGene.computeFitness(computingFactor);
+			//System.out.println(newGene.getFitness());
+			return newGene;	
+			
+		}
+	}
+	
+	private int getMappingModuleIndex(int lowLevelNodeIndex, SparseDoubleMatrix2D realMappingMatrix, int highLevelNum, int lowLevelNum){
+		for(int i=0; i<highLevelNum; i++){
+			if(realMappingMatrix.get(i, lowLevelNodeIndex) != 0){
+				return i;
+			}
+		}
+		
+		return -1;
+	}*/
+	
+	
+	
 	@Override
 	public Genotype produceOffSpring(Genotype oldGene) {
 		
@@ -90,9 +166,6 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 					
 					if(isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
 						
-						/*Genotype newGene = new Genotype(DNA);
-						newGene.setPreviousMappingMatrix(oldGene.getMappingMatrix());
-						newGene.setPreviousTmpMatrix(oldGene.getTmpMatrix());*/
 						Genotype newGene = oldGene.clone();
 						newGene.setDNA(DNA);
 						newGene.computeFitness(computingFactor);
@@ -105,9 +178,9 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 				unitIndexTrialNum--;
 			}while(!isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition) && unitIndexTrialNum>0);
 			
-			/*if(!isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
+			if(!isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
 				return oldGene;
-			}*/
+			}
 			
 		}
 		else{
@@ -127,7 +200,12 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 		return null;
 	}
 	
-	private LowLevelGraphNode showLowLevelNode(int nodeIndex){
+	private LowLevelGraphNode showType(int nodeIndex){
+		return Settings.scope.getScopeCompilationUnitList().get(nodeIndex);
+		//return Settings.scope.getScopeCompilationUnitList().get(nodeIndex);
+	}
+	
+	private LowLevelGraphNode showMember(int nodeIndex){
 		return Settings.scope.getScopeMemberList().get(nodeIndex);
 		//return Settings.scope.getScopeCompilationUnitList().get(nodeIndex);
 	}

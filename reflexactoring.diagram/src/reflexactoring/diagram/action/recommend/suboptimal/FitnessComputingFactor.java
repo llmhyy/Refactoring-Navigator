@@ -148,6 +148,30 @@ public class FitnessComputingFactor {
 		this.A_h = (SparseDoubleMatrix2D) alg.subMatrix(edgeVertexMatrix, 0, highLevelNum-1, 0, edgeVertexMatrix.columns()-1);
 		this.A_l = (SparseDoubleMatrix2D) alg.subMatrix(edgeVertexMatrix, highLevelNum, edgeVertexMatrix.rows()-1, 0, edgeVertexMatrix.columns()-1);
 	}
+	
+	public SparseDoubleMatrix2D getRealMappingMatrix(SparseDoubleMatrix1D xVector, SparseDoubleMatrix2D mappingMatrix){
+		SparseDoubleMatrix2D realMappingMatrix = new SparseDoubleMatrix2D(mappingMatrix.rows(), mappingMatrix.columns());
+		int count = 0;
+		for(int i=0; i<mappingMatrix.rows(); i++){
+			for(int j=0; j<mappingMatrix.columns(); j++){
+				if(mappingMatrix.get(i, j) == 1){
+					double value = xVector.get(count++);
+					realMappingMatrix.set(i, j, value);
+				}
+			}
+		}
+		
+		return realMappingMatrix;
+	}
+	
+	public SparseDoubleMatrix1D convertToVectorMatrix(int[] vector){
+		SparseDoubleMatrix1D vectorMatrix = new SparseDoubleMatrix1D(vector.length);
+		for(int i=0; i<vector.length; i++){
+			vectorMatrix.set(i, vector[i]);
+		}
+		
+		return vectorMatrix;
+	}
 
 	/**
 	 * @return the a_h
