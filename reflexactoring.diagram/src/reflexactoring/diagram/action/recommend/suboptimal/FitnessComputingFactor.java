@@ -149,12 +149,12 @@ public class FitnessComputingFactor {
 		this.A_l = (SparseDoubleMatrix2D) alg.subMatrix(edgeVertexMatrix, highLevelNum, edgeVertexMatrix.rows()-1, 0, edgeVertexMatrix.columns()-1);
 	}
 	
-	public SparseDoubleMatrix2D getRealMappingMatrix(SparseDoubleMatrix1D xVector, SparseDoubleMatrix2D mappingMatrix){
-		SparseDoubleMatrix2D realMappingMatrix = new SparseDoubleMatrix2D(mappingMatrix.rows(), mappingMatrix.columns());
+	public SparseDoubleMatrix2D getRealMappingMatrix(SparseDoubleMatrix1D xVector, SparseDoubleMatrix2D relationMatrix){
+		SparseDoubleMatrix2D realMappingMatrix = new SparseDoubleMatrix2D(relationMatrix.rows(), relationMatrix.columns());
 		int count = 0;
-		for(int i=0; i<mappingMatrix.rows(); i++){
-			for(int j=0; j<mappingMatrix.columns(); j++){
-				if(mappingMatrix.get(i, j) == 1){
+		for(int i=0; i<relationMatrix.rows(); i++){
+			for(int j=0; j<relationMatrix.columns(); j++){
+				if(relationMatrix.get(i, j) == 1){
 					double value = xVector.get(count++);
 					realMappingMatrix.set(i, j, value);
 				}
