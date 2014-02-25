@@ -27,13 +27,10 @@ public class Problem {
 		//run(highLevelNum, lowLevelNum, iterNum, populationNum);
 	}
 	
-	public void runExact(int highLevelNum, int lowLevelNum, double alpha, double beta){
-		FitnessComputingFactor computingFactor = buildComputingFactor(highLevelNum, lowLevelNum);
-		computingFactor.setMode(FitnessComputingFactor.EXPERIMENT_MODE);
-		computingFactor.setAlpha(alpha);
-		computingFactor.setBeta(beta);
+	public double runExact(FitnessComputingFactor computingFactor){
 		
-		int dimension = highLevelNum*lowLevelNum;
+		
+		int dimension = computingFactor.getHighLevelMatrix().rows()*computingFactor.getLowLevelMatrix().rows();
 		
 		ArrayList<ArrayList<Integer>> previousLevelList = null;
 		int level = 1;
@@ -86,10 +83,10 @@ public class Problem {
 					fitness = sol.getFitness();
 				}
 			}
-			System.out.println(fitness);
+			//System.out.println(fitness);
 		}
 		
-		System.out.println(fitness);
+		return fitness;
 	}
 	
 	private int[] convert(ArrayList<Integer> solution){
@@ -101,12 +98,7 @@ public class Problem {
 		return DNA;
 	}
 	
-	public void runMetaHeuristic(int highLevelNum, int lowLevelNum, int iterNum, int populationNum, double alpha, double beta){
-		FitnessComputingFactor computingFactor = buildComputingFactor(highLevelNum, lowLevelNum);
-		computingFactor.setMode(FitnessComputingFactor.EXPERIMENT_MODE);
-		computingFactor.setAlpha(alpha);
-		computingFactor.setBeta(beta);
-		
+	public double runMetaHeuristic(int iterNum, int populationNum, FitnessComputingFactor computingFactor){
 		SeedGenerator seedGenerator = new OriginOrientedSeedGenerator(computingFactor);
 		
 		Population population = generatePopulation(computingFactor, seedGenerator, populationNum);
@@ -116,6 +108,8 @@ public class Problem {
 			population = generateNextGeneration(population, computingFactor, null);
 			System.out.println(population.getOptimalGene().getFitness());
 		}
+		
+		return population.getOptimalGene().getFitness();
 	}
 	
 	private FitnessComputingFactor buildComputingFactor(int highLevelNum, int lowLevelNum){
@@ -219,7 +213,21 @@ public class Problem {
 	
 	public static void main(String[] args){
 		Problem problem = new Problem();
-		problem.runMetaHeuristic(3, 7, 1000, 10, 0.5, 0.5);
-		problem.runExact(3, 7, 0.5, 0.5);
+		
+		FitnessComputingFactor computingFactor = problem.buildComputingFactor(3, 7);
+		computingFactor.setMode(FitnessComputingFactor.EXPERIMENT_MODE);
+		computingFactor.setAlpha(0.5);
+		computingFactor.setBeta(0.5);
+		
+		long t11 = System.currentTimeMillis();
+		double subOptimal = problem.runMetaHeuristic(200, 20, computingFactor);
+		long t12 = System.currentTimeMillis();
+		
+		long t21 = System.currentTimeMillis();
+		double optimal = problem.runExact(computingFactor);
+		long t22 = System.currentTimeMillis();
+		
+		System.out.println("Suboptimal: " + subOptimal + ", Consumed time: " + (t12-t11));
+		System.out.println("Optimal: " + optimal + ", Consumed time: " + (t22-t21));
 	}
 }
