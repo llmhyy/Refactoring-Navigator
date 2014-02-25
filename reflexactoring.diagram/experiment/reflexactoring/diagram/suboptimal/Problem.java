@@ -67,8 +67,10 @@ public class Problem {
 		
 		System.out.println(previousLevelList.size());
 		Double fitness = null; 
+		Solution bestSolution = null;
 		Solution previousSolution = null;
 		for(ArrayList<Integer> solution: previousLevelList){
+			
 			int[] DNA = convert(solution);
 			if(fitness == null){
 				Solution sol = new Solution(DNA);
@@ -83,11 +85,12 @@ public class Problem {
 				sol.computeFitness(computingFactor);
 				if(sol.getFitness() > fitness){
 					fitness = sol.getFitness();
+					bestSolution = sol;
 				}
 			}
 			//System.out.println(fitness);
 		}
-		
+		System.out.println(bestSolution);
 		return fitness;
 	}
 	
@@ -102,7 +105,6 @@ public class Problem {
 	
 	public double runMetaHeuristic(int iterNum, int populationNum, FitnessComputingFactor computingFactor){
 		SeedGenerator seedGenerator = new OriginOrientedSeedGenerator(computingFactor);
-		
 		Population population = generatePopulation(computingFactor, seedGenerator, populationNum);
 		System.out.println(population.getOptimalGene().getFitness());
 		
@@ -115,12 +117,16 @@ public class Problem {
 	}
 	
 	private FitnessComputingFactor buildComputingFactor(int highLevelNum, int lowLevelNum){
-		SparseDoubleMatrix2D highLevelMatrix = generateRandomGraphMatrix(highLevelNum);
-		SparseDoubleMatrix2D lowLevelMatrix = generateRandomGraphMatrix(lowLevelNum);
+		//SparseDoubleMatrix2D highLevelMatrix = generateRandomGraphMatrix(highLevelNum);
+		//SparseDoubleMatrix2D lowLevelMatrix = generateRandomGraphMatrix(lowLevelNum);
+		SparseDoubleMatrix2D highLevelMatrix = generateConstantGraphMatrix(highLevelNum);
+		SparseDoubleMatrix2D lowLevelMatrix = generateConstantGraphMatrix(lowLevelNum);
 		SparseDoubleMatrix2D relationMatrix = generateRelationMatrix(highLevelNum, lowLevelNum);
 		
-		SparseDoubleMatrix1D x0Vector = generateX0Vector(highLevelMatrix, lowLevelMatrix, relationMatrix);
-		SparseDoubleMatrix1D weightVector = generateRandomWeight(x0Vector);
+		//SparseDoubleMatrix1D x0Vector = generateRandomX0Vector(highLevelMatrix, lowLevelMatrix, relationMatrix);
+		//SparseDoubleMatrix1D weightVector = generateRandomWeight(x0Vector);
+		SparseDoubleMatrix1D x0Vector = generateConstantX0Vector(highLevelMatrix, lowLevelMatrix, relationMatrix);
+		SparseDoubleMatrix1D weightVector = generateConstantWeight(x0Vector);
 		
 		FitnessComputingFactor computingFactor = new FitnessComputingFactor();
 		computingFactor.setHighLevelMatrix(highLevelMatrix);
@@ -165,7 +171,7 @@ public class Problem {
 		return population;
 	}
 	
-	private SparseDoubleMatrix1D generateX0Vector(SparseDoubleMatrix2D highLevelMatrix, 
+	private SparseDoubleMatrix1D generateRandomX0Vector(SparseDoubleMatrix2D highLevelMatrix, 
 			SparseDoubleMatrix2D lowLevelMatrix, SparseDoubleMatrix2D relationMatrix){
 		SparseDoubleMatrix1D x0Vector = new SparseDoubleMatrix1D(highLevelMatrix.rows()*lowLevelMatrix.rows());
 		
@@ -178,10 +184,32 @@ public class Problem {
 		return x0Vector;
 	}
 	
+	private SparseDoubleMatrix1D generateConstantX0Vector(SparseDoubleMatrix2D highLevelMatrix, 
+			SparseDoubleMatrix2D lowLevelMatrix, SparseDoubleMatrix2D relationMatrix){
+		SparseDoubleMatrix1D x0Vector = new SparseDoubleMatrix1D(highLevelMatrix.rows()*lowLevelMatrix.rows());
+		
+		for(int j=0; j<lowLevelMatrix.rows(); j++){
+			int rowNo = j%3;
+			
+			x0Vector.set(rowNo*lowLevelMatrix.rows()+j, 1);	
+		}
+		//System.currentTimeMillis();
+		return x0Vector;
+	}
+	
 	private SparseDoubleMatrix1D generateRandomWeight(SparseDoubleMatrix1D x0){
 		SparseDoubleMatrix1D weights = new SparseDoubleMatrix1D(x0.size());
 		for(int i=0; i<weights.size(); i++){
 			weights.set(i, Math.random());
+		}
+		
+		return weights;
+	}
+	
+	private SparseDoubleMatrix1D generateConstantWeight(SparseDoubleMatrix1D x0){
+		SparseDoubleMatrix1D weights = new SparseDoubleMatrix1D(x0.size());
+		for(int i=0; i<weights.size(); i++){
+			weights.set(i, 0.3);
 		}
 		
 		return weights;
@@ -213,23 +241,38 @@ public class Problem {
 		return matrix;
 	}
 	
+	private SparseDoubleMatrix2D generateConstantGraphMatrix(int n){
+		SparseDoubleMatrix2D matrix = new SparseDoubleMatrix2D(n, n);
+		for(int i=0; i<n; i++){
+			for(int j=0; j<n; j++){
+				if(i != j){
+					int value = i+j;
+					value = (value%2 == 0)? 1: 0;
+					matrix.set(i, j, value);
+				}
+			}
+		}
+		
+		return matrix;
+	}
+	
 	public static void main(String[] args){
 		Problem problem = new Problem();
 		System.out.println("Started");
-		FitnessComputingFactor computingFactor = problem.buildComputingFactor(3, 7);
+		FitnessComputingFactor computingFactor = problem.buildComputingFactor(3, 6);
 		computingFactor.setMode(FitnessComputingFactor.EXPERIMENT_MODE);
 		computingFactor.setAlpha(0.5);
 		computingFactor.setBeta(0.5);
 		
 		long t11 = System.currentTimeMillis();
-		double subOptimal = problem.runMetaHeuristic(50, 30, computingFactor);
+		double subOptimal = problem.runMetaHeuristic(30, 20, computingFactor);
 		long t12 = System.currentTimeMillis();
 		
-		long t21 = System.currentTimeMillis();
+		/*long t21 = System.currentTimeMillis();
 		double optimal = problem.runExact(computingFactor);
-		long t22 = System.currentTimeMillis();
+		long t22 = System.currentTimeMillis();*/
 		
 		System.out.println("Suboptimal: " + subOptimal + ", Consumed time: " + (t12-t11));
-		System.out.println("Optimal: " + optimal + ", Consumed time: " + (t22-t21));
+		//System.out.println("Optimal: " + optimal + ", Consumed time: " + (t22-t21));
 	}
 }
