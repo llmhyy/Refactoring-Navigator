@@ -9,11 +9,17 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -79,6 +85,39 @@ public class ClassStructureBuilder {
 							}
 						}
 					}
+					
+					return true;
+				}
+				
+				public boolean visit(MethodInvocation invocation){
+					Expression expression = invocation.getExpression();
+					if(null != expression && expression instanceof SimpleName){
+						SimpleName name = (SimpleName)expression;
+						IBinding binding = name.resolveBinding();
+						if(binding instanceof ITypeBinding){
+							ITypeBinding typeBinding = (ITypeBinding)binding;
+							String typeName = typeBinding.getName();
+							for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
+								if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
+									refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
+									refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
+									
+									refererCompilationUnit.putReferringDetail(refereeCompilationUnit, invocation);
+									
+									System.currentTimeMillis();
+								}
+							}
+						}
+					}
+					/*String typeName = ((SimpleType)type).getName().getFullyQualifiedName();
+					for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
+						if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
+							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
+							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
+							
+							refererCompilationUnit.putReferringDetail(refereeCompilationUnit, type);
+						}
+					}*/
 					
 					return true;
 				}
