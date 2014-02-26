@@ -15,6 +15,7 @@ import org.eclipse.gmf.runtime.diagram.core.edithelpers.CreateElementRequestAdap
 import org.eclipse.gmf.runtime.diagram.ui.commands.DeferredCreateConnectionViewAndElementCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElementRequest;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElementRequest.ConnectionViewAndElementDescriptor;
@@ -36,6 +37,8 @@ import reflexactoring.Type;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
+import reflexactoring.diagram.edit.parts.ModuleEditPart;
+import reflexactoring.diagram.edit.parts.ModuleTypeContainerCompartmentEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
@@ -289,6 +292,70 @@ public class GEFDiagramUtil {
 				
 				GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(comCommand);
 				
+			}
+		}
+	}
+	
+	public static void focusModuleOnGraph(String moduleName){
+		DiagramRootEditPart rootPart = GEFDiagramUtil.getRootEditPart();
+		for(Object partObj: rootPart.getChildren()){
+			if(partObj instanceof ReflexactoringEditPart){
+				for(Object modulePart: ((ReflexactoringEditPart)partObj).getChildren()){
+					if(modulePart instanceof ModuleEditPart){
+						ModuleEditPart moduleEditPart = (ModuleEditPart)modulePart;
+						Module module = (Module)moduleEditPart.resolveSemanticElement();
+						if(module.getName().equals(moduleName)){
+							IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+							ReflexactoringDiagramEditor editor = (ReflexactoringDiagramEditor)workbenchPage.getActiveEditor();
+							editor.setFocus();
+							
+							moduleEditPart.setSelected(EditPart.SELECTED_PRIMARY);
+							moduleEditPart.setFocus(true);
+							moduleEditPart.getViewer().setFocus(moduleEditPart);
+							moduleEditPart.getViewer().select(moduleEditPart);
+							//moduleEditPart.getViewer().setSelection(new StructuredSelection(moduleEditPart));
+							moduleEditPart.getViewer().reveal(moduleEditPart);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	public static void focusTypeOnGraph(String identifier){
+		DiagramRootEditPart rootPart = GEFDiagramUtil.getRootEditPart();
+		for(Object partObj: rootPart.getChildren()){
+			if(partObj instanceof ReflexactoringEditPart){
+				for(Object modulePart: ((ReflexactoringEditPart)partObj).getChildren()){
+					if(modulePart instanceof ModuleEditPart){
+						ModuleEditPart moduleEditPart = (ModuleEditPart)modulePart;
+						for(Object containerObj: moduleEditPart.getChildren()){
+							if(containerObj instanceof ModuleTypeContainerCompartmentEditPart){
+								ModuleTypeContainerCompartmentEditPart containerPart = (ModuleTypeContainerCompartmentEditPart)containerObj;
+								for(Object typeObj: containerPart.getChildren()){
+									ShapeEditPart typePart = (ShapeEditPart)typeObj;
+									
+									Type type = (Type) typePart.resolveSemanticElement();
+									String fullTypeName = type.getPackageName() + "." + type.getName();
+									if(fullTypeName.equals(identifier)){
+										IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+										ReflexactoringDiagramEditor editor = (ReflexactoringDiagramEditor)workbenchPage.getActiveEditor();
+										editor.setFocus();
+										
+										typePart.setSelected(EditPart.SELECTED_PRIMARY);
+										//typePart.setFocus(true);
+										//typePart.getViewer().setFocus(moduleEditPart);
+										//typePart.getViewer().select(moduleEditPart);
+										//moduleEditPart.getViewer().setSelection(new StructuredSelection(moduleEditPart));
+										typePart.getViewer().reveal(typePart);
+									}
+									
+								}
+							}
+							
+						}
+					}
+				}
 			}
 		}
 	}

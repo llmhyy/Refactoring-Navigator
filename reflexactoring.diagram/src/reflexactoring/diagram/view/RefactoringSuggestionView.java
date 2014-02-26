@@ -153,29 +153,7 @@ public class RefactoringSuggestionView extends ViewPart {
 							ModuleWrapper targetModule = moveTypeAction.getDestination();
 							
 							if(sourceModule.getName().equals(e.getLabel()) || targetModule.getName().equals(e.getLabel())){
-								DiagramRootEditPart rootPart = GEFDiagramUtil.getRootEditPart();
-								for(Object partObj: rootPart.getChildren()){
-									if(partObj instanceof ReflexactoringEditPart){
-										for(Object modulePart: ((ReflexactoringEditPart)partObj).getChildren()){
-											if(modulePart instanceof ModuleEditPart){
-												ModuleEditPart moduleEditPart = (ModuleEditPart)modulePart;
-												Module module = (Module)moduleEditPart.resolveSemanticElement();
-												if(module.getName().equals(e.getLabel())){
-													IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-													ReflexactoringDiagramEditor editor = (ReflexactoringDiagramEditor)workbenchPage.getActiveEditor();
-													editor.setFocus();
-													
-													moduleEditPart.setSelected(EditPart.SELECTED_PRIMARY);
-													moduleEditPart.setFocus(true);
-													moduleEditPart.getViewer().setFocus(moduleEditPart);
-													moduleEditPart.getViewer().select(moduleEditPart);
-													//moduleEditPart.getViewer().setSelection(new StructuredSelection(moduleEditPart));
-													moduleEditPart.getViewer().reveal(moduleEditPart);
-												}
-											}
-										}
-									}
-								}
+								GEFDiagramUtil.focusModuleOnGraph(e.getLabel());
 							}
 						}
 					}
@@ -183,7 +161,8 @@ public class RefactoringSuggestionView extends ViewPart {
 						SuggestionObject obj = suggestion.getSuggeestionObject();
 						if(obj instanceof ICompilationUnitWrapper){
 							ICompilationUnitWrapper unitWrapper = (ICompilationUnitWrapper)obj;
-							unitWrapper.openInEditor();
+							//unitWrapper.openInEditor();
+							GEFDiagramUtil.focusTypeOnGraph(unitWrapper.getFullQualifiedName());
 						}
 						else if(obj instanceof UnitMemberWrapper){
 							UnitMemberWrapper memberWrapper = (UnitMemberWrapper)obj;
