@@ -72,10 +72,17 @@ public class RefactoringRecommender {
 			 * need to gain the dependencies amongst modules
 			 */
 			
-			String msg = checkPossible(moduleList, Settings.scope.getScopeCompilationUnitList());
+			final String msg = checkPossible(moduleList, Settings.scope.getScopeCompilationUnitList());
 			
 			if(!msg.equals("OK")){
-				MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Problem", msg);
+				Display.getDefault().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Problem", msg);
+						
+					}
+				});
 				return new ArrayList<Suggestion>();
 			}
 			
@@ -129,6 +136,15 @@ public class RefactoringRecommender {
 				return suggestions;
 			}
 			else{
+				Display.getDefault().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
+						
+					}
+				});
+				
 				ArrayList<Suggestion> highLevelSuggestions = findHighLevelModificationSuggestion(memberGene, moduleList);
 				highLevelSuggestions.addAll(suggestions);
 				return highLevelSuggestions;
