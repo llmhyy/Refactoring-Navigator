@@ -52,6 +52,7 @@ import org.osgi.framework.Bundle;
 import reflexactoring.Activator;
 import reflexactoring.Module;
 import reflexactoring.diagram.action.recommend.Suggestion;
+import reflexactoring.diagram.action.recommend.action.DependencyAction;
 import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
 import reflexactoring.diagram.action.recommend.action.MoveTypeAction;
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
@@ -60,6 +61,8 @@ import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
+import reflexactoring.diagram.bean.ModuleDependencyConfidence;
+import reflexactoring.diagram.bean.ModuleDependencyWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -132,8 +135,14 @@ public class RefactoringSuggestionView extends ViewPart {
 			buffer.append("<b>]</b>");
 			if(suggestion.getAction() instanceof MoveMemberAction){
 				buffer.append("<b>[</b>");
-				buffer.append("<a href=\"Forbid\">Forbid</a> ");	
-				buffer.append("<a href=\"Allow\">Allow</a>");	
+				buffer.append("<a href=\"Forbid\">Reject</a> ");	
+				buffer.append("<a href=\"Allow\">Unreject</a>");	
+				buffer.append("<b>]</b>");
+			}
+			else if(suggestion.getAction() instanceof DependencyAction){
+				buffer.append("<b>[</b>");
+				buffer.append("<a href=\"Stick\">Stick Origin Design</a> ");	
+				buffer.append("<a href=\"Unstick\">Undo</a>");	
 				buffer.append("<b>]</b>");
 			}
 			buffer.append("</li>");			
@@ -194,12 +203,9 @@ public class RefactoringSuggestionView extends ViewPart {
 							
 							Settings.heuristicStopMapList.add(stopMap);
 							ViewUpdater updater = new ViewUpdater();
-							updater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList, false);
-							/*ForbiddenView view = (ForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-									getActivePage().findView(ReflexactoringPerspective.FORBIDDEN_VIEW);
-							view.getViewer().setInput(Settings.heuristicStopMapList);
-							view.getViewer().refresh();*/
+							updater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList, true);
 						}
+						
 						FormText t = (FormText) e.getSource();
 						FormColors colors = toolkit.getColors();
 						colors.createColor("gray", new RGB(207,207,207));
@@ -234,10 +240,60 @@ public class RefactoringSuggestionView extends ViewPart {
 							HeuristicModuleMemberStopMap stopMap = new HeuristicModuleMemberStopMap(moveMemberAction.getDestination(), memberWrapper);
 							
 							Settings.heuristicStopMapList.removeMap(stopMap);
-							ForbiddenView view = (ForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-									getActivePage().findView(ReflexactoringPerspective.FORBIDDEN_VIEW);
-							view.getViewer().setInput(Settings.heuristicStopMapList);
-							view.getViewer().refresh();
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList, true);
+						}
+						
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+						t.setForeground(colors.getColor("black"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("Stick")){
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleDependencyWrapper && action instanceof DependencyAction){
+							DependencyAction depAction =(DependencyAction)action;
+							for(ModuleDependencyConfidence confidence: Settings.confidenceTable){
+								if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper calleeModule = confidence.getModuleList().get(i);
+										if(calleeModule.getName().equals(depAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] += 2;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, true);
+						}
+						
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("gray", new RGB(207,207,207));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("gray"));
+						t.setForeground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("Unstick")){
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleDependencyWrapper && action instanceof DependencyAction){
+							DependencyAction depAction =(DependencyAction)action;
+							for(ModuleDependencyConfidence confidence: Settings.confidenceTable){
+								if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper calleeModule = confidence.getModuleList().get(i);
+										if(calleeModule.getName().equals(depAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] = 0.5;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, true);
 						}
 						FormText t = (FormText) e.getSource();
 						FormColors colors = toolkit.getColors();
