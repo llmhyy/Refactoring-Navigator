@@ -77,7 +77,7 @@ public class UnitMemberExtractor {
 					unitWrapper.getMembers().add(methodWrapper);
 					memberList.add(methodWrapper);
 					
-					return true;
+					return false;
 				}
 			});
 			
