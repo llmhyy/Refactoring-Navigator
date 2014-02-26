@@ -106,14 +106,14 @@ public class Problem {
 	public double runMetaHeuristic(int iterNum, int populationNum, FitnessComputingFactor computingFactor){
 		SeedGenerator seedGenerator = new OriginOrientedSeedGenerator(computingFactor);
 		Population population = generatePopulation(computingFactor, seedGenerator, populationNum);
-		System.out.println(population.getOptimalGene().getFitness());
+		System.out.println(population.get(0).getFitness());
 		
 		for(int i=0; i<iterNum; i++){
 			population = generateNextGeneration(population, computingFactor, null);
-			System.out.println(population.getOptimalGene().getFitness());
+			System.out.println(population.get(0).getFitness());
 		}
 		
-		return population.getOptimalGene().getFitness();
+		return population.get(0).getFitness();
 	}
 	
 	private FitnessComputingFactor buildComputingFactor(int highLevelNum, int lowLevelNum){
@@ -167,7 +167,7 @@ public class Problem {
 			population.add(gene);
 		}
 		
-		population.updateOptimalGene();
+		//population.updateOptimalGene();
 		return population;
 	}
 	
@@ -259,13 +259,13 @@ public class Problem {
 	public static void main(String[] args){
 		Problem problem = new Problem();
 		System.out.println("Started");
-		FitnessComputingFactor computingFactor = problem.buildComputingFactor(3, 6);
+		FitnessComputingFactor computingFactor = problem.buildComputingFactor(3, 100);
 		computingFactor.setMode(FitnessComputingFactor.EXPERIMENT_MODE);
 		computingFactor.setAlpha(0.5);
 		computingFactor.setBeta(0.5);
 		
 		long t11 = System.currentTimeMillis();
-		double subOptimal = problem.runMetaHeuristic(30, 20, computingFactor);
+		double subOptimal = problem.runMetaHeuristic(30, 10, computingFactor);
 		long t12 = System.currentTimeMillis();
 		
 		/*long t21 = System.currentTimeMillis();

@@ -43,12 +43,12 @@ public class GeneticOptimizer extends Suboptimizer{
 		SeedGenerator seedGenerator = new OriginOrientedSeedGenerator(computingFactor);
 		
 		Population population = generatePopulation(computingFactor, seedGenerator);
-		System.out.println(population.getOptimalGene().getFitness());
+		System.out.println(population.get(0).getFitness());
 		
 		//Integer.valueOf(ReflexactoringUtil.getIterationNumber())
 		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getIterationNumber()); i++){
 			population = generateNextGeneration(population, computingFactor, relationMap);
-			System.out.println(population.getOptimalGene().getFitness());
+			System.out.println(population.get(0).getFitness());
 			
 			monitor.worked(1);
 			if(monitor.isCanceled()){
@@ -56,7 +56,7 @@ public class GeneticOptimizer extends Suboptimizer{
 			}
 		}
 		
-		return population.getOptimalGene();
+		return population.get(0);
 	}
 	
 	
@@ -78,7 +78,7 @@ public class GeneticOptimizer extends Suboptimizer{
 			population.add(gene);
 		}
 		
-		population.updateOptimalGene();
+		//population.updateOptimalGene();
 		
 		return population;
 	}
@@ -127,7 +127,7 @@ public class GeneticOptimizer extends Suboptimizer{
 		int lowNum = computingFactor.getLowLevelMatrix().rows();
 		
 		Population selectedPopluation = new Population();
-		selectedPopluation.setOptimalGene(population.getOptimalGene());
+		//selectedPopluation.setOptimalGene(population.getOptimalGene());
 
 		double[] bin = new double[population.size()+1];
 		double sum = 0;

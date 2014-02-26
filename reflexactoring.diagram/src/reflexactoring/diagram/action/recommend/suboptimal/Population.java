@@ -16,18 +16,32 @@ public class Population extends ArrayList<Genotype>{
 	 */
 	private static final long serialVersionUID = 1030488561271723649L;
 
-	private Genotype optimalGene;
+	public ArrayList<Genotype> getKBestCandidate(int k){
+		if(this.size() < k){
+			return this;
+		}
+		else{
+			ArrayList<Genotype> list = new ArrayList<>();
+			for(int i=0; i<k; i++){
+				list.add(this.get(i));
+			}
+			
+			return  list;
+		}
+	}
+	
+	/*private Genotype optimalGene;
 
-	/**
+	*//**
 	 * @return the optimalGene
-	 */
+	 *//*
 	public Genotype getOptimalGene() {
 		return optimalGene;
 	}
 
-	/**
+	*//**
 	 * @param optimalGene the optimalGene to set
-	 */
+	 *//*
 	public void setOptimalGene(Genotype optimalGene) {
 		this.optimalGene = optimalGene;
 	}
@@ -46,5 +60,5 @@ public class Population extends ArrayList<Genotype>{
 		}
 		
 		this.optimalGene = optimalGene;
-	}
+	}*/
 }

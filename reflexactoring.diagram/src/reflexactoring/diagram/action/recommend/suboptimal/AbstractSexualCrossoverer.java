@@ -58,8 +58,8 @@ public abstract class AbstractSexualCrossoverer implements Crossoverer {
 			}
 		}
 		
-		newCrossoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
-		newCrossoverPopulation.updateOptimalGene();
+		//newCrossoverPopulation.setOptimalGene(selectedPopulation.getOptimalGene());
+		//newCrossoverPopulation.updateOptimalGene();
 		
 		return newCrossoverPopulation;
 	}
