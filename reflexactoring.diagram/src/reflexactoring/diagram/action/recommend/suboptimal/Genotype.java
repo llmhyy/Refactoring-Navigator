@@ -442,8 +442,8 @@ public class Genotype {
 		
 		double euclideanDis = computeEuclideanDistance(GeneticUtil.convertArrayToVector(this.getDNA()), x0Vector);
 		
-		//double objectiveValue = computingFactor.getAlpha()*totalWeight/length + computingFactor.getBeta()*(1-euclideanDis/Math.sqrt(length));
-		double objectiveValue = computingFactor.getAlpha()*totalWeight + computingFactor.getBeta()*(length-euclideanDis*euclideanDis);
+		double objectiveValue = computingFactor.getAlpha()*totalWeight/length + computingFactor.getBeta()*(1-euclideanDis/Math.sqrt(length));
+		//double objectiveValue = computingFactor.getAlpha()*totalWeight + computingFactor.getBeta()*(length-euclideanDis*euclideanDis);
 		//double objectiveValue = totalWeight;
 		return objectiveValue;
 	}
