@@ -23,7 +23,10 @@ public class Population extends ArrayList<Genotype>{
 		else{
 			ArrayList<Genotype> list = new ArrayList<>();
 			for(int i=0; i<k; i++){
-				list.add(this.get(i));
+				Genotype gene = this.get(i);
+				if(!list.contains(gene)){
+					list.add(gene);
+				}
 			}
 			
 			return  list;
