@@ -13,6 +13,7 @@ import reflexactoring.diagram.edit.parts.TypeDependencyEditPart;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.ReferenceDetailView;
+import reflexactoring.diagram.view.ViewUpdater;
 
 public class ShowReferenceDetailAction extends AbstractActionDelegate implements IObjectActionDelegate{
 
@@ -39,15 +40,16 @@ public class ShowReferenceDetailAction extends AbstractActionDelegate implements
 			ICompilationUnitWrapper targetUnit = Settings.scope.findUnit(targetType);
 			
 			if(sourceUnit != null && targetUnit != null){
+				ReferenceDetailMap map = new ReferenceDetailMap(sourceUnit, targetUnit, sourceUnit.getReferingDetails().get(targetUnit));
+				ViewUpdater updater = new ViewUpdater();
+				updater.updateView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW, map, true);
+				
+				/*ReferenceDetailMap map = new ReferenceDetailMap(sourceUnit, targetUnit, sourceUnit.getReferingDetails().get(targetUnit));
 				ReferenceDetailView view = (ReferenceDetailView)PlatformUI.getWorkbench().
 						getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW);
-				
-				ReferenceDetailMap map = new ReferenceDetailMap(sourceUnit, targetUnit, sourceUnit.getReferingDetails().get(targetUnit));
-				
-				view.setCallerCompilationUnit(sourceUnit);
 				view.getViewer().setLabelProvider(view.new DetailLabelProvider(map));
 				view.getViewer().setInput(map);
-				view.getViewer().refresh();
+				view.getViewer().refresh();*/
 			}
 			
 		}

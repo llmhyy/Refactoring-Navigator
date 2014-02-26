@@ -193,10 +193,12 @@ public class RefactoringSuggestionView extends ViewPart {
 							HeuristicModuleMemberStopMap stopMap = new HeuristicModuleMemberStopMap(moveMemberAction.getDestination(), memberWrapper);
 							
 							Settings.heuristicStopMapList.add(stopMap);
-							ForbiddenView view = (ForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList, false);
+							/*ForbiddenView view = (ForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 									getActivePage().findView(ReflexactoringPerspective.FORBIDDEN_VIEW);
 							view.getViewer().setInput(Settings.heuristicStopMapList);
-							view.getViewer().refresh();
+							view.getViewer().refresh();*/
 						}
 						FormText t = (FormText) e.getSource();
 						FormColors colors = toolkit.getColors();

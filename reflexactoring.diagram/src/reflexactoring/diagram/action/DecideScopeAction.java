@@ -156,10 +156,10 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			 * refresh above four view
 			 */
 			ViewUpdater viewUpdater = new ViewUpdater();
-			viewUpdater.updateView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW, Settings.heuristicModuleUnitMapList);
-			viewUpdater.updateView(ReflexactoringPerspective.MAPPING_FIX_VIEW, Settings.fixedMemberModuleUnitList);
-			viewUpdater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList);
-			viewUpdater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable);
+			viewUpdater.updateView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW, Settings.heuristicModuleUnitMapList, false);
+			viewUpdater.updateView(ReflexactoringPerspective.MAPPING_FIX_VIEW, Settings.fixedMemberModuleUnitList, false);
+			viewUpdater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList, false);
+			viewUpdater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, false);
 			
 			Settings.isCompliationUnitChanged = true;
 			Settings.isNeedClearCache = true;

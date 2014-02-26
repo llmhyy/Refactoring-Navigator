@@ -12,8 +12,11 @@ import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.edit.parts.Class2EditPart;
+import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.MappingFixView;
+import reflexactoring.diagram.view.ViewUpdater;
 
 public class FixMappingMemberAction extends AbstractActionDelegate implements IObjectActionDelegate{
 
@@ -39,10 +42,8 @@ public class FixMappingMemberAction extends AbstractActionDelegate implements IO
 			HeuristicModuleUnitFixMemberMap fixMemberMap = new HeuristicModuleUnitFixMemberMap(moduleWrapper, unitWrapper);
 			Settings.fixedMemberModuleUnitList.add(fixMemberMap);
 			
-			MappingFixView view = (MappingFixView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
-					getActivePage().findView("reflexactoring.diagram.mappingFix");
-			view.getViewer().setInput(Settings.fixedMemberModuleUnitList);
-			view.getViewer().refresh();
+			ViewUpdater viewUpdater = new ViewUpdater();
+			viewUpdater.updateView(ReflexactoringPerspective.MAPPING_FIX_VIEW, Settings.fixedMemberModuleUnitList, true);
 		}
 		
 	}

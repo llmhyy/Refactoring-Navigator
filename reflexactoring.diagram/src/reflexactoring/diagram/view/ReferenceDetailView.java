@@ -39,7 +39,7 @@ import reflexactoring.diagram.util.JavaCodeUtil;
 public class ReferenceDetailView extends ViewPart {
 
 	private TreeViewer viewer;
-	private ICompilationUnitWrapper callerCompilationUnit;
+	//private ICompilationUnitWrapper callerCompilationUnit;
 	
 	public ReferenceDetailView() {
 		// TODO Auto-generated constructor stub
@@ -70,11 +70,14 @@ public class ReferenceDetailView extends ViewPart {
 				Tree tree = (Tree)me.getSource();
 				TreeItem item = tree.getItem(new Point(me.x, me.y));
 				ASTNode node = (ASTNode) item.getData();
-				
-				CompilationUnit cu = callerCompilationUnit.getJavaUnit();
+				ASTNode parent = node.getParent();
+				while(parent.getParent() != null){
+					parent = parent.getParent();
+				}
+				CompilationUnit cu = (CompilationUnit)parent;
 				int lineNumber = cu.getLineNumber(node.getStartPosition());
 				
-				ICompilationUnit unit = callerCompilationUnit.getCompilationUnit();
+				ICompilationUnit unit = (ICompilationUnit) cu.getJavaElement();
 				IEditorPart javaEditor;
 				try {
 					javaEditor = JavaUI.openInEditor(unit);
@@ -105,17 +108,17 @@ public class ReferenceDetailView extends ViewPart {
 	
 	/**
 	 * @return the callerCompilationUnit
-	 */
+	 *//*
 	public ICompilationUnitWrapper getCallerCompilationUnit() {
 		return callerCompilationUnit;
 	}
 
-	/**
+	*//**
 	 * @param callerCompilationUnit the callerCompilationUnit to set
-	 */
+	 *//*
 	public void setCallerCompilationUnit(ICompilationUnitWrapper callerCompilationUnit) {
 		this.callerCompilationUnit = callerCompilationUnit;
-	}
+	}*/
 
 	public class DetailContentProvider implements ITreeContentProvider{
 		@Override
