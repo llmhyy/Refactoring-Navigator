@@ -43,6 +43,7 @@ import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.eclipse.ui.internal.util.BundleUtility;
@@ -52,6 +53,7 @@ import org.osgi.framework.Bundle;
 import reflexactoring.Activator;
 import reflexactoring.Module;
 import reflexactoring.diagram.action.recommend.Suggestion;
+import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.recommend.action.DependencyAction;
 import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
 import reflexactoring.diagram.action.recommend.action.MoveTypeAction;
@@ -121,25 +123,58 @@ public class RefactoringSuggestionView extends ViewPart {
 		form.reflow(false);
 	}
 	
-	private void generateSuggestionsOnUI(ArrayList<Suggestion> list){
-		for(Suggestion suggestion: list){
-			final FormText text = toolkit.createFormText(form.getBody(), true);
+	/**
+	 * @param suggestions
+	 */
+	private void generateSuggestionsOnUI(ArrayList<Suggestion> suggestions) {
+		
+		for(int i=0; i<suggestions.size(); i++){
+			Suggestion suggestion = suggestions.get(i);
+			
+			Section section = null;
+			if(i == 0){
+				section = toolkit.createSection(form.getBody(), Section.TWISTIE|Section.EXPANDED|Section.TITLE_BAR);
+			}
+			else{
+				section = toolkit.createSection(form.getBody(), Section.TWISTIE|Section.COMPACT|Section.TITLE_BAR);
+				section.setExpanded(false);
+			}
+			
+			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
+			section.setExpanded(true);
+			section.setLayout(new TableWrapLayout());
+			String feasible = suggestion.isFeasible() ? "(Feasible)" : "(InFeasible)";
+			section.setText("Suggestion " + feasible);
+			
+			Composite composite = toolkit.createComposite(section);
+			composite.setLayout(new TableWrapLayout());
+			composite.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
+			generateSingleSuggestionOnUI(suggestion, composite);
+			section.setClient(composite);
+			
+		}
+		
+	}
+
+	private void generateSingleSuggestionOnUI(Suggestion suggestion, Composite composite){
+		for(SuggestionMove move: suggestion){
+			final FormText text = toolkit.createFormText(composite, true);
 			text.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
 			
 			StringBuffer buffer = new StringBuffer();
 			buffer.append("<form>");
 			buffer.append("<li>");
-			buffer.append(suggestion.generateTagedText());
+			buffer.append(move.generateTagedText());
 			buffer.append("<b>[</b><a href=\"Exec\">Execute</a> ");
 			buffer.append("<a href=\"Undo\">Undo</a> ");
 			buffer.append("<b>]</b>");
-			if(suggestion.getAction() instanceof MoveMemberAction){
+			if(move.getAction() instanceof MoveMemberAction){
 				buffer.append("<b>[</b>");
 				buffer.append("<a href=\"Forbid\">Reject</a> ");	
 				buffer.append("<a href=\"Allow\">Unreject</a>");	
 				buffer.append("<b>]</b>");
 			}
-			else if(suggestion.getAction() instanceof DependencyAction){
+			else if(move.getAction() instanceof DependencyAction){
 				buffer.append("<b>[</b>");
 				buffer.append("<a href=\"Stick\">Stick Origin Design</a> ");	
 				buffer.append("<a href=\"Unstick\">Undo</a>");	
@@ -150,10 +185,10 @@ public class RefactoringSuggestionView extends ViewPart {
 			buffer.append("</form>");
 			
 			text.setText(buffer.toString(), true, false);
-			text.setData(suggestion);
+			text.setData(move);
 			text.addHyperlinkListener(new HyperlinkAdapter() {
 				public void linkActivated(HyperlinkEvent e) {
-					Suggestion suggestion = (Suggestion) text.getData();
+					SuggestionMove suggestion = (SuggestionMove) text.getData();
 					if(e.getHref().equals("Module")){
 						RefactoringAction action = suggestion.getAction();
 						if(action instanceof MoveTypeAction){
@@ -304,8 +339,8 @@ public class RefactoringSuggestionView extends ViewPart {
 					}
 				}
 			});
-			text.getParent().layout();
-			text.getParent().redraw();
+			//text.getParent().layout();
+			//text.getParent().redraw();
 		}
 	}
 

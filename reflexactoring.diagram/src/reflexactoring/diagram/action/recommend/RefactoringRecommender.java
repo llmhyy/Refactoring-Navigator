@@ -62,7 +62,9 @@ public class RefactoringRecommender {
 		
 		ArrayList<ICompilationUnitWrapper> unmappedUnits = checkUnmappedCompilationUnits();
 		if(unmappedUnits.size() != 0 && !Settings.isSkipUnMappedTypes){
-			ArrayList<Suggestion> suggestions = generateSuggestionForUnmappedUnits(unmappedUnits);
+			Suggestion suggestion = generateSuggestionForUnmappedUnits(unmappedUnits);
+			ArrayList<Suggestion> suggestions = new ArrayList<>();
+			suggestions.add(suggestion);
 			return suggestions;
 		}
 		
@@ -87,27 +89,28 @@ public class RefactoringRecommender {
 			}
 			
 			GeneticOptimizer optimizer = new GeneticOptimizer();
-			Genotype unitGene = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList, monitor);
-			ArrayList<Suggestion> suggestions = generateClassLevelSuggestions(unitGene, optimizer, moduleList);
+			ArrayList<Genotype> unitGeneList = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList, monitor);
 			
-			if(unitGene.isFeasible()){
-				return suggestions;
-			}
-			else{
-				Display.getDefault().asyncExec(new Runnable() {
-					
-					@Override
-					public void run() {
-						MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
-						
-					}
-				});
+			ArrayList<Suggestion> suggestions = new ArrayList<>();
+			for(Genotype unitGene: unitGeneList){
+				Suggestion suggestion = generateClassLevelSuggestion(unitGene, optimizer, moduleList);
 				
-				ArrayList<Suggestion> highLevelSuggestions = findHighLevelModificationSuggestion(unitGene, moduleList);
-				highLevelSuggestions.addAll(suggestions);
-				return highLevelSuggestions;
+				if(unitGene.isFeasible()){
+					suggestion.setFeasible(true);
+					suggestions.add(suggestion);
+				}
+				else{
+					suggestion.setFeasible(false);
+					ArrayList<SuggestionMove> highLevelSuggestion = findHighLevelModificationSuggestion(unitGene, moduleList);
+					for(SuggestionMove move: highLevelSuggestion){
+						suggestion.add(0, move);
+					}
+					suggestions.add(suggestion);
+				}
+				
 			}
 			
+			return suggestions;
 			
 		} catch (PartInitException e) {
 			e.printStackTrace();
@@ -128,39 +131,41 @@ public class RefactoringRecommender {
 			//UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
 			UnitMemberWrapperList members = Settings.scope.getScopeMemberList();
 			
-			Genotype memberGene = optimizer.optimize(members, moduleList, monitor);
-			ArrayList<Suggestion> suggestions = generateMemberLevelSuggestions(memberGene, optimizer, 
-					moduleList, members);				
+			ArrayList<Genotype> memberGenes = optimizer.optimize(members, moduleList, monitor);
 			
-			if(memberGene.isFeasible()){
-				return suggestions;
-			}
-			else{
-				Display.getDefault().asyncExec(new Runnable() {
-					
-					@Override
-					public void run() {
-						MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title, message);
-						
-					}
-				});
+			ArrayList<Suggestion> suggestions = new ArrayList<>();
+			
+			for(Genotype memberGene: memberGenes){
+				Suggestion suggestion = generateMemberLevelSuggestion(memberGene, optimizer, 
+						moduleList, members);				
 				
-				ArrayList<Suggestion> highLevelSuggestions = findHighLevelModificationSuggestion(memberGene, moduleList);
-				highLevelSuggestions.addAll(suggestions);
-				return highLevelSuggestions;
+				if(memberGene.isFeasible()){
+					suggestion.setFeasible(true);
+					suggestions.add(suggestion);
+				}
+				else{
+					suggestion.setFeasible(false);
+					ArrayList<SuggestionMove> highLevelSuggestion = findHighLevelModificationSuggestion(memberGene, moduleList);
+					for(SuggestionMove move: highLevelSuggestion){
+						suggestion.add(0, move);
+					}
+					suggestions.add(suggestion);
+				}
+				
 			}
 			
+			return suggestions;
 			
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}
 		
 		
-		return null;
+		return new ArrayList<Suggestion>();
 	}
 	
-	private ArrayList<Suggestion> findHighLevelModificationSuggestion(Genotype bestGene, ArrayList<ModuleWrapper> moduleList){
-		ArrayList<Suggestion> suggestions = new ArrayList<>();
+	private ArrayList<SuggestionMove> findHighLevelModificationSuggestion(Genotype bestGene, ArrayList<ModuleWrapper> moduleList){
+		ArrayList<SuggestionMove> suggestions = new ArrayList<>();
 		
 		ArrayList<Violation> violations = bestGene.getViolationList();
 		for(Violation violation: violations){
@@ -183,7 +188,7 @@ public class RefactoringRecommender {
 				}
 				
 				ModuleDependencyWrapper dependency = new ModuleDependencyWrapper(sourceModule, targetModule);
-				Suggestion suggestion = new Suggestion(dependency, action);
+				SuggestionMove suggestion = new SuggestionMove(dependency, action);
 				suggestions.add(suggestion);
 			}
 		}
@@ -228,7 +233,7 @@ public class RefactoringRecommender {
 		return "OK";
 	}
 	
-	private ArrayList<Suggestion> generateMemberLevelSuggestions(Genotype gene, GeneticOptimizer optimizer, 
+	private Suggestion generateMemberLevelSuggestion(Genotype gene, GeneticOptimizer optimizer, 
 			ArrayList<ModuleWrapper> moduleList, UnitMemberWrapperList members){
 		int[] bestSolution = gene.getDNA();
 		
@@ -236,35 +241,35 @@ public class RefactoringRecommender {
 		ArrayList<int[]> relationMap = optimizer.getRelationMap();
 		
 		Suggester suggester = new Suggester();
-		ArrayList<Suggestion> suggestions = suggester.generateSuggestions(members, moduleList, 
+		Suggestion suggestion = suggester.generateSuggestion(members, moduleList, 
 				bestSolution, initialSolution, relationMap);
 		
-		return suggestions;
+		return suggestion;
 	}
 	
-	private ArrayList<Suggestion> generateClassLevelSuggestions(Genotype gene, GeneticOptimizer optimizer, ArrayList<ModuleWrapper> moduleList){
+	private Suggestion generateClassLevelSuggestion(Genotype gene, GeneticOptimizer optimizer, ArrayList<ModuleWrapper> moduleList){
 		int[] bestSolution = gene.getDNA();
 		
 		int[] initialSolution = optimizer.getX0();
 		ArrayList<int[]> relationMap = optimizer.getRelationMap();
 		
 		Suggester suggester = new Suggester();
-		ArrayList<Suggestion> suggestions = suggester.generateSuggestions(Settings.scope.getScopeCompilationUnitList(), moduleList, 
+		Suggestion suggestion = suggester.generateSuggestion(Settings.scope.getScopeCompilationUnitList(), moduleList, 
 				bestSolution, initialSolution, relationMap);
 		
-		return suggestions;
+		return suggestion;
 	}
 	
-	private ArrayList<Suggestion> generateSuggestionForUnmappedUnits(ArrayList<ICompilationUnitWrapper> unmappedUnits){
+	private Suggestion generateSuggestionForUnmappedUnits(ArrayList<ICompilationUnitWrapper> unmappedUnits){
 		
 		AddModuleAction action = new AddModuleAction(unmappedUnits);
 		
-		Suggestion suggestion = new Suggestion(null, action);
+		SuggestionMove move = new SuggestionMove(null, action);
 		
-		ArrayList<Suggestion> suggestions = new ArrayList<>();
-		suggestions.add(suggestion);
+		Suggestion suggestion = new Suggestion();
+		suggestion.add(move);
 		
-		return suggestions;
+		return suggestion;
 	}
 	
 	private ArrayList<ICompilationUnitWrapper> checkUnmappedCompilationUnits(){

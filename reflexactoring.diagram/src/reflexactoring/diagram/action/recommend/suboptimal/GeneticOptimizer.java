@@ -33,7 +33,7 @@ public class GeneticOptimizer extends Suboptimizer{
 	 * 
 	 */
 	@Override
-	protected Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
+	protected ArrayList<Genotype> computeOptimalResult(FitnessComputingFactor computingFactor,
 			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, 
 			double[][] similarityTable, ArrayList<int[]> relationMap, IProgressMonitor monitor) {
 		
@@ -56,7 +56,7 @@ public class GeneticOptimizer extends Suboptimizer{
 			}
 		}
 		
-		return population.get(0);
+		return population.getKBestCandidate(3);
 	}
 	
 	

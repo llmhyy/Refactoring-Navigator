@@ -20,11 +20,11 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
  */
 public class Suggester {
 	
-	public ArrayList<Suggestion> generateSuggestions(ArrayList<? extends SuggestionObject> suggestionObjects,
+	public Suggestion generateSuggestion(ArrayList<? extends SuggestionObject> suggestionObjects,
 			ArrayList<ModuleWrapper> modules, int[] bestSolution, int[] initialSolution,
 			ArrayList<int[]> relationMap){
 		
-		ArrayList<Suggestion> suggestions = new ArrayList<>();
+		Suggestion suggestion = new Suggestion();
 		
 		
 		for(int i=0; i<initialSolution.length; i++){
@@ -51,8 +51,8 @@ public class Suggester {
 				
 				action.setDestination(tobeMappedmodule);
 				
-				Suggestion suggestion = new Suggestion(suggestionObject, action);
-				suggestions.add(suggestion);
+				SuggestionMove move = new SuggestionMove(suggestionObject, action);
+				suggestion.add(move);
 			}
 			/**
 			 * indicate optimal result is 0 and x0 is 1
@@ -62,8 +62,8 @@ public class Suggester {
 			}*/
 		}
 		
-		Collections.sort(suggestions, new SuggestionComparator());
+		Collections.sort(suggestion, new SuggestionMoveComparator());
 		
-		return suggestions;
+		return suggestion;
 	}
 }

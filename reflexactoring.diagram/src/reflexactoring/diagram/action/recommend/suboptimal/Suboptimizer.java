@@ -45,11 +45,11 @@ public abstract class Suboptimizer {
 	protected ArrayList<int[]> relationMap;
 	protected HashMap<ModuleUnitCorrespondence, Integer> reverseRelationMap;
 	
-	protected abstract Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
+	protected abstract ArrayList<Genotype> computeOptimalResult(FitnessComputingFactor computingFactor,
 			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes, 
 			double[][] similarityTable, ArrayList<int[]> relationMap, IProgressMonitor monitor);
 	
-	public Genotype optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules, IProgressMonitor monitor){
+	public ArrayList<Genotype> optimize(ArrayList<ICompilationUnitWrapper> units, ArrayList<ModuleWrapper> modules, IProgressMonitor monitor){
 		//double[][] similarityTable = new ModelMapper().computeSimilarityTableWithRegardToHeurisitcRules(modules, units);
 		double[][] similarityTable;
 		
@@ -64,12 +64,12 @@ public abstract class Suboptimizer {
 		
 		FitnessComputingFactor computingFactor = buildComputingFactor(similarityTable, modules, units);
 		
-		Genotype gene = computeOptimalResult(computingFactor, modules, units, similarityTable, relationMap, monitor);
+		ArrayList<Genotype> genes = computeOptimalResult(computingFactor, modules, units, similarityTable, relationMap, monitor);
 		
-		return gene;
+		return genes;
 	}
 	
-	public Genotype optimize(UnitMemberWrapperList members, ArrayList<ModuleWrapper> modules, IProgressMonitor monitor){
+	public ArrayList<Genotype> optimize(UnitMemberWrapperList members, ArrayList<ModuleWrapper> modules, IProgressMonitor monitor){
 		
 		MemberModuleValidityExaminer examiner = new MemberModuleValidityExaminer();
 		double[][] similarityTable = new double[modules.size()][members.size()];
@@ -101,9 +101,9 @@ public abstract class Suboptimizer {
 		
 		FitnessComputingFactor computingFactor = buildComputingFactor(similarityTable, modules, members);
 		
-		Genotype gene = computeOptimalResult(computingFactor, modules, members, similarityTable, relationMap, monitor);
+		ArrayList<Genotype> genes = computeOptimalResult(computingFactor, modules, members, similarityTable, relationMap, monitor);
 		
-		return gene;
+		return genes;
 	}
 	
 	public ArrayList<int[]> getRelationMap(){

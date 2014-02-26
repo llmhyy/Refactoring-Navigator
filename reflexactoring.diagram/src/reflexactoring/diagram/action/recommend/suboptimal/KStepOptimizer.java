@@ -28,7 +28,7 @@ public class KStepOptimizer extends Suboptimizer{
 	 * @see reflexactoring.diagram.action.recommend.suboptimal.Suboptimizer#computeOptimalResult(reflexactoring.diagram.action.recommend.suboptimal.FitnessComputingFactor, java.util.ArrayList, java.util.ArrayList, double[][])
 	 */
 	@Override
-	protected Genotype computeOptimalResult(FitnessComputingFactor computingFactor,
+	protected ArrayList<Genotype> computeOptimalResult(FitnessComputingFactor computingFactor,
 			ArrayList<ModuleWrapper> modules, ArrayList<? extends LowLevelGraphNode> lowLevelNodes,
 			double[][] similarityTable, ArrayList<int[]> relationMap, IProgressMonitor monitor) {
 
@@ -39,7 +39,7 @@ public class KStepOptimizer extends Suboptimizer{
 		ArrayList<Genotype> geneBucket = findBestGenotypeByOneMove(initialGene, computingFactor, Settings.bucketSize);
 		
 		if(geneBucket.get(0).getFitness() > 0){
-			return geneBucket.get(0);
+			return geneBucket;
 		}
 		
 		while(depth > 0){
@@ -48,7 +48,7 @@ public class KStepOptimizer extends Suboptimizer{
 				ArrayList<Genotype> bestGenesByOneMove = findBestGenotypeByOneMove(gene, computingFactor, Settings.bucketSize);
 				
 				if(bestGenesByOneMove.get(0).getFitness() > 0){
-					return geneBucket.get(0);
+					return geneBucket;
 				}
 				
 				possibleGenes.addAll(bestGenesByOneMove);
@@ -64,7 +64,7 @@ public class KStepOptimizer extends Suboptimizer{
 			depth--;
 		}
 		
-		return geneBucket.get(0);
+		return geneBucket;
 	}
 
 	/**
