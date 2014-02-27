@@ -144,53 +144,56 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 			
 			int unitIndexTrialNum = 10;
 			int[] DNA = oldGene.getDNA();
-			do{
-				int index = (int)(movableUnitIndexInSourceModule.length*Math.random());
-				int chosenMovableLowLevelNodeIndex = movableUnitIndexInSourceModule[index];
+			
+			int index = (int)(movableUnitIndexInSourceModule.length*Math.random());
+			int chosenMovableLowLevelNodeIndex = movableUnitIndexInSourceModule[index];
+			
+			//ModuleWrapper source = showModuleWrapper(sourceModuleIndex);
+			//ModuleWrapper target = showModuleWrapper(destModuleIndex);
+			/*System.out.println(sourceModuleIndex + "=>" + destModuleIndex);
+			LowLevelGraphNode node = showMember(chosenMovableLowLevelNodeIndex);
+			System.out.println(node);
+			if(node.toString().contains("loadFunction")){
+				System.currentTimeMillis();
+			}*/
+			
+			//SparseDoubleMatrix1D xVector = computingFactor.convertToVectorMatrix(DNA);
+			//SparseDoubleMatrix2D mappingMatrix = computingFactor.getRealMappingMatrix(xVector, computingFactor.getRelationMatrix());
+			
+			int correspondingIndexInSourceModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), sourceModuleIndex, chosenMovableLowLevelNodeIndex);
+			int correspondingIndexInDestModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), destModuleIndex, chosenMovableLowLevelNodeIndex);
+			
+			int vectorIndexOfSource = convertToVectorIndex(modulePartition, sourceModuleIndex, correspondingIndexInSourceModule);
+			int vectorIndexOfDest = convertToVectorIndex(modulePartition, destModuleIndex, correspondingIndexInDestModule);
+			
+			if(oldGene.getDNA()[vectorIndexOfSource]==1 && oldGene.getDNA()[vectorIndexOfDest]==1){
+				System.err.println("Random Walk Crossoverer does not allow the hard constraints to "
+						+ "be broken, more specifically, a unit/mehtod/field is mapped to at least two modules.");
+				return oldGene;
+			}
+			else{
+				DNA = flip(oldGene, vectorIndexOfSource, vectorIndexOfDest);
 				
-				//ModuleWrapper source = showModuleWrapper(sourceModuleIndex);
-				//ModuleWrapper target = showModuleWrapper(destModuleIndex);
-				/*System.out.println(sourceModuleIndex + "=>" + destModuleIndex);
-				LowLevelGraphNode node = showMember(chosenMovableLowLevelNodeIndex);
-				System.out.println(node);
-				if(node.toString().contains("loadFunction")){
-					System.currentTimeMillis();
-				}*/
-				
-				//SparseDoubleMatrix1D xVector = computingFactor.convertToVectorMatrix(DNA);
-				//SparseDoubleMatrix2D mappingMatrix = computingFactor.getRealMappingMatrix(xVector, computingFactor.getRelationMatrix());
-				
-				int correspondingIndexInSourceModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), sourceModuleIndex, chosenMovableLowLevelNodeIndex);
-				int correspondingIndexInDestModule = getCorrespondingIndexInPartition(computingFactor.getRelationMatrix(), destModuleIndex, chosenMovableLowLevelNodeIndex);
-				
-				int vectorIndexOfSource = convertToVectorIndex(modulePartition, sourceModuleIndex, correspondingIndexInSourceModule);
-				int vectorIndexOfDest = convertToVectorIndex(modulePartition, destModuleIndex, correspondingIndexInDestModule);
-				
-				if(oldGene.getDNA()[vectorIndexOfSource]==1 && oldGene.getDNA()[vectorIndexOfDest]==1){
-					System.err.println("Random Walk Crossoverer does not allow the hard constraints to "
-							+ "be broken, more specifically, a unit/mehtod/field is mapped to at least two modules.");
-					return oldGene;
-				}
-				else{
-					DNA = flip(oldGene, vectorIndexOfSource, vectorIndexOfDest);
+				if(isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
 					
-					if(isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
-						
-						Genotype newGene = oldGene.clone();
-						newGene.setDNA(DNA);
-						newGene.computeFitness(computingFactor);
-						//System.out.println(newGene.getFitness());
-						return newGene;						
-					}
-					
+					Genotype newGene = oldGene.clone();
+					newGene.setDNA(DNA);
+					newGene.computeFitness(computingFactor);
+					//System.out.println(newGene.getFitness());
+					return newGene;						
 				}
+				
+			}
+			
+			/*do{
+				
 				
 				unitIndexTrialNum--;
 			}while(!isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition) && unitIndexTrialNum>0);
 			
 			if(!isNoEmptyModuleProduced(DNA, sourceModuleIndex, destModuleIndex, modulePartition)){
 				return oldGene;
-			}
+			}*/
 			
 		}
 		else{

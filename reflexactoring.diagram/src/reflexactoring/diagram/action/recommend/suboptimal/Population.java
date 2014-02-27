@@ -15,6 +15,15 @@ public class Population extends ArrayList<Genotype>{
 	 * 
 	 */
 	private static final long serialVersionUID = 1030488561271723649L;
+	
+	public String toString(){
+		StringBuffer buffer = new StringBuffer();
+		for(Genotype gene: this){
+			buffer.append(gene + ": " + gene.getFitness());
+			buffer.append("\n");
+		}
+		return buffer.toString();
+	}
 
 	public ArrayList<Genotype> getKBestCandidate(int k){
 		if(this.size() < k){
