@@ -56,7 +56,7 @@ public class GeneticOptimizer extends Suboptimizer{
 			}
 		}
 		
-		return population.getKBestCandidate(3);
+		return population.getKBestCandidate(Integer.valueOf(ReflexactoringUtil.getSuggestionNumber()));
 	}
 	
 	

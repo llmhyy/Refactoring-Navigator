@@ -24,6 +24,7 @@ public class RecommendSettingPage extends PreferencePage implements
 	public static final String POPULATION_SIZE = "populationSize";
 	public static final String ALPHA = "alpha";
 	public static final String BETA = "beta";
+	public static final String SUGGESTION_NUMBER = "suggestionNumber";
 	
 	
 	private Text iterationNumberText;
@@ -31,6 +32,7 @@ public class RecommendSettingPage extends PreferencePage implements
 	private Text mutationRateText;
 	private Text alphaText;
 	private Text betaText;
+	private Text suggestionNumberText;
 	
 	public RecommendSettingPage() {
 		// TODO Auto-generated constructor stub
@@ -98,9 +100,16 @@ public class RecommendSettingPage extends PreferencePage implements
 		betaText = new Text(composite, SWT.BORDER);
 		betaText.setText(ReflexactoringUtil.getBeta());
 		GridData betaData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		iterationNumberData.horizontalSpan = 2;
+		betaData.horizontalSpan = 2;
 		betaText.setLayoutData(betaData);
 		
+		Label suggestionNumberLabel = new Label(composite, SWT.NONE);
+		suggestionNumberLabel.setText("beta");
+		suggestionNumberText = new Text(composite, SWT.BORDER);
+		suggestionNumberText.setText(ReflexactoringUtil.getSuggestionNumber());
+		GridData suggestionNumberData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		suggestionNumberData.horizontalSpan = 2;
+		suggestionNumberText.setLayoutData(suggestionNumberData);
 		
 		return composite;
 		
@@ -123,12 +132,14 @@ public class RecommendSettingPage extends PreferencePage implements
 		preferences.put(MUTATION_RATE, this.mutationRateText.getText());
 		preferences.put(ALPHA, this.alphaText.getText());
 		preferences.put(BETA, this.betaText.getText());
+		preferences.put(SUGGESTION_NUMBER, this.suggestionNumberText.getText());
 		
 		ReflexactoringUtil.setIterationNumber(this.iterationNumberText.getText());
 		ReflexactoringUtil.setPopulationSize(this.populationSizeText.getText());
 		ReflexactoringUtil.setMutationRate(this.mutationRateText.getText());
 		ReflexactoringUtil.setAlpha(this.alphaText.getText());
 		ReflexactoringUtil.setBeta(this.betaText.getText());
+		ReflexactoringUtil.setSuggestionNumber(this.suggestionNumberText.getText());
 		
 		return true;
 	}

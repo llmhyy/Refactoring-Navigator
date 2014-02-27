@@ -118,7 +118,15 @@ public class ReflexactoringUtil {
 	public static void setBeta(String beta){
 		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.BETA, beta);
 	}
+
+	public static String getSuggestionNumber() {
+		String suggestionNum = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.SUGGESTION_NUMBER);
+		return (suggestionNum == null || suggestionNum.length() == 0)? String.valueOf(Settings.suggestionNum) : suggestionNum;
+	}
 	
+	public static void setSuggestionNumber(String suggestionNumber){
+		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.SUGGESTION_NUMBER, suggestionNumber);
+	}
 	public static String getDictPath(){
 		if(Activator.getDefault() == null){
 			return "C:\\Program Files (x86)\\WordNet\\2.1\\dict";

@@ -75,6 +75,7 @@ public class Settings {
 	public static double mutationRate = 0.01;
 	public static int geneticIterationNum = 1000;
 	public static int populationSize = 50;
+	public static int suggestionNum = 3;
 	
 	//=============================================================
 	/**
