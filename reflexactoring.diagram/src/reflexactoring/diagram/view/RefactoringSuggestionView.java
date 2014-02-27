@@ -120,7 +120,7 @@ public class RefactoringSuggestionView extends ViewPart {
 		
 		generateSuggestionsOnUI(suggestions);
 		
-		form.reflow(false);
+		form.reflow(true);
 	}
 	
 	/**
