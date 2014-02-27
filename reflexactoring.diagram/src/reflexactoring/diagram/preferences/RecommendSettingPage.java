@@ -104,7 +104,7 @@ public class RecommendSettingPage extends PreferencePage implements
 		betaText.setLayoutData(betaData);
 		
 		Label suggestionNumberLabel = new Label(composite, SWT.NONE);
-		suggestionNumberLabel.setText("beta");
+		suggestionNumberLabel.setText("Suggestion Number");
 		suggestionNumberText = new Text(composite, SWT.BORDER);
 		suggestionNumberText.setText(ReflexactoringUtil.getSuggestionNumber());
 		GridData suggestionNumberData = new GridData(SWT.FILL, SWT.FILL, true, false);

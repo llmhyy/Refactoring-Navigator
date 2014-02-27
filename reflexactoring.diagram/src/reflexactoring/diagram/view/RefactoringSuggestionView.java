@@ -134,14 +134,15 @@ public class RefactoringSuggestionView extends ViewPart {
 			Section section = null;
 			if(i == 0){
 				section = toolkit.createSection(form.getBody(), Section.TWISTIE|Section.EXPANDED|Section.TITLE_BAR);
+				section.setExpanded(true);
 			}
 			else{
-				section = toolkit.createSection(form.getBody(), Section.TWISTIE|Section.COMPACT|Section.TITLE_BAR);
+				section = toolkit.createSection(form.getBody(), Section.TWISTIE|Section.EXPANDED|Section.TITLE_BAR);
 				section.setExpanded(false);
 			}
 			
 			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
-			section.setExpanded(true);
+			//section.setExpanded(true);
 			section.setLayout(new TableWrapLayout());
 			String feasible = suggestion.isFeasible() ? "(Feasible)" : "(InFeasible)";
 			section.setText("Suggestion " + feasible);
