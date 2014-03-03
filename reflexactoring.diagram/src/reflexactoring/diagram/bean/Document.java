@@ -20,6 +20,26 @@ public abstract class Document {
 	protected HashMap<String, Integer> termFrequency = new HashMap<>();
 	private String description;
 	
+	protected abstract String getDocName();
+	
+	/**
+	 * I need to add the weight of the java class name.
+	 * @return
+	 */
+	protected String generateTitle(){
+		String title = getDocName();
+		String[] titleList = ReflexactoringUtil.mixedSplitting(title);
+		
+		StringBuffer buffer = new StringBuffer();
+		for(String titleKeyword: titleList){
+			for(int i=0; i<100; i++){
+				buffer.append(titleKeyword + " ");				
+			}
+		}
+		
+		return buffer.toString();
+	}
+	
 	/**
 	 * Assume that the keywords in content are well formatted, i.e., all the keywords are separated by white space.
 	 * @param content

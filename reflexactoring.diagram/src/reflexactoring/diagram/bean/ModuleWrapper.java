@@ -149,4 +149,12 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	public String getNameWithTag() {
 		return "<a href=\"Module\">" + getName() + "</a>";
 	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.Document#getDocName()
+	 */
+	@Override
+	protected String getDocName() {
+		return getName();
+	}
 }

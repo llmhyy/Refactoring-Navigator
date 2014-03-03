@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun
@@ -29,11 +30,11 @@ public class MethodWrapper extends UnitMemberWrapper {
 		this.setMethod(method);
 		
 		String content = new TokenExtractor(unitWrapper).extractTokens(method);
+		content = content + generateTitle();
 		this.extractTermFrequency(content);
 		
 		System.currentTimeMillis();
 	}
-	
 	
 	@Override
 	public boolean equals(Object obj){
@@ -145,6 +146,14 @@ public class MethodWrapper extends UnitMemberWrapper {
 	@Override
 	protected ASTNode getJavaElement() {
 		return getMethod();
+	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.Document#getDocName()
+	 */
+	@Override
+	protected String getDocName() {
+		return getName();
 	}
 
 }

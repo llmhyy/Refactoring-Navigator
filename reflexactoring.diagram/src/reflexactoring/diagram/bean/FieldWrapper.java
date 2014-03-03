@@ -90,4 +90,9 @@ public class FieldWrapper extends UnitMemberWrapper{
 	protected ASTNode getJavaElement() {
 		return getField();
 	}
+
+	@Override
+	protected String getDocName() {
+		return getName();
+	}
 }

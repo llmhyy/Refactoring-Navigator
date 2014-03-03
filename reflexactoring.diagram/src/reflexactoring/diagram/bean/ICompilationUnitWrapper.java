@@ -59,24 +59,6 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		this.extractTermFrequency(content);
 	}
 	
-	/**
-	 * I need to add the weight of the java class name.
-	 * @return
-	 */
-	private String generateTitle(){
-		String title = getSimpleName();
-		String[] titleList = ReflexactoringUtil.mixedSplitting(title);
-		
-		StringBuffer buffer = new StringBuffer();
-		for(String titleKeyword: titleList){
-			for(int i=0; i<10; i++){
-				buffer.append(titleKeyword + " ");				
-			}
-		}
-		
-		return buffer.toString();
-	}
-	
 	
 	public String toString(){
 		return this.compilationUnit.getElementName();
@@ -307,5 +289,10 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 			nodeList.add(node);			
 		}
 		this.referingDetails.put(refereeCompilationUnit, nodeList);
+	}
+
+	@Override
+	protected String getDocName() {
+		return getName();
 	}
 }
