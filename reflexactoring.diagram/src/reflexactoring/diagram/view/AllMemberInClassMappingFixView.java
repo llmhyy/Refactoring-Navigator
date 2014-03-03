@@ -35,12 +35,12 @@ import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
 import reflexactoring.diagram.util.Settings;
 
-public class MappingFixView extends ViewPart {
+public class AllMemberInClassMappingFixView extends ViewPart {
 
 	private Text searchText;
 	private TableViewer tableViewer;
 	
-	public MappingFixView() {
+	public AllMemberInClassMappingFixView() {
 		
 	}
 

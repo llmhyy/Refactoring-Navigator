@@ -107,7 +107,12 @@
          <action
                class="reflexactoring.diagram.action.popup.FixMappingMemberAction"
                id="reflexactoring.diagram.action.fixMember"
-               label="Fix Mapping Member">
+               label="Fix All Members">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.FixPartOfMappingMemberAction"
+               id="reflexactoring.diagram.action.fixPartMembers"
+               label="Fix Part Members">
          </action>
       </objectContribution>
       <objectContribution
@@ -802,10 +807,18 @@
       </view>
       <view
             category="reflexactoring.diagram.view.category"
-            class="reflexactoring.diagram.view.MappingFixView"
+            class="reflexactoring.diagram.view.AllMemberInClassMappingFixView"
             icon="icons/view/fix.gif"
             id="reflexactoring.diagram.mappingFix"
-            name="Fix Mapping"
+            name="Fix Class Mapping"
+            restorable="true">
+      </view>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.MemberFixingView"
+            icon="icons/view/member_fix.gif"
+            id="reflexactoring.diagram.view.memberFixingView"
+            name="Fix Member Mapping"
             restorable="true">
       </view>
    </extension>

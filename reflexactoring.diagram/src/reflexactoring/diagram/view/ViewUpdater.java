@@ -38,8 +38,8 @@ public class ViewUpdater {
 			view.getViewer().setInput(inputData);
 			view.getViewer().refresh();
 		}
-		else if(viewId.equals(ReflexactoringPerspective.MAPPING_FIX_VIEW)){
-			MappingFixView view = (MappingFixView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+		else if(viewId.equals(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW)){
+			AllMemberInClassMappingFixView view = (AllMemberInClassMappingFixView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 					getActivePage().findView(viewId);
 			view.getViewer().setInput(inputData);
 			view.getViewer().refresh();

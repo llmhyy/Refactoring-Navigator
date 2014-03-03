@@ -157,7 +157,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			 */
 			ViewUpdater viewUpdater = new ViewUpdater();
 			viewUpdater.updateView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW, Settings.heuristicModuleUnitMapList, false);
-			viewUpdater.updateView(ReflexactoringPerspective.MAPPING_FIX_VIEW, Settings.fixedMemberModuleUnitList, false);
+			viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW, Settings.fixedMemberModuleUnitList, false);
 			viewUpdater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList, false);
 			viewUpdater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, false);
 			
