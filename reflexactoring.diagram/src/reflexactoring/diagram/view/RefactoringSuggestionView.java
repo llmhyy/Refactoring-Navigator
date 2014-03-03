@@ -55,6 +55,7 @@ import reflexactoring.Module;
 import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.recommend.action.DependencyAction;
+import reflexactoring.diagram.action.recommend.action.MoveAction;
 import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
 import reflexactoring.diagram.action.recommend.action.MoveTypeAction;
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
@@ -192,10 +193,10 @@ public class RefactoringSuggestionView extends ViewPart {
 					SuggestionMove suggestion = (SuggestionMove) text.getData();
 					if(e.getHref().equals("Module")){
 						RefactoringAction action = suggestion.getAction();
-						if(action instanceof MoveTypeAction){
-							MoveTypeAction moveTypeAction = (MoveTypeAction)action;
-							ModuleWrapper sourceModule = moveTypeAction.getOrigin();
-							ModuleWrapper targetModule = moveTypeAction.getDestination();
+						if(action instanceof MoveAction){
+							MoveAction moveAction = (MoveAction)action;
+							ModuleWrapper sourceModule = moveAction.getOrigin();
+							ModuleWrapper targetModule = moveAction.getDestination();
 							
 							if(sourceModule.getName().equals(e.getLabel()) || targetModule.getName().equals(e.getLabel())){
 								GEFDiagramUtil.focusModuleOnGraph(e.getLabel());
@@ -211,7 +212,8 @@ public class RefactoringSuggestionView extends ViewPart {
 						}
 						else if(obj instanceof UnitMemberWrapper){
 							UnitMemberWrapper memberWrapper = (UnitMemberWrapper)obj;
-							memberWrapper.getUnitWrapper().openInEditor();
+							//memberWrapper.getUnitWrapper().openInEditor();
+							GEFDiagramUtil.focusTypeOnGraph(memberWrapper.getUnitWrapper().getFullQualifiedName());
 						}
 					}
 					else if(e.getHref().equals("Method")){
