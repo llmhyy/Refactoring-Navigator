@@ -79,7 +79,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 	
 	@Override
 	public void run(IAction action) {
-		DecideScopeDialog scopeDialog = new DecideScopeDialog(
+		SelectionDialog scopeDialog = new SelectionDialog(
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
 				new ScopeLabelProvider(), new ScopeContentProvider());
 		

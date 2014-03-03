@@ -43,7 +43,7 @@ import org.eclipse.ui.internal.WorkbenchMessages;
  * 
  * @since 2.0
  */
-public class DecideScopeDialog extends SelectionStatusDialog {
+public class SelectionDialog extends SelectionStatusDialog {
     private CheckboxTreeViewer fViewer;
 
     private ILabelProvider fLabelProvider;
@@ -85,7 +85,7 @@ public class DecideScopeDialog extends SelectionStatusDialog {
      * @param contentProvider
      *            the content provider to evaluate the tree structure
      */
-    public DecideScopeDialog(Shell parent,
+    public SelectionDialog(Shell parent,
             ILabelProvider labelProvider, ITreeContentProvider contentProvider) {
 		this(parent, labelProvider, contentProvider, SWT.BORDER);
     }
@@ -103,7 +103,7 @@ public class DecideScopeDialog extends SelectionStatusDialog {
 	 *            the style of the tree
 	 * @since 3.105
 	 */
-	public DecideScopeDialog(Shell parent, ILabelProvider labelProvider,
+	public SelectionDialog(Shell parent, ILabelProvider labelProvider,
 			ITreeContentProvider contentProvider, int style) {
 		super(parent);
 		fLabelProvider = labelProvider;
