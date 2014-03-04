@@ -1,5 +1,7 @@
 package reflexactoring.diagram.action.popup;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.ui.stackview.TreeContentProvider;
 import org.eclipse.gmf.runtime.common.ui.action.AbstractActionDelegate;
@@ -11,6 +13,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.PlatformUI;
@@ -18,12 +21,16 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.Type;
 import reflexactoring.diagram.action.SelectionDialog;
 import reflexactoring.diagram.bean.FieldWrapper;
+import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMap;
+import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMapList;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.edit.parts.Class2EditPart;
+import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.Settings;
+import reflexactoring.diagram.view.ViewUpdater;
 
 public class FixPartOfMappingMemberAction extends AbstractActionDelegate implements IObjectActionDelegate{
 
@@ -52,7 +59,22 @@ public class FixPartOfMappingMemberAction extends AbstractActionDelegate impleme
 			memberDialog.setInput(unitWrapper);
 			memberDialog.setTitle("Fix Member");
 			memberDialog.setMessage("Please fix the members to module " + moduleWrapper.getName());
-			memberDialog.open();
+			HeuristicModulePartFixMemberMapList mapList = Settings.fixedPartMemberModuleList.findMap(unitWrapper);
+			if(mapList.size() > 0){
+				ArrayList<UnitMemberWrapper> memWrapperInMapList = new ArrayList<UnitMemberWrapper>();
+				for(HeuristicModulePartFixMemberMap map: mapList){
+					memWrapperInMapList.add(map.getMember());
+				}
+				memberDialog.setInitialSelections(memWrapperInMapList.toArray(new UnitMemberWrapper[0]));
+			}
+			if(memberDialog.open() == Window.OK){
+				for(Object memberWrapper: memberDialog.getResult()){
+					HeuristicModulePartFixMemberMap map = new HeuristicModulePartFixMemberMap(moduleWrapper, (UnitMemberWrapper) memberWrapper);
+					Settings.fixedPartMemberModuleList.add(map);
+				}
+			}
+			ViewUpdater viewUpdater = new ViewUpdater();
+			viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW, Settings.fixedPartMemberModuleList, true);
 		}
 		
 	}

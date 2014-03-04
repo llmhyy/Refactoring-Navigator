@@ -44,6 +44,12 @@ public class ViewUpdater {
 			view.getViewer().setInput(inputData);
 			view.getViewer().refresh();
 		}
+		else if(viewId.equals(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW)){
+			MemberFixingView view = (MemberFixingView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().findView(viewId);
+			view.getViewer().setInput(inputData);
+			view.getViewer().refresh();
+		}
 		else if(viewId.equals(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW)){
 			ModuleUnitsSimilarityView view = (ModuleUnitsSimilarityView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 					getActivePage().findView(viewId);
