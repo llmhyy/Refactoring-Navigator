@@ -370,7 +370,9 @@ public class Solution extends Genotype{
 		
 		int length = this.getDNA().length;
 		
-		double totalWeight = weightVector.zDotProduct(x0Vector);
+		SparseDoubleMatrix1D xVector = computingFactor.convertToVectorMatrix(this.getDNA());
+		
+		double totalWeight = weightVector.zDotProduct(xVector);
 		
 		double euclideanDis = computeEuclideanDistance(GeneticUtil.convertArrayToVector(this.getDNA()), x0Vector);
 		

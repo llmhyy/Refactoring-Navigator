@@ -110,6 +110,14 @@ public class Problem {
 		
 		for(int i=0; i<iterNum; i++){
 			population = generateNextGeneration(population, computingFactor, null);
+			
+			if(-3.604 - population.get(0).getFitness() < 0.01){
+				System.currentTimeMillis();
+			}
+			
+			/*if(0.283 - population.get(0).getFitness() < 0.01){
+				System.currentTimeMillis();
+			}*/
 			System.out.println(population.get(0).getFitness());
 		}
 		
@@ -259,13 +267,13 @@ public class Problem {
 	public static void main(String[] args){
 		Problem problem = new Problem();
 		System.out.println("Started");
-		FitnessComputingFactor computingFactor = problem.buildComputingFactor(3, 100);
+		FitnessComputingFactor computingFactor = problem.buildComputingFactor(3, 9);
 		computingFactor.setMode(FitnessComputingFactor.EXPERIMENT_MODE);
 		computingFactor.setAlpha(0.5);
 		computingFactor.setBeta(0.5);
 		
 		long t11 = System.currentTimeMillis();
-		double subOptimal = problem.runMetaHeuristic(30, 10, computingFactor);
+		double subOptimal = problem.runMetaHeuristic(100, 20, computingFactor);
 		long t12 = System.currentTimeMillis();
 		
 		/*long t21 = System.currentTimeMillis();
