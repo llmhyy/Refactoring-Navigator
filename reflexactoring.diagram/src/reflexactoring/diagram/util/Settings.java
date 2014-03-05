@@ -14,6 +14,7 @@ import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
+import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.Scope;
 
 /**
@@ -66,6 +67,12 @@ public class Settings {
 	 * my algorithm considering tolerating some violation.
 	 */
 	public static ModuleDependencyConfidenceTable confidenceTable = new ModuleDependencyConfidenceTable();
+	
+	/**
+	 * If a module is frozen on diagram, no member will be recommended to move into it, nor will any member
+	 * inside it will be move out of it.
+	 */
+	public static ArrayList<ModuleWrapper> frozenModules = new ArrayList<>();
 	
 	public static boolean isSkipUnMappedTypes = false;
 	public static boolean isCompliationUnitChanged = true;

@@ -79,7 +79,6 @@ public abstract class Suboptimizer {
 			module.extractTermFrequency(module.getDescription());
 			for(int j=0; j<members.size(); j++){
 				UnitMemberWrapper member = members.get(j);
-				
 				if(examiner.isValid(member, module)){
 					double similarity = module.computeSimilarity(member);
 					System.currentTimeMillis();

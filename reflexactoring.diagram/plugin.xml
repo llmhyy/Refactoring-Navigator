@@ -70,6 +70,16 @@
             id="reflexactoring.diagram.module"
             objectClass="reflexactoring.diagram.edit.parts.ModuleEditPart">
          <action
+               class="reflexactoring.diagram.action.popup.UnfreezeMemberAction"
+               id="reflexactoring.diagram.action.unFreezeMemberAction"
+               label="Unfreeze Member">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.FreezeMemberAction"
+               id="reflexactoring.diagram.action.freezeMemberAction"
+               label="Freeze Member">
+         </action>
+         <action
                class="reflexactoring.diagram.action.popup.EditModuleDescriptionAction"
                id="reflexactoring.diagram.action.editdescription"
                label="Edit Name or Description">

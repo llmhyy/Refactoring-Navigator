@@ -411,6 +411,17 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 		public RectangleFigure getFigureTypeContainer() {
 			return fFigureTypeContainer;
 		}
+		
+		/**
+		 * @NOT generated
+		 */
+		public void setFrozenBackgroundColor(){
+			this.setBackgroundColor(FROZEN_COLOR);
+		}
+		
+		public void setNormalBackgroundColor(){
+			this.setBackgroundColor(THIS_BACK);
+		}
 
 	}
 
@@ -424,4 +435,8 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 	 */
 	static final Color THIS_BACK = new Color(null, 250, 237, 216);
 
+	/**
+	 * @not generated
+	 */
+	static final Color FROZEN_COLOR = new Color(null, 163, 227, 231);
 }

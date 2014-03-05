@@ -60,7 +60,7 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 	}
 
 	/**
-	 * @generated
+	 * @not generated
 	 */
 	public class ModuleDependencyFigure extends PolylineConnectionEx {
 
@@ -75,7 +75,7 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 		}
 
 		/**
-		 * @generated
+		 * @not generated
 		 */
 		private RotatableDecoration createTargetDecoration() {
 			PolylineDecoration df = new PolylineDecoration();
@@ -109,6 +109,9 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 	 */
 	static final Color THIS_FORE = new Color(null, 0, 0, 0);
 
+	/**
+	 * @not generated
+	 */
 	static final Color COMFORMANCE = new Color(null, 85, 138, 37);
 	static final Color ABSENCE = new Color(null, 210, 180, 140);
 	static final Color DIVERGENCE = new Color(null, 255, 92, 72);

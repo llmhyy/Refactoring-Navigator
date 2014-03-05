@@ -23,10 +23,25 @@ public class MemberModuleValidityExaminer {
 	
 	public boolean isValid(UnitMemberWrapper memberWrapper,
 			ModuleWrapper moduleWrapper) {
-		return contructorCannotMove(memberWrapper, moduleWrapper) &&
+		return 
+				isMemberInRightModuleWhenSomeModuleGetFrozen(memberWrapper, moduleWrapper) &&
+				contructorCannotMove(memberWrapper, moduleWrapper) &&
 				cannotContainedInForbiddenList(memberWrapper, moduleWrapper) &&
 				parentUnitWrapperFixedToRightModule(memberWrapper, moduleWrapper) &&
 				isMemberMapFixedToRightModule(memberWrapper, moduleWrapper);
+	}
+	
+	private boolean isMemberInRightModuleWhenSomeModuleGetFrozen(UnitMemberWrapper memberWrapper,
+			ModuleWrapper moduleWrapper){
+		System.out.println(memberWrapper.getMappingModule());
+		for(ModuleWrapper frozenModule: Settings.frozenModules){
+			if(frozenModule.equals(moduleWrapper) ||
+					frozenModule.equals(memberWrapper.getMappingModule())){
+				return memberWrapper.getMappingModule().equals(moduleWrapper);
+			}
+		}
+		
+		return true;
 	}
 	
 	private boolean isMemberMapFixedToRightModule(UnitMemberWrapper memberWrapper,
