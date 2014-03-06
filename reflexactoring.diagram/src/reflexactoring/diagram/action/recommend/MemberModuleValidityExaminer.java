@@ -33,7 +33,7 @@ public class MemberModuleValidityExaminer {
 	
 	private boolean isMemberInRightModuleWhenSomeModuleGetFrozen(UnitMemberWrapper memberWrapper,
 			ModuleWrapper moduleWrapper){
-		System.out.println(memberWrapper.getMappingModule());
+		//System.out.println(memberWrapper.getMappingModule());
 		for(ModuleWrapper frozenModule: Settings.frozenModules){
 			if(frozenModule.equals(moduleWrapper) ||
 					frozenModule.equals(memberWrapper.getMappingModule())){

@@ -81,21 +81,21 @@ public abstract class Suboptimizer {
 				UnitMemberWrapper member = members.get(j);
 				if(examiner.isValid(member, module)){
 					double similarity = module.computeSimilarity(member);
-					System.currentTimeMillis();
+					//System.currentTimeMillis();
 					similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) + similarity;					
 				}
 				else{
 					similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) - 1;
 				}
 				
-				if(member.getName().contains("createControl")){
+				/*if(member.getName().contains("createControl")){
 					System.out.println(member.getUnitWrapper().getSimpleName()+"."+member);
 					System.out.println(member.getTermFrequency());
 					System.out.println(module);
 					System.out.println(module.getTermFrequency());
 					System.out.println("similarity:"+similarityTable[i][j]);
 					System.currentTimeMillis();					
-				}
+				}*/
 				
 			}
 		}
