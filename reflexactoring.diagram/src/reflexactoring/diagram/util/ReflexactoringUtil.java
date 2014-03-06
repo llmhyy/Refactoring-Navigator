@@ -30,6 +30,7 @@ import reflexactoring.Activator;
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
 import reflexactoring.Reflexactoring;
+import reflexactoring.diagram.action.UserInputMerger;
 import reflexactoring.diagram.action.semantic.WordNetDict;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
@@ -398,6 +399,10 @@ public class ReflexactoringUtil {
 			} catch (PartInitException e) {
 				e.printStackTrace();
 			}
+		}
+		else{
+			UserInputMerger merger = new UserInputMerger();
+			merger.mergeConfidenceTable();
 		}
 	}
 	
