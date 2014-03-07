@@ -4,6 +4,7 @@
 package reflexactoring.diagram.suboptimal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import reflexactoring.diagram.action.recommend.suboptimal.Crossoverer;
 import reflexactoring.diagram.action.recommend.suboptimal.FitnessComputingFactor;
@@ -103,24 +104,34 @@ public class Problem {
 		return DNA;
 	}
 	
-	public double runMetaHeuristic(int iterNum, int populationNum, FitnessComputingFactor computingFactor){
+	public double runMetaHeuristic(int iterNum, int populationNum, FitnessComputingFactor computingFactor, int STOP){
+
+		
 		SeedGenerator seedGenerator = new OriginOrientedSeedGenerator(computingFactor);
 		Population population = generatePopulation(computingFactor, seedGenerator, populationNum);
 		System.out.println(population.get(0).getFitness());
 		
+		double fitness = population.get(0).getFitness();
+		int stopDuration = STOP;
+		
 		for(int i=0; i<iterNum; i++){
 			population = generateNextGeneration(population, computingFactor, null);
+			System.out.println(population.get(0).getFitness());
 			
-			if(-3.604 - population.get(0).getFitness() < 0.01){
-				System.currentTimeMillis();
+			if(population.get(0).getFitness() == fitness){
+				stopDuration--;
+			}
+			else{
+				fitness = population.get(0).getFitness();
+				stopDuration = STOP;
 			}
 			
-			/*if(0.283 - population.get(0).getFitness() < 0.01){
-				System.currentTimeMillis();
-			}*/
-			System.out.println(population.get(0).getFitness());
+			if(stopDuration == 0){
+				System.out.println("Convergence Number: " + (i+1-STOP));
+				break;
+			}
 		}
-		
+		System.out.println(population.get(0));
 		return population.get(0).getFitness();
 	}
 	
@@ -197,7 +208,7 @@ public class Problem {
 		SparseDoubleMatrix1D x0Vector = new SparseDoubleMatrix1D(highLevelMatrix.rows()*lowLevelMatrix.rows());
 		
 		for(int j=0; j<lowLevelMatrix.rows(); j++){
-			int rowNo = j%3;
+			int rowNo = j%highLevelMatrix.rows();
 			
 			x0Vector.set(rowNo*lowLevelMatrix.rows()+j, 1);	
 		}
@@ -267,13 +278,13 @@ public class Problem {
 	public static void main(String[] args){
 		Problem problem = new Problem();
 		System.out.println("Started");
-		FitnessComputingFactor computingFactor = problem.buildComputingFactor(3, 9);
+		FitnessComputingFactor computingFactor = problem.buildComputingFactor(3, 110);
 		computingFactor.setMode(FitnessComputingFactor.EXPERIMENT_MODE);
 		computingFactor.setAlpha(0.5);
-		computingFactor.setBeta(0.5);
+		computingFactor.setBeta(0);
 		
 		long t11 = System.currentTimeMillis();
-		double subOptimal = problem.runMetaHeuristic(100, 20, computingFactor);
+		double subOptimal = problem.runMetaHeuristic(1000, 50, computingFactor, 200);
 		long t12 = System.currentTimeMillis();
 		
 		/*long t21 = System.currentTimeMillis();
