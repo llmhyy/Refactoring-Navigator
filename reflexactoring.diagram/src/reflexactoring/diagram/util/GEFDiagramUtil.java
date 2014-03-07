@@ -3,6 +3,7 @@
  */
 package reflexactoring.diagram.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
@@ -60,6 +61,15 @@ public class GEFDiagramUtil {
 		
 		return diagramRoot;
 	}
+	
+	/*public static EditPart findTypeEditPart(Type type){
+		IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		ReflexactoringDiagramEditor editor = (ReflexactoringDiagramEditor)workbenchPage.getActiveEditor();
+		DiagramGraphicalViewer diagram = (DiagramGraphicalViewer)editor.getDiagramGraphicalViewer();
+		
+		EditPart part = (EditPart)diagram.getEditPartRegistry().get(type);
+		return part;
+	}*/
 	
 	public static ReflexactoringEditPart getRootEditPart(DiagramRootEditPart diagramRoot){
 		for(Object obj: diagramRoot.getChildren()){

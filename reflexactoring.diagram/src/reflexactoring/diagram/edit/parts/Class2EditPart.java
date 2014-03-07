@@ -5,10 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
@@ -16,6 +18,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.LayoutEditPolicy;
 import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.gef.ui.palette.PaletteMessages;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.IGraphicalEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
@@ -27,6 +30,7 @@ import org.eclipse.gmf.runtime.gef.ui.figures.NodeFigure;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.swt.graphics.Color;
 
+import reflexactoring.Type;
 import reflexactoring.diagram.edit.policies.Class2ItemSemanticEditPolicy;
 import reflexactoring.diagram.part.ReflexactoringVisualIDRegistry;
 import reflexactoring.diagram.providers.ReflexactoringElementTypes;
@@ -355,7 +359,7 @@ public class Class2EditPart extends ShapeNodeEditPart {
 		private WrappingLabel fFigureClassNameFigure;
 
 		/**
-		 * @generated
+		 * @not generated
 		 */
 		public ClassFigure() {
 			this.setForegroundColor(THIS_FORE);
@@ -384,7 +388,6 @@ public class Class2EditPart extends ShapeNodeEditPart {
 		public WrappingLabel getFigureClassNameFigure() {
 			return fFigureClassNameFigure;
 		}
-
 	}
 
 	/**

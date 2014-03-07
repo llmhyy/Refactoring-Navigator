@@ -11,6 +11,7 @@ import java.util.List;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gef.EditPart;
@@ -26,6 +27,7 @@ import org.eclipse.gmf.runtime.diagram.ui.commands.DeferredCreateConnectionViewA
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditDomain;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
 import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramEditDomain;
@@ -193,9 +195,9 @@ public class DiagramUpdater {
 					Interface2CreateCommand createTypeCommand = new Interface2CreateCommand(req);
 					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));
 				}
-				
+			
 				setTypeValue(req.getNewElement(), unitWrapper, GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain());
-				
+				setToolTip((Type)req.getNewElement(), diagramRoot);
 			}
 			/**
 			 * such a compilation unit belongs to no module, so I draw it on original canvas.
@@ -215,8 +217,16 @@ public class DiagramUpdater {
 				}
 				
 				setTypeValue(req.getNewElement(), unitWrapper, GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain());
+				setToolTip((Type)req.getNewElement(), diagramRoot);
 			}
 		}
+	}
+	
+	private void setToolTip(Type type, DiagramRootEditPart diagramRoot){
+		ShapeEditPart part = (ShapeEditPart) GEFDiagramUtil.getRootEditPart(diagramRoot).findEditPart(diagramRoot, type);
+		String tooltipMsg = type.getPackageName() + "." + type.getName();
+		Label tooltip = new Label(tooltipMsg);
+		part.getFigure().setToolTip(tooltip);
 	}
 	
 	/**
