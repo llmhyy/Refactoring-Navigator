@@ -188,12 +188,7 @@ public class Genotype {
 			double voilatedNum = getViolatedConstraintsNumber(computingFactor);
 			this.fitness = objectiveValue - voilatedNum;
 			
-			//System.currentTimeMillis();
-			
 			fitnessTable.put(this, this);
-			//tmpMatrixTable.put(this, this.tmpMatrix);
-			//mappingMatrixTable.put(this, this.mappingMatrix);
-			//return d;
 		}
 		
 		/*SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
@@ -337,9 +332,10 @@ public class Genotype {
 		for(int i=0; i<softConstaintResult.rows(); i++){
 			for(int j=0; j<softConstaintResult.columns(); j++){
 				if(i!=j){
+					
 					if(highLevelMatrix.get(i, j) == 0 && softConstaintResult.get(i, j) != 0){
 						Violation violation = new Violation(i, j, Violation.DISONANCE);
-						violationList.add(violation);
+						violationList.add(violation);						
 						
 						double vio = softConstaintResult.get(i, j);
 						/**
@@ -349,14 +345,28 @@ public class Genotype {
 						if(Settings.confidenceTable.size() > 0){
 							confidence = Settings.confidenceTable.get(i).getConfidenceList()[j];
 							vio *= confidence;
-						}	
-						
+						}
 						violatedNum += vio;
 					}
 					else if(highLevelMatrix.get(i, j) != 0 && softConstaintResult.get(i, j) == 0){
 						Violation violation = new Violation(i, j, Violation.ABSENCE);
 						violationList.add(violation);
-						violatedNum++;
+						
+						if(i==2 && j==1){
+							System.currentTimeMillis();
+						}
+						
+						double vio = highLevelMatrix.get(i, j);
+						/**
+						 *  exam the confidence of violation
+						 */
+						double confidence;
+						if(Settings.confidenceTable.size() > 0){
+							confidence = Settings.confidenceTable.get(i).getConfidenceList()[j];
+							vio *= confidence;
+						}
+						
+						violatedNum += vio;
 					}
 				}
 			}
