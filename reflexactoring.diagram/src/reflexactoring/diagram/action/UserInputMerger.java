@@ -9,6 +9,7 @@ import java.util.Iterator;
 import org.eclipse.ui.PartInitException;
 
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
+import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
@@ -84,6 +85,39 @@ public class UserInputMerger {
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	public void mergeHeuristicFixPartMemberMappingTable() {
+		if(Settings.fixedPartMemberModuleList != null){
+			try {
+				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+				
+				Iterator<HeuristicModulePartFixMemberMap> iterator = Settings.fixedPartMemberModuleList.iterator();
+				while(iterator.hasNext()){
+					HeuristicModulePartFixMemberMap map = iterator.next();
+					
+					ModuleWrapper moduleWrapper = map.getModule();
+					UnitMemberWrapper memberWrapper = map.getMember();
+					
+					ModuleWrapper correspondingModule = ReflexactoringUtil.findModule(moduleList, moduleWrapper.getModule());
+					UnitMemberWrapper correspondingMember = Settings.scope.findMember(memberWrapper);
+				
+					if(correspondingModule == null || correspondingMember == null){
+						iterator.remove();
+					}
+					else{
+						map.setModule(correspondingModule);
+						map.setMember(correspondingMember);
+					}
+				}
+			} catch (PartInitException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
 	public void mergeForbiddenModuleMemberTable(){
 		if(Settings.heuristicStopMapList != null){
 			try {

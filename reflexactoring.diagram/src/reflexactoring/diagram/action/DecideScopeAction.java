@@ -151,7 +151,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			inputMerger.mergeHeuristicFixMemberMappingTable();
 			inputMerger.mergeForbiddenModuleMemberTable();
 			inputMerger.mergeConfidenceTable();
-			
+			inputMerger.mergeHeuristicFixPartMemberMappingTable();
 			/**
 			 * refresh above four view
 			 */

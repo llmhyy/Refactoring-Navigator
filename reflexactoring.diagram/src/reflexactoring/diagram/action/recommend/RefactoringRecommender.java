@@ -169,8 +169,8 @@ public class RefactoringRecommender {
 		
 		ArrayList<Violation> violations = bestGene.getViolationList();
 		for(Violation violation: violations){
-			if(Settings.confidenceTable.get(violation.getSourceModuleIndex()).
-					getConfidenceList()[violation.getDestModuleIndex()] < 1){
+			/*if(Settings.confidenceTable.get(violation.getSourceModuleIndex()).
+					getConfidenceList()[violation.getDestModuleIndex()] < 1){*/
 				ModuleWrapper sourceModule = moduleList.get(violation.getSourceModuleIndex());
 				ModuleWrapper targetModule = moduleList.get(violation.getDestModuleIndex());
 				
@@ -190,7 +190,7 @@ public class RefactoringRecommender {
 				ModuleDependencyWrapper dependency = new ModuleDependencyWrapper(sourceModule, targetModule);
 				SuggestionMove suggestion = new SuggestionMove(dependency, action);
 				suggestions.add(suggestion);
-			}
+			//}
 		}
 		
 		return suggestions;
