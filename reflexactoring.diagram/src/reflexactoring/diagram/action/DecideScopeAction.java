@@ -36,6 +36,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
@@ -108,9 +109,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					int scale = 50;
-					monitor.beginTask("build class structural information", totalWork*scale);
-					
-					monitor.subTask("preserve the refactoring scope...");
+					monitor.beginTask("preserve the refactoring scope", totalWork*scale);
 					Settings.scope.getScopeCompilationUnitList().clear();
 					Object[] selectedObjects = scopeDialog.getResult();
 					previousSelections = selectedObjects;
@@ -130,29 +129,41 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 					monitor.beginTask("build method/field structure inforamtion", 2*totalWork*scale);
 					new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 					
+					Display.getDefault().asyncExec(new Runnable() {
+						
+						@Override
+						public void run() {
+							/**
+							 * Merging previous user input into the new reflexion model.
+							 */
+							UserInputMerger inputMerger = new UserInputMerger();
+							inputMerger.mergeHeuristicMappingTable();
+							inputMerger.mergeHeuristicFixMemberMappingTable();
+							inputMerger.mergeForbiddenModuleMemberTable();
+							inputMerger.mergeConfidenceTable();
+							inputMerger.mergeHeuristicFixPartMemberMappingTable();
+							/**
+							 * refresh above four view
+							 */
+							ViewUpdater viewUpdater = new ViewUpdater();
+							viewUpdater.updateView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW, Settings.heuristicModuleUnitMapList, false);
+							viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW, Settings.fixedMemberModuleUnitList, false);
+							viewUpdater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList, false);
+							viewUpdater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, false);
+							viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW, Settings.fixedPartMemberModuleList, false);
+							
+							
+							AutoMappingAction mappingAction = new AutoMappingAction();
+							mappingAction.run(null);							
+						}
+					});
+					
 					return Status.OK_STATUS;
 				}
 			};
 			job.schedule();
 			
 			
-			/**
-			 * Merging previous user input into the new reflexion model.
-			 */
-			UserInputMerger inputMerger = new UserInputMerger();
-			inputMerger.mergeHeuristicMappingTable();
-			inputMerger.mergeHeuristicFixMemberMappingTable();
-			inputMerger.mergeForbiddenModuleMemberTable();
-			inputMerger.mergeConfidenceTable();
-			inputMerger.mergeHeuristicFixPartMemberMappingTable();
-			/**
-			 * refresh above four view
-			 */
-			ViewUpdater viewUpdater = new ViewUpdater();
-			viewUpdater.updateView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW, Settings.heuristicModuleUnitMapList, false);
-			viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW, Settings.fixedMemberModuleUnitList, false);
-			viewUpdater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList, false);
-			viewUpdater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, false);
 			
 			Settings.isCompliationUnitChanged = true;
 			Settings.isNeedClearCache = true;
