@@ -33,6 +33,7 @@ public abstract class Document {
 		StringBuffer buffer = new StringBuffer();
 		for(String titleKeyword: titleList){
 			for(int i=0; i<100; i++){
+				titleKeyword = ReflexactoringUtil.performStemming(titleKeyword);
 				buffer.append(titleKeyword + " ");				
 			}
 		}

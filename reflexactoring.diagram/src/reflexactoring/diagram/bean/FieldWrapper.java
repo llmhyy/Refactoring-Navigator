@@ -23,6 +23,7 @@ public class FieldWrapper extends UnitMemberWrapper{
 		this.setField(field);
 		
 		String content = new TokenExtractor(unitWrapper).extractTokens(field);
+		content = content + " " + generateTitle();
 		this.extractTermFrequency(content);
 	}
 	
