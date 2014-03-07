@@ -252,12 +252,6 @@ public class UnitMemberExtractor {
 			}
 		}
 		
-		for(UnitMemberWrapper member: members){
-			if(member.getName().contains("unary_op_listener")){
-				System.currentTimeMillis();
-			}
-		}
-		
 		return members;
 	}
 	

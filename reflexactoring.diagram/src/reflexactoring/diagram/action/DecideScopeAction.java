@@ -79,7 +79,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 	
 	@Override
 	public void run(IAction action) {
-		SelectionDialog scopeDialog = new SelectionDialog(
+		final SelectionDialog scopeDialog = new SelectionDialog(
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
 				new ScopeLabelProvider(), new ScopeContentProvider());
 		
@@ -99,38 +99,31 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		scopeDialog.setMessage("Please select the refactoring scope.");
 		if(scopeDialog.open() == Window.OK){
 			
-			
-			Settings.scope.getScopeCompilationUnitList().clear();
-			
-			Object[] selectedObjects = scopeDialog.getResult();
-			this.previousSelections = selectedObjects;
-			for(int i=0; i<selectedObjects.length; i++){
-				if(selectedObjects[i] instanceof ICompilationUnit){
-					ICompilationUnit unit = (ICompilationUnit)selectedObjects[i];
-					
-					Settings.scope.getScopeCompilationUnitList().add(new ICompilationUnitWrapper(unit));
-				}
-				//Settings.scopeCompilationUnitList.add(selectedObjects[i]);
-			}
-			
-			
 			/**
 			 * Build dependencies amongst java types and its corresponding members in scope.
 			 */
-			/*ProgressMonitorDialog dialog;
-			ProgramStructureExtractor extractor = new ProgramStructureExtractor(Settings.scope.getScopeCompilationUnitList().size());
-			try {
-				dialog = new ProgressMonitorDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
-				dialog.run(false, true, extractor);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}*/
 			final int totalWork = Settings.scope.getScopeCompilationUnitList().size();
 			Job job = new Job("Building program structure") {
 				
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					int scale = 50;
+					monitor.beginTask("build class structural information", totalWork*scale);
+					
+					monitor.subTask("preserve the refactoring scope...");
+					Settings.scope.getScopeCompilationUnitList().clear();
+					Object[] selectedObjects = scopeDialog.getResult();
+					previousSelections = selectedObjects;
+					for(int i=0; i<selectedObjects.length; i++){
+						if(selectedObjects[i] instanceof ICompilationUnit){
+							
+							monitor.worked(scale);
+							
+							ICompilationUnit unit = (ICompilationUnit)selectedObjects[i];
+							Settings.scope.getScopeCompilationUnitList().add(new ICompilationUnitWrapper(unit));
+						}
+						//Settings.scopeCompilationUnitList.add(selectedObjects[i]);
+					}
 					monitor.beginTask("build class structural information", 2*totalWork*scale);
 					new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 					
