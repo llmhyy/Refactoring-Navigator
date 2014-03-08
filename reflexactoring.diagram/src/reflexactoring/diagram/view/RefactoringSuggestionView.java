@@ -184,7 +184,7 @@ public class RefactoringSuggestionView extends ViewPart {
 			else if(move.getAction() instanceof DependencyAction){
 				buffer.append("<li bindent=\"20\">");
 				buffer.append("<b>[</b>");
-				buffer.append("<a href=\"Stick\">Stick Origin Design</a> ");	
+				buffer.append("<a href=\"Stick\">Reject</a> ");	
 				buffer.append("<a href=\"Unstick\">Undo</a>");	
 				buffer.append("<b>]</b>");
 				buffer.append("</li>");
