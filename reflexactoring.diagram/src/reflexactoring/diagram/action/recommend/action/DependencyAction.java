@@ -8,5 +8,7 @@ package reflexactoring.diagram.action.recommend.action;
  *
  */
 public abstract class DependencyAction extends DirectOrientedAction{
-	
+	public String getTagActionName(){
+		return "<b>" + "Prerequiste: " + actionName + "</b>";
+	}
 }
