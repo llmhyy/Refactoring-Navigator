@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
-
+import org.eclipse.swt.graphics.Color;
 
 import reflexactoring.ModuleDependency;
 import reflexactoring.diagram.bean.ModuleDependencyWrapper;
@@ -37,6 +37,7 @@ public class HighlightContributionAction extends ContributionAction{
 				
 				for(TypeDependencyEditPart dependencyPart: correspondingTypeDependencyParts){
 					TypeDependencyFigure depFigure = (TypeDependencyFigure)dependencyPart.getFigure();
+					depFigure.setForegroundColor(new Color(null, 66, 227, 227));
 					depFigure.setLineWidth(2);
 					depFigure.getPolylineDecoration().setLineWidth(2);;
 				}

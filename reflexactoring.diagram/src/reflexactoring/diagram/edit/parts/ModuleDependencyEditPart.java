@@ -50,7 +50,7 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 	 * Body of this method does not depend on settings in generation model
 	 * so you may safely remove <i>generated</i> tag and modify it.
 	 * 
-	 * @generated
+	 * @not generated
 	 */
 	protected Connection createConnectionFigure() {
 		ModuleDependencyFigure figure = new ModuleDependencyFigure();
