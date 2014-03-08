@@ -42,6 +42,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Activator;
+import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
@@ -152,7 +153,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 							viewUpdater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList, false);
 							viewUpdater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, false);
 							viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW, Settings.fixedPartMemberModuleList, false);
-							
+							viewUpdater.updateView(ReflexactoringPerspective.REFACTORING_SUGGESTION, new ArrayList<Suggestion>(), false);
 							
 							AutoMappingAction mappingAction = new AutoMappingAction();
 							mappingAction.run(null);							

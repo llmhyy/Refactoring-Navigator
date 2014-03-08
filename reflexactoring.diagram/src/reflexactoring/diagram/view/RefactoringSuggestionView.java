@@ -112,14 +112,14 @@ public class RefactoringSuggestionView extends ViewPart {
 		
 		FormText headerText = toolkit.createFormText(form.getBody(), true);
 		headerText.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
-		headerText.setText(refactoringDesc, false, false);
 		
-		
-		if(suggestions == null){
-			return;
+		if(suggestions == null || suggestions.size() == 0){
+			headerText.setText(initialDesc, false, false);
 		}
-		
-		generateSuggestionsOnUI(suggestions);
+		else{
+			headerText.setText(refactoringDesc, false, false);
+			generateSuggestionsOnUI(suggestions);			
+		}
 		
 		form.reflow(true);
 	}
