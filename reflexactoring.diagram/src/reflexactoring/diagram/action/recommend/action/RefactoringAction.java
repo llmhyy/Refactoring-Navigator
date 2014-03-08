@@ -26,6 +26,10 @@ public abstract class RefactoringAction {
 	public String getActionName() {
 		return actionName;
 	}
+	
+	public String getTagActionName(){
+		return "<b>" + actionName + "</b>";
+	}
 
 	/**
 	 * @param actionName the actionName to set

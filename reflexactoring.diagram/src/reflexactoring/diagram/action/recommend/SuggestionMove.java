@@ -73,7 +73,7 @@ public class SuggestionMove {
 			suggestionObjName += location;
 		}
 		
-		return this.action.getActionName() + 
+		return this.action.getTagActionName() + 
 				suggestionObjType + " " + suggestionObjName + " " +
 				this.action.getDetailedDescription() + " ";
 	}
