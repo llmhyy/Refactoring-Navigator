@@ -103,11 +103,12 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			/**
 			 * Build dependencies amongst java types and its corresponding members in scope.
 			 */
-			final int totalWork = Settings.scope.getScopeCompilationUnitList().size();
+			final int totalWorks = scopeDialog.getResult().length;
 			Job job = new Job("Building program structure") {
 				
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
+					int totalWork = totalWorks;
 					int scale = 50;
 					monitor.beginTask("preserve the refactoring scope", totalWork*scale);
 					Settings.scope.getScopeCompilationUnitList().clear();
