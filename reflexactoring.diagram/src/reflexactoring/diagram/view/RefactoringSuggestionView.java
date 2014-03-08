@@ -167,23 +167,28 @@ public class RefactoringSuggestionView extends ViewPart {
 			buffer.append("<form>");
 			buffer.append("<li>");
 			buffer.append(move.generateTagedText());
-			buffer.append("<b>[</b><a href=\"Exec\">Execute</a> ");
+			buffer.append("</li>");			
+			buffer.append("<li bindent=\"20\">");
+			buffer.append("<b>[</b><a href=\"Exec\">Apply</a> ");
 			buffer.append("<a href=\"Undo\">Undo</a> ");
 			buffer.append("<b>]</b>");
+			buffer.append("</li>");
 			if(move.getAction() instanceof MoveMemberAction){
+				buffer.append("<li bindent=\"20\">");
 				buffer.append("<b>[</b>");
 				buffer.append("<a href=\"Forbid\">Reject</a> ");	
-				buffer.append("<a href=\"Allow\">Unreject</a>");	
+				buffer.append("<a href=\"Allow\">Undo</a>");
 				buffer.append("<b>]</b>");
+				buffer.append("</li>");
 			}
 			else if(move.getAction() instanceof DependencyAction){
+				buffer.append("<li bindent=\"20\">");
 				buffer.append("<b>[</b>");
 				buffer.append("<a href=\"Stick\">Stick Origin Design</a> ");	
 				buffer.append("<a href=\"Unstick\">Undo</a>");	
 				buffer.append("<b>]</b>");
+				buffer.append("</li>");
 			}
-			buffer.append("</li>");			
-			
 			buffer.append("</form>");
 			
 			text.setText(buffer.toString(), true, false);
