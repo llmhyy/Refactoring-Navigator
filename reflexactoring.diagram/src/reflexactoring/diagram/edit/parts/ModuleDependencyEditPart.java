@@ -3,6 +3,7 @@ package reflexactoring.diagram.edit.parts;
 import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.PolylineDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ITreeBranchEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
@@ -11,6 +12,9 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 
+import reflexactoring.ModuleDependency;
+import reflexactoring.diagram.action.DiagramUpdater;
+import reflexactoring.diagram.bean.ModuleDependencyWrapper;
 import reflexactoring.diagram.edit.policies.ModuleDependencyItemSemanticEditPolicy;
 
 /**
@@ -49,7 +53,21 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 	 * @generated
 	 */
 	protected Connection createConnectionFigure() {
-		return new ModuleDependencyFigure();
+		ModuleDependencyFigure figure = new ModuleDependencyFigure();
+		EObject eObject = this.resolveSemanticElement();
+		if(eObject instanceof ModuleDependency){
+			ModuleDependency dependency = (ModuleDependency)eObject;
+			if(dependency.getName().equals(ModuleDependencyWrapper.ABSENCE)){
+				figure.setAbsenceStyle();
+			}
+			else if(dependency.getName().equals(ModuleDependencyWrapper.DIVERGENCE)){
+				figure.setDivergneceStyle();
+			}
+			else if(dependency.getName().equals(ModuleDependencyWrapper.CONFORMANCE)){
+				figure.setConformanceStyle();
+			}
+		}
+		return figure;
 	}
 
 	/**
