@@ -495,7 +495,7 @@ public class ReflexactoringUtil {
 		ArrayList<ICompilationUnitWrapper> unitList = new ArrayList<>();
 		
 		for(ICompilationUnitWrapper unit: Settings.scope.getScopeCompilationUnitList()){
-			if(unit.getMappingModule().equals(module)){
+			if(unit != null && unit.getMappingModule() != null && unit.getMappingModule().equals(module)){
 				unitList.add(unit);
 			}
 		}

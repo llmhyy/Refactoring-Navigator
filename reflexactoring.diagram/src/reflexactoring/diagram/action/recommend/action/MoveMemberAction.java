@@ -56,9 +56,11 @@ public class MoveMemberAction extends MoveAction {
 	private SuggestionObject curSuggestionObj;
 	private SelectTargetUnitDialog dialog;
 	private boolean dialogClosed = false;
+	private ModuleWrapper targetModule;
 
 	@Override
 	public void execute(SuggestionObject suggestionObj) {
+		targetModule = this.getDestination();
 		if(ReflexactoringUtil.getUnitListFromModule(this.getDestination()).size() != 0){
 			dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), this.getDestination());
 			dialog.create();
@@ -67,31 +69,12 @@ public class MoveMemberAction extends MoveAction {
 			dialog.link.addHyperlinkListener(new HyperlinkAdapter() {
 				public void linkActivated(HyperlinkEvent e) {
 					ICompilationUnitWrapper target = new JavaClassCreator().createClass();
-					if(target != null){
-						targetUnit = target;			
-						//Move!
-						try {
-							IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-							IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
-							project.open(null);					
-							IJavaProject javaProject = JavaCore.create(project);
-							
-							if(curSuggestionObj instanceof UnitMemberWrapper){
-								IMember member = ((UnitMemberWrapper) curSuggestionObj).getJavaMember();						
-								IType targetType = javaProject.findType(target.getFullQualifiedName());
-								member.move(targetType, null, null, false, null);
-							}					
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						}
-						
-						TitleAreaDialog doneDialog = new TitleAreaDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
-						doneDialog.create();
-						doneDialog.setTitle("New unit created");
-						doneDialog.setMessage("Member has been moved to the new unit. Please reselect the scope.");
-						doneDialog.open();
+					if(target != null){	
 						dialog.close();
 						dialogClosed = true;
+						dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), targetModule);
+						dialog.create();
+						dialog.open();
 					}
 				}
 			});
@@ -127,27 +110,15 @@ public class MoveMemberAction extends MoveAction {
 			if(dialog.open() == Window.OK){
 				ICompilationUnitWrapper target = new JavaClassCreator().createClass();
 				if(target != null){
-					targetUnit = target;			
-					//Move!
-					try {
-						IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-						IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
-						project.open(null);					
-						IJavaProject javaProject = JavaCore.create(project);
-						
-						if(suggestionObj instanceof UnitMemberWrapper){
-							IMember member = ((UnitMemberWrapper) suggestionObj).getJavaMember();						
-							IType targetType = javaProject.findType(target.getFullQualifiedName());
-							member.move(targetType, null, null, false, null);
-						}					
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					dialogClosed = true;
+//					this.dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), targetModule);
+//					this.dialog.create();
+//					this.dialog.open();
 					
 					TitleAreaDialog doneDialog = new TitleAreaDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 					doneDialog.create();
 					doneDialog.setTitle("New unit created");
-					doneDialog.setMessage("Member has been moved to the new unit. Please reselect the scope.");
+					doneDialog.setMessage("Please reselect the scope.");
 					doneDialog.open();
 				}
 			}
