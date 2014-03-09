@@ -55,6 +55,7 @@ import reflexactoring.Module;
 import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.recommend.action.DependencyAction;
+import reflexactoring.diagram.action.recommend.action.DirectOrientedAction;
 import reflexactoring.diagram.action.recommend.action.MoveAction;
 import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
 import reflexactoring.diagram.action.recommend.action.MoveTypeAction;
@@ -198,10 +199,10 @@ public class RefactoringSuggestionView extends ViewPart {
 					SuggestionMove suggestion = (SuggestionMove) text.getData();
 					if(e.getHref().equals("Module")){
 						RefactoringAction action = suggestion.getAction();
-						if(action instanceof MoveAction){
-							MoveAction moveAction = (MoveAction)action;
-							ModuleWrapper sourceModule = moveAction.getOrigin();
-							ModuleWrapper targetModule = moveAction.getDestination();
+						if(action instanceof DirectOrientedAction){
+							DirectOrientedAction directionAction = (DirectOrientedAction)action;
+							ModuleWrapper sourceModule = directionAction.getOrigin();
+							ModuleWrapper targetModule = directionAction.getDestination();
 							
 							if(sourceModule.getName().equals(e.getLabel()) || targetModule.getName().equals(e.getLabel())){
 								GEFDiagramUtil.focusModuleOnGraph(e.getLabel());
