@@ -68,6 +68,9 @@ public class FixPartOfMappingMemberAction extends AbstractActionDelegate impleme
 				memberDialog.setInitialSelections(memWrapperInMapList.toArray(new UnitMemberWrapper[0]));
 			}
 			if(memberDialog.open() == Window.OK){
+				for(HeuristicModulePartFixMemberMap map: mapList){
+					Settings.fixedPartMemberModuleList.removeMap(map);
+				}
 				for(Object memberWrapper: memberDialog.getResult()){
 					HeuristicModulePartFixMemberMap map = new HeuristicModulePartFixMemberMap(moduleWrapper, (UnitMemberWrapper) memberWrapper);
 					Settings.fixedPartMemberModuleList.add(map);
