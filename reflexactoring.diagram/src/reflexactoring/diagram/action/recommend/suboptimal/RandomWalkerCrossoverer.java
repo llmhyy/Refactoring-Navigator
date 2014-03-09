@@ -178,8 +178,11 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 					
 					Genotype newGene = oldGene.clone();
 					newGene.setDNA(DNA);
+					/*if(newGene.toString().equals("11111111111101000111111111111111111111101")){
+						System.currentTimeMillis();
+					}*/
+					
 					newGene.computeFitness(computingFactor);
-					//System.out.println(newGene.getFitness());
 					return newGene;						
 				}
 				

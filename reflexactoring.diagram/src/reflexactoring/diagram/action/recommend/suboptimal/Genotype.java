@@ -88,6 +88,7 @@ public class Genotype {
 	
 	@Override
 	public Genotype clone(){
+		
 		Genotype clonedGene = new Genotype(this.DNA);
 		
 		SparseDoubleMatrix2D tmpMatrix = this.getTmpMatrix();
@@ -175,10 +176,9 @@ public class Genotype {
 		Genotype t = fitnessTable.get(this);
 		if(t != null){
 			this.fitness = t.getFitness();
-			//this.tmpMatrix = tmpMatrixTable.get(this);
-			//this.mappingMatrix = mappingMatrixTable.get(this);
-			
-			//return d;
+			this.violationList = t.getViolationList();
+			this.mappingMatrix = t.getMappingMatrix();
+			this.tmpMatrix = t.getTmpMatrix();
 		}
 		else{
 			SparseDoubleMatrix1D weightVector = computingFactor.getWeightVector();
@@ -352,10 +352,6 @@ public class Genotype {
 						Violation violation = new Violation(i, j, Violation.ABSENCE);
 						violationList.add(violation);
 						
-						if(i==2 && j==1){
-							System.currentTimeMillis();
-						}
-						
 						double vio = highLevelMatrix.get(i, j);
 						/**
 						 *  exam the confidence of violation
@@ -372,6 +368,9 @@ public class Genotype {
 			}
 		}
 		
+		/*if(this.toString().equals("11111111111101000111111111111111111111101")){
+			System.currentTimeMillis();
+		}*/
 		this.violationList = violationList;
 		
 		return violatedNum;
