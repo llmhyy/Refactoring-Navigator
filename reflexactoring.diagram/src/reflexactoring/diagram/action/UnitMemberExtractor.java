@@ -112,6 +112,10 @@ public class UnitMemberExtractor {
 	 */
 	private UnitMemberWrapperList constructRelations(ArrayList<UnitMemberWrapper> memberList, IProgressMonitor monitor, int scale, int typeNum) {
 		final UnitMemberWrapperList members = new UnitMemberWrapperList();
+		if(typeNum == 0){
+			return members;
+		}
+		
 		for(UnitMemberWrapper wrapper: memberList){
 			members.add(wrapper);
 		}
