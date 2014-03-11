@@ -45,6 +45,7 @@ import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
@@ -55,7 +56,6 @@ public class MoveMemberAction extends MoveAction {
 	private ICompilationUnitWrapper targetUnit;
 	private SuggestionObject curSuggestionObj;
 	private SelectTargetUnitDialog dialog;
-	private boolean dialogClosed = false;
 	private ModuleWrapper targetModule;
 
 	@Override
@@ -70,8 +70,11 @@ public class MoveMemberAction extends MoveAction {
 				public void linkActivated(HyperlinkEvent e) {
 					ICompilationUnitWrapper target = new JavaClassCreator().createClass();
 					if(target != null){	
+						target.setMappingModule(targetModule);
+						if(!Settings.scope.getScopeCompilationUnitList().contains(target)){
+							Settings.scope.getScopeCompilationUnitList().add(target);	
+						}
 						dialog.close();
-						dialogClosed = true;
 						dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), targetModule);
 						dialog.create();
 						dialog.open();
@@ -79,7 +82,7 @@ public class MoveMemberAction extends MoveAction {
 				}
 			});
 			
-			if(!dialogClosed && dialog.open() == Window.OK){
+			if(dialog.open() == Window.OK){
 				ICompilationUnitWrapper target = dialog.getTargetUnit();
 				if(target != null){
 					targetUnit = target;
@@ -110,16 +113,20 @@ public class MoveMemberAction extends MoveAction {
 			if(dialog.open() == Window.OK){
 				ICompilationUnitWrapper target = new JavaClassCreator().createClass();
 				if(target != null){
-					dialogClosed = true;
-//					this.dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), targetModule);
-//					this.dialog.create();
-//					this.dialog.open();
+					target.setMappingModule(targetModule);
+					if(!Settings.scope.getScopeCompilationUnitList().contains(target)){
+						Settings.scope.getScopeCompilationUnitList().add(target);	
+					}
 					
-					TitleAreaDialog doneDialog = new TitleAreaDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
-					doneDialog.create();
-					doneDialog.setTitle("New unit created");
-					doneDialog.setMessage("Please reselect the scope.");
-					doneDialog.open();
+					this.dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), targetModule);
+					this.dialog.create();
+					this.dialog.open();
+					
+//					TitleAreaDialog doneDialog = new TitleAreaDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+//					doneDialog.create();
+//					doneDialog.setTitle("New unit created");
+//					doneDialog.setMessage("Please reselect the scope.");
+//					doneDialog.open();
 				}
 			}
 		}
