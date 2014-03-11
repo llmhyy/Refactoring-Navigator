@@ -75,6 +75,7 @@ import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.GEFDiagramUtil;
+import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -238,6 +239,8 @@ public class RefactoringSuggestionView extends ViewPart {
 						}
 					}
 					else if(e.getHref().equals("Forbid")){
+						RecordParameters.rejectTime++;
+						
 						SuggestionObject obj = suggestion.getSuggeestionObject();
 						RefactoringAction action = suggestion.getAction();
 						if(obj instanceof UnitMemberWrapper && action instanceof MoveMemberAction){
@@ -258,6 +261,8 @@ public class RefactoringSuggestionView extends ViewPart {
 						t.setForeground(colors.getColor("white"));
 					}
 					else if(e.getHref().equals("Exec")){
+						RecordParameters.applyTime++;
+						
 						suggestion.apply();
 						FormText t = (FormText) e.getSource();
 						FormColors colors = toolkit.getColors();
@@ -296,6 +301,8 @@ public class RefactoringSuggestionView extends ViewPart {
 						t.setBackground(colors.getColor("white"));
 					}
 					else if(e.getHref().equals("Stick")){
+						RecordParameters.recordTime++;
+						
 						SuggestionObject obj = suggestion.getSuggeestionObject();
 						RefactoringAction action = suggestion.getAction();
 						if(obj instanceof ModuleDependencyWrapper && action instanceof DependencyAction){

@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -18,6 +19,8 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.emf.core.GMFEditingDomainFactory;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -501,6 +504,24 @@ public class ReflexactoringUtil {
 		}
 		
 		return unitList;
+	}
+	
+	public static IProject getSpecificJavaProjectInWorkspace(){
+		
+		String targetProject = ReflexactoringUtil.getTargetProjectName();
+		
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
+		IProject[] projects = root.getProjects();
+		
+		for(int i=0; i<projects.length; i++){
+			if(targetProject.equals(projects[i].getName())){
+				return projects[i];
+				//return JavaCore.create(projects[i]);
+			}
+		}
+		
+		return null;
 	}
 	
 }

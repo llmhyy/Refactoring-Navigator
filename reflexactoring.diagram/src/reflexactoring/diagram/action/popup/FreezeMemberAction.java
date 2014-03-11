@@ -9,6 +9,7 @@ import reflexactoring.Module;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart.ModuleFigure;
+import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -26,6 +27,8 @@ public class FreezeMemberAction extends AbstractActionDelegate implements IObjec
 		Object selEditPart = selection.getFirstElement();
 		
 		if (selEditPart instanceof ModuleEditPart){
+			RecordParameters.freezeTime++;
+			
 			ModuleEditPart part = (ModuleEditPart)selEditPart;
 			Module module = (Module) part.resolveSemanticElement();
 			

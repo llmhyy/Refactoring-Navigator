@@ -13,6 +13,7 @@ import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.edit.parts.Class2EditPart;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.AllMemberInClassMappingFixView;
@@ -33,6 +34,8 @@ public class FixMappingMemberAction extends AbstractActionDelegate implements IO
 		Object selEditPart = selection.getFirstElement();
 		
 		if(selEditPart instanceof Class2EditPart){
+			RecordParameters.fixAllMember++;
+			
 			Class2EditPart editPart = (Class2EditPart)selEditPart;
 			Type type = (Type) editPart.resolveSemanticElement();
 			

@@ -15,6 +15,7 @@ import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.ConstraintConfidenceView;
@@ -27,6 +28,8 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 	@Override
 	public void run(IAction action) {
 		try {
+			RecordParameters.mapTime++;
+			
 			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 			String message = checkValidity(moduleList);
 			if(!AutoMappingAction.OK_MESSAGE.equals(message)){

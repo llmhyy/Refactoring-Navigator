@@ -48,6 +48,7 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
+import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.HeuristicMappingView;
@@ -86,7 +87,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 				new ScopeLabelProvider(), new ScopeContentProvider());
 		
 		Object[] projects = new Object[1];
-		projects[0] = getSpecificJavaProjectInWorkspace();
+		projects[0] = JavaCore.create(ReflexactoringUtil.getSpecificJavaProjectInWorkspace());
 		scopeDialog.setInput(projects);
 		
 		scopeDialog.setContainerMode(true);
@@ -100,7 +101,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		scopeDialog.setTitle("Define Refactoring Scope");
 		scopeDialog.setMessage("Please select the refactoring scope.");
 		if(scopeDialog.open() == Window.OK){
-			
+			RecordParameters.scopeDecisionTime++;
 			/**
 			 * Build dependencies amongst java types and its corresponding members in scope.
 			 */
@@ -199,28 +200,6 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		// TODO Auto-generated method stub
 
 	}
-	
-	
-	private IJavaProject getSpecificJavaProjectInWorkspace(){
-		
-		String targetProject = ReflexactoringUtil.getTargetProjectName();
-		
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root = workspace.getRoot();
-		IProject[] projects = root.getProjects();
-		
-		for(int i=0; i<projects.length; i++){
-			if(targetProject.equals(projects[i].getName())){
-				return JavaCore.create(projects[i]);
-			}
-		}
-		
-		return null;
-	}
-	
-	
-	
-	
 	
 	class ScopeContentProvider implements ITreeContentProvider{
 

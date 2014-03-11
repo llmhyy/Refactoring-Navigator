@@ -35,6 +35,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import reflexactoring.diagram.action.popup.ReferenceDetailMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.util.JavaCodeUtil;
+import reflexactoring.diagram.util.RecordParameters;
 
 public class ReferenceDetailView extends ViewPart {
 
@@ -67,6 +68,8 @@ public class ReferenceDetailView extends ViewPart {
 			
 			@Override
 			public void mouseDoubleClick(MouseEvent me) {
+				RecordParameters.referenceCheck++;
+				
 				Tree tree = (Tree)me.getSource();
 				TreeItem item = tree.getItem(new Point(me.x, me.y));
 				ASTNode node = (ASTNode) item.getData();

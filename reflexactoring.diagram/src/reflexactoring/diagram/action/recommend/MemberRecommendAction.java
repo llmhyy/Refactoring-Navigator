@@ -15,6 +15,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.UIJob;
 
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.RefactoringSuggestionView;
@@ -23,6 +24,7 @@ public class MemberRecommendAction implements IWorkbenchWindowActionDelegate {
 
 	@Override
 	public void run(IAction action) {
+		RecordParameters.memberSuggestion++;
 		
 		Display.getDefault().asyncExec(new Runnable() {
 			

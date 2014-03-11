@@ -718,6 +718,12 @@
             <groupMarker
                   name="process">
             </groupMarker>
+            <separator
+                  name="separator">
+            </separator>
+            <groupMarker
+                  name="experiment">
+            </groupMarker>
          </menu>
          <action
                class="reflexactoring.diagram.action.DecideScopeAction"
@@ -758,6 +764,16 @@
                style="push"
                toolbarPath="process"
                tooltip="Automatically map java classes/interfaces to modules">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.RecordBehaviorAction"
+               icon="icons/menu/save_record.png"
+               id="reflexactoring.diagram.action.recordBehavior"
+               label="Record Your Behavior"
+               menubarPath="reflexactoring.diagram.menu/experiment"
+               style="push"
+               toolbarPath="experiment"
+               tooltip="Record Your Behaviorial Data">
          </action>
       </actionSet>
    </extension>
