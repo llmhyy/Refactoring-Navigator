@@ -21,20 +21,17 @@ public class RecordBehaviorAction implements IWorkbenchWindowActionDelegate {
 	public void run(IAction action) {
 		IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
 		IFile file = project.getFile("/record_data" + (++RecordParameters.recordTime));
-		String content = "test" + RecordParameters.scopeDecisionTime 
-				+ RecordParameters.mapTime + 
-				RecordParameters.typeSuggestion + 
-				RecordParameters.memberSuggestion
-				 + RecordParameters.rejectTime + RecordParameters.applyTime +
-				 RecordParameters.referenceCheck + 
-				 RecordParameters.freezeTime +
-				 RecordParameters.fixAllMember
-				 + RecordParameters.fixPartMember;
-		
-		/**
-		 * Hi Adi,
-		 * parse them into readable string, that will be fine.
-		 */
+		String content = "Behavior Record: \n" + 
+				"Scope Decision Time: " + RecordParameters.scopeDecisionTime + "\n" +
+				"Map Time: " + RecordParameters.mapTime + "\n" +
+				"Type Suggestion: " + RecordParameters.typeSuggestion + "\n" +
+				"Member Suggestion: " + RecordParameters.memberSuggestion + "\n" +
+				"Reject Time: " + RecordParameters.rejectTime + "\n" +
+				"Apply Time: " + RecordParameters.applyTime + "\n" +
+				"Reference Check: " + RecordParameters.referenceCheck + "\n" +
+				"Freeze Time: " + RecordParameters.freezeTime + "\n" +
+				"Fix All Member: " + RecordParameters.fixAllMember + "\n" +
+				"Fix Part Member: " + RecordParameters.fixPartMember;
 		
 		InputStream source = new ByteArrayInputStream(content.getBytes());
 		try {
