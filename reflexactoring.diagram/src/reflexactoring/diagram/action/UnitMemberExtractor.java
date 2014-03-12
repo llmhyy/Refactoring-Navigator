@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -226,6 +227,20 @@ public class UnitMemberExtractor {
 								}
 							}							
 						}
+						
+						return false;
+					}
+					public boolean visit(QualifiedName name){
+						/*IBinding binding = name.resolveBinding();
+						IJavaElement element = binding.getJavaElement();
+						if(element != null && (binding instanceof IMethodBinding || binding instanceof IVariableBinding)){
+							for(UnitMemberWrapper calleeMember: members){
+								if(element.equals(calleeMember.getJavaMember()) && !member.equals(calleeMember)){
+									member.addCallee(calleeMember);
+									calleeMember.addCaller(member);
+								}
+							}							
+						}*/
 						
 						return false;
 					}
