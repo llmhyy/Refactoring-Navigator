@@ -757,7 +757,7 @@
          </action>
          <action
                class="reflexactoring.diagram.action.AutoMappingAction"
-               icon="icons/menu/mapping.gif"
+               icon="icons/menu/generate_reflexion_model.png"
                id="reflexactoring.diagram.action.autoMapping"
                label="Automatic Mapping"
                menubarPath="reflexactoring.diagram.menu/process"

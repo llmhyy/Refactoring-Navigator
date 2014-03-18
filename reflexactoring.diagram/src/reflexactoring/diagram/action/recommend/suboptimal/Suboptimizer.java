@@ -88,7 +88,7 @@ public abstract class Suboptimizer {
 					similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) - 1;
 				}
 				
-				/*if(member.getName().contains("op_listener")){
+				/*if(member.getName().contains(" ")){
 					System.out.println(member.getUnitWrapper().getSimpleName()+"."+member);
 					System.out.println(member.getTermFrequency());
 					System.out.println(module);

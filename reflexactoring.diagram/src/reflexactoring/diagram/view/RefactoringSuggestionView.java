@@ -98,7 +98,7 @@ public class RefactoringSuggestionView extends ViewPart {
 		
 		toolkit = new FormToolkit(parent.getDisplay());
 		form = toolkit.createScrolledForm(parent);
-		form.setText("Suggestions");
+		form.setText("Recommendation");
 		form.getBody().setLayout(new TableWrapLayout());
 		text = toolkit.createFormText(form.getBody(), true);
 		text.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
@@ -147,8 +147,8 @@ public class RefactoringSuggestionView extends ViewPart {
 			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 			//section.setExpanded(true);
 			section.setLayout(new TableWrapLayout());
-			String feasible = suggestion.isFeasible() ? "(Feasible)" : "(InFeasible)";
-			section.setText("Suggestion " + feasible);
+			//String feasible = suggestion.isFeasible() ? "(Feasible)" : "(InFeasible)";
+			section.setText("Recommendation "/* + feasible*/);
 			
 			Composite composite = toolkit.createComposite(section);
 			composite.setLayout(new TableWrapLayout());
