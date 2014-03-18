@@ -9,10 +9,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -22,7 +20,6 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -32,7 +29,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.forms.FormColors;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
@@ -77,7 +73,30 @@ public class MoveMemberAction extends MoveAction {
 						dialog.close();
 						dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), targetModule);
 						dialog.create();
-						dialog.open();
+						//dialog.open();
+						
+						if(dialog.open() == Window.OK){
+							ICompilationUnitWrapper tar = dialog.getTargetUnit();
+							if(tar != null){
+								targetUnit = tar;
+								
+								//Move!
+								try {
+									IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+									IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
+									project.open(null);					
+									IJavaProject javaProject = JavaCore.create(project);
+									
+									if(curSuggestionObj instanceof UnitMemberWrapper){
+										IMember member = ((UnitMemberWrapper) curSuggestionObj).getJavaMember();						
+										IType targetType = javaProject.findType(tar.getFullQualifiedName());
+										member.move(targetType, null, null, false, null);
+									}					
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}			
+							}				
+						}
 					}
 				}
 			});
@@ -110,6 +129,8 @@ public class MoveMemberAction extends MoveAction {
 			dialog.create();
 			dialog.setTitle("Create a new unit");
 			dialog.setMessage("The target module has no unit, click 'OK' to create a class or interface to move the method or field in.");
+			curSuggestionObj = suggestionObj;
+			
 			if(dialog.open() == Window.OK){
 				ICompilationUnitWrapper target = new JavaClassCreator().createClass();
 				if(target != null){
@@ -120,7 +141,30 @@ public class MoveMemberAction extends MoveAction {
 					
 					this.dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), targetModule);
 					this.dialog.create();
-					this.dialog.open();
+					//dialog.open();
+					
+					if(this.dialog.open() == Window.OK){
+						ICompilationUnitWrapper tar = this.dialog.getTargetUnit();
+						if(tar != null){
+							targetUnit = tar;
+							
+							//Move!
+							try {
+								IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+								IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
+								project.open(null);					
+								IJavaProject javaProject = JavaCore.create(project);
+								
+								if(curSuggestionObj instanceof UnitMemberWrapper){
+									IMember member = ((UnitMemberWrapper) curSuggestionObj).getJavaMember();						
+									IType targetType = javaProject.findType(tar.getFullQualifiedName());
+									member.move(targetType, null, null, false, null);
+								}					
+							} catch (Exception e) {
+								e.printStackTrace();
+							}			
+						}				
+					}
 					
 //					TitleAreaDialog doneDialog = new TitleAreaDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 //					doneDialog.create();
