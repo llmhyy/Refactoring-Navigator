@@ -11,9 +11,9 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
-import reflexactoring.diagram.action.recommend.suboptimal.FitnessComputingFactor;
-import reflexactoring.diagram.action.recommend.suboptimal.GeneticUtil;
-import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
+import reflexactoring.diagram.action.recommend.suboptimalold_representation.FitnessComputingFactor;
+import reflexactoring.diagram.action.recommend.suboptimalold_representation.GeneticUtil;
+import reflexactoring.diagram.action.recommend.suboptimalold_representation.Genotype;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

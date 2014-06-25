@@ -41,7 +41,7 @@ public class MemberRecommendAction implements IWorkbenchWindowActionDelegate {
 						Double iterNum = Double.valueOf(ReflexactoringUtil.getIterationNumber());
 						monitor.beginTask("Searching Solution...", iterNum.intValue());
 						
-						RefactoringRecommender recommender = new RefactoringRecommender();
+						RefactoringRecommenderForOldRepresentation recommender = new RefactoringRecommenderForOldRepresentation();
 						final ArrayList<Suggestion> suggestions = recommender.recommendStartByMember(monitor);
 						
 						Display.getDefault().asyncExec(new Runnable() {

@@ -6,13 +6,13 @@ package reflexactoring.diagram.suboptimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import reflexactoring.diagram.action.recommend.suboptimal.Crossoverer;
-import reflexactoring.diagram.action.recommend.suboptimal.FitnessComputingFactor;
-import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
-import reflexactoring.diagram.action.recommend.suboptimal.OriginOrientedSeedGenerator;
-import reflexactoring.diagram.action.recommend.suboptimal.Population;
-import reflexactoring.diagram.action.recommend.suboptimal.RandomWalkerCrossoverer;
-import reflexactoring.diagram.action.recommend.suboptimal.SeedGenerator;
+import reflexactoring.diagram.action.recommend.suboptimalold_representation.Crossoverer;
+import reflexactoring.diagram.action.recommend.suboptimalold_representation.FitnessComputingFactor;
+import reflexactoring.diagram.action.recommend.suboptimalold_representation.Genotype;
+import reflexactoring.diagram.action.recommend.suboptimalold_representation.OriginOrientedSeedGenerator;
+import reflexactoring.diagram.action.recommend.suboptimalold_representation.Population;
+import reflexactoring.diagram.action.recommend.suboptimalold_representation.RandomWalkerCrossoverer;
+import reflexactoring.diagram.action.recommend.suboptimalold_representation.SeedGenerator;
 import cern.colt.matrix.impl.SparseDoubleMatrix1D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 

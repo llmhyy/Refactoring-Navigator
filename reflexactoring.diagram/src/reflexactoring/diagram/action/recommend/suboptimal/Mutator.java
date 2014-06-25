@@ -7,6 +7,12 @@ package reflexactoring.diagram.action.recommend.suboptimal;
  * @author linyun
  *
  */
-public class Genotype {
+public interface Mutator {
+
+	/**
+	 * @param pop
+	 * @return
+	 */
+	Population mutate(Population pop);
 
 }

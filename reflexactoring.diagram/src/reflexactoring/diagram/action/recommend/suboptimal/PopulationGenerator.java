@@ -7,6 +7,6 @@ package reflexactoring.diagram.action.recommend.suboptimal;
  * @author linyun
  *
  */
-public class Genotype {
-
+public class PopulationGenerator {
+	
 }

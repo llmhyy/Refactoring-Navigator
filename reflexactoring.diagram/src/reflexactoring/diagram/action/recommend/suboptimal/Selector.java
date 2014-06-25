@@ -7,12 +7,13 @@ package reflexactoring.diagram.action.recommend.suboptimal;
  * @author linyun
  *
  */
-public interface Crossoverer {
+public interface Selector {
 
 	/**
 	 * @param population
+	 * @param newPop
 	 * @return
 	 */
-	Population deriveGeneration(Population population);
+	Population selectPopulation(Population population, Population newPop);
 
 }

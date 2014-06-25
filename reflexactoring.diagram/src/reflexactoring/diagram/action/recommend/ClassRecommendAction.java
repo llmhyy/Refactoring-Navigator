@@ -38,7 +38,7 @@ public class ClassRecommendAction implements
 				Double iterNum = Double.valueOf(ReflexactoringUtil.getIterationNumber());
 				monitor.beginTask("Searching Solution...", iterNum.intValue());
 				
-				RefactoringRecommender recommender = new RefactoringRecommender();
+				RefactoringRecommenderForOldRepresentation recommender = new RefactoringRecommenderForOldRepresentation();
 				final ArrayList<Suggestion> suggestions = recommender.recommendStartByClass(monitor);
 				
 				Display.getDefault().asyncExec(new Runnable() {

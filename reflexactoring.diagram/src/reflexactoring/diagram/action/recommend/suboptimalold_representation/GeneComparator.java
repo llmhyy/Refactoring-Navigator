@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reflexactoring.diagram.action.recommend.suboptimal;
+package reflexactoring.diagram.action.recommend.suboptimalold_representation;
 
 import java.util.Comparator;
 
