@@ -31,28 +31,28 @@ public class Settings {
 	/**
 	 * It is used for keeping user-specified module-type(unit) mapping relation.
 	 */
-	public static HeuristicModuleUnitMapList heuristicModuleUnitMapList
+	public static HeuristicModuleUnitMapList heuristicModuleUnitFixList
 		= new HeuristicModuleUnitMapList();
 	
 	/**
 	 * It is used for keeping user-specified forbidden list indicating which member can never
 	 * be mapped to which module.
 	 */
-	public static HeuristicModuleMemberStopMapList heuristicStopMapList
+	public static HeuristicModuleMemberStopMapList heuristicModuleMemberStopMapList
 		= new HeuristicModuleMemberStopMapList();
 	
 	/**
 	 * It is used for keeping user-defined fixed list. In other words, when user fix a module
 	 * and type, he/she force that all the members of a type can only be mapped to the module.
 	 */
-	public static HeuristicModuleUnitFixMemberMapList fixedMemberModuleUnitList
+	public static HeuristicModuleUnitFixMemberMapList heuristicModuleUnitMemberFixList
 		= new HeuristicModuleUnitFixMemberMapList();
 	
 	/**
 	 * It is used for keeping user-defined fixed list. In other words, when user fix part a module
 	 * and type, he/she force that part the members of a type can only be mapped to the module.
 	 */
-	public static HeuristicModulePartFixMemberMapList fixedPartMemberModuleList
+	public static HeuristicModulePartFixMemberMapList heuristicModuleMemberPartFixList
 		= new HeuristicModulePartFixMemberMapList();
 	
 	/**
