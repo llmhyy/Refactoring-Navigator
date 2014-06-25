@@ -50,6 +50,30 @@ public class Scope{
 		return null;
 	}
 	
+	public int getICompilationUnitIndex(ICompilationUnitWrapper u){
+		for(int i=0; i<this.scopeCompilationUnitList.size(); i++){
+			ICompilationUnitWrapper unit = this.scopeCompilationUnitList.get(i);
+			if(unit.getFullQualifiedName().equals(u.getFullQualifiedName())){
+				return i;
+			}
+		}
+		
+		return -1;
+
+	}
+	
+	public int getUnitMemberIndex(UnitMemberWrapper u){
+		for(int i=0; i<this.scopeMemberList.size(); i++){
+			UnitMemberWrapper member = this.scopeMemberList.get(i);
+			if(member.equals(u)){
+				return i;
+			}
+		}
+		
+		return -1;
+
+	}
+	
 	public ICompilationUnitWrapper findUnit(Type type){
 		String packageName = type.getPackageName();
 		String typeName = type.getName();

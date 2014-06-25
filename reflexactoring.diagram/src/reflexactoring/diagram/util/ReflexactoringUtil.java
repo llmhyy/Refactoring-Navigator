@@ -524,4 +524,14 @@ public class ReflexactoringUtil {
 		return null;
 	}
 	
+	public static int getModuleIndex(ArrayList<ModuleWrapper> moduleList, ModuleWrapper module){
+		for(int i=0; i<moduleList.size(); i++){
+			ModuleWrapper m = moduleList.get(i);
+			if(m.equals(module)){
+				return i;
+			}
+		}
+		
+		return -1;
+	}
 }
