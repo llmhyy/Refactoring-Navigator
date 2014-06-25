@@ -149,11 +149,11 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 							 * refresh above four view
 							 */
 							ViewUpdater viewUpdater = new ViewUpdater();
-							viewUpdater.updateView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW, Settings.heuristicModuleUnitMapList, false);
-							viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW, Settings.fixedMemberModuleUnitList, false);
-							viewUpdater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicStopMapList, false);
+							viewUpdater.updateView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW, Settings.heuristicModuleUnitFixList, false);
+							viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW, Settings.heuristicModuleUnitMemberFixList, false);
+							viewUpdater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, false);
 							viewUpdater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, false);
-							viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW, Settings.fixedPartMemberModuleList, false);
+							viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW, Settings.heuristicModuleMemberPartFixList, false);
 							viewUpdater.updateView(ReflexactoringPerspective.REFACTORING_SUGGESTION, new ArrayList<Suggestion>(), false);
 							
 							AutoMappingAction mappingAction = new AutoMappingAction();

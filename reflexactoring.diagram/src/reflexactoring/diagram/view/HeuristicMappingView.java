@@ -64,12 +64,12 @@ public class HeuristicMappingView extends ViewPart {
 		    	if (e.keyCode == 13) {  
 		    		String searchString = searchText.getText().toLowerCase();
 		    		if(searchString == null || searchString.trim().equals("")){
-		    			tableViewer.setInput(Settings.heuristicModuleUnitMapList);
+		    			tableViewer.setInput(Settings.heuristicModuleUnitFixList);
 						tableViewer.refresh();
 		    		}else{
 		    			HeuristicModuleUnitMapList filteredHeuristicModuleUnitMapList
 		    			= new HeuristicModuleUnitMapList();
-		    			for(HeuristicModuleUnitMap map: Settings.heuristicModuleUnitMapList){
+		    			for(HeuristicModuleUnitMap map: Settings.heuristicModuleUnitFixList){
 		    				if(map.getUnit().getFullQualifiedName().toLowerCase().indexOf(searchString) != -1 ||
 		    						map.getModule().getName().toLowerCase().indexOf(searchString) != -1){
 			    				filteredHeuristicModuleUnitMapList.add(map);		    					
@@ -98,7 +98,7 @@ public class HeuristicMappingView extends ViewPart {
 		table.setLinesVisible(true);
 
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		tableViewer.setInput(Settings.heuristicModuleUnitMapList);
+		tableViewer.setInput(Settings.heuristicModuleUnitFixList);
 
 		GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
@@ -119,9 +119,9 @@ public class HeuristicMappingView extends ViewPart {
 					TableItem[] ti = tableViewer.getTable().getSelection();
 					if (ti != null && ti.length > 0) { 
 						for(int i = 0; i < ti.length; i++){
-							Settings.heuristicModuleUnitMapList.removeMap((HeuristicModuleUnitMap) ti[i].getData());	
+							Settings.heuristicModuleUnitFixList.removeMap((HeuristicModuleUnitMap) ti[i].getData());	
 						}						
-						tableViewer.setInput(Settings.heuristicModuleUnitMapList);
+						tableViewer.setInput(Settings.heuristicModuleUnitFixList);
 						tableViewer.refresh();
 					}else{
 						
@@ -202,8 +202,8 @@ public class HeuristicMappingView extends ViewPart {
 				if(dialog.open() == Window.OK){
 					HeuristicModuleUnitMap map = dialog.getHeuristicModuleUnitMap();
 					if(map != null){
-						Settings.heuristicModuleUnitMapList.add(map);
-						tableViewer.setInput(Settings.heuristicModuleUnitMapList);
+						Settings.heuristicModuleUnitFixList.add(map);
+						tableViewer.setInput(Settings.heuristicModuleUnitFixList);
 						tableViewer.refresh();
 					}
 				}

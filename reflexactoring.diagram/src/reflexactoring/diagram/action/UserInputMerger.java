@@ -28,11 +28,11 @@ public class UserInputMerger {
 	
 	
 	public void mergeHeuristicMappingTable(){
-		if(Settings.heuristicModuleUnitMapList != null){
+		if(Settings.heuristicModuleUnitFixList != null){
 			try {
 				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 				
-				Iterator<HeuristicModuleUnitMap> iterator = Settings.heuristicModuleUnitMapList.iterator();
+				Iterator<HeuristicModuleUnitMap> iterator = Settings.heuristicModuleUnitFixList.iterator();
 				while(iterator.hasNext()){
 					HeuristicModuleUnitMap map = iterator.next();
 					
@@ -57,11 +57,11 @@ public class UserInputMerger {
 	}
 	
 	public void mergeHeuristicFixMemberMappingTable(){
-		if(Settings.fixedMemberModuleUnitList != null){
+		if(Settings.heuristicModuleUnitMemberFixList != null){
 			try {
 				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 				
-				Iterator<HeuristicModuleUnitFixMemberMap> iterator = Settings.fixedMemberModuleUnitList.iterator();
+				Iterator<HeuristicModuleUnitFixMemberMap> iterator = Settings.heuristicModuleUnitMemberFixList.iterator();
 				while(iterator.hasNext()){
 					HeuristicModuleUnitFixMemberMap map = iterator.next();
 					
@@ -89,11 +89,11 @@ public class UserInputMerger {
 	 * 
 	 */
 	public void mergeHeuristicFixPartMemberMappingTable() {
-		if(Settings.fixedPartMemberModuleList != null){
+		if(Settings.heuristicModuleMemberPartFixList != null){
 			try {
 				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 				
-				Iterator<HeuristicModulePartFixMemberMap> iterator = Settings.fixedPartMemberModuleList.iterator();
+				Iterator<HeuristicModulePartFixMemberMap> iterator = Settings.heuristicModuleMemberPartFixList.iterator();
 				while(iterator.hasNext()){
 					HeuristicModulePartFixMemberMap map = iterator.next();
 					
@@ -119,11 +119,11 @@ public class UserInputMerger {
 	}
 
 	public void mergeForbiddenModuleMemberTable(){
-		if(Settings.heuristicStopMapList != null){
+		if(Settings.heuristicModuleMemberStopMapList != null){
 			try {
 				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 				
-				Iterator<HeuristicModuleMemberStopMap> iterator = Settings.heuristicStopMapList.iterator();
+				Iterator<HeuristicModuleMemberStopMap> iterator = Settings.heuristicModuleMemberStopMapList.iterator();
 				while(iterator.hasNext()){
 					HeuristicModuleMemberStopMap map = iterator.next();
 					

@@ -62,7 +62,7 @@ public class FixPartOfMappingMemberAction extends AbstractActionDelegate impleme
 			memberDialog.setInput(unitWrapper);
 			memberDialog.setTitle("Fix Member");
 			memberDialog.setMessage("Please fix the members to module " + moduleWrapper.getName());
-			HeuristicModulePartFixMemberMapList mapList = Settings.fixedPartMemberModuleList.findMap(unitWrapper);
+			HeuristicModulePartFixMemberMapList mapList = Settings.heuristicModuleMemberPartFixList.findMap(unitWrapper);
 			if(mapList.size() > 0){
 				ArrayList<UnitMemberWrapper> memWrapperInMapList = new ArrayList<UnitMemberWrapper>();
 				for(HeuristicModulePartFixMemberMap map: mapList){
@@ -72,15 +72,15 @@ public class FixPartOfMappingMemberAction extends AbstractActionDelegate impleme
 			}
 			if(memberDialog.open() == Window.OK){
 				for(HeuristicModulePartFixMemberMap map: mapList){
-					Settings.fixedPartMemberModuleList.removeMap(map);
+					Settings.heuristicModuleMemberPartFixList.removeMap(map);
 				}
 				for(Object memberWrapper: memberDialog.getResult()){
 					HeuristicModulePartFixMemberMap map = new HeuristicModulePartFixMemberMap(moduleWrapper, (UnitMemberWrapper) memberWrapper);
-					Settings.fixedPartMemberModuleList.add(map);
+					Settings.heuristicModuleMemberPartFixList.add(map);
 				}
 			}
 			ViewUpdater viewUpdater = new ViewUpdater();
-			viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW, Settings.fixedPartMemberModuleList, true);
+			viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW, Settings.heuristicModuleMemberPartFixList, true);
 		}
 		
 	}

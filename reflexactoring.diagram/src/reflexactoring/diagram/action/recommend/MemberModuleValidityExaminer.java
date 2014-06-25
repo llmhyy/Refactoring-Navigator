@@ -46,7 +46,7 @@ public class MemberModuleValidityExaminer {
 	
 	private boolean isMemberMapFixedToRightModule(UnitMemberWrapper memberWrapper,
 			ModuleWrapper moduleWrapper){
-		for(HeuristicModulePartFixMemberMap map: Settings.fixedPartMemberModuleList){
+		for(HeuristicModulePartFixMemberMap map: Settings.heuristicModuleMemberPartFixList){
 			if(map.getMember().equals(memberWrapper)){
 				return map.getModule().equals(moduleWrapper);
 			}
@@ -62,7 +62,7 @@ public class MemberModuleValidityExaminer {
 	 */
 	private boolean parentUnitWrapperFixedToRightModule(
 			UnitMemberWrapper memberWrapper, ModuleWrapper moduleWrapper) {
-		HeuristicModuleUnitFixMemberMap map = Settings.fixedMemberModuleUnitList.findMap(memberWrapper.getUnitWrapper());
+		HeuristicModuleUnitFixMemberMap map = Settings.heuristicModuleUnitMemberFixList.findMap(memberWrapper.getUnitWrapper());
 		
 		if(map == null){
 			return true;
@@ -94,7 +94,7 @@ public class MemberModuleValidityExaminer {
 
 	private boolean cannotContainedInForbiddenList(
 			UnitMemberWrapper memberWrapper, ModuleWrapper moduleWrapper) {
-		HeuristicModuleMemberStopMap stopMap = Settings.heuristicStopMapList
+		HeuristicModuleMemberStopMap stopMap = Settings.heuristicModuleMemberStopMapList
 				.findStopMap(moduleWrapper, memberWrapper);
 		return stopMap == null;
 	}

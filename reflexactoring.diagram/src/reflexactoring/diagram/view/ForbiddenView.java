@@ -63,12 +63,12 @@ public class ForbiddenView extends ViewPart {
 		    	if (e.keyCode == 13) {  
 		    		String searchString = searchText.getText().toLowerCase();
 		    		if(searchString == null || searchString.trim().equals("")){
-		    			tableViewer.setInput(Settings.heuristicStopMapList);
+		    			tableViewer.setInput(Settings.heuristicModuleMemberStopMapList);
 						tableViewer.refresh();
 		    		}else{
 		    			HeuristicModuleMemberStopMapList filteredHeuristicStopMapList
 		    			= new HeuristicModuleMemberStopMapList();
-		    			for(HeuristicModuleMemberStopMap map: Settings.heuristicStopMapList){
+		    			for(HeuristicModuleMemberStopMap map: Settings.heuristicModuleMemberStopMapList){
 		    				if(map.getMember().getName().toLowerCase().indexOf(searchString) != -1 ||
 		    						map.getMember().getUnitWrapper().getFullQualifiedName().toLowerCase().indexOf(searchString) != -1 ||
 		    						map.getModule().getName().toLowerCase().indexOf(searchString) != -1){
@@ -98,7 +98,7 @@ public class ForbiddenView extends ViewPart {
 		table.setLinesVisible(true);
 
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		tableViewer.setInput(Settings.heuristicStopMapList);
+		tableViewer.setInput(Settings.heuristicModuleMemberStopMapList);
 
 		GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
@@ -119,9 +119,9 @@ public class ForbiddenView extends ViewPart {
 					TableItem[] ti = tableViewer.getTable().getSelection();
 					if (ti != null && ti.length > 0) { 
 						for(int i = 0; i < ti.length; i++){
-							Settings.heuristicStopMapList.removeMap((HeuristicModuleMemberStopMap) ti[i].getData());							
+							Settings.heuristicModuleMemberStopMapList.removeMap((HeuristicModuleMemberStopMap) ti[i].getData());							
 						}						
-						tableViewer.setInput(Settings.heuristicStopMapList);
+						tableViewer.setInput(Settings.heuristicModuleMemberStopMapList);
 						tableViewer.refresh();
 					}else{
 						

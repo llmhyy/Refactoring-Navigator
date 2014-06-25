@@ -55,7 +55,7 @@ public class ModelMapper {
 			/**
 			 * see whether user has specified mapping rules for such a compilation unit.
 			 */
-			HeuristicModuleUnitMap map = Settings.heuristicModuleUnitMapList.findHeuristicMapping(unit);
+			HeuristicModuleUnitMap map = Settings.heuristicModuleUnitFixList.findHeuristicMapping(unit);
 			if(map != null){
 				ModuleWrapper module = map.getModule();
 				unit.setMappingModule(module);
@@ -119,7 +119,7 @@ public class ModelMapper {
 			/**
 			 * see whether user has specified mapping rules for such a compilation unit.
 			 */
-			HeuristicModuleUnitMap map = Settings.heuristicModuleUnitMapList.findHeuristicMapping(unit);
+			HeuristicModuleUnitMap map = Settings.heuristicModuleUnitFixList.findHeuristicMapping(unit);
 			if(map != null){
 				ModuleWrapper module = map.getModule();
 				/**

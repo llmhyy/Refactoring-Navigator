@@ -43,10 +43,10 @@ public class FixMappingMemberAction extends AbstractActionDelegate implements IO
 			ModuleWrapper moduleWrapper = unitWrapper.getMappingModule();
 			
 			HeuristicModuleUnitFixMemberMap fixMemberMap = new HeuristicModuleUnitFixMemberMap(moduleWrapper, unitWrapper);
-			Settings.fixedMemberModuleUnitList.add(fixMemberMap);
+			Settings.heuristicModuleUnitMemberFixList.add(fixMemberMap);
 			
 			ViewUpdater viewUpdater = new ViewUpdater();
-			viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW, Settings.fixedMemberModuleUnitList, true);
+			viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW, Settings.heuristicModuleUnitMemberFixList, true);
 		}
 		
 	}

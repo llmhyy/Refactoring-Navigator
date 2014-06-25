@@ -84,9 +84,9 @@ public class ModuleTypeContainerDropEditPolicy extends
 		
 		ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(identifier);
 		if(null != unitWrapper){
-			HeuristicModuleUnitMap extantMap = Settings.heuristicModuleUnitMapList.findHeuristicMapping(identifier);
+			HeuristicModuleUnitMap extantMap = Settings.heuristicModuleUnitFixList.findHeuristicMapping(identifier);
 			if(extantMap != null){
-				Settings.heuristicModuleUnitMapList.remove(extantMap);
+				Settings.heuristicModuleUnitFixList.remove(extantMap);
 			}			
 		}
 	}
@@ -118,7 +118,7 @@ public class ModuleTypeContainerDropEditPolicy extends
 	private void refreshHeuristicView(){
 		HeuristicMappingView view = (HeuristicMappingView)PlatformUI.getWorkbench().
 				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW);
-		view.getViewer().setInput(Settings.heuristicModuleUnitMapList);
+		view.getViewer().setInput(Settings.heuristicModuleUnitFixList);
 		view.getViewer().refresh();	
 	}
 	
@@ -131,15 +131,15 @@ public class ModuleTypeContainerDropEditPolicy extends
 		
 		ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(identifier);
 		if(null != unitWrapper){
-			HeuristicModuleUnitMap extantMap = Settings.heuristicModuleUnitMapList
+			HeuristicModuleUnitMap extantMap = Settings.heuristicModuleUnitFixList
 					.findHeuristicMapping(identifier);
 			if (extantMap != null) {
-				Settings.heuristicModuleUnitMapList.remove(extantMap);
+				Settings.heuristicModuleUnitFixList.remove(extantMap);
 			}
 			
 			ModuleWrapper moduleWrapper = new ModuleWrapper(module);
 			HeuristicModuleUnitMap map = new HeuristicModuleUnitMap(moduleWrapper, unitWrapper);
-			Settings.heuristicModuleUnitMapList.add(map);	
+			Settings.heuristicModuleUnitFixList.add(map);	
 			
 			return moduleWrapper;
 		}

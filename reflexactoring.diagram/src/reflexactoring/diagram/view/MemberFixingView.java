@@ -58,12 +58,12 @@ public class MemberFixingView extends ViewPart {
 		    	if (e.keyCode == 13) {  
 		    		String searchString = searchText.getText().toLowerCase();
 		    		if(searchString == null || searchString.trim().equals("")){
-		    			tableViewer.setInput(Settings.fixedPartMemberModuleList);
+		    			tableViewer.setInput(Settings.heuristicModuleMemberPartFixList);
 						tableViewer.refresh();
 		    		}else{
 		    			HeuristicModulePartFixMemberMapList filteredMapList
 		    				= new HeuristicModulePartFixMemberMapList();
-		    			for(HeuristicModulePartFixMemberMap map: Settings.fixedPartMemberModuleList){
+		    			for(HeuristicModulePartFixMemberMap map: Settings.heuristicModuleMemberPartFixList){
 		    				if(map.getMember().getName().toLowerCase().indexOf(searchString) != -1 ||
 		    						map.getMember().getUnitWrapper().getFullQualifiedName().toLowerCase().indexOf(searchString) != -1 ||
 		    						map.getModule().getName().toLowerCase().indexOf(searchString) != -1){
@@ -91,7 +91,7 @@ public class MemberFixingView extends ViewPart {
 		table.setLinesVisible(true);
 
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		tableViewer.setInput(Settings.fixedPartMemberModuleList);
+		tableViewer.setInput(Settings.heuristicModuleMemberPartFixList);
 
 		GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
@@ -112,9 +112,9 @@ public class MemberFixingView extends ViewPart {
 					TableItem[] ti = tableViewer.getTable().getSelection();
 					if (ti != null && ti.length > 0) { 
 						for(int i = 0; i < ti.length; i++){
-							Settings.fixedPartMemberModuleList.removeMap((HeuristicModulePartFixMemberMap) ti[i].getData());	
+							Settings.heuristicModuleMemberPartFixList.removeMap((HeuristicModulePartFixMemberMap) ti[i].getData());	
 						}						
-						tableViewer.setInput(Settings.fixedPartMemberModuleList);
+						tableViewer.setInput(Settings.heuristicModuleMemberPartFixList);
 						tableViewer.refresh();
 					}else{
 						

@@ -105,7 +105,7 @@ public class MappingDialog extends TitleAreaDialog {
 		for(ICompilationUnitWrapper type: Settings.scope.getScopeCompilationUnitList()){
 			//ICompilationUnitWrapper type = new ICompilationUnitWrapper(unit);
 			
-			if(Settings.heuristicModuleUnitMapList.findHeuristicMapping(type) == null){
+			if(Settings.heuristicModuleUnitFixList.findHeuristicMapping(type) == null){
 				unitCombo.add(type.getFullQualifiedName());
 				unitCombo.setData(type.getFullQualifiedName(), type);
 			}			
