@@ -26,5 +26,7 @@ public class Population {
 		this.list = list;
 	}
 	
-	
+	public void add(Genotype genotype){
+		list.add(genotype);
+	}
 }

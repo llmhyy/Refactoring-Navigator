@@ -3,6 +3,7 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.ui.PartInitException;
@@ -26,11 +27,13 @@ import reflexactoring.diagram.util.Settings;
 public class Rules {
 	
 	private HashMap<Integer, Integer> unitModuleFixList;
-	private HashMap<Integer, Integer> unitModuleStopList;
+	private HashMap<Integer, ArrayList<Integer>> unitModuleStopList;
 	private HashMap<Integer, Integer> memberModuleFixList;
-	private HashMap<Integer, Integer> memberModuleStopList;
+	private HashMap<Integer, ArrayList<Integer>> memberModuleStopList;
 	
-	
+	/**
+	 * Create a new Rules instance will get all the available fix/stop lists.
+	 */
 	public Rules(){
 		this.unitModuleFixList = deriveUnitModuleFixList();
 		this.unitModuleStopList = deriveUnitModuleStopList();
@@ -58,8 +61,8 @@ public class Rules {
 		return map;
 	}
 	
-	private HashMap<Integer, Integer> deriveUnitModuleStopList(){
-		HashMap<Integer, Integer> map = new HashMap<>();
+	private HashMap<Integer, ArrayList<Integer>> deriveUnitModuleStopList(){
+		HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
 		
 		//TODO for Adi
 		
@@ -104,8 +107,8 @@ public class Rules {
 		return map;
 	}
 	
-	private HashMap<Integer, Integer> deriveMemberModuleStopList(){
-		HashMap<Integer, Integer> map = new HashMap<>();
+	private HashMap<Integer, ArrayList<Integer>> deriveMemberModuleStopList(){
+		HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
 		
 		for(HeuristicModuleMemberStopMap m: Settings.heuristicModuleMemberStopMapList){
 			ModuleWrapper module = m.getModule();
@@ -114,7 +117,17 @@ public class Rules {
 			try {
 				int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
 				int memberIndex = Settings.scope.getUnitMemberIndex(member);
-				map.put(memberIndex, moduleIndex);
+				
+				ArrayList<Integer> moduleIndexList;
+				if(map.get(memberIndex) != null){
+					moduleIndexList = map.get(memberIndex);
+				}
+				else{
+					moduleIndexList = new ArrayList<>();
+				}
+				moduleIndexList.add(moduleIndex);
+				map.put(memberIndex, moduleIndexList);
+				
 				
 			} catch (PartInitException e) {
 				e.printStackTrace();
@@ -134,7 +147,7 @@ public class Rules {
 	/**
 	 * @return the moduleUnitStopList
 	 */
-	public HashMap<Integer, Integer> getUnitModuleStopList() {
+	public HashMap<Integer, ArrayList<Integer>> getUnitModuleStopList() {
 		return unitModuleStopList;
 	}
 
@@ -148,7 +161,7 @@ public class Rules {
 	/**
 	 * @return the moduleMemberStopList
 	 */
-	public HashMap<Integer, Integer> getMemberModuleStopList() {
+	public HashMap<Integer, ArrayList<Integer>> getMemberModuleStopList() {
 		return memberModuleStopList;
 	}
 }
