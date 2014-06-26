@@ -84,57 +84,53 @@ public class PopulationGenerator {
 			int popSize, boolean isForTypePopulation) {
 		Population population = new Population();
 		
-		try {
-			int moduleNum = ReflexactoringUtil.getModuleList(Settings.diagramPath).size();
-			for(int i=0; i<popSize; i++){
-				int[] DNA = new int[seedDNA.length];
-				
-				for(int j=0; j<seedDNA.length; j++){
-					/**
-					 * fixed map cannot be moved.
-					 */
-					if(fixList.containsKey(j)){
-						DNA[j] = seedDNA[j];
+		int moduleNum = ReflexactoringUtil.getModuleList(Settings.diagramPath).size();
+		for(int i=0; i<popSize; i++){
+			int[] DNA = new int[seedDNA.length];
+			
+			for(int j=0; j<seedDNA.length; j++){
+				/**
+				 * fixed map cannot be moved.
+				 */
+				if(fixList.containsKey(j)){
+					DNA[j] = seedDNA[j];
+				}
+				/**
+				 * try to randomly change some mapping w.r.t stop list, i.e., a forbidden map
+				 * will not be generated.
+				 */
+				else{
+					ArrayList<Integer> availabelModuleIndexList = new ArrayList<>();
+					ArrayList<Integer> stopModuleIndexList = stopList.get(j);
+					for(int k=0; k<moduleNum; k++){
+						if(!stopModuleIndexList.contains(k)){
+							availabelModuleIndexList.add(k);
+						}
+					}
+					
+					if(availabelModuleIndexList.size() > 0){
+						int index = (int) (Math.random()*availabelModuleIndexList.size());
+						DNA[j] = availabelModuleIndexList.get(index);
 					}
 					/**
-					 * try to randomly change some mapping w.r.t stop list, i.e., a forbidden map
-					 * will not be generated.
+					 * For error information, i.e., no available low level nodes mapped to module.
 					 */
 					else{
-						ArrayList<Integer> availabelModuleIndexList = new ArrayList<>();
-						ArrayList<Integer> stopModuleIndexList = stopList.get(j);
-						for(int k=0; k<moduleNum; k++){
-							if(!stopModuleIndexList.contains(k)){
-								availabelModuleIndexList.add(k);
-							}
-						}
+						DNA[j] = seedDNA[j];
 						
-						if(availabelModuleIndexList.size() > 0){
-							int index = (int) (Math.random()*availabelModuleIndexList.size());
-							DNA[j] = availabelModuleIndexList.get(index);
+						String lowLevelModelName;
+						if(isForTypePopulation){
+							lowLevelModelName = Settings.scope.getScopeCompilationUnitList().get(j).getName();
 						}
-						/**
-						 * For error information, i.e., no available low level nodes mapped to module.
-						 */
 						else{
-							DNA[j] = seedDNA[j];
-							
-							String lowLevelModelName;
-							if(isForTypePopulation){
-								lowLevelModelName = Settings.scope.getScopeCompilationUnitList().get(j).getName();
-							}
-							else{
-								lowLevelModelName = Settings.scope.getScopeMemberList().get(j).getName();
-							}
-							System.err.println("No possible module could be mapped to " + lowLevelModelName);
+							lowLevelModelName = Settings.scope.getScopeMemberList().get(j).getName();
 						}
-					}					
-				}
-				
-				
+						System.err.println("No possible module could be mapped to " + lowLevelModelName);
+					}
+				}					
 			}
-		} catch (PartInitException e) {
-			e.printStackTrace();
+			
+			
 		}
 		
 		return population;

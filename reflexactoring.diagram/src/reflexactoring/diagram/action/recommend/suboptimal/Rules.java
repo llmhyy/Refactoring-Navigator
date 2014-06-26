@@ -48,14 +48,10 @@ public class Rules {
 			ModuleWrapper module = m.getModule();
 			ICompilationUnitWrapper unit = m.getUnit();
 			
-			try {
-				int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
-				int unitIndex = Settings.scope.getICompilationUnitIndex(unit);
-				
-				map.put(unitIndex, moduleIndex);
-			} catch (PartInitException e) {
-				e.printStackTrace();
-			}
+			int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
+			int unitIndex = Settings.scope.getICompilationUnitIndex(unit);
+			
+			map.put(unitIndex, moduleIndex);
 		}
 		
 		return map;
@@ -78,15 +74,10 @@ public class Rules {
 			ModuleWrapper module = m.getModule();
 			ICompilationUnitWrapper unit = m.getUnit();
 			
-			try {
-				int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
-				for(UnitMemberWrapper member: unit.getMembers()){
-					int memberIndex = Settings.scope.getUnitMemberIndex(member);
-					map.put(memberIndex, moduleIndex);
-				}
-				
-			} catch (PartInitException e) {
-				e.printStackTrace();
+			int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
+			for(UnitMemberWrapper member: unit.getMembers()){
+				int memberIndex = Settings.scope.getUnitMemberIndex(member);
+				map.put(memberIndex, moduleIndex);
 			}
 		}
 		
@@ -94,14 +85,9 @@ public class Rules {
 			ModuleWrapper module = m.getModule();
 			UnitMemberWrapper member = m.getMember();
 			
-			try {
-				int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
-				int memberIndex = Settings.scope.getUnitMemberIndex(member);
-				map.put(memberIndex, moduleIndex);
-				
-			} catch (PartInitException e) {
-				e.printStackTrace();
-			}
+			int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
+			int memberIndex = Settings.scope.getUnitMemberIndex(member);
+			map.put(memberIndex, moduleIndex);
 		}
 		
 		return map;
@@ -114,24 +100,18 @@ public class Rules {
 			ModuleWrapper module = m.getModule();
 			UnitMemberWrapper member = m.getMember();
 			
-			try {
-				int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
-				int memberIndex = Settings.scope.getUnitMemberIndex(member);
-				
-				ArrayList<Integer> moduleIndexList;
-				if(map.get(memberIndex) != null){
-					moduleIndexList = map.get(memberIndex);
-				}
-				else{
-					moduleIndexList = new ArrayList<>();
-				}
-				moduleIndexList.add(moduleIndex);
-				map.put(memberIndex, moduleIndexList);
-				
-				
-			} catch (PartInitException e) {
-				e.printStackTrace();
+			int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
+			int memberIndex = Settings.scope.getUnitMemberIndex(member);
+			
+			ArrayList<Integer> moduleIndexList;
+			if(map.get(memberIndex) != null){
+				moduleIndexList = map.get(memberIndex);
 			}
+			else{
+				moduleIndexList = new ArrayList<>();
+			}
+			moduleIndexList.add(moduleIndex);
+			map.put(memberIndex, moduleIndexList);
 		}
 		
 		return map;
