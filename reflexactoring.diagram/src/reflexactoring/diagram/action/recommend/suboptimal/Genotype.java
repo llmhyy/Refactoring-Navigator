@@ -43,7 +43,17 @@ public class Genotype {
 	 * @return the fitness
 	 */
 	public double getFitness() {
+		
+		if(fitness == 0){
+			fitness = computeFitness();
+		}
+		
 		return fitness;
+	}
+	
+	private double computeFitness(){
+		//TODO
+		return 0;
 	}
 
 	/**
