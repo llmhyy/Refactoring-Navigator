@@ -20,6 +20,8 @@ public class DefaultCrossoverer implements Crossoverer{
 			Genotype gene1 = population.getList().get(i);
 			Genotype gene2 = population.getList().get(i+1);
 			
+			int[] originalDNA = gene1.getOriginalDNA();
+			
 			int[] DNA1 = new int[gene1.getLength()];
 			int[] DNA2 = new int[gene2.getLength()];
 			
@@ -45,8 +47,8 @@ public class DefaultCrossoverer implements Crossoverer{
 				}
 			}
 			
-			newGeneration.add(new Genotype(DNA1));
-			newGeneration.add(new Genotype(DNA2));
+			newGeneration.add(new Genotype(DNA1, originalDNA));
+			newGeneration.add(new Genotype(DNA2, originalDNA));
 		}
 		
 		return newGeneration;

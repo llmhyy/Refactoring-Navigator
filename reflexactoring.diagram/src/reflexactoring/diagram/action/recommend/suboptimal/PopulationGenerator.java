@@ -130,7 +130,8 @@ public class PopulationGenerator {
 				}					
 			}
 			
-			
+			Genotype gene = new Genotype(DNA, seedDNA);
+			population.add(gene);
 		}
 		
 		return population;
