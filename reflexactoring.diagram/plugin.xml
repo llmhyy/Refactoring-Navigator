@@ -817,10 +817,18 @@
       </view>
       <view
             category="reflexactoring.diagram.view.category"
-            class="reflexactoring.diagram.view.ForbiddenView"
+            class="reflexactoring.diagram.view.ModuleMemberForbiddenView"
             icon="icons/view/forbid.gif"
-            id="reflexactoring.diagram.view.forbidMap"
-            name="Forbidden List"
+            id="reflexactoring.diagram.view.moduleMemberForbidMap"
+            name="Module-Member Forbidden List"
+            restorable="true">
+      </view>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.ModuleTypeForbiddenView"
+            icon="icons/view/forbid.gif"
+            id="reflexactoring.diagram.view.moduleUnitForbidMap"
+            name="Module-Type Forbidden List"
             restorable="true">
       </view>
       <view

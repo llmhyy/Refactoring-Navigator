@@ -12,6 +12,7 @@ import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMapList;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
+import reflexactoring.diagram.bean.HeuristicModuleUnitStopMapList;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -33,6 +34,13 @@ public class Settings {
 	 */
 	public static HeuristicModuleUnitMapList heuristicModuleUnitFixList
 		= new HeuristicModuleUnitMapList();
+	
+	/**
+	 * It is used for keeping user-specified forbidden list indicating which type(unit) can never
+	 * be mapped to which module.
+	 */
+	public static HeuristicModuleUnitStopMapList heuristicModuleUnitStopMapList
+		= new HeuristicModuleUnitStopMapList();
 	
 	/**
 	 * It is used for keeping user-specified forbidden list indicating which member can never

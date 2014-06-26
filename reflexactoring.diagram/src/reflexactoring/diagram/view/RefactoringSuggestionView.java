@@ -250,7 +250,7 @@ public class RefactoringSuggestionView extends ViewPart {
 							
 							Settings.heuristicModuleMemberStopMapList.add(stopMap);
 							ViewUpdater updater = new ViewUpdater();
-							updater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, true);
+							updater.updateView(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, true);
 						}
 						
 						FormText t = (FormText) e.getSource();
@@ -290,7 +290,7 @@ public class RefactoringSuggestionView extends ViewPart {
 							
 							Settings.heuristicModuleMemberStopMapList.removeMap(stopMap);
 							ViewUpdater updater = new ViewUpdater();
-							updater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, true);
+							updater.updateView(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, true);
 						}
 						
 						FormText t = (FormText) e.getSource();

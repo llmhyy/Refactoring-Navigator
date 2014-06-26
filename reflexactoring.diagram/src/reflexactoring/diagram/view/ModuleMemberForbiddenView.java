@@ -32,12 +32,12 @@ import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
 import reflexactoring.diagram.util.Settings;
 
-public class ForbiddenView extends ViewPart {
+public class ModuleMemberForbiddenView extends ViewPart {
 
 	private Text searchText;
 	private TableViewer tableViewer;
 	
-	public ForbiddenView() {
+	public ModuleMemberForbiddenView() {
 		
 	}
 
