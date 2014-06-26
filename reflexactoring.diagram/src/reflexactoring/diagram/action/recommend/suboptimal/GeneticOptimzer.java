@@ -3,6 +3,7 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
+
 /**
  * @author linyun
  *
@@ -42,13 +43,6 @@ public class GeneticOptimzer {
 	}
 
 	/**
-	 * @return the population
-	 */
-	public Population getPopulation() {
-		return population;
-	}
-
-	/**
 	 * @param population the population to set
 	 */
 	public void setPopulation(Population population) {
@@ -56,24 +50,10 @@ public class GeneticOptimzer {
 	}
 
 	/**
-	 * @return the selector
-	 */
-	public Selector getSelector() {
-		return selector;
-	}
-
-	/**
 	 * @param selector the selector to set
 	 */
 	public void setSelector(Selector selector) {
 		this.selector = selector;
-	}
-
-	/**
-	 * @return the crossoverer
-	 */
-	public Crossoverer getCrossoverer() {
-		return crossoverer;
 	}
 
 	/**
@@ -95,13 +75,6 @@ public class GeneticOptimzer {
 	 */
 	public void setMutator(Mutator mutator) {
 		this.mutator = mutator;
-	}
-
-	/**
-	 * @return the iterationNum
-	 */
-	public int getIterationNum() {
-		return iterationNum;
 	}
 
 	/**
