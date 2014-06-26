@@ -8,7 +8,7 @@ package reflexactoring.diagram.action.recommend.suboptimal;
  * @author linyun
  *
  */
-public class GeneticOptimzer {
+public class GeneticOptimizer {
 	
 	private Population population;
 	private Selector selector;
@@ -22,7 +22,7 @@ public class GeneticOptimzer {
 	 * @param crossoverer
 	 * @param mutator
 	 */
-	public GeneticOptimzer(Population population, Selector selector,
+	public GeneticOptimizer(Population population, Selector selector,
 			Crossoverer crossoverer, Mutator mutator) {
 		super();
 		this.population = population;
@@ -34,9 +34,18 @@ public class GeneticOptimzer {
 	public Population optimize(){
 		Population pop = null;
 		for(int i=0; i<iterationNum; i++){			
+			/**
+			 * derive a new generation.
+			 */
 			Population newPop = this.crossoverer.deriveGeneration(this.population);
-			pop = this.selector.selectPopulation(this.population, newPop);
+			/**
+			 * mutate some of the genotypes.
+			 */
 			pop = this.mutator.mutate(pop);		
+			/**
+			 * select the best ones of both generations.
+			 */
+			pop = this.selector.selectPopulation(this.population, newPop);
 		}
 		
 		return pop;
