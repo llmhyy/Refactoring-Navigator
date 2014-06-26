@@ -68,100 +68,87 @@ public class RefactoringRecommenderForOldRepresentation {
 			return suggestions;
 		}
 		
-		try {
-			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
-			/**
-			 * need to gain the dependencies amongst modules
-			 */
-			
-			final String msg = checkPossible(moduleList, Settings.scope.getScopeCompilationUnitList());
-			
-			if(!msg.equals("OK")){
-				Display.getDefault().asyncExec(new Runnable() {
+		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+		/**
+		 * need to gain the dependencies amongst modules
+		 */
+		
+		final String msg = checkPossible(moduleList, Settings.scope.getScopeCompilationUnitList());
+		
+		if(!msg.equals("OK")){
+			Display.getDefault().asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Problem", msg);
 					
-					@Override
-					public void run() {
-						MessageDialog.openConfirm(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Problem", msg);
-						
-					}
-				});
-				return new ArrayList<Suggestion>();
-			}
-			
-			GeneticOptimizer optimizer = new GeneticOptimizer();
-			ArrayList<Genotype> unitGeneList = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList, monitor);
-			
-			ArrayList<Suggestion> suggestions = new ArrayList<>();
-			for(Genotype unitGene: unitGeneList){
-				Suggestion suggestion = generateClassLevelSuggestion(unitGene, optimizer, moduleList);
-				
-				if(unitGene.isFeasible()){
-					suggestion.setFeasible(true);
-					suggestions.add(suggestion);
 				}
-				else{
-					suggestion.setFeasible(false);
-					ArrayList<SuggestionMove> highLevelSuggestion = findHighLevelModificationSuggestion(unitGene, moduleList);
-					for(SuggestionMove move: highLevelSuggestion){
-						suggestion.add(0, move);
-					}
-					suggestions.add(suggestion);
-				}
-				
-			}
-			
-			return suggestions;
-			
-		} catch (PartInitException e) {
-			e.printStackTrace();
+			});
+			return new ArrayList<Suggestion>();
 		}
 		
-		return new ArrayList<Suggestion>();
+		GeneticOptimizer optimizer = new GeneticOptimizer();
+		ArrayList<Genotype> unitGeneList = optimizer.optimize(Settings.scope.getScopeCompilationUnitList(), moduleList, monitor);
+		
+		ArrayList<Suggestion> suggestions = new ArrayList<>();
+		for(Genotype unitGene: unitGeneList){
+			Suggestion suggestion = generateClassLevelSuggestion(unitGene, optimizer, moduleList);
+			
+			if(unitGene.isFeasible()){
+				suggestion.setFeasible(true);
+				suggestions.add(suggestion);
+			}
+			else{
+				suggestion.setFeasible(false);
+				ArrayList<SuggestionMove> highLevelSuggestion = findHighLevelModificationSuggestion(unitGene, moduleList);
+				for(SuggestionMove move: highLevelSuggestion){
+					suggestion.add(0, move);
+				}
+				suggestions.add(suggestion);
+			}
+			
+		}
+		
+		return suggestions;
+		
 	}
 	
 	public ArrayList<Suggestion> recommendStartByMember(IProgressMonitor monitor){
 		
 		ArrayList<ModuleWrapper> moduleList;
-		try {
-			moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+		moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+		
+		GeneticOptimizer optimizer = new GeneticOptimizer();
+		
+		//UnitMemberExtractor extractor = new UnitMemberExtractor();
+		//UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
+		UnitMemberWrapperList members = Settings.scope.getScopeMemberList();
+		
+		ArrayList<Genotype> memberGenes = optimizer.optimize(members, moduleList, monitor);
+		
+		ArrayList<Suggestion> suggestions = new ArrayList<>();
+		
+		for(Genotype memberGene: memberGenes){
+			Suggestion suggestion = generateMemberLevelSuggestion(memberGene, optimizer, 
+					moduleList, members);				
 			
-			GeneticOptimizer optimizer = new GeneticOptimizer();
-			
-			//UnitMemberExtractor extractor = new UnitMemberExtractor();
-			//UnitMemberWrapperList members = extractor.extract(Settings.scope.getScopeCompilationUnitList());
-			UnitMemberWrapperList members = Settings.scope.getScopeMemberList();
-			
-			ArrayList<Genotype> memberGenes = optimizer.optimize(members, moduleList, monitor);
-			
-			ArrayList<Suggestion> suggestions = new ArrayList<>();
-			
-			for(Genotype memberGene: memberGenes){
-				Suggestion suggestion = generateMemberLevelSuggestion(memberGene, optimizer, 
-						moduleList, members);				
-				
-				if(memberGene.isFeasible()){
-					suggestion.setFeasible(true);
-					suggestions.add(suggestion);
+			if(memberGene.isFeasible()){
+				suggestion.setFeasible(true);
+				suggestions.add(suggestion);
+			}
+			else{
+				suggestion.setFeasible(false);
+				ArrayList<SuggestionMove> highLevelSuggestion = findHighLevelModificationSuggestion(memberGene, moduleList);
+				for(SuggestionMove move: highLevelSuggestion){
+					suggestion.add(0, move);
 				}
-				else{
-					suggestion.setFeasible(false);
-					ArrayList<SuggestionMove> highLevelSuggestion = findHighLevelModificationSuggestion(memberGene, moduleList);
-					for(SuggestionMove move: highLevelSuggestion){
-						suggestion.add(0, move);
-					}
-					suggestions.add(suggestion);
-				}
-				
+				suggestions.add(suggestion);
 			}
 			
-			return suggestions;
-			
-		} catch (PartInitException e) {
-			e.printStackTrace();
 		}
 		
+		return suggestions;
 		
-		return new ArrayList<Suggestion>();
 	}
 	
 	private ArrayList<SuggestionMove> findHighLevelModificationSuggestion(Genotype bestGene, ArrayList<ModuleWrapper> moduleList){

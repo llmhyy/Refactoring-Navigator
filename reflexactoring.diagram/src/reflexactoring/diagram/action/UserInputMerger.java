@@ -29,58 +29,50 @@ public class UserInputMerger {
 	
 	public void mergeHeuristicMappingTable(){
 		if(Settings.heuristicModuleUnitFixList != null){
-			try {
-				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			
+			Iterator<HeuristicModuleUnitMap> iterator = Settings.heuristicModuleUnitFixList.iterator();
+			while(iterator.hasNext()){
+				HeuristicModuleUnitMap map = iterator.next();
 				
-				Iterator<HeuristicModuleUnitMap> iterator = Settings.heuristicModuleUnitFixList.iterator();
-				while(iterator.hasNext()){
-					HeuristicModuleUnitMap map = iterator.next();
-					
-					ModuleWrapper moduleWrapper = map.getModule();
-					ICompilationUnitWrapper unit = map.getUnit();
-					
-					ModuleWrapper correspondingModule = ReflexactoringUtil.findModule(moduleList, moduleWrapper.getModule());
-					ICompilationUnitWrapper correspondingUnit = Settings.scope.findUnit(unit.getFullQualifiedName());
+				ModuleWrapper moduleWrapper = map.getModule();
+				ICompilationUnitWrapper unit = map.getUnit();
 				
-					if(correspondingModule == null || correspondingUnit == null){
-						iterator.remove();
-					}
-					else{
-						map.setModule(correspondingModule);
-						map.setUnit(correspondingUnit);
-					}
+				ModuleWrapper correspondingModule = ReflexactoringUtil.findModule(moduleList, moduleWrapper.getModule());
+				ICompilationUnitWrapper correspondingUnit = Settings.scope.findUnit(unit.getFullQualifiedName());
+			
+				if(correspondingModule == null || correspondingUnit == null){
+					iterator.remove();
 				}
-			} catch (PartInitException e) {
-				e.printStackTrace();
+				else{
+					map.setModule(correspondingModule);
+					map.setUnit(correspondingUnit);
+				}
 			}
 		}
 	}
 	
 	public void mergeHeuristicFixMemberMappingTable(){
 		if(Settings.heuristicModuleUnitMemberFixList != null){
-			try {
-				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			
+			Iterator<HeuristicModuleUnitFixMemberMap> iterator = Settings.heuristicModuleUnitMemberFixList.iterator();
+			while(iterator.hasNext()){
+				HeuristicModuleUnitFixMemberMap map = iterator.next();
 				
-				Iterator<HeuristicModuleUnitFixMemberMap> iterator = Settings.heuristicModuleUnitMemberFixList.iterator();
-				while(iterator.hasNext()){
-					HeuristicModuleUnitFixMemberMap map = iterator.next();
-					
-					ModuleWrapper moduleWrapper = map.getModule();
-					ICompilationUnitWrapper unit = map.getUnit();
-					
-					ModuleWrapper correspondingModule = ReflexactoringUtil.findModule(moduleList, moduleWrapper.getModule());
-					ICompilationUnitWrapper correspondingUnit = Settings.scope.findUnit(unit.getFullQualifiedName());
+				ModuleWrapper moduleWrapper = map.getModule();
+				ICompilationUnitWrapper unit = map.getUnit();
 				
-					if(correspondingModule == null || correspondingUnit == null){
-						iterator.remove();
-					}
-					else{
-						map.setModule(correspondingModule);
-						map.setUnit(correspondingUnit);
-					}
+				ModuleWrapper correspondingModule = ReflexactoringUtil.findModule(moduleList, moduleWrapper.getModule());
+				ICompilationUnitWrapper correspondingUnit = Settings.scope.findUnit(unit.getFullQualifiedName());
+			
+				if(correspondingModule == null || correspondingUnit == null){
+					iterator.remove();
 				}
-			} catch (PartInitException e) {
-				e.printStackTrace();
+				else{
+					map.setModule(correspondingModule);
+					map.setUnit(correspondingUnit);
+				}
 			}
 		}
 	}
@@ -90,29 +82,25 @@ public class UserInputMerger {
 	 */
 	public void mergeHeuristicFixPartMemberMappingTable() {
 		if(Settings.heuristicModuleMemberPartFixList != null){
-			try {
-				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			
+			Iterator<HeuristicModulePartFixMemberMap> iterator = Settings.heuristicModuleMemberPartFixList.iterator();
+			while(iterator.hasNext()){
+				HeuristicModulePartFixMemberMap map = iterator.next();
 				
-				Iterator<HeuristicModulePartFixMemberMap> iterator = Settings.heuristicModuleMemberPartFixList.iterator();
-				while(iterator.hasNext()){
-					HeuristicModulePartFixMemberMap map = iterator.next();
-					
-					ModuleWrapper moduleWrapper = map.getModule();
-					UnitMemberWrapper memberWrapper = map.getMember();
-					
-					ModuleWrapper correspondingModule = ReflexactoringUtil.findModule(moduleList, moduleWrapper.getModule());
-					UnitMemberWrapper correspondingMember = Settings.scope.findMember(memberWrapper);
+				ModuleWrapper moduleWrapper = map.getModule();
+				UnitMemberWrapper memberWrapper = map.getMember();
 				
-					if(correspondingModule == null || correspondingMember == null){
-						iterator.remove();
-					}
-					else{
-						map.setModule(correspondingModule);
-						map.setMember(correspondingMember);
-					}
+				ModuleWrapper correspondingModule = ReflexactoringUtil.findModule(moduleList, moduleWrapper.getModule());
+				UnitMemberWrapper correspondingMember = Settings.scope.findMember(memberWrapper);
+			
+				if(correspondingModule == null || correspondingMember == null){
+					iterator.remove();
 				}
-			} catch (PartInitException e) {
-				e.printStackTrace();
+				else{
+					map.setModule(correspondingModule);
+					map.setMember(correspondingMember);
+				}
 			}
 		}
 		
@@ -120,61 +108,53 @@ public class UserInputMerger {
 
 	public void mergeForbiddenModuleMemberTable(){
 		if(Settings.heuristicModuleMemberStopMapList != null){
-			try {
-				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			
+			Iterator<HeuristicModuleMemberStopMap> iterator = Settings.heuristicModuleMemberStopMapList.iterator();
+			while(iterator.hasNext()){
+				HeuristicModuleMemberStopMap map = iterator.next();
 				
-				Iterator<HeuristicModuleMemberStopMap> iterator = Settings.heuristicModuleMemberStopMapList.iterator();
-				while(iterator.hasNext()){
-					HeuristicModuleMemberStopMap map = iterator.next();
-					
-					ModuleWrapper moduleWrapper = map.getModule();
-					UnitMemberWrapper memberWrapper = map.getMember();
-					
-					ModuleWrapper correspondingModule = ReflexactoringUtil.findModule(moduleList, moduleWrapper.getModule());
-					UnitMemberWrapper correspondingMember = Settings.scope.findMember(memberWrapper);
+				ModuleWrapper moduleWrapper = map.getModule();
+				UnitMemberWrapper memberWrapper = map.getMember();
 				
-					if(correspondingModule == null || correspondingMember == null){
-						iterator.remove();
-					}
-					else{
-						map.setModule(correspondingModule);
-						map.setMember(correspondingMember);
-					}
+				ModuleWrapper correspondingModule = ReflexactoringUtil.findModule(moduleList, moduleWrapper.getModule());
+				UnitMemberWrapper correspondingMember = Settings.scope.findMember(memberWrapper);
+			
+				if(correspondingModule == null || correspondingMember == null){
+					iterator.remove();
 				}
-			} catch (PartInitException e) {
-				e.printStackTrace();
+				else{
+					map.setModule(correspondingModule);
+					map.setMember(correspondingMember);
+				}
 			}
 		}
 	}
 	
 	public void mergeConfidenceTable(){
 		if(Settings.confidenceTable.size() > 0){
-			try {
-				ModuleDependencyConfidenceTable table = new ModuleDependencyConfidenceTable();
-				
-				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
-				
-				for(ModuleWrapper moduleWrapper: moduleList){
-					double[] confidenceList = new double[moduleList.size()];
-					for(int i=0; i<confidenceList.length; i++){
-						Double conf = findCorrespondingConfidence(moduleWrapper, moduleList.get(i));
-						if(conf == null){
-							confidenceList[i] = 0.5;							
-						}
-						else{
-							confidenceList[i] = conf;
-						}
+			ModuleDependencyConfidenceTable table = new ModuleDependencyConfidenceTable();
+			
+			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			
+			for(ModuleWrapper moduleWrapper: moduleList){
+				double[] confidenceList = new double[moduleList.size()];
+				for(int i=0; i<confidenceList.length; i++){
+					Double conf = findCorrespondingConfidence(moduleWrapper, moduleList.get(i));
+					if(conf == null){
+						confidenceList[i] = 0.5;							
 					}
-					
-					ModuleDependencyConfidence confidence = 
-							new ModuleDependencyConfidence(moduleWrapper, moduleList, confidenceList);
-					table.add(confidence);
+					else{
+						confidenceList[i] = conf;
+					}
 				}
 				
-				Settings.confidenceTable = table;
-			} catch (PartInitException e) {
-				e.printStackTrace();
+				ModuleDependencyConfidence confidence = 
+						new ModuleDependencyConfidence(moduleWrapper, moduleList, confidenceList);
+				table.add(confidence);
 			}
+			
+			Settings.confidenceTable = table;
 			
 		}
 	}

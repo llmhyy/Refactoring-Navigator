@@ -87,13 +87,9 @@ public class MappingDialog extends TitleAreaDialog {
 
 		moduleCombo = new Combo(group, SWT.BORDER | SWT.READ_ONLY);
 		moduleCombo.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
-		try {
-			for(ModuleWrapper module: ReflexactoringUtil.getModuleList(Settings.diagramPath)){
-				moduleCombo.add(module.getName());
-				moduleCombo.setData(module.getName(), module);
-			}
-		} catch (PartInitException e) {
-			e.printStackTrace();
+		for(ModuleWrapper module: ReflexactoringUtil.getModuleList(Settings.diagramPath)){
+			moduleCombo.add(module.getName());
+			moduleCombo.setData(module.getName(), module);
 		}
 		
 		Label unitLabel = new Label(group, SWT.NONE);

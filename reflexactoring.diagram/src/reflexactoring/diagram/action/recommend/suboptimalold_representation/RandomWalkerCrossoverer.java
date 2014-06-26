@@ -207,13 +207,8 @@ public class RandomWalkerCrossoverer extends AbstractAsexualCrossoverer implemen
 	}
 	
 	private ModuleWrapper showModuleWrapper(int moduleIndex){
-		try {
-			return ReflexactoringUtil.getModuleList(Settings.diagramPath).get(moduleIndex);
-		} catch (PartInitException e) {
-			e.printStackTrace();
-		}
+		return ReflexactoringUtil.getModuleList(Settings.diagramPath).get(moduleIndex);
 		
-		return null;
 	}
 	
 	private LowLevelGraphNode showType(int nodeIndex){

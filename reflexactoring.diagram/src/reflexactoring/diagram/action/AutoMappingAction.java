@@ -27,56 +27,51 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 	
 	@Override
 	public void run(IAction action) {
-		try {
-			RecordParameters.mapTime++;
-			
-			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
-			String message = checkValidity(moduleList);
-			if(!AutoMappingAction.OK_MESSAGE.equals(message)){
-				MessageDialog.openError(null, "Validity Error", message);
-				return;
-			}
-			
-			/*ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList = new ArrayList<>();
-			for(ICompilationUnit unit: Settings.scope.getScopeCompilationUnitList()){
-				compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
-			}
-			compilationUnitWrapperList = buildStructuralDependency(compilationUnitWrapperList);*/
-			
-			ModelMapper mapper = new ModelMapper();
-			
-			double[][] similarityTable = mapper.generateMappingRelation(moduleList, Settings.scope.getScopeCompilationUnitList());
-			//double[][] similarityTable = mapper.computeSimilarityTableWithRegardToHeurisitcRules(moduleList, compilationUnitWrapperList);
-			ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(similarityTable, 
-					moduleList, Settings.scope.getScopeCompilationUnitList());
-			Settings.similarityTable = table;
-			
-			ModuleUnitsSimilarityView similarityView = (ModuleUnitsSimilarityView)PlatformUI.getWorkbench().
-					getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
-			similarityView.refreshUI(Settings.similarityTable);
-			
-			
-			ConstraintConfidenceView confidenceView = (ConstraintConfidenceView) PlatformUI.getWorkbench().
-					getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW);
-			ReflexactoringUtil.getModuleDependencyConfidenceTable();
-			confidenceView.refreshUI(Settings.confidenceTable);
-			
-			//view.getViewer().setContentProvider(new ArrayContentProvider());
-			//view.getViewer().setInput(Settings.similarityTable);
-			//view.getViewer().refresh();
-			
-			
-			
-			new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
-			
-			/**
-			 * after all, the recompute settings should be set false to improve efficiency
-			 */
-			Settings.isCompliationUnitChanged = false;
-		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		RecordParameters.mapTime++;
+		
+		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+		String message = checkValidity(moduleList);
+		if(!AutoMappingAction.OK_MESSAGE.equals(message)){
+			MessageDialog.openError(null, "Validity Error", message);
+			return;
 		}
+		
+		/*ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList = new ArrayList<>();
+		for(ICompilationUnit unit: Settings.scope.getScopeCompilationUnitList()){
+			compilationUnitWrapperList.add(new ICompilationUnitWrapper(unit));
+		}
+		compilationUnitWrapperList = buildStructuralDependency(compilationUnitWrapperList);*/
+		
+		ModelMapper mapper = new ModelMapper();
+		
+		double[][] similarityTable = mapper.generateMappingRelation(moduleList, Settings.scope.getScopeCompilationUnitList());
+		//double[][] similarityTable = mapper.computeSimilarityTableWithRegardToHeurisitcRules(moduleList, compilationUnitWrapperList);
+		ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(similarityTable, 
+				moduleList, Settings.scope.getScopeCompilationUnitList());
+		Settings.similarityTable = table;
+		
+		ModuleUnitsSimilarityView similarityView = (ModuleUnitsSimilarityView)PlatformUI.getWorkbench().
+				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
+		similarityView.refreshUI(Settings.similarityTable);
+		
+		
+		ConstraintConfidenceView confidenceView = (ConstraintConfidenceView) PlatformUI.getWorkbench().
+				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW);
+		ReflexactoringUtil.getModuleDependencyConfidenceTable();
+		confidenceView.refreshUI(Settings.confidenceTable);
+		
+		//view.getViewer().setContentProvider(new ArrayContentProvider());
+		//view.getViewer().setInput(Settings.similarityTable);
+		//view.getViewer().refresh();
+		
+		
+		
+		new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
+		
+		/**
+		 * after all, the recompute settings should be set false to improve efficiency
+		 */
+		Settings.isCompliationUnitChanged = false;
 		
 	}
 	

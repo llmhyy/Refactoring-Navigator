@@ -309,7 +309,7 @@ public class ReflexactoringUtil {
 	 * @return
 	 * @throws PartInitException
 	 */
-	public static ArrayList<ModuleWrapper> getModuleList(String diagramName) throws PartInitException{
+	public static ArrayList<ModuleWrapper> getModuleList(String diagramName){
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IProject project = root.getProject(ReflexactoringUtil.getTargetProjectName());
 		
@@ -382,26 +382,22 @@ public class ReflexactoringUtil {
 	public static void getModuleDependencyConfidenceTable(){
 		
 		if(Settings.confidenceTable.size() == 0){
-			try {
-				ModuleDependencyConfidenceTable table = new ModuleDependencyConfidenceTable();
-				
-				ArrayList<ModuleWrapper> moduleList = getModuleList(Settings.diagramPath);
-				
-				for(ModuleWrapper moduleWrapper: moduleList){
-					double[] confidenceList = new double[moduleList.size()];
-					for(int i=0; i<confidenceList.length; i++){
-						confidenceList[i] = 0.5;
-					}
-					
-					ModuleDependencyConfidence confidence = 
-							new ModuleDependencyConfidence(moduleWrapper, moduleList, confidenceList);
-					table.add(confidence);
+			ModuleDependencyConfidenceTable table = new ModuleDependencyConfidenceTable();
+			
+			ArrayList<ModuleWrapper> moduleList = getModuleList(Settings.diagramPath);
+			
+			for(ModuleWrapper moduleWrapper: moduleList){
+				double[] confidenceList = new double[moduleList.size()];
+				for(int i=0; i<confidenceList.length; i++){
+					confidenceList[i] = 0.5;
 				}
 				
-				Settings.confidenceTable = table;
-			} catch (PartInitException e) {
-				e.printStackTrace();
+				ModuleDependencyConfidence confidence = 
+						new ModuleDependencyConfidence(moduleWrapper, moduleList, confidenceList);
+				table.add(confidence);
 			}
+			
+			Settings.confidenceTable = table;
 		}
 		else{
 			UserInputMerger merger = new UserInputMerger();
@@ -483,15 +479,10 @@ public class ReflexactoringUtil {
 	 * @return
 	 */
 	public static boolean isReflexionModelChanged(){
-		try {
-			return Settings.isCompliationUnitChanged || isModuleChaged(getModuleList(Settings.diagramPath))
-					|| Settings.similarityTable.size()==0 || Settings.confidenceTable.size()==0;
-		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		return Settings.isCompliationUnitChanged || isModuleChaged(getModuleList(Settings.diagramPath))
+				|| Settings.similarityTable.size()==0 || Settings.confidenceTable.size()==0;
 		
-		return true;
+		//return true;
 	}
 
 	public static ArrayList<ICompilationUnitWrapper> getUnitListFromModule(ModuleWrapper module){
