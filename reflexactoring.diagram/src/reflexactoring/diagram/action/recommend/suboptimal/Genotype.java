@@ -26,4 +26,12 @@ public class Genotype {
 	public int[] getDNA() {
 		return DNA;
 	}
+	
+	public void setDNA(int[] DNA){
+		this.DNA = DNA;
+	}
+	
+	public int getLength(){
+		return DNA.length;
+	}
 }

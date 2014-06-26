@@ -29,4 +29,8 @@ public class Population {
 	public void add(Genotype genotype){
 		list.add(genotype);
 	}
+	
+	public int getSize(){
+		return list.size();
+	}
 }
