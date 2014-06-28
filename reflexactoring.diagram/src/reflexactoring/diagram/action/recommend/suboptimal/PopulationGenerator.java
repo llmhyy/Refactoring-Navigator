@@ -8,6 +8,9 @@ import java.util.HashMap;
 
 import org.eclipse.ui.PartInitException;
 
+import cern.colt.matrix.impl.SparseDoubleMatrix2D;
+import reflexactoring.diagram.action.recommend.MemberModuleValidityExaminer;
+import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -47,7 +50,7 @@ public class PopulationGenerator {
 		 */
 		Rules rules = new Rules();
 		Population population = generateRandomPopualtion(rules.getUnitModuleFixList(), rules.getUnitModuleStopList(), 
-				seedDNA, populationSize, true);
+				seedDNA, moduleList.size(), populationSize, Settings.similarityTable.convertModuleUnitsSimilarityTableToRawTable(), true);
 		
 		return population;
 	}
@@ -65,10 +68,37 @@ public class PopulationGenerator {
 		}
 		
 		Rules rules = new Rules();
+		double[][] similarityTable = computeMemberSimilarity();
 		Population population = generateRandomPopualtion(rules.getMemberModuleFixList(), rules.getMemberModuleStopList(), 
-				seedDNA, populationSize, false);
+				seedDNA, moduleList.size(), populationSize, similarityTable, false);
 		
 		return population;
+	}
+	
+	private double[][] computeMemberSimilarity(){
+		ArrayList<ModuleWrapper> modules = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+		UnitMemberWrapperList members = Settings.scope.getScopeMemberList();
+		
+		MemberModuleValidityExaminer examiner = new MemberModuleValidityExaminer();
+		double[][] similarityTable = new double[modules.size()][members.size()];
+		
+		for(int i=0; i<modules.size(); i++){
+			ModuleWrapper module = modules.get(i);
+			module.extractTermFrequency(module.getDescription());
+			for(int j=0; j<members.size(); j++){
+				UnitMemberWrapper member = members.get(j);
+				if(examiner.isValid(member, module)){
+					double similarity = module.computeSimilarity(member);
+					//System.currentTimeMillis();
+					similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) + similarity;					
+				}
+				else{
+					similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) - 1;
+				}
+			}
+		}
+		
+		return similarityTable;
 	}
 
 	/**
@@ -80,11 +110,22 @@ public class PopulationGenerator {
 	 */
 	private Population generateRandomPopualtion(
 			HashMap<Integer, Integer> fixList,
-			HashMap<Integer, ArrayList<Integer>> stopList, int[] seedDNA,
-			int popSize, boolean isForTypePopulation) {
+			HashMap<Integer, ArrayList<Integer>> stopList, int[] seedDNA, int moduleNum,
+			int popSize, double[][] similarityTable, boolean isForTypePopulation) {
 		Population population = new Population();
 		
-		int moduleNum = ReflexactoringUtil.getModuleList(Settings.diagramPath).size();
+		double[][] highLevelNodeMatrix = extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath));
+		double[][] lowLevelNodeMatrix;
+		
+		if(isForTypePopulation){
+			lowLevelNodeMatrix = extractGraph(Settings.scope.getScopeCompilationUnitList());
+		}
+		else{
+			lowLevelNodeMatrix = extractGraph(Settings.scope.getScopeMemberList());
+		}
+		
+		
+		//int moduleNum = ReflexactoringUtil.getModuleList(Settings.diagramPath).size();
 		for(int i=0; i<popSize; i++){
 			int[] DNA = new int[seedDNA.length];
 			
@@ -103,7 +144,7 @@ public class PopulationGenerator {
 					ArrayList<Integer> availabelModuleIndexList = new ArrayList<>();
 					ArrayList<Integer> stopModuleIndexList = stopList.get(j);
 					for(int k=0; k<moduleNum; k++){
-						if(!stopModuleIndexList.contains(k)){
+						if((stopModuleIndexList == null) || (!stopModuleIndexList.contains(k))){
 							availabelModuleIndexList.add(k);
 						}
 					}
@@ -130,12 +171,32 @@ public class PopulationGenerator {
 				}					
 			}
 			
-			Genotype gene = new Genotype(DNA, seedDNA);
+			Genotype gene = new Genotype(DNA, seedDNA, 
+					new DefaultFitnessEvaluator(similarityTable, highLevelNodeMatrix, lowLevelNodeMatrix));
 			population.add(gene);
 		}
 		
 		return population;
 	}
 	
-	
+	private double[][] extractGraph(ArrayList<? extends GraphNode> nodes){
+		
+		int dimension = nodes.size();
+		double[][] graphMatrix = new double[dimension][dimension];
+		
+		for(int i=0; i<dimension; i++){
+			for(int j=0; j<dimension; j++){
+				if(i != j){
+					GraphNode nodeI = nodes.get(i);
+					GraphNode nodeJ = nodes.get(j);
+					
+					if(nodeI.getCalleeList().contains(nodeJ)){
+						graphMatrix[i][j] = 1;
+					}
+				}
+			}
+		}
+		
+		return graphMatrix;
+	}
 }

@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
+import reflexactoring.diagram.util.ReflexactoringUtil;
+
 
 /**
  * @author linyun
@@ -32,20 +34,20 @@ public class GeneticOptimizer {
 	}
 	
 	public Population optimize(){
-		Population pop = null;
-		for(int i=0; i<iterationNum; i++){			
+		Population pop = this.population;
+		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getIterationNumber()); i++){			
 			/**
 			 * derive a new generation.
 			 */
-			Population newPop = this.crossoverer.deriveGeneration(this.population);
+			Population newPop = this.crossoverer.deriveGeneration(pop);
 			/**
 			 * mutate some of the genotypes.
 			 */
-			pop = this.mutator.mutate(pop);		
+			pop = this.mutator.mutate(newPop);		
 			/**
 			 * select the best ones of both generations.
 			 */
-			pop = this.selector.selectPopulation(this.population, newPop);
+			pop = this.selector.selectPopulation(pop, newPop);
 		}
 		
 		return pop;

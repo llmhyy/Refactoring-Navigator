@@ -47,8 +47,11 @@ public class DefaultCrossoverer implements Crossoverer{
 				}
 			}
 			
-			newGeneration.add(new Genotype(DNA1, originalDNA));
-			newGeneration.add(new Genotype(DNA2, originalDNA));
+			double[][] similarityTable = ((DefaultFitnessEvaluator)gene1.getEvaluator()).getSimilarityTable();
+			double[][] highLevelNodeMatrix = ((DefaultFitnessEvaluator)gene1.getEvaluator()).getHighLevelNodeMatrix();
+			double[][] lowLevelNodeMatrix = ((DefaultFitnessEvaluator)gene1.getEvaluator()).getLowLevelNodeMatrix();
+			newGeneration.add(new Genotype(DNA1, originalDNA, new DefaultFitnessEvaluator(similarityTable, highLevelNodeMatrix, lowLevelNodeMatrix)));
+			newGeneration.add(new Genotype(DNA2, originalDNA, new DefaultFitnessEvaluator(similarityTable, highLevelNodeMatrix, lowLevelNodeMatrix)));
 		}
 		
 		return newGeneration;

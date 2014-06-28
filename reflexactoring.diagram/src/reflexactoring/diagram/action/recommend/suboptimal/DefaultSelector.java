@@ -23,8 +23,9 @@ public class DefaultSelector implements Selector {
 		Collections.sort(geneList, new GenoTypeComparator());
 		
 		Population pop = new Population();
-		for(int i=0; i<pop.getSize()*2; i++){
-			if(i<pop.getSize()/2 || (i>=pop.getSize() && i<pop.getSize()+pop.getSize()/2)){
+		for(int i=0; i<geneList.size(); i++){
+			if(i<geneList.size()/4 || 
+					(i>=geneList.size()/2 && i<geneList.size()/2+geneList.size()/4)){
 				pop.add(geneList.get(i));
 			}
 		}

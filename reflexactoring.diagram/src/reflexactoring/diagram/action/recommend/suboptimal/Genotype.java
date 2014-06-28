@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
+import reflexactoring.diagram.util.ReflexactoringUtil;
+
 /**
  * 
  * 
@@ -14,14 +16,15 @@ public class Genotype {
 	private int[] originalDNA;
 	private double fitness;
 	
-
+	private FitnessEvaluator evaluator;
 	/**
 	 * @param DNA
 	 */
-	public Genotype(int[] DNA, int[] originalDNA) {
+	public Genotype(int[] DNA, int[] originalDNA, FitnessEvaluator evaluator) {
 		super();
 		this.DNA = DNA;
 		this.setOriginalDNA(originalDNA);
+		this.setEvaluator(evaluator);
 	}
 
 	/**
@@ -45,15 +48,14 @@ public class Genotype {
 	public double getFitness() {
 		
 		if(fitness == 0){
-			fitness = computeFitness();
+			fitness = evaluator.computeFitness(this);
 		}
 		
 		return fitness;
 	}
 	
-	private double computeFitness(){
-		//TODO
-		return 0;
+	public boolean isFeasible(){
+		return this.evaluator.isFeasible();
 	}
 
 	/**
@@ -76,5 +78,19 @@ public class Genotype {
 	 */
 	public void setOriginalDNA(int[] originalDNA) {
 		this.originalDNA = originalDNA;
+	}
+
+	/**
+	 * @return the evaluator
+	 */
+	public FitnessEvaluator getEvaluator() {
+		return evaluator;
+	}
+
+	/**
+	 * @param evaluator the evaluator to set
+	 */
+	public void setEvaluator(FitnessEvaluator evaluator) {
+		this.evaluator = evaluator;
 	}
 }

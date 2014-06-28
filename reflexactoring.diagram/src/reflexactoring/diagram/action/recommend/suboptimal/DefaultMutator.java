@@ -18,15 +18,18 @@ public class DefaultMutator implements Mutator {
 	private HashMap<Integer, Integer> fixList;
 	private HashMap<Integer, ArrayList<Integer>> stopList;
 	
+	private int moduleNum;
+	
 	/**
 	 * @param fixList
 	 * @param stopList
 	 */
 	public DefaultMutator(HashMap<Integer, Integer> fixList,
-			HashMap<Integer, ArrayList<Integer>> stopList) {
+			HashMap<Integer, ArrayList<Integer>> stopList, int moduleNum) {
 		super();
 		this.fixList = fixList;
 		this.stopList = stopList;
+		this.moduleNum = moduleNum;
 	}
 
 	@Override
@@ -46,11 +49,11 @@ public class DefaultMutator implements Mutator {
 					/**
 					 * find the possible (available) module to map, excluding the module it currently mapped.
 					 */
-					int moduleNum = ReflexactoringUtil.getModuleList(Settings.diagramPath).size();
+					//int moduleNum = ReflexactoringUtil.getModuleList(Settings.diagramPath).size();
 					ArrayList<Integer> availabelModuleIndexList = new ArrayList<>();
 					ArrayList<Integer> stopModuleIndexList = stopList.get(i);
 					for(int k=0; k<moduleNum; k++){
-						if(!stopModuleIndexList.contains(k) && k!=gene.getDNA()[i]){
+						if((stopModuleIndexList == null) || (!stopModuleIndexList.contains(k) && k!=gene.getDNA()[i])){
 							availabelModuleIndexList.add(k);
 						}
 					}

@@ -35,7 +35,7 @@ public class ModuleDependencyConfidenceTable extends ArrayList<ModuleDependencyC
 		int rows = getRowNumber();
 		int columns = getColumnNumber();
 		double[][] table = new double[rows][columns];
-		for(int i=0; i>rows; i++){
+		for(int i=0; i<rows; i++){
 			for(int j=0; j<columns; j++){
 				table[i][j] = this.get(i).getConfidenceList()[j];
 			}
