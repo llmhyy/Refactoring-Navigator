@@ -90,6 +90,17 @@ public class Rules {
 			map.put(memberIndex, moduleIndex);
 		}
 		
+		for(UnitMemberWrapper member: Settings.scope.getScopeMemberList()){
+			ModuleWrapper module = member.getMappingModule();
+			
+			if(Settings.frozenModules.contains(module)){
+				int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
+				int memberIndex = Settings.scope.getUnitMemberIndex(member);
+				
+				map.put(memberIndex, moduleIndex);
+			}
+		}
+		
 		return map;
 	}
 	
