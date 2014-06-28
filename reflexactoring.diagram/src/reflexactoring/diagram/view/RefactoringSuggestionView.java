@@ -63,6 +63,7 @@ import reflexactoring.diagram.action.recommend.action.RefactoringAction;
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
+import reflexactoring.diagram.bean.HeuristicModuleUnitStopMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
@@ -175,22 +176,22 @@ public class RefactoringSuggestionView extends ViewPart {
 			buffer.append("<a href=\"Undo\">Undo</a> ");
 			buffer.append("<b>]</b>");
 			buffer.append("</li>");
-			if(move.getAction() instanceof MoveMemberAction){
-				buffer.append("<li bindent=\"20\">");
-				buffer.append("<b>[</b>");
-				buffer.append("<a href=\"Forbid\">Reject</a> ");	
-				buffer.append("<a href=\"Allow\">Undo</a>");
-				buffer.append("<b>]</b>");
-				buffer.append("</li>");
+			buffer.append("<li bindent=\"20\">");
+			buffer.append("<b>[</b>");
+			if(move.getAction() instanceof MoveTypeAction){
+				buffer.append("<a href=\"ForbidType\">Reject</a> ");	
+				buffer.append("<a href=\"AllowType\">Undo</a>");
+			}
+			else if(move.getAction() instanceof MoveMemberAction){
+				buffer.append("<a href=\"ForbidMember\">Reject</a> ");	
+				buffer.append("<a href=\"AllowMember\">Undo</a>");
 			}
 			else if(move.getAction() instanceof DependencyAction){
-				buffer.append("<li bindent=\"20\">");
-				buffer.append("<b>[</b>");
 				buffer.append("<a href=\"Stick\">Reject</a> ");	
 				buffer.append("<a href=\"Unstick\">Undo</a>");	
-				buffer.append("<b>]</b>");
-				buffer.append("</li>");
 			}
+			buffer.append("<b>]</b>");
+			buffer.append("</li>");
 			buffer.append("</form>");
 			
 			text.setText(buffer.toString(), true, false);
@@ -238,7 +239,29 @@ public class RefactoringSuggestionView extends ViewPart {
 							fieldWrapper.openInEditor();
 						}
 					}
-					else if(e.getHref().equals("Forbid")){
+					else if(e.getHref().equals("ForbidType")){
+						RecordParameters.rejectTime++;
+						
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ICompilationUnitWrapper && action instanceof MoveTypeAction){
+							ICompilationUnitWrapper typeWrapper = (ICompilationUnitWrapper)obj;
+							MoveTypeAction moveTypeAction = (MoveTypeAction)action;
+							HeuristicModuleUnitStopMap stopMap = new HeuristicModuleUnitStopMap(moveTypeAction.getDestination(), typeWrapper);
+							
+							Settings.heuristicModuleUnitStopMapList.add(stopMap);
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW, Settings.heuristicModuleUnitStopMapList, true);
+						}
+						
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("gray", new RGB(207,207,207));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("gray"));
+						t.setForeground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("ForbidMember")){
 						RecordParameters.rejectTime++;
 						
 						SuggestionObject obj = suggestion.getSuggeestionObject();
@@ -250,7 +273,7 @@ public class RefactoringSuggestionView extends ViewPart {
 							
 							Settings.heuristicModuleMemberStopMapList.add(stopMap);
 							ViewUpdater updater = new ViewUpdater();
-							updater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, true);
+							updater.updateView(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, true);
 						}
 						
 						FormText t = (FormText) e.getSource();
@@ -280,7 +303,27 @@ public class RefactoringSuggestionView extends ViewPart {
 						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
 						t.setBackground(colors.getColor("white"));
 					}
-					else if(e.getHref().equals("Allow")){
+					else if(e.getHref().equals("AllowType")){
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ICompilationUnitWrapper && action instanceof MoveTypeAction){
+							ICompilationUnitWrapper typeWrapper = (ICompilationUnitWrapper)obj;
+							MoveTypeAction moveTypeAction = (MoveTypeAction)action;
+							HeuristicModuleUnitStopMap stopMap = new HeuristicModuleUnitStopMap(moveTypeAction.getDestination(), typeWrapper);
+							
+							Settings.heuristicModuleUnitStopMapList.removeMap(stopMap);
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW, Settings.heuristicModuleUnitStopMapList, true);
+						}
+						
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+						t.setForeground(colors.getColor("black"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("AllowMember")){
 						SuggestionObject obj = suggestion.getSuggeestionObject();
 						RefactoringAction action = suggestion.getAction();
 						if(obj instanceof UnitMemberWrapper && action instanceof MoveMemberAction){
@@ -290,7 +333,7 @@ public class RefactoringSuggestionView extends ViewPart {
 							
 							Settings.heuristicModuleMemberStopMapList.removeMap(stopMap);
 							ViewUpdater updater = new ViewUpdater();
-							updater.updateView(ReflexactoringPerspective.FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, true);
+							updater.updateView(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, true);
 						}
 						
 						FormText t = (FormText) e.getSource();

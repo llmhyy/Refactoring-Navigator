@@ -11,7 +11,8 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 	public static String REFACTORING_SUGGESTION = "reflexactoring.diagram.view.suggestion";
 	public static String MODULE_TYPE_SIMILARITY_VIEW = "reflexactoring.diagram.view.moduleTypeSimilarity";
 	public static String REFERENCE_DETAIL_VIEW = "reflexactoring.diagram.view.referenceDetail";
-	public static String FORBIDDEN_VIEW = "reflexactoring.diagram.view.forbidMap";
+	public static String MODULE_MEMBER_FORBIDDEN_VIEW = "reflexactoring.diagram.view.moduleMemberForbidMap";
+	public static String MODULE_UNIT_FORBIDDEN_VIEW = "reflexactoring.diagram.view.moduleUnitForbidMap";
 	public static String CONSTRAINT_CONFIDENCE_VIEW = "reflexactoring.diagram.view.constraintConfidence";
 	public static String MEMBER_MAPPING_FIX_BY_CLASS_VIEW = "reflexactoring.diagram.mappingFix";
 	public static String MEMBER_MAPING_FIX_VIEW = "reflexactoring.diagram.view.memberFixingView";
@@ -27,7 +28,8 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 		bottom.addView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW);
 		bottom.addView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
 		bottom.addView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW);
-		bottom.addView(ReflexactoringPerspective.FORBIDDEN_VIEW);
+		bottom.addView(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW);
+		bottom.addView(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW);
 		bottom.addView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW);
 		bottom.addView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW);
 		bottom.addView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW);

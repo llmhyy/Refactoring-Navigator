@@ -26,8 +26,14 @@ public class ViewUpdater {
 					getActivePage().findView(viewId);
 			view.refreshUI((ModuleDependencyConfidenceTable) inputData);
 		}
-		else if(viewId.equals(ReflexactoringPerspective.FORBIDDEN_VIEW)){
-			ForbiddenView view = (ForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+		else if(viewId.equals(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW)){
+			ModuleMemberForbiddenView view = (ModuleMemberForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().findView(viewId);
+			view.getViewer().setInput(inputData);
+			view.getViewer().refresh();
+		}
+		else if(viewId.equals(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW)){
+			ModuleTypeForbiddenView view = (ModuleTypeForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 					getActivePage().findView(viewId);
 			view.getViewer().setInput(inputData);
 			view.getViewer().refresh();
