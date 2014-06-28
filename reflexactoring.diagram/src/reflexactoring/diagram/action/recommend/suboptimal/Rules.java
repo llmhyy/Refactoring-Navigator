@@ -90,7 +90,9 @@ public class Rules {
 			map.put(memberIndex, moduleIndex);
 		}
 		
-		for(UnitMemberWrapper member: Settings.scope.getScopeMemberList()){
+		int count=0;
+		for(int i=0; i<Settings.scope.getScopeMemberList().size(); i++){
+			UnitMemberWrapper member = Settings.scope.getScopeMemberList().get(i);
 			ModuleWrapper module = member.getMappingModule();
 			
 			if(Settings.frozenModules.contains(module)){
@@ -98,6 +100,8 @@ public class Rules {
 				int memberIndex = Settings.scope.getUnitMemberIndex(member);
 				
 				map.put(memberIndex, moduleIndex);
+				
+				count++;
 			}
 		}
 		

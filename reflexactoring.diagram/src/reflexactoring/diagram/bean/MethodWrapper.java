@@ -40,7 +40,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public boolean equals(Object obj){
 		if(obj instanceof MethodWrapper){
 			MethodWrapper methodWrapper = (MethodWrapper)obj;
-			if(methodWrapper.getName().equals(this.getName())
+			if(methodWrapper.getJavaElement().toString().equals(this.getJavaElement().toString())
 					&& methodWrapper.getUnitWrapper().equals(this.getUnitWrapper())){
 				return this.hasSameParameters(methodWrapper);
 			};

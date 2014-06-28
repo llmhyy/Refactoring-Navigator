@@ -112,6 +112,8 @@ public class PopulationGenerator {
 			HashMap<Integer, Integer> fixList,
 			HashMap<Integer, ArrayList<Integer>> stopList, int[] seedDNA, int moduleNum,
 			int popSize, double[][] similarityTable, boolean isForTypePopulation) {
+		//Rules rules = new Rules();
+		
 		Population population = new Population();
 		
 		double[][] highLevelNodeMatrix = extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath));
@@ -170,6 +172,10 @@ public class PopulationGenerator {
 					}
 				}					
 			}
+			
+			/*if(!ReflexactoringUtil.checkCorrectMapping(DNA, rules)){
+				System.currentTimeMillis();
+			}*/
 			
 			Genotype gene = new Genotype(DNA, seedDNA, 
 					new DefaultFitnessEvaluator(similarityTable, highLevelNodeMatrix, lowLevelNodeMatrix));

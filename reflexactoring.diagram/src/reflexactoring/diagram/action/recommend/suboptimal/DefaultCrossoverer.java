@@ -3,17 +3,22 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
+import reflexactoring.diagram.util.ReflexactoringUtil;
+
 /**
  * @author linyun
  *
  */
 public class DefaultCrossoverer implements Crossoverer{
 
+	
 	/**
 	 * The default number of population is even.
 	 */
 	@Override
 	public Population deriveGeneration(Population population) {
+		//Rules rules = new Rules();
+		
 		Population newGeneration = new Population();
 		
 		for(int i=0; i<population.getSize(); i=i+2){
@@ -46,6 +51,10 @@ public class DefaultCrossoverer implements Crossoverer{
 					DNA2[j] = gene2.getDNA()[j];
 				}
 			}
+			
+			/*if(!ReflexactoringUtil.checkCorrectMapping(DNA1, rules) || !ReflexactoringUtil.checkCorrectMapping(DNA2, rules)){
+				System.currentTimeMillis();
+			}*/
 			
 			double[][] similarityTable = ((DefaultFitnessEvaluator)gene1.getEvaluator()).getSimilarityTable();
 			double[][] highLevelNodeMatrix = ((DefaultFitnessEvaluator)gene1.getEvaluator()).getHighLevelNodeMatrix();

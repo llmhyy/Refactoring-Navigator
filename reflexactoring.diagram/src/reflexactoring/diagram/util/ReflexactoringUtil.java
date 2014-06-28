@@ -34,6 +34,7 @@ import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
 import reflexactoring.Reflexactoring;
 import reflexactoring.diagram.action.UserInputMerger;
+import reflexactoring.diagram.action.recommend.suboptimal.Rules;
 import reflexactoring.diagram.action.semantic.WordNetDict;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
@@ -524,5 +525,17 @@ public class ReflexactoringUtil {
 		}
 		
 		return -1;
+	}
+	
+	public static boolean checkCorrectMapping(int[] DNA, Rules rules){
+		for(int i=0; i<DNA.length; i++){
+			Integer index = rules.getMemberModuleFixList().get(i);
+			
+			if(index != null && index != DNA[i]){
+				return false;	
+			}
+		}
+		
+		return true;
 	}
 }
