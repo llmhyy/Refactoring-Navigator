@@ -110,7 +110,7 @@ public class RefactoringRecommender {
 		 * The first genotype in population should be the best genotype
 		 */
 		Genotype bestGene = pop.getList().get(0);
-		Suggestion suggestion = generateClassLevelSuggestion(bestGene, optimizer, moduleList);
+		Suggestion suggestion = generateClassLevelSuggestion(bestGene, moduleList);
 		
 		ArrayList<Suggestion> suggestions = generateSuggestions(bestGene, suggestion, moduleList);
 		return suggestions;
@@ -132,7 +132,7 @@ public class RefactoringRecommender {
 		 * The first genotype in population should be the best genotype
 		 */
 		Genotype bestGene = pop.getList().get(0);
-		Suggestion suggestion = generateMemberLevelSuggestion(bestGene, optimizer, moduleList);				
+		Suggestion suggestion = generateMemberLevelSuggestion(bestGene, moduleList);				
 		
 		ArrayList<Suggestion> suggestions = generateSuggestions(bestGene, suggestion, moduleList);
 		return suggestions;
@@ -237,13 +237,27 @@ public class RefactoringRecommender {
 		return "OK";
 	}
 	
-	private Suggestion generateClassLevelSuggestion(Genotype gene, GeneticOptimizer optimizer, ArrayList<ModuleWrapper> moduleList){
-		return null;
+	private Suggestion generateClassLevelSuggestion(Genotype gene, ArrayList<ModuleWrapper> moduleList){
+		int[] bestSolution = gene.getDNA();
+		int[] initialSolution = gene.getOriginalDNA();
+		
+		Suggester suggester = new Suggester();
+		Suggestion suggestion = suggester.generateSuggestion(Settings.scope.getScopeCompilationUnitList(), moduleList, 
+				bestSolution, initialSolution);
+		
+		return suggestion;
 	}
 	
-	private Suggestion generateMemberLevelSuggestion(Genotype gene, GeneticOptimizer optimizer, 
+	private Suggestion generateMemberLevelSuggestion(Genotype gene, 
 			ArrayList<ModuleWrapper> moduleList){
-		return null;
+		int[] bestSolution = gene.getDNA();
+		int[] initialSolution = gene.getOriginalDNA();
+		
+		Suggester suggester = new Suggester();
+		Suggestion suggestion = suggester.generateSuggestion(Settings.scope.getScopeMemberList(), moduleList, 
+				bestSolution, initialSolution);
+		
+		return suggestion;
 	}
 	
 	
