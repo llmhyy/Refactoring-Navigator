@@ -10,6 +10,7 @@ import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
 import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
+import reflexactoring.diagram.bean.HeuristicModuleUnitStopMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -60,7 +61,50 @@ public class Rules {
 	private HashMap<Integer, ArrayList<Integer>> deriveUnitModuleStopList(){
 		HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
 		
-		//TODO for Adi
+		for(HeuristicModuleUnitStopMap m: Settings.heuristicModuleUnitStopMapList){
+			ModuleWrapper module = m.getModule();
+			ICompilationUnitWrapper unit = m.getUnit();
+			
+			int moduleIndex = ReflexactoringUtil.getModuleIndex(moduleList, module);
+			int unitIndex = Settings.scope.getICompilationUnitIndex(unit);
+			
+			ArrayList<Integer> moduleIndexList;
+			if(map.get(unitIndex) != null){
+				moduleIndexList = map.get(unitIndex);
+			}
+			else{
+				moduleIndexList = new ArrayList<>();
+			}
+			moduleIndexList.add(moduleIndex);
+			map.put(unitIndex, moduleIndexList);
+		}
+		
+		/**
+		 * for frozen modules.
+		 */
+		for(int i=0; i<Settings.scope.getScopeCompilationUnitList().size(); i++){
+			ICompilationUnitWrapper unit = Settings.scope.getScopeCompilationUnitList().get(i);
+			int unitIndex = Settings.scope.getICompilationUnitIndex(unit);
+			
+			ModuleWrapper module = unit.getMappingModule();
+			
+			for(ModuleWrapper frozenModule: Settings.frozenModules){
+				if(!frozenModule.equals(module)){
+					
+					int frozenModuleIndex = ReflexactoringUtil.getModuleIndex(moduleList, frozenModule);
+					
+					ArrayList<Integer> frozenModuleIndexList;
+					if(map.get(unitIndex) != null){
+						frozenModuleIndexList = map.get(unitIndex);
+					}
+					else{
+						frozenModuleIndexList = new ArrayList<>();
+					}
+					frozenModuleIndexList.add(frozenModuleIndex);
+					map.put(unitIndex, frozenModuleIndexList);
+				}
+			}
+		}
 		
 		return map;
 	}
