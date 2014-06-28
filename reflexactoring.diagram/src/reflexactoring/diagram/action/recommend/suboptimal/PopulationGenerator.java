@@ -87,14 +87,23 @@ public class PopulationGenerator {
 			module.extractTermFrequency(module.getDescription());
 			for(int j=0; j<members.size(); j++){
 				UnitMemberWrapper member = members.get(j);
+				
 				if(examiner.isValid(member, module)){
 					double similarity = module.computeSimilarity(member);
-					//System.currentTimeMillis();
 					similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) + similarity;					
 				}
 				else{
 					similarityTable[i][j] = Double.valueOf(ReflexactoringUtil.getMappingThreshold()) - 1;
 				}
+				
+				/*if(member.getJavaMember().toString().contains("listen")){
+					System.out.println(member.getJavaMember().toString() + " " + module.getName() + ":" + similarityTable[i][j]);			
+					System.currentTimeMillis();
+					if(similarityTable[i][j] == -1){
+						System.currentTimeMillis();
+						examiner.isValid(member, module);
+					}
+				}*/
 			}
 		}
 		

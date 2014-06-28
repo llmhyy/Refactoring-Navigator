@@ -6,8 +6,6 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.ui.PartInitException;
-
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
 import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
@@ -31,6 +29,8 @@ public class Rules {
 	private HashMap<Integer, Integer> memberModuleFixList;
 	private HashMap<Integer, ArrayList<Integer>> memberModuleStopList;
 	
+	private ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+	
 	/**
 	 * Create a new Rules instance will get all the available fix/stop lists.
 	 */
@@ -48,7 +48,7 @@ public class Rules {
 			ModuleWrapper module = m.getModule();
 			ICompilationUnitWrapper unit = m.getUnit();
 			
-			int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
+			int moduleIndex = ReflexactoringUtil.getModuleIndex(moduleList, module);
 			int unitIndex = Settings.scope.getICompilationUnitIndex(unit);
 			
 			map.put(unitIndex, moduleIndex);
@@ -74,7 +74,7 @@ public class Rules {
 			ModuleWrapper module = m.getModule();
 			ICompilationUnitWrapper unit = m.getUnit();
 			
-			int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
+			int moduleIndex = ReflexactoringUtil.getModuleIndex(moduleList, module);
 			for(UnitMemberWrapper member: unit.getMembers()){
 				int memberIndex = Settings.scope.getUnitMemberIndex(member);
 				map.put(memberIndex, moduleIndex);
@@ -85,23 +85,20 @@ public class Rules {
 			ModuleWrapper module = m.getModule();
 			UnitMemberWrapper member = m.getMember();
 			
-			int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
+			int moduleIndex = ReflexactoringUtil.getModuleIndex(moduleList, module);
 			int memberIndex = Settings.scope.getUnitMemberIndex(member);
 			map.put(memberIndex, moduleIndex);
 		}
 		
-		int count=0;
 		for(int i=0; i<Settings.scope.getScopeMemberList().size(); i++){
 			UnitMemberWrapper member = Settings.scope.getScopeMemberList().get(i);
 			ModuleWrapper module = member.getMappingModule();
 			
 			if(Settings.frozenModules.contains(module)){
-				int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
+				int moduleIndex = ReflexactoringUtil.getModuleIndex(moduleList, module);
 				int memberIndex = Settings.scope.getUnitMemberIndex(member);
 				
 				map.put(memberIndex, moduleIndex);
-				
-				count++;
 			}
 		}
 		
@@ -115,7 +112,7 @@ public class Rules {
 			ModuleWrapper module = m.getModule();
 			UnitMemberWrapper member = m.getMember();
 			
-			int moduleIndex = ReflexactoringUtil.getModuleIndex(ReflexactoringUtil.getModuleList(Settings.diagramPath), module);
+			int moduleIndex = ReflexactoringUtil.getModuleIndex(moduleList, module);
 			int memberIndex = Settings.scope.getUnitMemberIndex(member);
 			
 			ArrayList<Integer> moduleIndexList;
@@ -127,6 +124,33 @@ public class Rules {
 			}
 			moduleIndexList.add(moduleIndex);
 			map.put(memberIndex, moduleIndexList);
+		}
+		
+		/**
+		 * for frozen modules.
+		 */
+		for(int i=0; i<Settings.scope.getScopeMemberList().size(); i++){
+			UnitMemberWrapper member = Settings.scope.getScopeMemberList().get(i);
+			int memberIndex = Settings.scope.getUnitMemberIndex(member);
+			
+			ModuleWrapper module = member.getMappingModule();
+			
+			for(ModuleWrapper frozenModule: Settings.frozenModules){
+				if(!frozenModule.equals(module)){
+					
+					int frozenModuleIndex = ReflexactoringUtil.getModuleIndex(moduleList, frozenModule);
+					
+					ArrayList<Integer> frozenModuleIndexList;
+					if(map.get(memberIndex) != null){
+						frozenModuleIndexList = map.get(memberIndex);
+					}
+					else{
+						frozenModuleIndexList = new ArrayList<>();
+					}
+					frozenModuleIndexList.add(frozenModuleIndex);
+					map.put(memberIndex, frozenModuleIndexList);
+				}
+			}
 		}
 		
 		return map;
