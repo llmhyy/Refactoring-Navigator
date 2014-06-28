@@ -152,7 +152,7 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 	private double computeRefactoringEffort(Genotype gene){
 		double result = 0;
 		for(int i=0; i<gene.getLength(); i++){
-			if(gene.getDNA()[i] != gene.getOriginalDNA()[i]){
+			if(gene.getDNA()[i] == gene.getOriginalDNA()[i]){
 				result++;
 			}
 		}
