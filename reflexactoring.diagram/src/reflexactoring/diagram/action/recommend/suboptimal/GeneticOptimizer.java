@@ -16,8 +16,6 @@ public class GeneticOptimizer {
 	private Selector selector;
 	private Crossoverer crossoverer;
 	private Mutator mutator;
-	
-	private int iterationNum;
 	/**
 	 * @param population
 	 * @param selector
@@ -87,13 +85,5 @@ public class GeneticOptimizer {
 	public void setMutator(Mutator mutator) {
 		this.mutator = mutator;
 	}
-
-	/**
-	 * @param iterationNum the iterationNum to set
-	 */
-	public void setIterationNum(int iterationNum) {
-		this.iterationNum = iterationNum;
-	}
-	
 	
 }
