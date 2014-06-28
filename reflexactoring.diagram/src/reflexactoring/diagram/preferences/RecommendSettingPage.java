@@ -88,7 +88,7 @@ public class RecommendSettingPage extends PreferencePage implements
 		mutationRateText.setLayoutData(mutationRateData);
 		
 		Label alphaLabel = new Label(composite, SWT.NONE);
-		alphaLabel.setText("alpha");
+		alphaLabel.setText("Lexical Similarity");
 		alphaText = new Text(composite, SWT.BORDER);
 		alphaText.setText(ReflexactoringUtil.getAlpha());
 		GridData alphaData = new GridData(SWT.FILL, SWT.FILL, true, false);
@@ -96,7 +96,7 @@ public class RecommendSettingPage extends PreferencePage implements
 		alphaText.setLayoutData(alphaData);
 		
 		Label betaLabel = new Label(composite, SWT.NONE);
-		betaLabel.setText("beta");
+		betaLabel.setText("Effort Consideration");
 		betaText = new Text(composite, SWT.BORDER);
 		betaText.setText(ReflexactoringUtil.getBeta());
 		GridData betaData = new GridData(SWT.FILL, SWT.FILL, true, false);
