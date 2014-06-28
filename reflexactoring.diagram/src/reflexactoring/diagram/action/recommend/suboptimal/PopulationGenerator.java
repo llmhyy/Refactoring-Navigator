@@ -84,7 +84,7 @@ public class PopulationGenerator {
 		
 		for(int i=0; i<modules.size(); i++){
 			ModuleWrapper module = modules.get(i);
-			module.extractTermFrequency(module.getDescription());
+			//module.extractTermFrequency(module.getDescription());
 			for(int j=0; j<members.size(); j++){
 				UnitMemberWrapper member = members.get(j);
 				

@@ -18,7 +18,7 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  */
 public abstract class Document {
 	protected HashMap<String, Integer> termFrequency = new HashMap<>();
-	private String description;
+	protected String description;
 	
 	protected abstract String getDocName();
 	

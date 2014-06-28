@@ -25,6 +25,7 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	public ModuleWrapper(Module module) {
 		super();
 		this.module = module;
+		this.extractTermFrequency(module.getDescription());
 	}
 	
 	public boolean equals(Object obj){
