@@ -125,7 +125,7 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 		if (childEditPart instanceof ModuleTypeContainerCompartmentEditPart) {
 			IFigure pane = getPrimaryShape().getFigureTypeContainer();
 			//setupContentPane(pane); // FIXME each comparment should handle his content pane in his own way 
-			
+
 			pane.setLayoutManager(new GridLayout());
 			GridData gridData = new GridData();
 			gridData.verticalAlignment = GridData.FILL;
@@ -135,7 +135,7 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 			gridData.verticalSpan = 1;
 			gridData.grabExcessHorizontalSpace = true;
 			gridData.grabExcessVerticalSpace = true;
-			
+
 			pane.add(((ModuleTypeContainerCompartmentEditPart) childEditPart)
 					.getFigure(), gridData);
 			return true;
@@ -287,8 +287,9 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 	 * @generated
 	 */
 	public List<IElementType> getMARelTypesOnSource() {
-		ArrayList<IElementType> types = new ArrayList<IElementType>(1);
+		ArrayList<IElementType> types = new ArrayList<IElementType>(2);
 		types.add(ReflexactoringElementTypes.ModuleDependency_4001);
+		types.add(ReflexactoringElementTypes.ModuleExtend_4006);
 		return types;
 	}
 
@@ -301,6 +302,9 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 		if (targetEditPart instanceof reflexactoring.diagram.edit.parts.ModuleEditPart) {
 			types.add(ReflexactoringElementTypes.ModuleDependency_4001);
 		}
+		if (targetEditPart instanceof reflexactoring.diagram.edit.parts.ModuleEditPart) {
+			types.add(ReflexactoringElementTypes.ModuleExtend_4006);
+		}
 		return types;
 	}
 
@@ -311,6 +315,8 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 		LinkedList<IElementType> types = new LinkedList<IElementType>();
 		if (relationshipType == ReflexactoringElementTypes.ModuleDependency_4001) {
 			types.add(ReflexactoringElementTypes.Module_2003);
+		} else if (relationshipType == ReflexactoringElementTypes.ModuleExtend_4006) {
+			types.add(ReflexactoringElementTypes.Module_2003);
 		}
 		return types;
 	}
@@ -319,8 +325,9 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 	 * @generated
 	 */
 	public List<IElementType> getMARelTypesOnTarget() {
-		ArrayList<IElementType> types = new ArrayList<IElementType>(1);
+		ArrayList<IElementType> types = new ArrayList<IElementType>(2);
 		types.add(ReflexactoringElementTypes.ModuleDependency_4001);
+		types.add(ReflexactoringElementTypes.ModuleExtend_4006);
 		return types;
 	}
 
@@ -330,6 +337,8 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 	public List<IElementType> getMATypesForSource(IElementType relationshipType) {
 		LinkedList<IElementType> types = new LinkedList<IElementType>();
 		if (relationshipType == ReflexactoringElementTypes.ModuleDependency_4001) {
+			types.add(ReflexactoringElementTypes.Module_2003);
+		} else if (relationshipType == ReflexactoringElementTypes.ModuleExtend_4006) {
 			types.add(ReflexactoringElementTypes.Module_2003);
 		}
 		return types;
@@ -395,7 +404,7 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 			layoutFFigureTypeContainer.numColumns = 1;
 			layoutFFigureTypeContainer.makeColumnsEqualWidth = true;
 			fFigureTypeContainer.setLayoutManager(layoutFFigureTypeContainer);
-			//fFigureTypeContainer.setLineWidth(0);
+
 		}
 
 		/**
@@ -411,15 +420,15 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 		public RectangleFigure getFigureTypeContainer() {
 			return fFigureTypeContainer;
 		}
-		
+
 		/**
 		 * @NOT generated
 		 */
-		public void setFrozenBackgroundColor(){
+		public void setFrozenBackgroundColor() {
 			this.setBackgroundColor(FROZEN_COLOR);
 		}
-		
-		public void setNormalBackgroundColor(){
+
+		public void setNormalBackgroundColor() {
 			this.setBackgroundColor(THIS_BACK);
 		}
 

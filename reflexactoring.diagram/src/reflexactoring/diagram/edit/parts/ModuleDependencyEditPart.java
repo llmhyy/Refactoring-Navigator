@@ -8,13 +8,14 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ITreeBranchEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
+import org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 
 import reflexactoring.ModuleDependency;
 import reflexactoring.diagram.action.DiagramUpdater;
-import reflexactoring.diagram.bean.ModuleDependencyWrapper;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.edit.policies.ModuleDependencyItemSemanticEditPolicy;
 
 /**
@@ -55,15 +56,15 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 	protected Connection createConnectionFigure() {
 		ModuleDependencyFigure figure = new ModuleDependencyFigure();
 		EObject eObject = this.resolveSemanticElement();
-		if(eObject instanceof ModuleDependency){
-			ModuleDependency dependency = (ModuleDependency)eObject;
-			if(dependency.getName().equals(ModuleDependencyWrapper.ABSENCE)){
+		if (eObject instanceof ModuleDependency) {
+			ModuleDependency dependency = (ModuleDependency) eObject;
+			if (dependency.getName().equals(ModuleLinkWrapper.ABSENCE)) {
 				figure.setAbsenceStyle();
-			}
-			else if(dependency.getName().equals(ModuleDependencyWrapper.DIVERGENCE)){
+			} else if (dependency.getName().equals(
+					ModuleLinkWrapper.DIVERGENCE)) {
 				figure.setDivergneceStyle();
-			}
-			else if(dependency.getName().equals(ModuleDependencyWrapper.CONFORMANCE)){
+			} else if (dependency.getName().equals(
+					ModuleLinkWrapper.CONFORMANCE)) {
 				figure.setConformanceStyle();
 			}
 		}
@@ -100,23 +101,23 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 			df.setLineWidth(2);
 			return df;
 		}
-		
-		public void setOriginStyle(){
+
+		public void setOriginStyle() {
 			this.setLineStyle(SWT.LINE_SOLID);
 			this.setForegroundColor(THIS_FORE);
 		}
 
-		public void setConformanceStyle(){
+		public void setConformanceStyle() {
 			this.setLineStyle(SWT.LINE_SOLID);
 			this.setForegroundColor(COMFORMANCE);
 		}
-		
-		public void setAbsenceStyle(){
+
+		public void setAbsenceStyle() {
 			this.setLineStyle(SWT.LINE_DOT);
 			this.setForegroundColor(ABSENCE);
 		}
-		
-		public void setDivergneceStyle(){
+
+		public void setDivergneceStyle() {
 			this.setLineStyle(SWT.LINE_DASH);
 			this.setForegroundColor(DIVERGENCE);
 		}

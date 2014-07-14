@@ -24,7 +24,7 @@ import org.eclipse.gmf.runtime.notation.View;
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
 import reflexactoring.Reflexactoring;
-import reflexactoring.diagram.bean.ModuleDependencyWrapper;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
 import reflexactoring.diagram.providers.ReflexactoringElementTypes;
@@ -45,8 +45,8 @@ public class AddDependencyAction extends DependencyAction {
 	 */
 	@Override
 	public void execute(SuggestionObject suggestionObj) {
-		if(suggestionObj instanceof ModuleDependencyWrapper){
-			ModuleDependencyWrapper dependencyWrapper = (ModuleDependencyWrapper)suggestionObj;
+		if(suggestionObj instanceof ModuleLinkWrapper){
+			ModuleLinkWrapper dependencyWrapper = (ModuleLinkWrapper)suggestionObj;
 			
 			GEFDiagramUtil.addModuleDependency(dependencyWrapper.getSourceModule(), 
 					dependencyWrapper.getTargetModule());
@@ -59,8 +59,8 @@ public class AddDependencyAction extends DependencyAction {
 	 */
 	@Override
 	public void undoExecute(SuggestionObject suggestionObj) {
-		if(suggestionObj instanceof ModuleDependencyWrapper){
-			ModuleDependencyWrapper dependencyWrapper = (ModuleDependencyWrapper)suggestionObj;
+		if(suggestionObj instanceof ModuleLinkWrapper){
+			ModuleLinkWrapper dependencyWrapper = (ModuleLinkWrapper)suggestionObj;
 			
 			GEFDiagramUtil.removeModuleDependency(dependencyWrapper.getSourceModule(), 
 					dependencyWrapper.getTargetModule());

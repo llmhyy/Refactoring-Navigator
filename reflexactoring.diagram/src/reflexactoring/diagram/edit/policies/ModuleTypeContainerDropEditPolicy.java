@@ -62,14 +62,17 @@ public class ModuleTypeContainerDropEditPolicy extends
 					Type type = getSemanticType(requestEP);
 					
 					ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(type);
-					unitWrapper.setMappingModule(new ModuleWrapper(module));
 					
-					if(type != null){
-						ModuleWrapper moduleWrapper = insertMappingRelation(module, type);
-						refreshHeuristicView();		
-						
-						unitWrapper.setMappingModule(moduleWrapper);
+					if(unitWrapper != null){
+						unitWrapper.setMappingModule(new ModuleWrapper(module));						
+						if(type != null){
+							ModuleWrapper moduleWrapper = insertMappingRelation(module, type);
+							refreshHeuristicView();		
+							
+							unitWrapper.setMappingModule(moduleWrapper);
+						}
 					}
+					
 				}
 			}
 		}

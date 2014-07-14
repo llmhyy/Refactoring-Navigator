@@ -38,11 +38,12 @@ public class ReflexactoringPaletteFactory {
 		paletteContainer.add(createModule1CreationTool());
 		paletteContainer.add(createClass2CreationTool());
 		paletteContainer.add(createInterface3CreationTool());
-		paletteContainer.add(createModuleDependency4CreationTool());
-		paletteContainer.add(createTypeDependency5CreationTool());
-		paletteContainer.add(createImplement6CreationTool());
-		paletteContainer.add(createExtendClass7CreationTool());
-		paletteContainer.add(createExtendInterface8CreationTool());
+		paletteContainer.add(createTypeDependency4CreationTool());
+		paletteContainer.add(createImplement5CreationTool());
+		paletteContainer.add(createClassExtend6CreationTool());
+		paletteContainer.add(createInterfaceExtend7CreationTool());
+		paletteContainer.add(createModuleExtend8CreationTool());
+		paletteContainer.add(createModuleDependency9CreationTool());
 		return paletteContainer;
 	}
 
@@ -99,31 +100,15 @@ public class ReflexactoringPaletteFactory {
 	/**
 	 * @generated
 	 */
-	private ToolEntry createModuleDependency4CreationTool() {
+	private ToolEntry createTypeDependency4CreationTool() {
 		LinkToolEntry entry = new LinkToolEntry(
-				Messages.ModuleDependency4CreationTool_title,
-				Messages.ModuleDependency4CreationTool_desc,
-				Collections
-						.singletonList(ReflexactoringElementTypes.ModuleDependency_4001));
-		entry.setId("createModuleDependency4CreationTool"); //$NON-NLS-1$
-		entry.setSmallIcon(ReflexactoringElementTypes
-				.getImageDescriptor(ReflexactoringElementTypes.ModuleDependency_4001));
-		entry.setLargeIcon(entry.getSmallIcon());
-		return entry;
-	}
-
-	/**
-	 * @generated
-	 */
-	private ToolEntry createTypeDependency5CreationTool() {
-		LinkToolEntry entry = new LinkToolEntry(
-				Messages.TypeDependency5CreationTool_title,
-				Messages.TypeDependency5CreationTool_desc,
+				Messages.TypeDependency4CreationTool_title,
+				Messages.TypeDependency4CreationTool_desc,
 				Collections
 						.singletonList(ReflexactoringElementTypes.TypeDependency_4003));
-		entry.setId("createTypeDependency5CreationTool"); //$NON-NLS-1$
-		entry.setSmallIcon(ReflexactoringElementTypes
-				.getImageDescriptor(ReflexactoringElementTypes.TypeDependency_4003));
+		entry.setId("createTypeDependency4CreationTool"); //$NON-NLS-1$
+		entry.setSmallIcon(ReflexactoringDiagramEditorPlugin
+				.findImageDescriptor("icons/tool/module.gif")); //$NON-NLS-1$
 		entry.setLargeIcon(entry.getSmallIcon());
 		return entry;
 	}
@@ -131,15 +116,15 @@ public class ReflexactoringPaletteFactory {
 	/**
 	 * @generated
 	 */
-	private ToolEntry createImplement6CreationTool() {
+	private ToolEntry createImplement5CreationTool() {
 		LinkToolEntry entry = new LinkToolEntry(
-				Messages.Implement6CreationTool_title,
-				Messages.Implement6CreationTool_desc,
+				Messages.Implement5CreationTool_title,
+				Messages.Implement5CreationTool_desc,
 				Collections
 						.singletonList(ReflexactoringElementTypes.Implement_4005));
-		entry.setId("createImplement6CreationTool"); //$NON-NLS-1$
-		entry.setSmallIcon(ReflexactoringElementTypes
-				.getImageDescriptor(ReflexactoringElementTypes.Implement_4005));
+		entry.setId("createImplement5CreationTool"); //$NON-NLS-1$
+		entry.setSmallIcon(ReflexactoringDiagramEditorPlugin
+				.findImageDescriptor("icons/tool/module.gif")); //$NON-NLS-1$
 		entry.setLargeIcon(entry.getSmallIcon());
 		return entry;
 	}
@@ -147,15 +132,15 @@ public class ReflexactoringPaletteFactory {
 	/**
 	 * @generated
 	 */
-	private ToolEntry createExtendClass7CreationTool() {
+	private ToolEntry createClassExtend6CreationTool() {
 		LinkToolEntry entry = new LinkToolEntry(
-				Messages.ExtendClass7CreationTool_title,
-				Messages.ExtendClass7CreationTool_desc,
+				Messages.ClassExtend6CreationTool_title,
+				Messages.ClassExtend6CreationTool_desc,
 				Collections
 						.singletonList(ReflexactoringElementTypes.ClassExtend_4002));
-		entry.setId("createExtendClass7CreationTool"); //$NON-NLS-1$
-		entry.setSmallIcon(ReflexactoringElementTypes
-				.getImageDescriptor(ReflexactoringElementTypes.ClassExtend_4002));
+		entry.setId("createClassExtend6CreationTool"); //$NON-NLS-1$
+		entry.setSmallIcon(ReflexactoringDiagramEditorPlugin
+				.findImageDescriptor("icons/tool/module.gif")); //$NON-NLS-1$
 		entry.setLargeIcon(entry.getSmallIcon());
 		return entry;
 	}
@@ -163,15 +148,47 @@ public class ReflexactoringPaletteFactory {
 	/**
 	 * @generated
 	 */
-	private ToolEntry createExtendInterface8CreationTool() {
+	private ToolEntry createInterfaceExtend7CreationTool() {
 		LinkToolEntry entry = new LinkToolEntry(
-				Messages.ExtendInterface8CreationTool_title,
-				Messages.ExtendInterface8CreationTool_desc,
+				Messages.InterfaceExtend7CreationTool_title,
+				Messages.InterfaceExtend7CreationTool_desc,
 				Collections
 						.singletonList(ReflexactoringElementTypes.InterfaceExtend_4004));
-		entry.setId("createExtendInterface8CreationTool"); //$NON-NLS-1$
-		entry.setSmallIcon(ReflexactoringElementTypes
-				.getImageDescriptor(ReflexactoringElementTypes.InterfaceExtend_4004));
+		entry.setId("createInterfaceExtend7CreationTool"); //$NON-NLS-1$
+		entry.setSmallIcon(ReflexactoringDiagramEditorPlugin
+				.findImageDescriptor("icons/tool/module.gif")); //$NON-NLS-1$
+		entry.setLargeIcon(entry.getSmallIcon());
+		return entry;
+	}
+
+	/**
+	 * @generated
+	 */
+	private ToolEntry createModuleExtend8CreationTool() {
+		LinkToolEntry entry = new LinkToolEntry(
+				Messages.ModuleExtend8CreationTool_title,
+				Messages.ModuleExtend8CreationTool_desc,
+				Collections
+						.singletonList(ReflexactoringElementTypes.ModuleExtend_4006));
+		entry.setId("createModuleExtend8CreationTool"); //$NON-NLS-1$
+		entry.setSmallIcon(ReflexactoringDiagramEditorPlugin
+				.findImageDescriptor("icons/tool/module.gif")); //$NON-NLS-1$
+		entry.setLargeIcon(entry.getSmallIcon());
+		return entry;
+	}
+
+	/**
+	 * @generated
+	 */
+	private ToolEntry createModuleDependency9CreationTool() {
+		LinkToolEntry entry = new LinkToolEntry(
+				Messages.ModuleDependency9CreationTool_title,
+				Messages.ModuleDependency9CreationTool_desc,
+				Collections
+						.singletonList(ReflexactoringElementTypes.ModuleDependency_4001));
+		entry.setId("createModuleDependency9CreationTool"); //$NON-NLS-1$
+		entry.setSmallIcon(ReflexactoringDiagramEditorPlugin
+				.findImageDescriptor("icons/tool/module.gif")); //$NON-NLS-1$
 		entry.setLargeIcon(entry.getSmallIcon());
 		return entry;
 	}

@@ -67,7 +67,7 @@ import reflexactoring.diagram.bean.HeuristicModuleUnitStopMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
-import reflexactoring.diagram.bean.ModuleDependencyWrapper;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -348,7 +348,7 @@ public class RefactoringSuggestionView extends ViewPart {
 						
 						SuggestionObject obj = suggestion.getSuggeestionObject();
 						RefactoringAction action = suggestion.getAction();
-						if(obj instanceof ModuleDependencyWrapper && action instanceof DependencyAction){
+						if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
 							DependencyAction depAction =(DependencyAction)action;
 							for(ModuleDependencyConfidence confidence: Settings.confidenceTable){
 								if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
@@ -374,7 +374,7 @@ public class RefactoringSuggestionView extends ViewPart {
 					else if(e.getHref().equals("Unstick")){
 						SuggestionObject obj = suggestion.getSuggeestionObject();
 						RefactoringAction action = suggestion.getAction();
-						if(obj instanceof ModuleDependencyWrapper && action instanceof DependencyAction){
+						if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
 							DependencyAction depAction =(DependencyAction)action;
 							for(ModuleDependencyConfidence confidence: Settings.confidenceTable){
 								if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){

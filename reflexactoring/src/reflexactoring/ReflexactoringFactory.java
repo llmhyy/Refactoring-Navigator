@@ -103,6 +103,15 @@ public interface ReflexactoringFactory extends EFactory {
 	InterfaceExtend createInterfaceExtend();
 
 	/**
+	 * Returns a new object of class '<em>Module Extend</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Module Extend</em>'.
+	 * @generated
+	 */
+	ModuleExtend createModuleExtend();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

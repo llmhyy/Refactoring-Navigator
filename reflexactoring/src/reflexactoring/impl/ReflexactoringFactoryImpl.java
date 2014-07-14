@@ -16,6 +16,7 @@ import reflexactoring.Interface;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleExtend;
 import reflexactoring.Reflexactoring;
 import reflexactoring.ReflexactoringFactory;
 import reflexactoring.ReflexactoringPackage;
@@ -69,11 +70,12 @@ public class ReflexactoringFactoryImpl extends EFactoryImpl implements Reflexact
 			case ReflexactoringPackage.MODULE: return createModule();
 			case ReflexactoringPackage.CLASS: return createClass();
 			case ReflexactoringPackage.INTERFACE: return createInterface();
-			case ReflexactoringPackage.MODULE_DEPENDENCY: return createModuleDependency();
 			case ReflexactoringPackage.TYPE_DEPENDENCY: return createTypeDependency();
 			case ReflexactoringPackage.IMPLEMENT: return createImplement();
 			case ReflexactoringPackage.CLASS_EXTEND: return createClassExtend();
 			case ReflexactoringPackage.INTERFACE_EXTEND: return createInterfaceExtend();
+			case ReflexactoringPackage.MODULE_EXTEND: return createModuleExtend();
+			case ReflexactoringPackage.MODULE_DEPENDENCY: return createModuleDependency();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -167,6 +169,16 @@ public class ReflexactoringFactoryImpl extends EFactoryImpl implements Reflexact
 	public InterfaceExtend createInterfaceExtend() {
 		InterfaceExtendImpl interfaceExtend = new InterfaceExtendImpl();
 		return interfaceExtend;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ModuleExtend createModuleExtend() {
+		ModuleExtendImpl moduleExtend = new ModuleExtendImpl();
+		return moduleExtend;
 	}
 
 	/**

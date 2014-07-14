@@ -7,6 +7,7 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ITreeBranchEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
+import org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel;
 import org.eclipse.gmf.runtime.notation.View;
 
 import reflexactoring.diagram.edit.policies.TypeDependencyItemSemanticEditPolicy;
@@ -61,9 +62,9 @@ public class TypeDependencyEditPart extends ConnectionNodeEditPart implements
 	 * @not generated
 	 */
 	public class TypeDependencyFigure extends PolylineConnectionEx {
-		
+
 		private PolylineDecoration polylineDecoration;
-		
+
 		/**
 		 * @not generated
 		 */
@@ -79,9 +80,9 @@ public class TypeDependencyEditPart extends ConnectionNodeEditPart implements
 		private RotatableDecoration createTargetDecoration() {
 			PolylineDecoration df = new PolylineDecoration();
 			df.setLineWidth(1);
-			
+
 			this.setPolylineDecoration(df);
-			
+
 			return df;
 		}
 

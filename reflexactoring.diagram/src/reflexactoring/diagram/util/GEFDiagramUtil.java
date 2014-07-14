@@ -3,7 +3,6 @@
  */
 package reflexactoring.diagram.util;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
@@ -33,6 +32,7 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.Type;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
@@ -109,7 +109,7 @@ public class GEFDiagramUtil {
 		return null;
 	}
 	
-	public static View findViewOfSpecificModuleDependency(DiagramRootEditPart diagramRoot, ModuleDependency dependency){
+	public static View findViewOfSpecificModuleDependency(DiagramRootEditPart diagramRoot, ModuleLink link){
 		for(Object obj: diagramRoot.getChildren()){
 			if(obj instanceof ReflexactoringEditPart){
 				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
@@ -120,9 +120,9 @@ public class GEFDiagramUtil {
 						EObject eObj = dependencyPart.resolveSemanticElement();
 						if(eObj instanceof ModuleDependency){
 							ModuleDependency d = (ModuleDependency)eObj;
-							if(d.getName().equals(dependency.getName()) &&
-									d.getDestination().getDescription().equals(dependency.getDestination().getDescription()) &&
-									d.getOrigin().getDescription().equals(dependency.getOrigin().getDescription())){
+							if(d.getName().equals(link.getName()) &&
+									d.getDestination().getDescription().equals(link.getDestination().getDescription()) &&
+									d.getOrigin().getDescription().equals(link.getOrigin().getDescription())){
 								return dependencyPart.getPrimaryView();
 							}
 						}
@@ -286,13 +286,13 @@ public class GEFDiagramUtil {
 		
 		int count = reflexactoring.getModuleDenpencies().size();
 		for(int i=0; i<count; i++){
-			ModuleDependency dependency = reflexactoring.getModuleDenpencies().get(i);
-			if(dependency.getOrigin().getName().equals(sourceModuleWrapper.getName())
-					&& dependency.getDestination().getName().equals(targetModuleWrapper.getName())){
+			ModuleLink link = reflexactoring.getModuleDenpencies().get(i);
+			if(link.getOrigin().getName().equals(sourceModuleWrapper.getName())
+					&& link.getDestination().getName().equals(targetModuleWrapper.getName())){
 				
-				Edge edge = (Edge)GEFDiagramUtil.findViewOfSpecificModuleDependency(diagramRoot, dependency);
+				Edge edge = (Edge)GEFDiagramUtil.findViewOfSpecificModuleDependency(diagramRoot, link);
 				
-				DestroyElementRequest destroyRequest = new DestroyElementRequest(dependency, false);
+				DestroyElementRequest destroyRequest = new DestroyElementRequest(link, false);
 				DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
 				DeleteCommand deleteCommand = new DeleteCommand(GEFDiagramUtil.getRootEditPart(diagramRoot).getEditingDomain(), edge);
 				

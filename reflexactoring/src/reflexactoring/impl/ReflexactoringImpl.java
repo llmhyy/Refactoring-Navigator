@@ -3,24 +3,18 @@
 package reflexactoring.impl;
 
 import java.util.Collection;
-
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
 import reflexactoring.ClassExtend;
 import reflexactoring.Implement;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
-import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.ReflexactoringPackage;
 import reflexactoring.Type;
@@ -74,7 +68,7 @@ public class ReflexactoringImpl extends MinimalEObjectImpl.Container implements 
 	 * @generated
 	 * @ordered
 	 */
-	protected EList<ModuleDependency> moduleDenpencies;
+	protected EList<ModuleLink> moduleDenpencies;
 
 	/**
 	 * The cached value of the '{@link #getImplements() <em>Implements</em>}' containment reference list.
@@ -164,9 +158,9 @@ public class ReflexactoringImpl extends MinimalEObjectImpl.Container implements 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList<ModuleDependency> getModuleDenpencies() {
+	public EList<ModuleLink> getModuleDenpencies() {
 		if (moduleDenpencies == null) {
-			moduleDenpencies = new EObjectContainmentEList<ModuleDependency>(ModuleDependency.class, this, ReflexactoringPackage.REFLEXACTORING__MODULE_DENPENCIES);
+			moduleDenpencies = new EObjectContainmentEList<ModuleLink>(ModuleLink.class, this, ReflexactoringPackage.REFLEXACTORING__MODULE_DENPENCIES);
 		}
 		return moduleDenpencies;
 	}
@@ -290,7 +284,7 @@ public class ReflexactoringImpl extends MinimalEObjectImpl.Container implements 
 				return;
 			case ReflexactoringPackage.REFLEXACTORING__MODULE_DENPENCIES:
 				getModuleDenpencies().clear();
-				getModuleDenpencies().addAll((Collection<? extends ModuleDependency>)newValue);
+				getModuleDenpencies().addAll((Collection<? extends ModuleLink>)newValue);
 				return;
 			case ReflexactoringPackage.REFLEXACTORING__IMPLEMENTS:
 				getImplements().clear();

@@ -8,34 +8,22 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.transaction.TransactionalEditingDomain;
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gmf.runtime.common.core.command.ICommand;
 import org.eclipse.gmf.runtime.diagram.core.commands.DeleteCommand;
 import org.eclipse.gmf.runtime.diagram.core.edithelpers.CreateElementRequestAdapter;
-import org.eclipse.gmf.runtime.diagram.core.util.ViewUtil;
-import org.eclipse.gmf.runtime.diagram.ui.commands.CreateCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.DeferredCreateConnectionViewAndElementCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramEditDomain;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
 import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramEditDomain;
-import org.eclipse.gmf.runtime.diagram.ui.parts.IDiagramWorkbenchPart;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElementRequest;
 import org.eclipse.gmf.runtime.diagram.ui.requests.CreateConnectionViewAndElementRequest.ConnectionViewAndElementDescriptor;
-import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest;
-import org.eclipse.gmf.runtime.diagram.ui.requests.CreateViewAndElementRequest.ViewAndElementDescriptor;
 import org.eclipse.gmf.runtime.emf.core.util.EObjectAdapter;
 import org.eclipse.gmf.runtime.emf.type.core.IElementType;
 import org.eclipse.gmf.runtime.emf.type.core.IHintedType;
@@ -50,36 +38,30 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
-import org.junit.internal.RealSystem;
 
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.ReflexactoringPackage;
 import reflexactoring.Type;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.ModuleDependencyWrapper;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.edit.commands.Class2CreateCommand;
 import reflexactoring.diagram.edit.commands.ClassCreateCommand;
 import reflexactoring.diagram.edit.commands.Interface2CreateCommand;
 import reflexactoring.diagram.edit.commands.InterfaceCreateCommand;
-import reflexactoring.diagram.edit.commands.ModuleDependencyCreateCommand;
-import reflexactoring.diagram.edit.commands.TypeDependencyCreateCommand;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
+import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart.ModuleDependencyFigure;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
-import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart.ModuleDependencyFigure;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
-import reflexactoring.diagram.part.ReflexactoringDiagramEditorUtil;
 import reflexactoring.diagram.providers.ReflexactoringElementTypes;
 import reflexactoring.diagram.util.GEFDiagramUtil;
-import reflexactoring.impl.ReflexactoringImpl;
-import reflexactoring.provider.ReflexactoringEditPlugin;
 
 /**
  * This class is used to update the diagram according to corresponding computation,
@@ -145,11 +127,11 @@ public class DiagramUpdater {
 		count = reflexactoring.getModuleDenpencies().size();
 		int index = 0;
 		for(int i=0; i<count; i++){
-			ModuleDependency dependency = reflexactoring.getModuleDenpencies().get(index);
-			if(dependency.getName().equals(ModuleDependencyWrapper.DIVERGENCE)){
-				Edge edge = (Edge)GEFDiagramUtil.findViewOfSpecificModuleDependency(diagramRoot, dependency);
+			ModuleLink link = reflexactoring.getModuleDenpencies().get(index);
+			if(link.getName().equals(ModuleLinkWrapper.DIVERGENCE)){
+				Edge edge = (Edge)GEFDiagramUtil.findViewOfSpecificModuleDependency(diagramRoot, link);
 				
-				DestroyElementRequest destroyRequest = new DestroyElementRequest(dependency, false);
+				DestroyElementRequest destroyRequest = new DestroyElementRequest(link, false);
 				DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
 				DeleteCommand deleteCommand = new DeleteCommand(GEFDiagramUtil.getRootEditPart(diagramRoot).getEditingDomain(), edge);
 				
@@ -161,7 +143,7 @@ public class DiagramUpdater {
 				
 			}
 			else{
-				setDependencyType(diagramRoot, dependency, ModuleDependencyWrapper.ORIGIN);
+				setDependencyType(diagramRoot, link, ModuleLinkWrapper.ORIGIN);
 				index++;
 			}
 		}
@@ -281,16 +263,16 @@ public class DiagramUpdater {
 		 * other one for realistic connections.
 		 */
 		Reflexactoring root = GEFDiagramUtil.findReflexactoring(diagramRoot);
-		HashSet<ModuleDependencyWrapper> conceivedConnectionList = new HashSet<>();
-		for(ModuleDependency connection: root.getModuleDenpencies()){
+		HashSet<ModuleLinkWrapper> conceivedConnectionList = new HashSet<>();
+		for(ModuleLink connection: root.getModuleDenpencies()){
 			ModuleWrapper sourceModule = new ModuleWrapper(connection.getOrigin());
 			ModuleWrapper targetModule = new ModuleWrapper(connection.getDestination());
-			ModuleDependencyWrapper connectionWrapper = new ModuleDependencyWrapper(sourceModule, targetModule);
+			ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule);
 			
 			conceivedConnectionList.add(connectionWrapper);
 		}
 		
-		HashSet<ModuleDependencyWrapper> realisticConnectionList = recoverRealisticConnectionList(compilationUnitWrapperList);
+		HashSet<ModuleLinkWrapper> realisticConnectionList = recoverRealisticConnectionList(compilationUnitWrapperList);
 		
 		/**
 		 * Start comparing the module conformance between high and low level module.
@@ -299,9 +281,9 @@ public class DiagramUpdater {
 		/**
 		 * First, identify matched connections from two sets.
 		 */
-		Iterator<ModuleDependencyWrapper> iterator = conceivedConnectionList.iterator();
+		Iterator<ModuleLinkWrapper> iterator = conceivedConnectionList.iterator();
 		while(iterator.hasNext()){
-			ModuleDependencyWrapper connection = iterator.next();
+			ModuleLinkWrapper connection = iterator.next();
 			if(realisticConnectionList.contains(connection)){
 				iterator.remove();
 				realisticConnectionList.remove(connection);
@@ -310,7 +292,7 @@ public class DiagramUpdater {
 						connection).getPrimaryShape();
 				connectionFigure.setConformanceStyle();
 				
-				setDependencyType(diagramRoot, connection, ModuleDependencyWrapper.CONFORMANCE);
+				setDependencyType(diagramRoot, connection, ModuleLinkWrapper.CONFORMANCE);
 			}
 		}
 		
@@ -319,25 +301,25 @@ public class DiagramUpdater {
 		 * while not exist in code.
 		 * 
 		 */
-		for(ModuleDependencyWrapper conceivedConnection: conceivedConnectionList){
+		for(ModuleLinkWrapper conceivedConnection: conceivedConnectionList){
 			ModuleDependencyFigure connectionFigure = findCorrespondingDepedencyEditPart(diagramRoot, 
 					conceivedConnection).getPrimaryShape();
 			connectionFigure.setAbsenceStyle();
-			setDependencyType(diagramRoot, conceivedConnection, ModuleDependencyWrapper.ABSENCE);
+			setDependencyType(diagramRoot, conceivedConnection, ModuleLinkWrapper.ABSENCE);
 		}
 		
 		/**
 		 * Third, deal with wrong dependencies (divergent connection), i.e., the dependencies unexpected by user
 		 * while exist in code.
 		 */
-		for(ModuleDependencyWrapper divergentConnection: realisticConnectionList){
+		for(ModuleLinkWrapper divergentConnection: realisticConnectionList){
 			ModuleDependencyFigure connectionFigure = createDependency(diagramRoot, divergentConnection);
 			connectionFigure.setDivergneceStyle();
-			setDependencyType(diagramRoot, divergentConnection, ModuleDependencyWrapper.DIVERGENCE);
+			setDependencyType(diagramRoot, divergentConnection, ModuleLinkWrapper.DIVERGENCE);
 		}
 	}
 	
-	private ModuleDependencyFigure createDependency(DiagramRootEditPart diagramRoot, ModuleDependencyWrapper connection){
+	private ModuleDependencyFigure createDependency(DiagramRootEditPart diagramRoot, ModuleLinkWrapper connection){
 		Module sourceModule = GEFDiagramUtil.findModule(diagramRoot, connection.getSourceModule().getModule());
 		Module targetModule = GEFDiagramUtil.findModule(diagramRoot, connection.getTargetModule().getModule());
 		
@@ -371,7 +353,7 @@ public class DiagramUpdater {
 	}
 	
 	private ModuleDependencyEditPart findCorrespondingDepedencyEditPart(DiagramRootEditPart diagramRoot,
-			ModuleDependencyWrapper connection){
+			ModuleLinkWrapper connection){
 		
 		for(Object obj: diagramRoot.getChildren()){
 			if(obj instanceof ReflexactoringEditPart){
@@ -388,7 +370,7 @@ public class DiagramUpdater {
 						//ModuleDependency dependency = (ModuleDependency)dependencyPart.resolveSemanticElement();
 						ModuleWrapper sourceModule = new ModuleWrapper((Module)sourceEditPart.resolveSemanticElement());
 						ModuleWrapper targetModule = new ModuleWrapper((Module)targetEditPart.resolveSemanticElement());
-						ModuleDependencyWrapper connectionWrapper = new ModuleDependencyWrapper(sourceModule, targetModule);
+						ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule);
 						
 						if(connectionWrapper.equals(connection)){
 							return dependencyPart;
@@ -401,16 +383,16 @@ public class DiagramUpdater {
 		return null;
 	}
 	
-	private HashSet<ModuleDependencyWrapper> recoverRealisticConnectionList(
+	private HashSet<ModuleLinkWrapper> recoverRealisticConnectionList(
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList){
-		HashSet<ModuleDependencyWrapper> realisticConnectionList = new HashSet<>();
+		HashSet<ModuleLinkWrapper> realisticConnectionList = new HashSet<>();
 		for(ICompilationUnitWrapper callerUnit: compilationUnitWrapperList){
 			for(ICompilationUnitWrapper calleeUnit: callerUnit.getCalleeCompilationUnitList().keySet()){
 				ModuleWrapper callerModule = callerUnit.getMappingModule();
 				ModuleWrapper calleeModule = calleeUnit.getMappingModule();
 				
 				if(callerModule != null && calleeModule != null && !callerModule.equals(calleeModule)){
-					ModuleDependencyWrapper connection = new ModuleDependencyWrapper(callerModule, calleeModule);
+					ModuleLinkWrapper connection = new ModuleLinkWrapper(callerModule, calleeModule);
 					realisticConnectionList.add(connection);
 				}
 			}
@@ -429,7 +411,7 @@ public class DiagramUpdater {
 		diagramEditDomain.getDiagramCommandStack().execute(new ICommandProxy(setPackageCommand));
 	}
 	
-	private void setDependencyType(DiagramRootEditPart diagramRoot, ModuleDependencyWrapper connection, String connectionType){
+	private void setDependencyType(DiagramRootEditPart diagramRoot, ModuleLinkWrapper connection, String connectionType){
 		ModuleDependencyEditPart part = findCorrespondingDepedencyEditPart(diagramRoot, connection);
 		ModuleDependency dependency = (ModuleDependency)part.resolveSemanticElement();
 		
@@ -437,7 +419,7 @@ public class DiagramUpdater {
 	}
 	
 	private void setDependencyType(DiagramRootEditPart diagramRoot, EObject dependency, String connectionType){
-		SetRequest req = new SetRequest(dependency, ReflexactoringPackage.eINSTANCE.getModuleDependency_Name(), connectionType);
+		SetRequest req = new SetRequest(dependency, ReflexactoringPackage.eINSTANCE.getModuleLink_Name(), connectionType);
 		SetValueCommand setCommand = new SetValueCommand(req);
 		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(setCommand));
 	}

@@ -124,15 +124,32 @@
         href="reflexactoring.ecore#//Reflexactoring/moduleDenpencies"/>
     <tool
         xsi:type="gmftool:CreationTool"
-        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.3"/>
+        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.8"/>
     <diagramLink
         href="reflexactoring.gmfgraph#ModuleDependency"/>
     <sourceMetaFeature
         xsi:type="ecore:EReference"
-        href="reflexactoring.ecore#//ModuleDependency/origin"/>
+        href="reflexactoring.ecore#//ModuleLink/origin"/>
     <linkMetaFeature
         xsi:type="ecore:EReference"
-        href="reflexactoring.ecore#//ModuleDependency/destination"/>
+        href="reflexactoring.ecore#//ModuleLink/destination"/>
+  </links>
+  <links>
+    <domainMetaElement
+        href="reflexactoring.ecore#//ModuleExtend"/>
+    <containmentFeature
+        href="reflexactoring.ecore#//Reflexactoring/moduleDenpencies"/>
+    <tool
+        xsi:type="gmftool:CreationTool"
+        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.7"/>
+    <diagramLink
+        href="reflexactoring.gmfgraph#ModuleExtend"/>
+    <sourceMetaFeature
+        xsi:type="ecore:EReference"
+        href="reflexactoring.ecore#//ModuleLink/origin"/>
+    <linkMetaFeature
+        xsi:type="ecore:EReference"
+        href="reflexactoring.ecore#//ModuleLink/destination"/>
   </links>
   <links>
     <domainMetaElement
@@ -141,7 +158,7 @@
         href="reflexactoring.ecore#//Reflexactoring/classExtends"/>
     <tool
         xsi:type="gmftool:CreationTool"
-        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.6"/>
+        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.5"/>
     <diagramLink
         href="reflexactoring.gmfgraph#ClassExtend"/>
     <sourceMetaFeature
@@ -158,7 +175,7 @@
         href="reflexactoring.ecore#//Reflexactoring/typeDependencies"/>
     <tool
         xsi:type="gmftool:CreationTool"
-        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.4"/>
+        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.3"/>
     <diagramLink
         href="reflexactoring.gmfgraph#TypeDependency"/>
     <sourceMetaFeature
@@ -175,7 +192,7 @@
         href="reflexactoring.ecore#//Reflexactoring/interfaceExtends"/>
     <tool
         xsi:type="gmftool:CreationTool"
-        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.7"/>
+        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.6"/>
     <diagramLink
         href="reflexactoring.gmfgraph#InterfaceExtend"/>
     <sourceMetaFeature
@@ -192,7 +209,7 @@
         href="reflexactoring.ecore#//Reflexactoring/implements"/>
     <tool
         xsi:type="gmftool:CreationTool"
-        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.5"/>
+        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.4"/>
     <diagramLink
         href="reflexactoring.gmfgraph#Implement"/>
     <sourceMetaFeature

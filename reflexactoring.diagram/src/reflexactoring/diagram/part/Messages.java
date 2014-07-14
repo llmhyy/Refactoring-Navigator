@@ -278,52 +278,62 @@ public class Messages extends NLS {
 	/**
 	 * @generated
 	 */
-	public static String ModuleDependency4CreationTool_title;
+	public static String TypeDependency4CreationTool_title;
 
 	/**
 	 * @generated
 	 */
-	public static String ModuleDependency4CreationTool_desc;
+	public static String TypeDependency4CreationTool_desc;
 
 	/**
 	 * @generated
 	 */
-	public static String TypeDependency5CreationTool_title;
+	public static String Implement5CreationTool_title;
 
 	/**
 	 * @generated
 	 */
-	public static String TypeDependency5CreationTool_desc;
+	public static String Implement5CreationTool_desc;
 
 	/**
 	 * @generated
 	 */
-	public static String Implement6CreationTool_title;
+	public static String ClassExtend6CreationTool_title;
 
 	/**
 	 * @generated
 	 */
-	public static String Implement6CreationTool_desc;
+	public static String ClassExtend6CreationTool_desc;
 
 	/**
 	 * @generated
 	 */
-	public static String ExtendClass7CreationTool_title;
+	public static String InterfaceExtend7CreationTool_title;
 
 	/**
 	 * @generated
 	 */
-	public static String ExtendClass7CreationTool_desc;
+	public static String InterfaceExtend7CreationTool_desc;
 
 	/**
 	 * @generated
 	 */
-	public static String ExtendInterface8CreationTool_title;
+	public static String ModuleExtend8CreationTool_title;
 
 	/**
 	 * @generated
 	 */
-	public static String ExtendInterface8CreationTool_desc;
+	public static String ModuleExtend8CreationTool_desc;
+
+	/**
+	 * @generated
+	 */
+	public static String ModuleDependency9CreationTool_title;
+
+	/**
+	 * @generated
+	 */
+	public static String ModuleDependency9CreationTool_desc;
 
 	/**
 	 * @generated
@@ -409,6 +419,16 @@ public class Messages extends NLS {
 	 * @generated
 	 */
 	public static String NavigatorGroupName_Interface_3002_outgoinglinks;
+
+	/**
+	 * @generated
+	 */
+	public static String NavigatorGroupName_ModuleExtend_4006_target;
+
+	/**
+	 * @generated
+	 */
+	public static String NavigatorGroupName_ModuleExtend_4006_source;
 
 	/**
 	 * @generated

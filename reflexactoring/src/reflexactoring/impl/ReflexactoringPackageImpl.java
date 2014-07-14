@@ -15,6 +15,8 @@ import reflexactoring.Interface;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleExtend;
+import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.ReflexactoringFactory;
 import reflexactoring.ReflexactoringPackage;
@@ -68,6 +70,13 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	private EClass moduleLinkEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	private EClass moduleDependencyEClass = null;
 
 	/**
@@ -97,6 +106,13 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 	 * @generated
 	 */
 	private EClass interfaceExtendEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass moduleExtendEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -326,35 +342,44 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getModuleLink() {
+		return moduleLinkEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getModuleLink_Origin() {
+		return (EReference)moduleLinkEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getModuleLink_Destination() {
+		return (EReference)moduleLinkEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getModuleLink_Name() {
+		return (EAttribute)moduleLinkEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getModuleDependency() {
 		return moduleDependencyEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getModuleDependency_Origin() {
-		return (EReference)moduleDependencyEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getModuleDependency_Destination() {
-		return (EReference)moduleDependencyEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getModuleDependency_Name() {
-		return (EAttribute)moduleDependencyEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -506,6 +531,15 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getModuleExtend() {
+		return moduleExtendEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public ReflexactoringFactory getReflexactoringFactory() {
 		return (ReflexactoringFactory)getEFactoryInstance();
 	}
@@ -552,10 +586,10 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 
 		interfaceEClass = createEClass(INTERFACE);
 
-		moduleDependencyEClass = createEClass(MODULE_DEPENDENCY);
-		createEReference(moduleDependencyEClass, MODULE_DEPENDENCY__ORIGIN);
-		createEReference(moduleDependencyEClass, MODULE_DEPENDENCY__DESTINATION);
-		createEAttribute(moduleDependencyEClass, MODULE_DEPENDENCY__NAME);
+		moduleLinkEClass = createEClass(MODULE_LINK);
+		createEReference(moduleLinkEClass, MODULE_LINK__ORIGIN);
+		createEReference(moduleLinkEClass, MODULE_LINK__DESTINATION);
+		createEAttribute(moduleLinkEClass, MODULE_LINK__NAME);
 
 		typeDependencyEClass = createEClass(TYPE_DEPENDENCY);
 		createEReference(typeDependencyEClass, TYPE_DEPENDENCY__ORIGIN);
@@ -576,6 +610,10 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 		createEAttribute(interfaceExtendEClass, INTERFACE_EXTEND__NAME);
 		createEReference(interfaceExtendEClass, INTERFACE_EXTEND__SUB_INTERFACE);
 		createEReference(interfaceExtendEClass, INTERFACE_EXTEND__SUPER_INTERFACE);
+
+		moduleExtendEClass = createEClass(MODULE_EXTEND);
+
+		moduleDependencyEClass = createEClass(MODULE_DEPENDENCY);
 	}
 
 	/**
@@ -608,12 +646,14 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 		// Add supertypes to classes
 		classEClass.getESuperTypes().add(this.getType());
 		interfaceEClass.getESuperTypes().add(this.getType());
+		moduleExtendEClass.getESuperTypes().add(this.getModuleLink());
+		moduleDependencyEClass.getESuperTypes().add(this.getModuleLink());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(reflexactoringEClass, Reflexactoring.class, "Reflexactoring", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getReflexactoring_Modules(), this.getModule(), null, "modules", null, 0, -1, Reflexactoring.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getReflexactoring_Types(), this.getType(), null, "types", null, 0, -1, Reflexactoring.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getReflexactoring_ModuleDenpencies(), this.getModuleDependency(), null, "moduleDenpencies", null, 0, -1, Reflexactoring.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getReflexactoring_ModuleDenpencies(), this.getModuleLink(), null, "moduleDenpencies", null, 0, -1, Reflexactoring.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getReflexactoring_Implements(), this.getImplement(), null, "implements", null, 0, -1, Reflexactoring.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getReflexactoring_TypeDependencies(), this.getTypeDependency(), null, "typeDependencies", null, 0, -1, Reflexactoring.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getReflexactoring_ClassExtends(), this.getClassExtend(), null, "classExtends", null, 0, -1, Reflexactoring.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -633,10 +673,10 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 
 		initEClass(interfaceEClass, Interface.class, "Interface", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
-		initEClass(moduleDependencyEClass, ModuleDependency.class, "ModuleDependency", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getModuleDependency_Origin(), this.getModule(), null, "origin", null, 1, 1, ModuleDependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getModuleDependency_Destination(), this.getModule(), null, "destination", null, 1, 1, ModuleDependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getModuleDependency_Name(), ecorePackage.getEString(), "name", "origin", 1, 1, ModuleDependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(moduleLinkEClass, ModuleLink.class, "ModuleLink", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getModuleLink_Origin(), this.getModule(), null, "origin", null, 1, 1, ModuleLink.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getModuleLink_Destination(), this.getModule(), null, "destination", null, 1, 1, ModuleLink.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getModuleLink_Name(), ecorePackage.getEString(), "name", "origin", 1, 1, ModuleLink.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(typeDependencyEClass, TypeDependency.class, "TypeDependency", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getTypeDependency_Origin(), this.getType(), null, "origin", null, 1, 1, TypeDependency.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -657,6 +697,10 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 		initEAttribute(getInterfaceExtend_Name(), ecorePackage.getEString(), "name", null, 1, 1, InterfaceExtend.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getInterfaceExtend_SubInterface(), this.getInterface(), null, "subInterface", null, 1, 1, InterfaceExtend.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getInterfaceExtend_SuperInterface(), this.getInterface(), null, "superInterface", null, 1, 1, InterfaceExtend.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(moduleExtendEClass, ModuleExtend.class, "ModuleExtend", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(moduleDependencyEClass, ModuleDependency.class, "ModuleDependency", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

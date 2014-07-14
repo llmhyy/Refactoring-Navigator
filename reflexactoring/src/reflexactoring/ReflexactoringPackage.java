@@ -350,14 +350,14 @@ public interface ReflexactoringPackage extends EPackage {
 	int INTERFACE_OPERATION_COUNT = TYPE_OPERATION_COUNT + 0;
 
 	/**
-	 * The meta object id for the '{@link reflexactoring.impl.ModuleDependencyImpl <em>Module Dependency</em>}' class.
+	 * The meta object id for the '{@link reflexactoring.impl.ModuleLinkImpl <em>Module Link</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see reflexactoring.impl.ModuleDependencyImpl
-	 * @see reflexactoring.impl.ReflexactoringPackageImpl#getModuleDependency()
+	 * @see reflexactoring.impl.ModuleLinkImpl
+	 * @see reflexactoring.impl.ReflexactoringPackageImpl#getModuleLink()
 	 * @generated
 	 */
-	int MODULE_DEPENDENCY = 5;
+	int MODULE_LINK = 5;
 
 	/**
 	 * The feature id for the '<em><b>Origin</b></em>' reference.
@@ -366,7 +366,7 @@ public interface ReflexactoringPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MODULE_DEPENDENCY__ORIGIN = 0;
+	int MODULE_LINK__ORIGIN = 0;
 
 	/**
 	 * The feature id for the '<em><b>Destination</b></em>' reference.
@@ -375,7 +375,7 @@ public interface ReflexactoringPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MODULE_DEPENDENCY__DESTINATION = 1;
+	int MODULE_LINK__DESTINATION = 1;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -384,25 +384,35 @@ public interface ReflexactoringPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MODULE_DEPENDENCY__NAME = 2;
+	int MODULE_LINK__NAME = 2;
 
 	/**
-	 * The number of structural features of the '<em>Module Dependency</em>' class.
+	 * The number of structural features of the '<em>Module Link</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int MODULE_DEPENDENCY_FEATURE_COUNT = 3;
+	int MODULE_LINK_FEATURE_COUNT = 3;
 
 	/**
-	 * The number of operations of the '<em>Module Dependency</em>' class.
+	 * The number of operations of the '<em>Module Link</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int MODULE_DEPENDENCY_OPERATION_COUNT = 0;
+	int MODULE_LINK_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link reflexactoring.impl.ModuleDependencyImpl <em>Module Dependency</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see reflexactoring.impl.ModuleDependencyImpl
+	 * @see reflexactoring.impl.ReflexactoringPackageImpl#getModuleDependency()
+	 * @generated
+	 */
+	int MODULE_DEPENDENCY = 11;
 
 	/**
 	 * The meta object id for the '{@link reflexactoring.impl.TypeDependencyImpl <em>Type Dependency</em>}' class.
@@ -626,6 +636,107 @@ public interface ReflexactoringPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link reflexactoring.impl.ModuleExtendImpl <em>Module Extend</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see reflexactoring.impl.ModuleExtendImpl
+	 * @see reflexactoring.impl.ReflexactoringPackageImpl#getModuleExtend()
+	 * @generated
+	 */
+	int MODULE_EXTEND = 10;
+
+	/**
+	 * The feature id for the '<em><b>Origin</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODULE_EXTEND__ORIGIN = MODULE_LINK__ORIGIN;
+
+	/**
+	 * The feature id for the '<em><b>Destination</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODULE_EXTEND__DESTINATION = MODULE_LINK__DESTINATION;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODULE_EXTEND__NAME = MODULE_LINK__NAME;
+
+	/**
+	 * The number of structural features of the '<em>Module Extend</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODULE_EXTEND_FEATURE_COUNT = MODULE_LINK_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of operations of the '<em>Module Extend</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODULE_EXTEND_OPERATION_COUNT = MODULE_LINK_OPERATION_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Origin</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODULE_DEPENDENCY__ORIGIN = MODULE_LINK__ORIGIN;
+
+	/**
+	 * The feature id for the '<em><b>Destination</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODULE_DEPENDENCY__DESTINATION = MODULE_LINK__DESTINATION;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODULE_DEPENDENCY__NAME = MODULE_LINK__NAME;
+
+	/**
+	 * The number of structural features of the '<em>Module Dependency</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODULE_DEPENDENCY_FEATURE_COUNT = MODULE_LINK_FEATURE_COUNT + 0;
+
+	/**
+	 * The number of operations of the '<em>Module Dependency</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int MODULE_DEPENDENCY_OPERATION_COUNT = MODULE_LINK_OPERATION_COUNT + 0;
+
+
+	/**
 	 * Returns the meta object for class '{@link reflexactoring.Reflexactoring <em>Reflexactoring</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -819,6 +930,49 @@ public interface ReflexactoringPackage extends EPackage {
 	EClass getInterface();
 
 	/**
+	 * Returns the meta object for class '{@link reflexactoring.ModuleLink <em>Module Link</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Module Link</em>'.
+	 * @see reflexactoring.ModuleLink
+	 * @generated
+	 */
+	EClass getModuleLink();
+
+	/**
+	 * Returns the meta object for the reference '{@link reflexactoring.ModuleLink#getOrigin <em>Origin</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Origin</em>'.
+	 * @see reflexactoring.ModuleLink#getOrigin()
+	 * @see #getModuleLink()
+	 * @generated
+	 */
+	EReference getModuleLink_Origin();
+
+	/**
+	 * Returns the meta object for the reference '{@link reflexactoring.ModuleLink#getDestination <em>Destination</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Destination</em>'.
+	 * @see reflexactoring.ModuleLink#getDestination()
+	 * @see #getModuleLink()
+	 * @generated
+	 */
+	EReference getModuleLink_Destination();
+
+	/**
+	 * Returns the meta object for the attribute '{@link reflexactoring.ModuleLink#getName <em>Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see reflexactoring.ModuleLink#getName()
+	 * @see #getModuleLink()
+	 * @generated
+	 */
+	EAttribute getModuleLink_Name();
+
+	/**
 	 * Returns the meta object for class '{@link reflexactoring.ModuleDependency <em>Module Dependency</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -827,39 +981,6 @@ public interface ReflexactoringPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getModuleDependency();
-
-	/**
-	 * Returns the meta object for the reference '{@link reflexactoring.ModuleDependency#getOrigin <em>Origin</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Origin</em>'.
-	 * @see reflexactoring.ModuleDependency#getOrigin()
-	 * @see #getModuleDependency()
-	 * @generated
-	 */
-	EReference getModuleDependency_Origin();
-
-	/**
-	 * Returns the meta object for the reference '{@link reflexactoring.ModuleDependency#getDestination <em>Destination</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Destination</em>'.
-	 * @see reflexactoring.ModuleDependency#getDestination()
-	 * @see #getModuleDependency()
-	 * @generated
-	 */
-	EReference getModuleDependency_Destination();
-
-	/**
-	 * Returns the meta object for the attribute '{@link reflexactoring.ModuleDependency#getName <em>Name</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Name</em>'.
-	 * @see reflexactoring.ModuleDependency#getName()
-	 * @see #getModuleDependency()
-	 * @generated
-	 */
-	EAttribute getModuleDependency_Name();
 
 	/**
 	 * Returns the meta object for class '{@link reflexactoring.TypeDependency <em>Type Dependency</em>}'.
@@ -1032,6 +1153,16 @@ public interface ReflexactoringPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getInterfaceExtend_SuperInterface();
+
+	/**
+	 * Returns the meta object for class '{@link reflexactoring.ModuleExtend <em>Module Extend</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Module Extend</em>'.
+	 * @see reflexactoring.ModuleExtend
+	 * @generated
+	 */
+	EClass getModuleExtend();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -1211,6 +1342,40 @@ public interface ReflexactoringPackage extends EPackage {
 		EClass INTERFACE = eINSTANCE.getInterface();
 
 		/**
+		 * The meta object literal for the '{@link reflexactoring.impl.ModuleLinkImpl <em>Module Link</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see reflexactoring.impl.ModuleLinkImpl
+		 * @see reflexactoring.impl.ReflexactoringPackageImpl#getModuleLink()
+		 * @generated
+		 */
+		EClass MODULE_LINK = eINSTANCE.getModuleLink();
+
+		/**
+		 * The meta object literal for the '<em><b>Origin</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference MODULE_LINK__ORIGIN = eINSTANCE.getModuleLink_Origin();
+
+		/**
+		 * The meta object literal for the '<em><b>Destination</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference MODULE_LINK__DESTINATION = eINSTANCE.getModuleLink_Destination();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute MODULE_LINK__NAME = eINSTANCE.getModuleLink_Name();
+
+		/**
 		 * The meta object literal for the '{@link reflexactoring.impl.ModuleDependencyImpl <em>Module Dependency</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -1219,30 +1384,6 @@ public interface ReflexactoringPackage extends EPackage {
 		 * @generated
 		 */
 		EClass MODULE_DEPENDENCY = eINSTANCE.getModuleDependency();
-
-		/**
-		 * The meta object literal for the '<em><b>Origin</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference MODULE_DEPENDENCY__ORIGIN = eINSTANCE.getModuleDependency_Origin();
-
-		/**
-		 * The meta object literal for the '<em><b>Destination</b></em>' reference feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EReference MODULE_DEPENDENCY__DESTINATION = eINSTANCE.getModuleDependency_Destination();
-
-		/**
-		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
-		 * <!-- begin-user-doc -->
-		 * <!-- end-user-doc -->
-		 * @generated
-		 */
-		EAttribute MODULE_DEPENDENCY__NAME = eINSTANCE.getModuleDependency_Name();
 
 		/**
 		 * The meta object literal for the '{@link reflexactoring.impl.TypeDependencyImpl <em>Type Dependency</em>}' class.
@@ -1379,6 +1520,16 @@ public interface ReflexactoringPackage extends EPackage {
 		 * @generated
 		 */
 		EReference INTERFACE_EXTEND__SUPER_INTERFACE = eINSTANCE.getInterfaceExtend_SuperInterface();
+
+		/**
+		 * The meta object literal for the '{@link reflexactoring.impl.ModuleExtendImpl <em>Module Extend</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see reflexactoring.impl.ModuleExtendImpl
+		 * @see reflexactoring.impl.ReflexactoringPackageImpl#getModuleExtend()
+		 * @generated
+		 */
+		EClass MODULE_EXTEND = eINSTANCE.getModuleExtend();
 
 	}
 

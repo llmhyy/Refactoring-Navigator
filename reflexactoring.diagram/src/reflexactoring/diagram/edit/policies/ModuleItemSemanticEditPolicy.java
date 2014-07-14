@@ -17,12 +17,15 @@ import org.eclipse.gmf.runtime.notation.View;
 
 import reflexactoring.diagram.edit.commands.ModuleDependencyCreateCommand;
 import reflexactoring.diagram.edit.commands.ModuleDependencyReorientCommand;
+import reflexactoring.diagram.edit.commands.ModuleExtendCreateCommand;
+import reflexactoring.diagram.edit.commands.ModuleExtendReorientCommand;
 import reflexactoring.diagram.edit.parts.Class2EditPart;
 import reflexactoring.diagram.edit.parts.ClassExtendEditPart;
 import reflexactoring.diagram.edit.parts.ImplementEditPart;
 import reflexactoring.diagram.edit.parts.Interface2EditPart;
 import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
+import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
 import reflexactoring.diagram.edit.parts.ModuleTypeContainerCompartmentEditPart;
 import reflexactoring.diagram.edit.parts.TypeDependencyEditPart;
 import reflexactoring.diagram.part.ReflexactoringVisualIDRegistry;
@@ -58,10 +61,24 @@ public class ModuleItemSemanticEditPolicy extends
 				cmd.add(new DeleteCommand(getEditingDomain(), incomingLink));
 				continue;
 			}
+			if (ReflexactoringVisualIDRegistry.getVisualID(incomingLink) == ModuleExtendEditPart.VISUAL_ID) {
+				DestroyElementRequest r = new DestroyElementRequest(
+						incomingLink.getElement(), false);
+				cmd.add(new DestroyElementCommand(r));
+				cmd.add(new DeleteCommand(getEditingDomain(), incomingLink));
+				continue;
+			}
 		}
 		for (Iterator<?> it = view.getSourceEdges().iterator(); it.hasNext();) {
 			Edge outgoingLink = (Edge) it.next();
 			if (ReflexactoringVisualIDRegistry.getVisualID(outgoingLink) == ModuleDependencyEditPart.VISUAL_ID) {
+				DestroyElementRequest r = new DestroyElementRequest(
+						outgoingLink.getElement(), false);
+				cmd.add(new DestroyElementCommand(r));
+				cmd.add(new DeleteCommand(getEditingDomain(), outgoingLink));
+				continue;
+			}
+			if (ReflexactoringVisualIDRegistry.getVisualID(outgoingLink) == ModuleExtendEditPart.VISUAL_ID) {
 				DestroyElementRequest r = new DestroyElementRequest(
 						outgoingLink.getElement(), false);
 				cmd.add(new DestroyElementCommand(r));
@@ -242,6 +259,11 @@ public class ModuleItemSemanticEditPolicy extends
 			return getGEFWrapper(new ModuleDependencyCreateCommand(req,
 					req.getSource(), req.getTarget()));
 		}
+		if (ReflexactoringElementTypes.ModuleExtend_4006 == req
+				.getElementType()) {
+			return getGEFWrapper(new ModuleExtendCreateCommand(req,
+					req.getSource(), req.getTarget()));
+		}
 		return null;
 	}
 
@@ -253,6 +275,11 @@ public class ModuleItemSemanticEditPolicy extends
 		if (ReflexactoringElementTypes.ModuleDependency_4001 == req
 				.getElementType()) {
 			return getGEFWrapper(new ModuleDependencyCreateCommand(req,
+					req.getSource(), req.getTarget()));
+		}
+		if (ReflexactoringElementTypes.ModuleExtend_4006 == req
+				.getElementType()) {
+			return getGEFWrapper(new ModuleExtendCreateCommand(req,
 					req.getSource(), req.getTarget()));
 		}
 		return null;
@@ -269,6 +296,8 @@ public class ModuleItemSemanticEditPolicy extends
 		switch (getVisualID(req)) {
 		case ModuleDependencyEditPart.VISUAL_ID:
 			return getGEFWrapper(new ModuleDependencyReorientCommand(req));
+		case ModuleExtendEditPart.VISUAL_ID:
+			return getGEFWrapper(new ModuleExtendReorientCommand(req));
 		}
 		return super.getReorientRelationshipCommand(req);
 	}

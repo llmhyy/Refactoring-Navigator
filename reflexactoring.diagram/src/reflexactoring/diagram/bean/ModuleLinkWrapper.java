@@ -7,7 +7,7 @@ package reflexactoring.diagram.bean;
  * @author linyun
  *
  */
-public class ModuleDependencyWrapper implements SuggestionObject{
+public class ModuleLinkWrapper implements SuggestionObject{
 	
 	/**
 	 * Difference types 
@@ -20,7 +20,7 @@ public class ModuleDependencyWrapper implements SuggestionObject{
 	private ModuleWrapper sourceModule;
 	private ModuleWrapper targetModule;
 	
-	public ModuleDependencyWrapper(ModuleWrapper sourceModule, ModuleWrapper targetModule){
+	public ModuleLinkWrapper(ModuleWrapper sourceModule, ModuleWrapper targetModule){
 		this.sourceModule = sourceModule;
 		this.targetModule = targetModule;
 	}
@@ -34,8 +34,8 @@ public class ModuleDependencyWrapper implements SuggestionObject{
 	}
 	
 	public boolean equals(Object obj){
-		if(obj instanceof ModuleDependencyWrapper){
-			ModuleDependencyWrapper connection = (ModuleDependencyWrapper)obj;
+		if(obj instanceof ModuleLinkWrapper){
+			ModuleLinkWrapper connection = (ModuleLinkWrapper)obj;
 			if(connection.getSourceModule().equals(getSourceModule())
 					&& connection.getTargetModule().equals(getTargetModule())){
 				return true;

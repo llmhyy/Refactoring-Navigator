@@ -37,8 +37,9 @@
           metamodelType="//@diagram/@topLevelNodes.0/@elementType"/>
       <viewmap
           xsi:type="gmfgen:InnerClassViewmap"
+          layoutType="FLOW_LAYOUT"
           className="ClassFigure"
-          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class ClassFigure extends org.eclipse.draw2d.RectangleFigure {&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel fFigureClassNameFigure; &#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public ClassFigure() {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;this.setForegroundColor(THIS_FORE&#xA;);&#xA;&#x9;this.setBackgroundColor(THIS_BACK&#xA;);&#xA;this.setPreferredSize(new org.eclipse.draw2d.geometry.Dimension(getMapMode().DPtoLP(100)&#xA;, getMapMode().DPtoLP(50)&#xA;));&#xA;&#x9;&#x9;createContents();&#xA;&#x9;}&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private void createContents(){&#xA;&#xA;&#xA;fFigureClassNameFigure = new org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel();&#xA;&#xA;fFigureClassNameFigure.setText(&quot;&lt;...>&quot;);&#xA;&#xA;this.add(fFigureClassNameFigure);&#xA;&#xA;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel getFigureClassNameFigure() {&#xA;&#x9;&#x9;return fFigureClassNameFigure;&#xA;&#x9;}&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_BACK = new org.eclipse.swt.graphics.Color(null, 166, 219, 153);&#xA;&#xA;">
+          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class ClassFigure extends org.eclipse.draw2d.RectangleFigure {&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel fFigureClassNameFigure; &#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public ClassFigure() {&#xA;&#x9;&#x9;&#xA;&#x9;org.eclipse.draw2d.FlowLayout layoutThis = new org.eclipse.draw2d.FlowLayout();&#xA;&#x9;layoutThis.setStretchMinorAxis(false);&#xA;&#x9;layoutThis.setMinorAlignment(org.eclipse.draw2d.FlowLayout.ALIGN_LEFTTOP&#xA;);&#xA;&#xA;&#x9;layoutThis.setMajorAlignment(org.eclipse.draw2d.FlowLayout.ALIGN_LEFTTOP&#xA;);&#xA;&#x9;layoutThis.setMajorSpacing(5);&#xA;&#x9;layoutThis.setMinorSpacing(5);&#xA;&#x9;layoutThis.setHorizontal(true);&#xA;&#xA;&#x9;this.setLayoutManager(layoutThis);&#xA;&#xA;&#x9;&#x9;&#x9;this.setForegroundColor(THIS_FORE&#xA;);&#xA;&#x9;this.setBackgroundColor(THIS_BACK&#xA;);&#xA;this.setPreferredSize(new org.eclipse.draw2d.geometry.Dimension(getMapMode().DPtoLP(100)&#xA;, getMapMode().DPtoLP(50)&#xA;));&#xA;&#x9;&#x9;createContents();&#xA;&#x9;}&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private void createContents(){&#xA;&#xA;&#xA;fFigureClassNameFigure = new org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel();&#xA;&#xA;fFigureClassNameFigure.setText(&quot;&lt;...>&quot;);&#xA;&#xA;this.add(fFigureClassNameFigure);&#xA;&#xA;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel getFigureClassNameFigure() {&#xA;&#x9;&#x9;return fFigureClassNameFigure;&#xA;&#x9;}&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_BACK = new org.eclipse.swt.graphics.Color(null, 166, 219, 153);&#xA;&#xA;">
         <attributes
             xsi:type="gmfgen:StyleAttributes"
             fixedForeground="true"
@@ -92,8 +93,9 @@
           metamodelType="//@diagram/@topLevelNodes.1/@elementType"/>
       <viewmap
           xsi:type="gmfgen:InnerClassViewmap"
+          layoutType="FLOW_LAYOUT"
           className="InterfaceFigure"
-          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class InterfaceFigure extends org.eclipse.draw2d.RectangleFigure {&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel fFigureInterfaceNameFigure; &#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public InterfaceFigure() {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;this.setForegroundColor(THIS_FORE&#xA;);&#xA;&#x9;this.setBackgroundColor(THIS_BACK&#xA;);&#xA;this.setPreferredSize(new org.eclipse.draw2d.geometry.Dimension(getMapMode().DPtoLP(100)&#xA;, getMapMode().DPtoLP(50)&#xA;));&#xA;&#x9;&#x9;createContents();&#xA;&#x9;}&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private void createContents(){&#xA;&#xA;&#xA;fFigureInterfaceNameFigure = new org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel();&#xA;&#xA;fFigureInterfaceNameFigure.setText(&quot;&lt;...>&quot;);&#xA;&#xA;this.add(fFigureInterfaceNameFigure);&#xA;&#xA;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel getFigureInterfaceNameFigure() {&#xA;&#x9;&#x9;return fFigureInterfaceNameFigure;&#xA;&#x9;}&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_BACK = new org.eclipse.swt.graphics.Color(null, 215, 102, 203);&#xA;&#xA;">
+          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class InterfaceFigure extends org.eclipse.draw2d.RectangleFigure {&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel fFigureInterfaceNameFigure; &#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public InterfaceFigure() {&#xA;&#x9;&#x9;&#xA;&#x9;org.eclipse.draw2d.FlowLayout layoutThis = new org.eclipse.draw2d.FlowLayout();&#xA;&#x9;layoutThis.setStretchMinorAxis(false);&#xA;&#x9;layoutThis.setMinorAlignment(org.eclipse.draw2d.FlowLayout.ALIGN_LEFTTOP&#xA;);&#xA;&#xA;&#x9;layoutThis.setMajorAlignment(org.eclipse.draw2d.FlowLayout.ALIGN_LEFTTOP&#xA;);&#xA;&#x9;layoutThis.setMajorSpacing(5);&#xA;&#x9;layoutThis.setMinorSpacing(5);&#xA;&#x9;layoutThis.setHorizontal(true);&#xA;&#xA;&#x9;this.setLayoutManager(layoutThis);&#xA;&#xA;&#x9;&#x9;&#x9;this.setForegroundColor(THIS_FORE&#xA;);&#xA;&#x9;this.setBackgroundColor(THIS_BACK&#xA;);&#xA;this.setPreferredSize(new org.eclipse.draw2d.geometry.Dimension(getMapMode().DPtoLP(100)&#xA;, getMapMode().DPtoLP(50)&#xA;));&#xA;&#x9;&#x9;createContents();&#xA;&#x9;}&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private void createContents(){&#xA;&#xA;&#xA;fFigureInterfaceNameFigure = new org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel();&#xA;&#xA;fFigureInterfaceNameFigure.setText(&quot;&lt;...>&quot;);&#xA;&#xA;this.add(fFigureInterfaceNameFigure);&#xA;&#xA;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel getFigureInterfaceNameFigure() {&#xA;&#x9;&#x9;return fFigureInterfaceNameFigure;&#xA;&#x9;}&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_BACK = new org.eclipse.swt.graphics.Color(null, 215, 102, 203);&#xA;&#xA;">
         <attributes
             xsi:type="gmfgen:StyleAttributes"
             fixedForeground="true"
@@ -146,8 +148,9 @@
           editHelperClassName="ClassEditHelper"/>
       <viewmap
           xsi:type="gmfgen:InnerClassViewmap"
+          layoutType="FLOW_LAYOUT"
           className="ClassFigure"
-          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class ClassFigure extends org.eclipse.draw2d.RectangleFigure {&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel fFigureClassNameFigure; &#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public ClassFigure() {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;this.setForegroundColor(THIS_FORE&#xA;);&#xA;&#x9;this.setBackgroundColor(THIS_BACK&#xA;);&#xA;this.setPreferredSize(new org.eclipse.draw2d.geometry.Dimension(getMapMode().DPtoLP(100)&#xA;, getMapMode().DPtoLP(50)&#xA;));&#xA;&#x9;&#x9;createContents();&#xA;&#x9;}&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private void createContents(){&#xA;&#xA;&#xA;fFigureClassNameFigure = new org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel();&#xA;&#xA;fFigureClassNameFigure.setText(&quot;&lt;...>&quot;);&#xA;&#xA;this.add(fFigureClassNameFigure);&#xA;&#xA;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel getFigureClassNameFigure() {&#xA;&#x9;&#x9;return fFigureClassNameFigure;&#xA;&#x9;}&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_BACK = new org.eclipse.swt.graphics.Color(null, 166, 219, 153);&#xA;&#xA;">
+          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class ClassFigure extends org.eclipse.draw2d.RectangleFigure {&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel fFigureClassNameFigure; &#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public ClassFigure() {&#xA;&#x9;&#x9;&#xA;&#x9;org.eclipse.draw2d.FlowLayout layoutThis = new org.eclipse.draw2d.FlowLayout();&#xA;&#x9;layoutThis.setStretchMinorAxis(false);&#xA;&#x9;layoutThis.setMinorAlignment(org.eclipse.draw2d.FlowLayout.ALIGN_LEFTTOP&#xA;);&#xA;&#xA;&#x9;layoutThis.setMajorAlignment(org.eclipse.draw2d.FlowLayout.ALIGN_LEFTTOP&#xA;);&#xA;&#x9;layoutThis.setMajorSpacing(5);&#xA;&#x9;layoutThis.setMinorSpacing(5);&#xA;&#x9;layoutThis.setHorizontal(true);&#xA;&#xA;&#x9;this.setLayoutManager(layoutThis);&#xA;&#xA;&#x9;&#x9;&#x9;this.setForegroundColor(THIS_FORE&#xA;);&#xA;&#x9;this.setBackgroundColor(THIS_BACK&#xA;);&#xA;this.setPreferredSize(new org.eclipse.draw2d.geometry.Dimension(getMapMode().DPtoLP(100)&#xA;, getMapMode().DPtoLP(50)&#xA;));&#xA;&#x9;&#x9;createContents();&#xA;&#x9;}&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private void createContents(){&#xA;&#xA;&#xA;fFigureClassNameFigure = new org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel();&#xA;&#xA;fFigureClassNameFigure.setText(&quot;&lt;...>&quot;);&#xA;&#xA;this.add(fFigureClassNameFigure);&#xA;&#xA;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel getFigureClassNameFigure() {&#xA;&#x9;&#x9;return fFigureClassNameFigure;&#xA;&#x9;}&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_BACK = new org.eclipse.swt.graphics.Color(null, 166, 219, 153);&#xA;&#xA;">
         <attributes
             xsi:type="gmfgen:StyleAttributes"
             fixedForeground="true"
@@ -200,8 +203,9 @@
           editHelperClassName="InterfaceEditHelper"/>
       <viewmap
           xsi:type="gmfgen:InnerClassViewmap"
+          layoutType="FLOW_LAYOUT"
           className="InterfaceFigure"
-          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class InterfaceFigure extends org.eclipse.draw2d.RectangleFigure {&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel fFigureInterfaceNameFigure; &#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public InterfaceFigure() {&#xA;&#x9;&#x9;&#x9;&#x9;&#x9;this.setForegroundColor(THIS_FORE&#xA;);&#xA;&#x9;this.setBackgroundColor(THIS_BACK&#xA;);&#xA;this.setPreferredSize(new org.eclipse.draw2d.geometry.Dimension(getMapMode().DPtoLP(100)&#xA;, getMapMode().DPtoLP(50)&#xA;));&#xA;&#x9;&#x9;createContents();&#xA;&#x9;}&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private void createContents(){&#xA;&#xA;&#xA;fFigureInterfaceNameFigure = new org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel();&#xA;&#xA;fFigureInterfaceNameFigure.setText(&quot;&lt;...>&quot;);&#xA;&#xA;this.add(fFigureInterfaceNameFigure);&#xA;&#xA;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel getFigureInterfaceNameFigure() {&#xA;&#x9;&#x9;return fFigureInterfaceNameFigure;&#xA;&#x9;}&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_BACK = new org.eclipse.swt.graphics.Color(null, 215, 102, 203);&#xA;&#xA;">
+          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class InterfaceFigure extends org.eclipse.draw2d.RectangleFigure {&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel fFigureInterfaceNameFigure; &#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public InterfaceFigure() {&#xA;&#x9;&#x9;&#xA;&#x9;org.eclipse.draw2d.FlowLayout layoutThis = new org.eclipse.draw2d.FlowLayout();&#xA;&#x9;layoutThis.setStretchMinorAxis(false);&#xA;&#x9;layoutThis.setMinorAlignment(org.eclipse.draw2d.FlowLayout.ALIGN_LEFTTOP&#xA;);&#xA;&#xA;&#x9;layoutThis.setMajorAlignment(org.eclipse.draw2d.FlowLayout.ALIGN_LEFTTOP&#xA;);&#xA;&#x9;layoutThis.setMajorSpacing(5);&#xA;&#x9;layoutThis.setMinorSpacing(5);&#xA;&#x9;layoutThis.setHorizontal(true);&#xA;&#xA;&#x9;this.setLayoutManager(layoutThis);&#xA;&#xA;&#x9;&#x9;&#x9;this.setForegroundColor(THIS_FORE&#xA;);&#xA;&#x9;this.setBackgroundColor(THIS_BACK&#xA;);&#xA;this.setPreferredSize(new org.eclipse.draw2d.geometry.Dimension(getMapMode().DPtoLP(100)&#xA;, getMapMode().DPtoLP(50)&#xA;));&#xA;&#x9;&#x9;createContents();&#xA;&#x9;}&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private void createContents(){&#xA;&#xA;&#xA;fFigureInterfaceNameFigure = new org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel();&#xA;&#xA;fFigureInterfaceNameFigure.setText(&quot;&lt;...>&quot;);&#xA;&#xA;this.add(fFigureInterfaceNameFigure);&#xA;&#xA;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel getFigureInterfaceNameFigure() {&#xA;&#x9;&#x9;return fFigureInterfaceNameFigure;&#xA;&#x9;}&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_BACK = new org.eclipse.swt.graphics.Color(null, 215, 102, 203);&#xA;&#xA;">
         <attributes
             xsi:type="gmfgen:StyleAttributes"
             fixedForeground="true"
@@ -323,9 +327,43 @@
         <childMetaFeature
             href="reflexactoring.genmodel#//reflexactoring/Reflexactoring/moduleDenpencies"/>
         <sourceMetaFeature
-            href="reflexactoring.genmodel#//reflexactoring/ModuleDependency/origin"/>
+            href="reflexactoring.genmodel#//reflexactoring/ModuleLink/origin"/>
         <targetMetaFeature
-            href="reflexactoring.genmodel#//reflexactoring/ModuleDependency/destination"/>
+            href="reflexactoring.genmodel#//reflexactoring/ModuleLink/destination"/>
+      </modelFacet>
+    </links>
+    <links
+        visualID="4006"
+        editPartClassName="ModuleExtendEditPart"
+        itemSemanticEditPolicyClassName="ModuleExtendItemSemanticEditPolicy"
+        notationViewFactoryClassName="ModuleExtendViewFactory"
+        createCommandClassName="ModuleExtendCreateCommand"
+        reorientCommandClassName="ModuleExtendReorientCommand">
+      <diagramRunTimeClass
+          href="../../../plugin/org.eclipse.gmf.runtime.notation/model/notation.genmodel#//notation/Edge"/>
+      <elementType
+          xsi:type="gmfgen:MetamodelType"
+          editHelperClassName="ModuleExtendEditHelper"/>
+      <viewmap
+          xsi:type="gmfgen:InnerClassViewmap"
+          className="ModuleExtendFigure"
+          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class ModuleExtendFigure extends org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx {&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public ModuleExtendFigure() {&#xA;&#x9;&#x9;this.setLineWidth(2);&#xA;&#x9;this.setForegroundColor(THIS_FORE&#xA;);&#xA;&#xA;&#x9;&#x9;setTargetDecoration(createTargetDecoration());&#xA;&#x9;}&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.draw2d.RotatableDecoration createTargetDecoration() {&#xA;&#x9;&#x9;org.eclipse.draw2d.PolygonDecoration df = new org.eclipse.draw2d.PolygonDecoration();&#xA;df.setFill(true);&#xA;df.setLineWidth(2);&#xA;&#x9;df.setForegroundColor(DF_FORE&#xA;);&#xA;&#x9;df.setBackgroundColor(org.eclipse.draw2d.ColorConstants.white);&#xA;org.eclipse.draw2d.geometry.PointList pl = new org.eclipse.draw2d.geometry.PointList();&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(-2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(0)&#xA;, getMapMode().DPtoLP(0)&#xA;);&#xA;df.setTemplate(pl);&#xA;df.setScale(getMapMode().DPtoLP(7)&#xA;, getMapMode().DPtoLP(3)&#xA;);&#xA;&#x9;&#x9;return df;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color THIS_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color DF_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;">
+        <attributes
+            xsi:type="gmfgen:StyleAttributes"
+            fixedForeground="true"/>
+      </viewmap>
+      <modelFacet
+          xsi:type="gmfgen:TypeLinkModelFacet">
+        <metaClass
+            href="reflexactoring.genmodel#//reflexactoring/ModuleExtend"/>
+        <containmentMetaFeature
+            href="reflexactoring.genmodel#//reflexactoring/Reflexactoring/moduleDenpencies"/>
+        <childMetaFeature
+            href="reflexactoring.genmodel#//reflexactoring/Reflexactoring/moduleDenpencies"/>
+        <sourceMetaFeature
+            href="reflexactoring.genmodel#//reflexactoring/ModuleLink/origin"/>
+        <targetMetaFeature
+            href="reflexactoring.genmodel#//reflexactoring/ModuleLink/destination"/>
       </modelFacet>
     </links>
     <links
@@ -343,7 +381,7 @@
       <viewmap
           xsi:type="gmfgen:InnerClassViewmap"
           className="ClassExtendFigure"
-          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class ClassExtendFigure extends org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx {&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public ClassExtendFigure() {&#xA;&#x9;&#x9;this.setLineWidth(2);&#xA;&#xA;&#x9;&#x9;setTargetDecoration(createTargetDecoration());&#xA;&#x9;}&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.draw2d.RotatableDecoration createTargetDecoration() {&#xA;&#x9;&#x9;org.eclipse.draw2d.PolygonDecoration df = new org.eclipse.draw2d.PolygonDecoration();&#xA;df.setFill(true);&#xA;df.setLineWidth(2);&#xA;&#x9;df.setForegroundColor(DF_FORE&#xA;);&#xA;&#x9;df.setBackgroundColor(org.eclipse.draw2d.ColorConstants.white);&#xA;org.eclipse.draw2d.geometry.PointList pl = new org.eclipse.draw2d.geometry.PointList();&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(-2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(0)&#xA;, getMapMode().DPtoLP(0)&#xA;);&#xA;df.setTemplate(pl);&#xA;df.setScale(getMapMode().DPtoLP(7)&#xA;, getMapMode().DPtoLP(3)&#xA;);&#xA;&#x9;&#x9;return df;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color DF_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;"/>
+          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class ClassExtendFigure extends org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx {&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public ClassExtendFigure() {&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;setTargetDecoration(createTargetDecoration());&#xA;&#x9;}&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.draw2d.RotatableDecoration createTargetDecoration() {&#xA;&#x9;&#x9;org.eclipse.draw2d.PolygonDecoration df = new org.eclipse.draw2d.PolygonDecoration();&#xA;df.setFill(true);&#xA;&#x9;df.setForegroundColor(DF_FORE&#xA;);&#xA;&#x9;df.setBackgroundColor(org.eclipse.draw2d.ColorConstants.white);&#xA;org.eclipse.draw2d.geometry.PointList pl = new org.eclipse.draw2d.geometry.PointList();&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(-2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(0)&#xA;, getMapMode().DPtoLP(0)&#xA;);&#xA;df.setTemplate(pl);&#xA;df.setScale(getMapMode().DPtoLP(7)&#xA;, getMapMode().DPtoLP(3)&#xA;);&#xA;&#x9;&#x9;return df;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color DF_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;"/>
       <modelFacet
           xsi:type="gmfgen:TypeLinkModelFacet">
         <metaClass
@@ -403,7 +441,7 @@
       <viewmap
           xsi:type="gmfgen:InnerClassViewmap"
           className="InterfaceExtendFigure"
-          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class InterfaceExtendFigure extends org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx {&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public InterfaceExtendFigure() {&#xA;&#x9;&#x9;this.setLineWidth(2);&#xA;&#xA;&#x9;&#x9;setTargetDecoration(createTargetDecoration());&#xA;&#x9;}&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.draw2d.RotatableDecoration createTargetDecoration() {&#xA;&#x9;&#x9;org.eclipse.draw2d.PolygonDecoration df = new org.eclipse.draw2d.PolygonDecoration();&#xA;df.setFill(true);&#xA;df.setLineWidth(2);&#xA;&#x9;df.setForegroundColor(DF_FORE&#xA;);&#xA;&#x9;df.setBackgroundColor(org.eclipse.draw2d.ColorConstants.white);&#xA;org.eclipse.draw2d.geometry.PointList pl = new org.eclipse.draw2d.geometry.PointList();&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(-2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(0)&#xA;, getMapMode().DPtoLP(0)&#xA;);&#xA;df.setTemplate(pl);&#xA;df.setScale(getMapMode().DPtoLP(7)&#xA;, getMapMode().DPtoLP(3)&#xA;);&#xA;&#x9;&#x9;return df;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color DF_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;"/>
+          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class InterfaceExtendFigure extends org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx {&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public InterfaceExtendFigure() {&#xA;&#x9;&#x9;&#xA;&#x9;&#x9;setTargetDecoration(createTargetDecoration());&#xA;&#x9;}&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.draw2d.RotatableDecoration createTargetDecoration() {&#xA;&#x9;&#x9;org.eclipse.draw2d.PolygonDecoration df = new org.eclipse.draw2d.PolygonDecoration();&#xA;df.setFill(true);&#xA;&#x9;df.setForegroundColor(DF_FORE&#xA;);&#xA;&#x9;df.setBackgroundColor(org.eclipse.draw2d.ColorConstants.white);&#xA;org.eclipse.draw2d.geometry.PointList pl = new org.eclipse.draw2d.geometry.PointList();&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(-2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(0)&#xA;, getMapMode().DPtoLP(0)&#xA;);&#xA;df.setTemplate(pl);&#xA;df.setScale(getMapMode().DPtoLP(7)&#xA;, getMapMode().DPtoLP(3)&#xA;);&#xA;&#x9;&#x9;return df;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color DF_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;"/>
       <modelFacet
           xsi:type="gmfgen:TypeLinkModelFacet">
         <metaClass
@@ -433,7 +471,7 @@
       <viewmap
           xsi:type="gmfgen:InnerClassViewmap"
           className="ImplementFigure"
-          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class ImplementFigure extends org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx {&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public ImplementFigure() {&#xA;&#x9;&#x9;this.setLineWidth(2);&#xA;this.setLineStyle(org.eclipse.draw2d.Graphics.LINE_DASH);&#xA;&#xA;&#x9;&#x9;setTargetDecoration(createTargetDecoration());&#xA;&#x9;}&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.draw2d.RotatableDecoration createTargetDecoration() {&#xA;&#x9;&#x9;org.eclipse.draw2d.PolygonDecoration df = new org.eclipse.draw2d.PolygonDecoration();&#xA;df.setFill(true);&#xA;df.setLineWidth(2);&#xA;&#x9;df.setForegroundColor(DF_FORE&#xA;);&#xA;&#x9;df.setBackgroundColor(org.eclipse.draw2d.ColorConstants.white);&#xA;org.eclipse.draw2d.geometry.PointList pl = new org.eclipse.draw2d.geometry.PointList();&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(-2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(0)&#xA;, getMapMode().DPtoLP(0)&#xA;);&#xA;df.setTemplate(pl);&#xA;df.setScale(getMapMode().DPtoLP(7)&#xA;, getMapMode().DPtoLP(3)&#xA;);&#xA;&#x9;&#x9;return df;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color DF_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;"/>
+          classBody="&#xA;/**&#xA; * @generated&#xA; */&#xA;public class ImplementFigure extends org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx {&#xA;&#xA;&#xA;&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;public ImplementFigure() {&#xA;&#x9;&#x9;this.setLineStyle(org.eclipse.draw2d.Graphics.LINE_DASH);&#xA;&#xA;&#x9;&#x9;setTargetDecoration(createTargetDecoration());&#xA;&#x9;}&#xA;&#xA;&#x9;/**&#xA;&#x9; * @generated&#xA;&#x9; */&#xA;&#x9;private org.eclipse.draw2d.RotatableDecoration createTargetDecoration() {&#xA;&#x9;&#x9;org.eclipse.draw2d.PolygonDecoration df = new org.eclipse.draw2d.PolygonDecoration();&#xA;df.setFill(true);&#xA;&#x9;df.setForegroundColor(DF_FORE&#xA;);&#xA;&#x9;df.setBackgroundColor(org.eclipse.draw2d.ColorConstants.white);&#xA;org.eclipse.draw2d.geometry.PointList pl = new org.eclipse.draw2d.geometry.PointList();&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(-2)&#xA;, getMapMode().DPtoLP(-2)&#xA;);&#xA;pl.addPoint(getMapMode().DPtoLP(0)&#xA;, getMapMode().DPtoLP(0)&#xA;);&#xA;df.setTemplate(pl);&#xA;df.setScale(getMapMode().DPtoLP(7)&#xA;, getMapMode().DPtoLP(3)&#xA;);&#xA;&#x9;&#x9;return df;&#xA;&#x9;}&#xA;&#xA;&#xA;&#xA;&#xA;}&#xA;&#xA;/**&#xA; * @generated&#xA; */&#xA;static final org.eclipse.swt.graphics.Color DF_FORE = new org.eclipse.swt.graphics.Color(null, 0, 0, 0);&#xA;&#xA;"/>
       <modelFacet
           xsi:type="gmfgen:TypeLinkModelFacet">
         <metaClass
@@ -489,29 +527,40 @@
             genNodes="//@diagram/@topLevelNodes.1 //@diagram/@childNodes.1"/>
         <entries
             xsi:type="gmfgen:ToolEntry"
-            title="Module Dependency"
-            description="Create new module dependency"
-            genLinks="//@diagram/@links.0"/>
-        <entries
-            xsi:type="gmfgen:ToolEntry"
-            title="Type Dependency"
-            description="Create new type dependency"
-            genLinks="//@diagram/@links.2"/>
+            title="TypeDependency"
+            description="Create new TypeDependency"
+            smallIconPath="icons/tool/module.gif"
+            genLinks="//@diagram/@links.3"/>
         <entries
             xsi:type="gmfgen:ToolEntry"
             title="Implement"
             description="Create new Implement"
+            smallIconPath="icons/tool/module.gif"
+            genLinks="//@diagram/@links.5"/>
+        <entries
+            xsi:type="gmfgen:ToolEntry"
+            title="ClassExtend"
+            description="Create new ClassExtend"
+            smallIconPath="icons/tool/module.gif"
+            genLinks="//@diagram/@links.2"/>
+        <entries
+            xsi:type="gmfgen:ToolEntry"
+            title="InterfaceExtend"
+            description="Create new InterfaceExtend"
+            smallIconPath="icons/tool/module.gif"
             genLinks="//@diagram/@links.4"/>
         <entries
             xsi:type="gmfgen:ToolEntry"
-            title="Extend Class"
-            description="Create new class extend relation"
+            title="ModuleExtend"
+            description="Create new ModuleExtend"
+            smallIconPath="icons/tool/module.gif"
             genLinks="//@diagram/@links.1"/>
         <entries
             xsi:type="gmfgen:ToolEntry"
-            title="Extend Interface"
-            description="Create new interface extend relation"
-            genLinks="//@diagram/@links.3"/>
+            title="ModuleDependency"
+            description="Create new ModuleDependency"
+            smallIconPath="icons/tool/module.gif"
+            genLinks="//@diagram/@links.0"/>
       </groups>
     </palette>
     <preferencePages
@@ -600,48 +649,24 @@
         groupIcon="icons/linksNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@links.1"
-        child="//@diagram/@topLevelNodes.0"
+        child="//@diagram/@topLevelNodes.2"
         referenceType="out_target"
         groupName="target"
         groupIcon="icons/linkTargetNavigatorGroup.gif"/>
     <childReferences
-        parent="//@diagram/@topLevelNodes.0"
+        parent="//@diagram/@topLevelNodes.2"
         child="//@diagram/@links.1"
         referenceType="in_source"
         groupName="incoming links"
         groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@links.1"
-        child="//@diagram/@childNodes.0"
-        referenceType="out_target"
-        groupName="target"
-        groupIcon="icons/linkTargetNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@childNodes.0"
-        child="//@diagram/@links.1"
-        referenceType="in_source"
-        groupName="incoming links"
-        groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@links.1"
-        child="//@diagram/@topLevelNodes.0"
+        child="//@diagram/@topLevelNodes.2"
         referenceType="in_source"
         groupName="source"
         groupIcon="icons/linkSourceNavigatorGroup.gif"/>
     <childReferences
-        parent="//@diagram/@topLevelNodes.0"
-        child="//@diagram/@links.1"
-        referenceType="out_target"
-        groupName="outgoing links"
-        groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@links.1"
-        child="//@diagram/@childNodes.0"
-        referenceType="in_source"
-        groupName="source"
-        groupIcon="icons/linkSourceNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@childNodes.0"
+        parent="//@diagram/@topLevelNodes.2"
         child="//@diagram/@links.1"
         referenceType="out_target"
         groupName="outgoing links"
@@ -665,36 +690,12 @@
         groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@links.2"
-        child="//@diagram/@topLevelNodes.1"
-        referenceType="out_target"
-        groupName="target"
-        groupIcon="icons/linkTargetNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@topLevelNodes.1"
-        child="//@diagram/@links.2"
-        referenceType="in_source"
-        groupName="incoming links"
-        groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@links.2"
         child="//@diagram/@childNodes.0"
         referenceType="out_target"
         groupName="target"
         groupIcon="icons/linkTargetNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@childNodes.0"
-        child="//@diagram/@links.2"
-        referenceType="in_source"
-        groupName="incoming links"
-        groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@links.2"
-        child="//@diagram/@childNodes.1"
-        referenceType="out_target"
-        groupName="target"
-        groupIcon="icons/linkTargetNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@childNodes.1"
         child="//@diagram/@links.2"
         referenceType="in_source"
         groupName="incoming links"
@@ -713,18 +714,6 @@
         groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@links.2"
-        child="//@diagram/@topLevelNodes.1"
-        referenceType="in_source"
-        groupName="source"
-        groupIcon="icons/linkSourceNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@topLevelNodes.1"
-        child="//@diagram/@links.2"
-        referenceType="out_target"
-        groupName="outgoing links"
-        groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@links.2"
         child="//@diagram/@childNodes.0"
         referenceType="in_source"
         groupName="source"
@@ -736,30 +725,42 @@
         groupName="outgoing links"
         groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>
     <childReferences
-        parent="//@diagram/@links.2"
-        child="//@diagram/@childNodes.1"
-        referenceType="in_source"
-        groupName="source"
-        groupIcon="icons/linkSourceNavigatorGroup.gif"/>
-    <childReferences
-        parent="//@diagram/@childNodes.1"
-        child="//@diagram/@links.2"
-        referenceType="out_target"
-        groupName="outgoing links"
-        groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>
-    <childReferences
         parent="//@diagram"
         child="//@diagram/@links.3"
         groupName="links"
         groupIcon="icons/linksNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@links.3"
+        child="//@diagram/@topLevelNodes.0"
+        referenceType="out_target"
+        groupName="target"
+        groupIcon="icons/linkTargetNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@topLevelNodes.0"
+        child="//@diagram/@links.3"
+        referenceType="in_source"
+        groupName="incoming links"
+        groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@links.3"
         child="//@diagram/@topLevelNodes.1"
         referenceType="out_target"
         groupName="target"
         groupIcon="icons/linkTargetNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@topLevelNodes.1"
+        child="//@diagram/@links.3"
+        referenceType="in_source"
+        groupName="incoming links"
+        groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@links.3"
+        child="//@diagram/@childNodes.0"
+        referenceType="out_target"
+        groupName="target"
+        groupIcon="icons/linkTargetNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@childNodes.0"
         child="//@diagram/@links.3"
         referenceType="in_source"
         groupName="incoming links"
@@ -778,12 +779,36 @@
         groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@links.3"
+        child="//@diagram/@topLevelNodes.0"
+        referenceType="in_source"
+        groupName="source"
+        groupIcon="icons/linkSourceNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@topLevelNodes.0"
+        child="//@diagram/@links.3"
+        referenceType="out_target"
+        groupName="outgoing links"
+        groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@links.3"
         child="//@diagram/@topLevelNodes.1"
         referenceType="in_source"
         groupName="source"
         groupIcon="icons/linkSourceNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@topLevelNodes.1"
+        child="//@diagram/@links.3"
+        referenceType="out_target"
+        groupName="outgoing links"
+        groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@links.3"
+        child="//@diagram/@childNodes.0"
+        referenceType="in_source"
+        groupName="source"
+        groupIcon="icons/linkSourceNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@childNodes.0"
         child="//@diagram/@links.3"
         referenceType="out_target"
         groupName="outgoing links"
@@ -831,25 +856,78 @@
         groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@links.4"
-        child="//@diagram/@topLevelNodes.0"
+        child="//@diagram/@topLevelNodes.1"
         referenceType="in_source"
         groupName="source"
         groupIcon="icons/linkSourceNavigatorGroup.gif"/>
     <childReferences
-        parent="//@diagram/@topLevelNodes.0"
+        parent="//@diagram/@topLevelNodes.1"
         child="//@diagram/@links.4"
         referenceType="out_target"
         groupName="outgoing links"
         groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@links.4"
+        child="//@diagram/@childNodes.1"
+        referenceType="in_source"
+        groupName="source"
+        groupIcon="icons/linkSourceNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@childNodes.1"
+        child="//@diagram/@links.4"
+        referenceType="out_target"
+        groupName="outgoing links"
+        groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram"
+        child="//@diagram/@links.5"
+        groupName="links"
+        groupIcon="icons/linksNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@links.5"
+        child="//@diagram/@topLevelNodes.1"
+        referenceType="out_target"
+        groupName="target"
+        groupIcon="icons/linkTargetNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@topLevelNodes.1"
+        child="//@diagram/@links.5"
+        referenceType="in_source"
+        groupName="incoming links"
+        groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@links.5"
+        child="//@diagram/@childNodes.1"
+        referenceType="out_target"
+        groupName="target"
+        groupIcon="icons/linkTargetNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@childNodes.1"
+        child="//@diagram/@links.5"
+        referenceType="in_source"
+        groupName="incoming links"
+        groupIcon="icons/incomingLinksNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@links.5"
+        child="//@diagram/@topLevelNodes.0"
+        referenceType="in_source"
+        groupName="source"
+        groupIcon="icons/linkSourceNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@topLevelNodes.0"
+        child="//@diagram/@links.5"
+        referenceType="out_target"
+        groupName="outgoing links"
+        groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>
+    <childReferences
+        parent="//@diagram/@links.5"
         child="//@diagram/@childNodes.0"
         referenceType="in_source"
         groupName="source"
         groupIcon="icons/linkSourceNavigatorGroup.gif"/>
     <childReferences
         parent="//@diagram/@childNodes.0"
-        child="//@diagram/@links.4"
+        child="//@diagram/@links.5"
         referenceType="out_target"
         groupName="outgoing links"
         groupIcon="icons/outgoingLinksNavigatorGroup.gif"/>

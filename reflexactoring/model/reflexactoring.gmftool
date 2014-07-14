@@ -35,48 +35,51 @@
       </tools>
       <tools
           xsi:type="gmftool:CreationTool"
-          title="Module Dependency"
-          description="Create new module dependency">
+          title="TypeDependency"
+          description="Create new TypeDependency">
         <smallIcon
-            xsi:type="gmftool:DefaultImage"/>
-        <largeIcon
-            xsi:type="gmftool:DefaultImage"/>
-      </tools>
-      <tools
-          xsi:type="gmftool:CreationTool"
-          title="Type Dependency"
-          description="Create new type dependency">
-        <smallIcon
-            xsi:type="gmftool:DefaultImage"/>
-        <largeIcon
-            xsi:type="gmftool:DefaultImage"/>
+            xsi:type="gmftool:BundleImage"
+            path="icons/tool/module.gif"/>
       </tools>
       <tools
           xsi:type="gmftool:CreationTool"
           title="Implement"
           description="Create new Implement">
         <smallIcon
-            xsi:type="gmftool:DefaultImage"/>
-        <largeIcon
-            xsi:type="gmftool:DefaultImage"/>
+            xsi:type="gmftool:BundleImage"
+            path="icons/tool/module.gif"/>
       </tools>
       <tools
           xsi:type="gmftool:CreationTool"
-          title="Extend Class"
-          description="Create new class extend relation">
+          title="ClassExtend"
+          description="Create new ClassExtend">
         <smallIcon
-            xsi:type="gmftool:DefaultImage"/>
-        <largeIcon
-            xsi:type="gmftool:DefaultImage"/>
+            xsi:type="gmftool:BundleImage"
+            path="icons/tool/module.gif"/>
       </tools>
       <tools
           xsi:type="gmftool:CreationTool"
-          title="Extend Interface"
-          description="Create new interface extend relation">
+          title="InterfaceExtend"
+          description="Create new InterfaceExtend">
         <smallIcon
-            xsi:type="gmftool:DefaultImage"/>
-        <largeIcon
-            xsi:type="gmftool:DefaultImage"/>
+            xsi:type="gmftool:BundleImage"
+            path="icons/tool/module.gif"/>
+      </tools>
+      <tools
+          xsi:type="gmftool:CreationTool"
+          title="ModuleExtend"
+          description="Create new ModuleExtend">
+        <smallIcon
+            xsi:type="gmftool:BundleImage"
+            path="icons/tool/module.gif"/>
+      </tools>
+      <tools
+          xsi:type="gmftool:CreationTool"
+          title="ModuleDependency"
+          description="Create new ModuleDependency">
+        <smallIcon
+            xsi:type="gmftool:BundleImage"
+            path="icons/tool/module.gif"/>
       </tools>
     </tools>
   </palette>

@@ -52,7 +52,6 @@ public class ReflexactoringEditPart extends DiagramEditPart {
 		installEditPolicy(EditPolicyRoles.CREATION_ROLE,
 				new CreationEditPolicyWithCustomReparent(
 						ReflexactoringVisualIDRegistry.TYPED_INSTANCE));
-		installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE, new ReflexactoringDropPolicy());
 		// removeEditPolicy(org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles.POPUPBAR_ROLE);
 	}
 

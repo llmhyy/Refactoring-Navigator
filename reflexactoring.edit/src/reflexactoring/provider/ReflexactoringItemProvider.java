@@ -178,6 +178,11 @@ public class ReflexactoringItemProvider
 		newChildDescriptors.add
 			(createChildParameter
 				(ReflexactoringPackage.Literals.REFLEXACTORING__MODULE_DENPENCIES,
+				 ReflexactoringFactory.eINSTANCE.createModuleExtend()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(ReflexactoringPackage.Literals.REFLEXACTORING__MODULE_DENPENCIES,
 				 ReflexactoringFactory.eINSTANCE.createModuleDependency()));
 
 		newChildDescriptors.add

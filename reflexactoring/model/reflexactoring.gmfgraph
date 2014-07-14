@@ -9,8 +9,23 @@
       name="Default">
     <figures
         xsi:type="gmfgraph:PolygonDecoration"
-        name="EmptyTriangle"
+        name="ModuleEmptyTriangle"
         lineWidth="2">
+      <foregroundColor
+          xsi:type="gmfgraph:RGBColor"/>
+      <backgroundColor
+          xsi:type="gmfgraph:ConstantColor"/>
+      <template
+          x="-2"
+          y="2"/>
+      <template
+          x="-2"
+          y="-2"/>
+      <template/>
+    </figures>
+    <figures
+        xsi:type="gmfgraph:PolygonDecoration"
+        name="TypeEmptyTriangle">
       <foregroundColor
           xsi:type="gmfgraph:RGBColor"/>
       <backgroundColor
@@ -68,6 +83,8 @@
           name="ClassFigure">
         <layoutData
             xsi:type="gmfgraph:GridLayoutData"/>
+        <layout
+            xsi:type="gmfgraph:FlowLayout"/>
         <foregroundColor
             xsi:type="gmfgraph:RGBColor"/>
         <backgroundColor
@@ -93,6 +110,8 @@
           name="InterfaceFigure">
         <layoutData
             xsi:type="gmfgraph:GridLayoutData"/>
+        <layout
+            xsi:type="gmfgraph:FlowLayout"/>
         <foregroundColor
             xsi:type="gmfgraph:RGBColor"/>
         <backgroundColor
@@ -144,25 +163,33 @@
       <actualFigure
           xsi:type="gmfgraph:PolylineConnection"
           name="ImplementFigure"
-          lineWidth="2"
           lineKind="LINE_DASH"
-          targetDecoration="//@figures.0/@figures.0"/>
+          targetDecoration="//@figures.0/@figures.1"/>
     </descriptors>
     <descriptors
         name="ClassExtendFigure">
       <actualFigure
           xsi:type="gmfgraph:PolylineConnection"
           name="ClassExtendFigure"
-          lineWidth="2"
-          targetDecoration="//@figures.0/@figures.0"/>
+          targetDecoration="//@figures.0/@figures.1"/>
     </descriptors>
     <descriptors
         name="InterfaceExtendFigure">
       <actualFigure
           xsi:type="gmfgraph:PolylineConnection"
           name="InterfaceExtendFigure"
+          targetDecoration="//@figures.0/@figures.1"/>
+    </descriptors>
+    <descriptors
+        name="ModuleExtendFigure">
+      <actualFigure
+          xsi:type="gmfgraph:PolylineConnection"
+          name="ModuleExtendFigure"
           lineWidth="2"
-          targetDecoration="//@figures.0/@figures.0"/>
+          targetDecoration="//@figures.0/@figures.0">
+        <foregroundColor
+            xsi:type="gmfgraph:RGBColor"/>
+      </actualFigure>
     </descriptors>
   </figures>
   <nodes
@@ -189,6 +216,9 @@
   <connections
       name="InterfaceExtend"
       figure="InterfaceExtendFigure"/>
+  <connections
+      name="ModuleExtend"
+      figure="ModuleExtendFigure"/>
   <compartments
       name="TypeContainerCompartment"
       figure="ModuleFigure"

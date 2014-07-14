@@ -15,6 +15,8 @@ import reflexactoring.Interface;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleExtend;
+import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.ReflexactoringPackage;
 import reflexactoring.Type;
@@ -97,8 +99,8 @@ public class ReflexactoringAdapterFactory extends AdapterFactoryImpl {
 				return createInterfaceAdapter();
 			}
 			@Override
-			public Adapter caseModuleDependency(ModuleDependency object) {
-				return createModuleDependencyAdapter();
+			public Adapter caseModuleLink(ModuleLink object) {
+				return createModuleLinkAdapter();
 			}
 			@Override
 			public Adapter caseTypeDependency(TypeDependency object) {
@@ -115,6 +117,14 @@ public class ReflexactoringAdapterFactory extends AdapterFactoryImpl {
 			@Override
 			public Adapter caseInterfaceExtend(InterfaceExtend object) {
 				return createInterfaceExtendAdapter();
+			}
+			@Override
+			public Adapter caseModuleExtend(ModuleExtend object) {
+				return createModuleExtendAdapter();
+			}
+			@Override
+			public Adapter caseModuleDependency(ModuleDependency object) {
+				return createModuleDependencyAdapter();
 			}
 			@Override
 			public Adapter defaultCase(EObject object) {
@@ -207,6 +217,20 @@ public class ReflexactoringAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
+	 * Creates a new adapter for an object of class '{@link reflexactoring.ModuleLink <em>Module Link</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see reflexactoring.ModuleLink
+	 * @generated
+	 */
+	public Adapter createModuleLinkAdapter() {
+		return null;
+	}
+
+	/**
 	 * Creates a new adapter for an object of class '{@link reflexactoring.ModuleDependency <em>Module Dependency</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -273,6 +297,20 @@ public class ReflexactoringAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createInterfaceExtendAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link reflexactoring.ModuleExtend <em>Module Extend</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see reflexactoring.ModuleExtend
+	 * @generated
+	 */
+	public Adapter createModuleExtendAdapter() {
 		return null;
 	}
 

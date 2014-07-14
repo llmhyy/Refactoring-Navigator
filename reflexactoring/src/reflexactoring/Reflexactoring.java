@@ -63,7 +63,7 @@ public interface Reflexactoring extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>Module Denpencies</b></em>' containment reference list.
-	 * The list contents are of type {@link reflexactoring.ModuleDependency}.
+	 * The list contents are of type {@link reflexactoring.ModuleLink}.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Module Denpencies</em>' containment reference list isn't clear,
@@ -75,7 +75,7 @@ public interface Reflexactoring extends EObject {
 	 * @model containment="true"
 	 * @generated
 	 */
-	EList<ModuleDependency> getModuleDenpencies();
+	EList<ModuleLink> getModuleDenpencies();
 
 	/**
 	 * Returns the value of the '<em><b>Implements</b></em>' containment reference list.

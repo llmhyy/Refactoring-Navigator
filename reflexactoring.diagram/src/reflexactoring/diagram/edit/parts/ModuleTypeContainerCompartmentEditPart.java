@@ -65,36 +65,35 @@ public class ModuleTypeContainerCompartmentEditPart extends
 		result.setTitleVisibility(false);
 		result.getContentPane().setLayoutManager(new CustomLayout());
 		//result.getContentPane().setLayoutManager(new XYLayout());
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * @not generated
 	 */
-	private static class CustomLayout extends XYLayout
-	{
+	private static class CustomLayout extends XYLayout {
 		@Override
-		public void layout(IFigure parent){
+		public void layout(IFigure parent) {
 			Iterator<IFigure> fIterator = parent.getChildren().iterator();
 			int count = 1;
 			int x = 10;
 			int y = 10;
-			while (fIterator.hasNext()){
+			while (fIterator.hasNext()) {
 				IFigure figure = fIterator.next();
 				int height = figure.getPreferredSize().height;
 				int width = figure.getPreferredSize().width;
-				figure.setBounds(new Rectangle(x, y, width,height));
-				if(count % 3 == 0){
+				figure.setBounds(new Rectangle(x, y, width, height));
+				if (count % 3 == 0) {
 					x = 10;
 					y = y + height + 20;
-				}else{
+				} else {
 					x = x + width + 20;
 				}
 				count++;
 			}
 		}
-		
+
 		/*public void layout(IFigure parent) {
 			Iterator children = parent.getChildren().iterator();
 			Point offset = getOrigin(parent);
@@ -120,7 +119,6 @@ public class ModuleTypeContainerCompartmentEditPart extends
 		}*/
 	}
 
-	
 	/**
 	 * @not generated
 	 */
@@ -134,44 +132,45 @@ public class ModuleTypeContainerCompartmentEditPart extends
 				new CreationEditPolicyWithCustomReparent(
 						ReflexactoringVisualIDRegistry.TYPED_INSTANCE));
 		//installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE, new DragDropEditPolicy());
-		installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE, new ModuleTypeContainerDropEditPolicy());
+		installEditPolicy(EditPolicyRoles.DRAG_DROP_ROLE,
+				new ModuleTypeContainerDropEditPolicy());
 		installEditPolicy(EditPolicyRoles.CANONICAL_ROLE,
 				new ModuleTypeContainerCompartmentCanonicalEditPolicy());
 		//removeEditPolicy(EditPolicy.LAYOUT_ROLE);
 		//installEditPolicy(EditPolicy.LAYOUT_ROLE, new CustomFlowLayoutEditPolicy());
 		//installEditPolicy(EditPolicy.LAYOUT_ROLE, new XYLayoutEditPolicy());
 	}
+
+	/*	private class CustomFlowLayoutEditPolicy extends FlowLayoutEditPolicy{
+
+	 (non-Javadoc)
+	 * @see org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy#createAddCommand(org.eclipse.gef.EditPart, org.eclipse.gef.EditPart)
 	
-/*	private class CustomFlowLayoutEditPolicy extends FlowLayoutEditPolicy{
+	 @Override
+	 protected Command createAddCommand(EditPart child, EditPart after) {
+	 // TODO Auto-generated method stub
+	 return null;
+	 }
 
-		 (non-Javadoc)
-		 * @see org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy#createAddCommand(org.eclipse.gef.EditPart, org.eclipse.gef.EditPart)
-		 
-		@Override
-		protected Command createAddCommand(EditPart child, EditPart after) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+	 (non-Javadoc)
+	 * @see org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy#createMoveChildCommand(org.eclipse.gef.EditPart, org.eclipse.gef.EditPart)
+	
+	 @Override
+	 protected Command createMoveChildCommand(EditPart child, EditPart after) {
+	 // TODO Auto-generated method stub
+	 return null;
+	 }
 
-		 (non-Javadoc)
-		 * @see org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy#createMoveChildCommand(org.eclipse.gef.EditPart, org.eclipse.gef.EditPart)
-		 
-		@Override
-		protected Command createMoveChildCommand(EditPart child, EditPart after) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		 (non-Javadoc)
-		 * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getCreateCommand(org.eclipse.gef.requests.CreateRequest)
-		 
-		@Override
-		protected Command getCreateCommand(CreateRequest request) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-	}*/
+	 (non-Javadoc)
+	 * @see org.eclipse.gef.editpolicies.LayoutEditPolicy#getCreateCommand(org.eclipse.gef.requests.CreateRequest)
+	
+	 @Override
+	 protected Command getCreateCommand(CreateRequest request) {
+	 // TODO Auto-generated method stub
+	 return null;
+	 }
+	
+	 }*/
 
 	/**
 	 * @generated

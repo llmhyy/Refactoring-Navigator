@@ -61,6 +61,9 @@ public class ReflexactoringEditPartFactory implements EditPartFactory {
 			case ModuleDependencyEditPart.VISUAL_ID:
 				return new ModuleDependencyEditPart(view);
 
+			case ModuleExtendEditPart.VISUAL_ID:
+				return new ModuleExtendEditPart(view);
+
 			case ClassExtendEditPart.VISUAL_ID:
 				return new ClassExtendEditPart(view);
 

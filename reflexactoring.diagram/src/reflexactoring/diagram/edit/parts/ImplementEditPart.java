@@ -10,6 +10,7 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ITreeBranchEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
+import org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel;
 import org.eclipse.gmf.runtime.notation.View;
 
 import org.eclipse.swt.graphics.Color;
@@ -70,7 +71,6 @@ public class ImplementEditPart extends ConnectionNodeEditPart implements
 		 * @generated
 		 */
 		public ImplementFigure() {
-			this.setLineWidth(2);
 			this.setLineStyle(Graphics.LINE_DASH);
 
 			setTargetDecoration(createTargetDecoration());
@@ -82,7 +82,6 @@ public class ImplementEditPart extends ConnectionNodeEditPart implements
 		private RotatableDecoration createTargetDecoration() {
 			PolygonDecoration df = new PolygonDecoration();
 			df.setFill(true);
-			df.setLineWidth(2);
 			df.setForegroundColor(DF_FORE);
 			df.setBackgroundColor(ColorConstants.white);
 			PointList pl = new PointList();

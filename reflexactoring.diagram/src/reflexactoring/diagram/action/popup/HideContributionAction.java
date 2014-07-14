@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Color;
 
 import reflexactoring.ModuleDependency;
-import reflexactoring.diagram.bean.ModuleDependencyWrapper;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.TypeDependencyEditPart;
@@ -27,7 +27,7 @@ public class HideContributionAction extends ContributionAction{
 		if(selEditPart instanceof ModuleDependencyEditPart){
 			ModuleDependencyEditPart moduleDependencyEditPart = (ModuleDependencyEditPart)selEditPart;
 			ModuleDependency moduleDependency = (ModuleDependency) moduleDependencyEditPart.resolveSemanticElement();
-			if(!moduleDependency.getName().equals(ModuleDependencyWrapper.ABSENCE)){
+			if(!moduleDependency.getName().equals(ModuleLinkWrapper.ABSENCE)){
 				ModuleEditPart sourceModulePart = (ModuleEditPart)moduleDependencyEditPart.getSource();
 				ModuleEditPart targetModulePart = (ModuleEditPart)moduleDependencyEditPart.getTarget();
 				

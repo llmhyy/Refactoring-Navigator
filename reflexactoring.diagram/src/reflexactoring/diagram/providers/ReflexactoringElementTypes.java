@@ -26,6 +26,7 @@ import reflexactoring.diagram.edit.parts.InterfaceEditPart;
 import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
+import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.edit.parts.TypeDependencyEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
@@ -84,6 +85,11 @@ public class ReflexactoringElementTypes {
 	 * @generated
 	 */
 	public static final IElementType ModuleDependency_4001 = getElementType("reflexactoring.diagram.ModuleDependency_4001"); //$NON-NLS-1$
+	/**
+	 * @generated
+	 */
+	public static final IElementType ModuleExtend_4006 = getElementType("reflexactoring.diagram.ModuleExtend_4006"); //$NON-NLS-1$
+
 	/**
 	 * @generated
 	 */
@@ -233,6 +239,9 @@ public class ReflexactoringElementTypes {
 			elements.put(ModuleDependency_4001,
 					ReflexactoringPackage.eINSTANCE.getModuleDependency());
 
+			elements.put(ModuleExtend_4006,
+					ReflexactoringPackage.eINSTANCE.getModuleExtend());
+
 			elements.put(ClassExtend_4002,
 					ReflexactoringPackage.eINSTANCE.getClassExtend());
 
@@ -268,6 +277,7 @@ public class ReflexactoringElementTypes {
 			KNOWN_ELEMENT_TYPES.add(Class_3001);
 			KNOWN_ELEMENT_TYPES.add(Interface_3002);
 			KNOWN_ELEMENT_TYPES.add(ModuleDependency_4001);
+			KNOWN_ELEMENT_TYPES.add(ModuleExtend_4006);
 			KNOWN_ELEMENT_TYPES.add(ClassExtend_4002);
 			KNOWN_ELEMENT_TYPES.add(TypeDependency_4003);
 			KNOWN_ELEMENT_TYPES.add(InterfaceExtend_4004);
@@ -295,6 +305,8 @@ public class ReflexactoringElementTypes {
 			return Interface_3002;
 		case ModuleDependencyEditPart.VISUAL_ID:
 			return ModuleDependency_4001;
+		case ModuleExtendEditPart.VISUAL_ID:
+			return ModuleExtend_4006;
 		case ClassExtendEditPart.VISUAL_ID:
 			return ClassExtend_4002;
 		case TypeDependencyEditPart.VISUAL_ID:

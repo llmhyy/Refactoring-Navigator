@@ -279,6 +279,29 @@ public class ReflexactoringItemProviderAdapterFactory extends ReflexactoringAdap
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link reflexactoring.ModuleExtend} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected ModuleExtendItemProvider moduleExtendItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link reflexactoring.ModuleExtend}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createModuleExtendAdapter() {
+		if (moduleExtendItemProvider == null) {
+			moduleExtendItemProvider = new ModuleExtendItemProvider(this);
+		}
+
+		return moduleExtendItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -381,11 +404,12 @@ public class ReflexactoringItemProviderAdapterFactory extends ReflexactoringAdap
 		if (moduleItemProvider != null) moduleItemProvider.dispose();
 		if (classItemProvider != null) classItemProvider.dispose();
 		if (interfaceItemProvider != null) interfaceItemProvider.dispose();
-		if (moduleDependencyItemProvider != null) moduleDependencyItemProvider.dispose();
 		if (typeDependencyItemProvider != null) typeDependencyItemProvider.dispose();
 		if (implementItemProvider != null) implementItemProvider.dispose();
 		if (classExtendItemProvider != null) classExtendItemProvider.dispose();
 		if (interfaceExtendItemProvider != null) interfaceExtendItemProvider.dispose();
+		if (moduleExtendItemProvider != null) moduleExtendItemProvider.dispose();
+		if (moduleDependencyItemProvider != null) moduleDependencyItemProvider.dispose();
 	}
 
 }

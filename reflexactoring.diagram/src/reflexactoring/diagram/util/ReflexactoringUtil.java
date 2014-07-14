@@ -18,20 +18,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.emf.core.GMFEditingDomainFactory;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.SimpleType;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.ui.PartInitException;
 
 import reflexactoring.Activator;
 import reflexactoring.Module;
-import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.diagram.action.UserInputMerger;
 import reflexactoring.diagram.action.recommend.suboptimal.Rules;
@@ -39,10 +30,10 @@ import reflexactoring.diagram.action.semantic.WordNetDict;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
-import reflexactoring.diagram.bean.ModuleDependencyWrapper;
-import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarity;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
+import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
 import reflexactoring.diagram.preferences.RecommendSettingPage;
 
@@ -334,9 +325,9 @@ public class ReflexactoringUtil {
 				/**
 				 * Build calling relation amongst modules.
 				 */
-				for(ModuleDependency moduleDependency: reflexactoring.getModuleDenpencies()){
+				for(ModuleLink moduleDependency: reflexactoring.getModuleDenpencies()){
 					
-					if(!moduleDependency.getName().equals(ModuleDependencyWrapper.DIVERGENCE)){
+					if(!moduleDependency.getName().equals(ModuleLinkWrapper.DIVERGENCE)){
 						Module origin = moduleDependency.getOrigin();
 						Module destination = moduleDependency.getDestination();
 						

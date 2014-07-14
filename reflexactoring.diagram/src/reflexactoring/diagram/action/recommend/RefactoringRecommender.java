@@ -28,7 +28,7 @@ import reflexactoring.diagram.action.recommend.suboptimal.PopulationGenerator;
 import reflexactoring.diagram.action.recommend.suboptimal.Rules;
 import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.ModuleDependencyWrapper;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -185,7 +185,7 @@ public class RefactoringRecommender {
 				action.setDestination(targetModule);	
 			}
 			
-			ModuleDependencyWrapper dependency = new ModuleDependencyWrapper(sourceModule, targetModule);
+			ModuleLinkWrapper dependency = new ModuleLinkWrapper(sourceModule, targetModule);
 			SuggestionMove suggestion = new SuggestionMove(dependency, action);
 			suggestions.add(suggestion);
 		}

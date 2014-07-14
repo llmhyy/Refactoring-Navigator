@@ -22,7 +22,7 @@ import reflexactoring.diagram.action.recommend.suboptimalold_representation.Gene
 import reflexactoring.diagram.action.recommend.suboptimalold_representation.Genotype;
 import reflexactoring.diagram.action.recommend.suboptimalold_representation.Violation;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.ModuleDependencyWrapper;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -174,7 +174,7 @@ public class RefactoringRecommenderForOldRepresentation {
 					action.setDestination(targetModule);	
 				}
 				
-				ModuleDependencyWrapper dependency = new ModuleDependencyWrapper(sourceModule, targetModule);
+				ModuleLinkWrapper dependency = new ModuleLinkWrapper(sourceModule, targetModule);
 				SuggestionMove suggestion = new SuggestionMove(dependency, action);
 				suggestions.add(suggestion);
 			//}

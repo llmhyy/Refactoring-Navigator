@@ -41,6 +41,7 @@ import reflexactoring.diagram.edit.parts.InterfaceEditPart;
 import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
+import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.edit.parts.TypeDependencyEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramUpdater;
@@ -318,6 +319,14 @@ public class ReflexactoringCanonicalEditPolicy extends CanonicalEditPolicy {
 			if (!domain2NotationMap.containsKey(view.getElement())) {
 				result.addAll(ReflexactoringDiagramUpdater
 						.getModuleDependency_4001ContainedLinks(view));
+			}
+			domain2NotationMap.putView(view.getElement(), view);
+			break;
+		}
+		case ModuleExtendEditPart.VISUAL_ID: {
+			if (!domain2NotationMap.containsKey(view.getElement())) {
+				result.addAll(ReflexactoringDiagramUpdater
+						.getModuleExtend_4006ContainedLinks(view));
 			}
 			domain2NotationMap.putView(view.getElement(), view);
 			break;

@@ -39,6 +39,7 @@ import reflexactoring.Interface;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleExtend;
 import reflexactoring.Reflexactoring;
 import reflexactoring.Type;
 import reflexactoring.TypeDependency;
@@ -342,6 +343,14 @@ public class ReflexactoringBaseItemSemanticEditPolicy extends
 		/**
 		 * @generated
 		 */
+		public boolean canCreateModuleExtend_4006(Reflexactoring container,
+				Module source, Module target) {
+			return canExistModuleExtend_4006(container, null, source, target);
+		}
+
+		/**
+		 * @generated
+		 */
 		public boolean canCreateClassExtend_4002(Reflexactoring container,
 				Class source, Class target) {
 			return canExistClassExtend_4002(container, null, source, target);
@@ -376,6 +385,14 @@ public class ReflexactoringBaseItemSemanticEditPolicy extends
 		 */
 		public boolean canExistModuleDependency_4001(Reflexactoring container,
 				ModuleDependency linkInstance, Module source, Module target) {
+			return true;
+		}
+
+		/**
+		 * @generated
+		 */
+		public boolean canExistModuleExtend_4006(Reflexactoring container,
+				ModuleExtend linkInstance, Module source, Module target) {
 			return true;
 		}
 

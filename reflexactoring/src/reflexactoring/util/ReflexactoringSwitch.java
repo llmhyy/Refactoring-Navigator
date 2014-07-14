@@ -13,6 +13,8 @@ import reflexactoring.Interface;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleExtend;
+import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.ReflexactoringPackage;
 import reflexactoring.Type;
@@ -107,9 +109,9 @@ public class ReflexactoringSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case ReflexactoringPackage.MODULE_DEPENDENCY: {
-				ModuleDependency moduleDependency = (ModuleDependency)theEObject;
-				T result = caseModuleDependency(moduleDependency);
+			case ReflexactoringPackage.MODULE_LINK: {
+				ModuleLink moduleLink = (ModuleLink)theEObject;
+				T result = caseModuleLink(moduleLink);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -134,6 +136,20 @@ public class ReflexactoringSwitch<T> extends Switch<T> {
 			case ReflexactoringPackage.INTERFACE_EXTEND: {
 				InterfaceExtend interfaceExtend = (InterfaceExtend)theEObject;
 				T result = caseInterfaceExtend(interfaceExtend);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ReflexactoringPackage.MODULE_EXTEND: {
+				ModuleExtend moduleExtend = (ModuleExtend)theEObject;
+				T result = caseModuleExtend(moduleExtend);
+				if (result == null) result = caseModuleLink(moduleExtend);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ReflexactoringPackage.MODULE_DEPENDENCY: {
+				ModuleDependency moduleDependency = (ModuleDependency)theEObject;
+				T result = caseModuleDependency(moduleDependency);
+				if (result == null) result = caseModuleLink(moduleDependency);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -217,6 +233,21 @@ public class ReflexactoringSwitch<T> extends Switch<T> {
 	}
 
 	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Module Link</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Module Link</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseModuleLink(ModuleLink object) {
+		return null;
+	}
+
+	/**
 	 * Returns the result of interpreting the object as an instance of '<em>Module Dependency</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -288,6 +319,21 @@ public class ReflexactoringSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseInterfaceExtend(InterfaceExtend object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Module Extend</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Module Extend</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseModuleExtend(ModuleExtend object) {
 		return null;
 	}
 
