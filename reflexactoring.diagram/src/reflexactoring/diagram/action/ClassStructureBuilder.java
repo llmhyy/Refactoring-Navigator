@@ -6,6 +6,7 @@ package reflexactoring.diagram.action;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -17,9 +18,9 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -35,6 +36,10 @@ public class ClassStructureBuilder {
 	public void buildStructuralDependency(final ArrayList<ICompilationUnitWrapper> compilationUnitList,
 			IProgressMonitor monitor, int scale){
 		
+		buildExtendingAndImplementingRelations(compilationUnitList);
+		
+		//System.currentTimeMillis();
+		
 		for(final ICompilationUnitWrapper refererCompilationUnit: compilationUnitList){
 			monitor.worked(scale);
 			
@@ -48,24 +53,18 @@ public class ClassStructureBuilder {
 					String typeName = type.getName().getFullyQualifiedName();
 					for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
 						if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
-							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
-							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
-							
-							refererCompilationUnit.putReferringDetail(refereeCompilationUnit, type);
+							buildCallRelation(refererCompilationUnit, type, refereeCompilationUnit);
 						}
 					}
 					
 					return true;
 				}
-				
+
 				public boolean visit(ImportDeclaration declaration){
 					String fullQulifiedName = declaration.getName().getFullyQualifiedName();
 					for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
 						if(fullQulifiedName.equals(refereeCompilationUnit.getFullQualifiedName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
-							refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
-							refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
-							
-							refererCompilationUnit.putReferringDetail(refereeCompilationUnit, declaration);
+							buildCallRelation(refererCompilationUnit, declaration, refereeCompilationUnit);
 						}
 					}
 					
@@ -78,10 +77,7 @@ public class ClassStructureBuilder {
 						String typeName = ((SimpleType)type).getName().getFullyQualifiedName();
 						for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
 							if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
-								refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
-								refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
-								
-								refererCompilationUnit.putReferringDetail(refereeCompilationUnit, type);
+								buildCallRelation(refererCompilationUnit, type, refereeCompilationUnit);
 							}
 						}
 					}
@@ -99,12 +95,7 @@ public class ClassStructureBuilder {
 							String typeName = typeBinding.getName();
 							for(ICompilationUnitWrapper refereeCompilationUnit: compilationUnitList){
 								if(typeName.equals(refereeCompilationUnit.getSimpleName()) && !refererCompilationUnit.equals(refereeCompilationUnit)){
-									refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
-									refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
-									
-									refererCompilationUnit.putReferringDetail(refereeCompilationUnit, invocation);
-									
-									System.currentTimeMillis();
+									buildCallRelation(refererCompilationUnit, invocation, refereeCompilationUnit);
 								}
 							}
 						}
@@ -121,10 +112,64 @@ public class ClassStructureBuilder {
 					
 					return true;
 				}
+
+				/**
+				 * @param refererCompilationUnit
+				 * @param node
+				 * @param refereeCompilationUnit
+				 */
+				private void buildCallRelation(
+						final ICompilationUnitWrapper refererCompilationUnit,
+						ASTNode node,
+						ICompilationUnitWrapper refereeCompilationUnit) {
+					
+					/*if(refererCompilationUnit.toString().contains("Data") && refereeCompilationUnit.toString().contains("AbstractData")){
+						System.currentTimeMillis();
+					}*/
+					
+					if(!refererCompilationUnit.hasSuperCompilationUnit(refereeCompilationUnit)){
+						refererCompilationUnit.addCalleeCompilationUnit(refereeCompilationUnit);
+						refereeCompilationUnit.addCallerCompilationUnit(refererCompilationUnit);
+						
+						refererCompilationUnit.putReferringDetail(refereeCompilationUnit, node);
+					}
+				}
 			});
 		}
 		
 		Settings.scope.setScopeCompilationUnitList(compilationUnitList);
 		//return compilationUnitList;
+	}
+	
+	private void buildExtendingAndImplementingRelations(ArrayList<ICompilationUnitWrapper> compilationUnitList){
+		for(ICompilationUnitWrapper refererUnit: compilationUnitList){
+			for(ICompilationUnitWrapper refereeUnit: compilationUnitList){
+				if(!refererUnit.equals(refereeUnit)){
+					System.currentTimeMillis();
+					
+					TypeDeclaration refererType = (TypeDeclaration) refererUnit.getJavaUnit().types().get(0);
+					TypeDeclaration refereeType = (TypeDeclaration) refereeUnit.getJavaUnit().types().get(0);
+					
+					ITypeBinding superType = refererType.resolveBinding().getSuperclass();
+					ITypeBinding[] interfaceList = refererType.resolveBinding().getInterfaces();
+					
+					ITypeBinding referee = refereeType.resolveBinding();
+					
+					if(superType != null && superType.getJavaElement().equals(referee.getJavaElement())){
+						refererUnit.setSuperClass(refereeUnit);
+					}
+					else{
+						for(int i=0; i<interfaceList.length; i++){
+							if(referee.toString().contains("Data") && refererType.toString().contains("WeatherData")){
+								System.currentTimeMillis();
+							}
+							if(referee.getJavaElement().equals(interfaceList[i].getJavaElement())){
+								refererUnit.addSuperInterface(refereeUnit);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

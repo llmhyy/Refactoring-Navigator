@@ -18,6 +18,7 @@ import org.eclipse.gmf.runtime.diagram.core.edithelpers.CreateElementRequestAdap
 import org.eclipse.gmf.runtime.diagram.ui.commands.DeferredCreateConnectionViewAndElementCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
@@ -57,6 +58,7 @@ import reflexactoring.diagram.edit.commands.InterfaceCreateCommand;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart.ModuleDependencyFigure;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
+import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
@@ -93,7 +95,7 @@ public class DiagramUpdater {
 			generateLowLevelModel(diagramRoot, compilationUnitWrapperList);
 			generateLowLevelConnection(diagramRoot, compilationUnitWrapperList);
 			
-			showModelConformance(diagramRoot, moduleList, compilationUnitWrapperList);
+			//showModelConformance(diagramRoot, moduleList, compilationUnitWrapperList);
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
@@ -217,38 +219,77 @@ public class DiagramUpdater {
 	 */
 	protected void generateLowLevelConnection(DiagramRootEditPart diagramRoot,
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList) {
+		/**
+		 * generate class extending relation
+		 */
+		for(ICompilationUnitWrapper unit: compilationUnitWrapperList){
+			ICompilationUnitWrapper superClass = unit.getSuperClass();
+			if(null != superClass){
+				generateRelationsBetweenUnits(diagramRoot, unit, superClass, ReflexactoringElementTypes.ClassExtend_4002);
+			}
+		}
+		
+		/**
+		 * generate implementing relation and interface extending relation
+		 */
+		for(ICompilationUnitWrapper unit: compilationUnitWrapperList){
+			for(ICompilationUnitWrapper interfaceUnit: unit.getSuperInterfaceList()){
+				if(unit.isInterface()){
+					generateRelationsBetweenUnits(diagramRoot, unit, interfaceUnit, ReflexactoringElementTypes.InterfaceExtend_4004);
+				}
+				else{
+					generateRelationsBetweenUnits(diagramRoot, unit, interfaceUnit, ReflexactoringElementTypes.Implement_4005);
+				}
+			}
+		}
+		
+		/**
+		 * generate call relations between caller unit and callee unit.
+		 */
 		for(ICompilationUnitWrapper callerWrapper: compilationUnitWrapperList){
 			for(ICompilationUnitWrapper calleeWrapper: callerWrapper.getCalleeCompilationUnitList().keySet()){
 				if(callerWrapper != calleeWrapper){
-					Type callerType = GEFDiagramUtil.findType(diagramRoot, callerWrapper);
-					Type calleeType = GEFDiagramUtil.findType(diagramRoot, calleeWrapper);
-					
-					IElementType relationType = ReflexactoringElementTypes.TypeDependency_4003;
-					CreateRelationshipRequest req = new CreateRelationshipRequest(callerType, calleeType, relationType);
-					
-					ConnectionViewAndElementDescriptor viewDescriptor = new ConnectionViewAndElementDescriptor(
-							new CreateElementRequestAdapter(req),
-							((IHintedType) relationType).getSemanticHint(),
-							ReflexactoringDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT);
-					
-					CreateConnectionViewAndElementRequest request = new CreateConnectionViewAndElementRequest(
-							viewDescriptor);
-					
-					View callerView = GEFDiagramUtil.findViewOfSpecificType(diagramRoot, callerType);
-					View calleeView = GEFDiagramUtil.findViewOfSpecificType(diagramRoot, calleeType);
-					
-					ICommand createRelationCommand = new DeferredCreateConnectionViewAndElementCommand(
-							request, new EObjectAdapter(callerView),
-							new EObjectAdapter(calleeView),
-							diagramRoot.getViewer());
-					CompoundCommand c = new CompoundCommand();
-					c.add(new ICommandProxy(createRelationCommand));
-					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);	
+					generateRelationsBetweenUnits(diagramRoot, callerWrapper, calleeWrapper, ReflexactoringElementTypes.TypeDependency_4003);	
 				}
 			}
 		}
 		
 	}
+
+	/**
+	 * @param diagramRoot
+	 * @param callerWrapper
+	 * @param calleeWrapper
+	 */
+	private void generateRelationsBetweenUnits(DiagramRootEditPart diagramRoot,
+			ICompilationUnitWrapper callerWrapper,
+			ICompilationUnitWrapper calleeWrapper, IElementType relationType) {
+		Type callerType = GEFDiagramUtil.findType(diagramRoot, callerWrapper);
+		Type calleeType = GEFDiagramUtil.findType(diagramRoot, calleeWrapper);
+		
+		CreateRelationshipRequest req = new CreateRelationshipRequest(callerType, calleeType, relationType);
+		
+		ConnectionViewAndElementDescriptor viewDescriptor = new ConnectionViewAndElementDescriptor(
+				new CreateElementRequestAdapter(req),
+				((IHintedType) relationType).getSemanticHint(),
+				ReflexactoringDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT);
+		
+		CreateConnectionViewAndElementRequest request = new CreateConnectionViewAndElementRequest(
+				viewDescriptor);
+		
+		View callerView = GEFDiagramUtil.findViewOfSpecificType(diagramRoot, callerType);
+		View calleeView = GEFDiagramUtil.findViewOfSpecificType(diagramRoot, calleeType);
+		
+		ICommand createRelationCommand = new DeferredCreateConnectionViewAndElementCommand(
+				request, new EObjectAdapter(callerView),
+				new EObjectAdapter(calleeView),
+				diagramRoot.getViewer());
+		CompoundCommand c = new CompoundCommand();
+		c.add(new ICommandProxy(createRelationCommand));
+		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);
+	}
+	
+	
 
 	/**
 	 * @param diagramRoot
@@ -352,7 +393,7 @@ public class DiagramUpdater {
 		return connectionFigure;
 	}
 	
-	private ModuleDependencyEditPart findCorrespondingDepedencyEditPart(DiagramRootEditPart diagramRoot,
+	private ConnectionEditPart findCorrespondingDepedencyEditPart(DiagramRootEditPart diagramRoot,
 			ModuleLinkWrapper connection){
 		
 		for(Object obj: diagramRoot.getChildren()){
@@ -367,13 +408,17 @@ public class DiagramUpdater {
 						ModuleEditPart sourceEditPart = (ModuleEditPart)dependencyPart.getSource();
 						ModuleEditPart targetEditPart = (ModuleEditPart)dependencyPart.getTarget();
 						
-						//ModuleDependency dependency = (ModuleDependency)dependencyPart.resolveSemanticElement();
-						ModuleWrapper sourceModule = new ModuleWrapper((Module)sourceEditPart.resolveSemanticElement());
-						ModuleWrapper targetModule = new ModuleWrapper((Module)targetEditPart.resolveSemanticElement());
-						ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule);
-						
-						if(connectionWrapper.equals(connection)){
+						if(isCorrectConnection(sourceEditPart, targetEditPart, connection)){
 							return dependencyPart;
+						}
+					}
+					else if(connectionPart instanceof ModuleExtendEditPart){
+						ModuleExtendEditPart extendPart = (ModuleExtendEditPart)connectionPart;
+						ModuleEditPart sourceEditPart = (ModuleEditPart)extendPart.getSource();
+						ModuleEditPart targetEditPart = (ModuleEditPart)extendPart.getTarget();
+						
+						if(isCorrectConnection(sourceEditPart, targetEditPart, connection)){
+							return extendPart;
 						}
 					}
 				}
@@ -381,6 +426,14 @@ public class DiagramUpdater {
 		}
 		
 		return null;
+	}
+	
+	private boolean isCorrectConnection(ModuleEditPart sourceEditPart, ModuleEditPart targetEditPart, ModuleLinkWrapper connection){
+		ModuleWrapper sourceModule = new ModuleWrapper((Module)sourceEditPart.resolveSemanticElement());
+		ModuleWrapper targetModule = new ModuleWrapper((Module)targetEditPart.resolveSemanticElement());
+		ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule);
+		
+		return connectionWrapper.equals(connection);
 	}
 	
 	private HashSet<ModuleLinkWrapper> recoverRealisticConnectionList(

@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
@@ -29,6 +30,9 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	private ICompilationUnit compilationUnit;
 	private ModuleWrapper mappingModule;
 	private CompilationUnit javaUnit;
+	
+	private ICompilationUnitWrapper superClass;
+	private ArrayList<ICompilationUnitWrapper> superInterfaceList = new ArrayList<>();
 	
 	private HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList = new HashMap<>();
 	private HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList = new HashMap<>();
@@ -59,6 +63,10 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		this.extractTermFrequency(content);
 	}
 	
+	public boolean isInterface(){
+		TypeDeclaration typeDeclar = (TypeDeclaration) this.javaUnit.types().get(0);
+		return typeDeclar.isInterface();
+	}
 	
 	public String toString(){
 		return this.compilationUnit.getElementName();
@@ -75,6 +83,21 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public boolean hasSuperCompilationUnit(ICompilationUnitWrapper unit){
+		if(superClass != null && superClass.equals(unit)){
+			return true;
+		}
+		else{
+			for(ICompilationUnitWrapper interf: superInterfaceList){
+				if(interf.equals(unit)){
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	public String getSimpleName(){
@@ -294,5 +317,41 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	@Override
 	protected String getDocName() {
 		return getName();
+	}
+
+
+	/**
+	 * @return the superClass
+	 */
+	public ICompilationUnitWrapper getSuperClass() {
+		return superClass;
+	}
+
+
+	/**
+	 * @param superClass the superClass to set
+	 */
+	public void setSuperClass(ICompilationUnitWrapper superClass) {
+		this.superClass = superClass;
+	}
+
+
+	/**
+	 * @return the superInterfaceList
+	 */
+	public ArrayList<ICompilationUnitWrapper> getSuperInterfaceList() {
+		return superInterfaceList;
+	}
+
+
+	/**
+	 * @param superInterfaceList the superInterfaceList to set
+	 */
+	public void setSuperInterfaceList(ArrayList<ICompilationUnitWrapper> superInterfaceList) {
+		this.superInterfaceList = superInterfaceList;
+	}
+	
+	public void addSuperInterface(ICompilationUnitWrapper superInterface){
+		this.superInterfaceList.add(superInterface);
 	}
 }
