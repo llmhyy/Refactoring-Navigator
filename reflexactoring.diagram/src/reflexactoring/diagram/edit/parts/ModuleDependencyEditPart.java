@@ -60,8 +60,8 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 			ModuleDependency dependency = (ModuleDependency) eObject;
 			if (dependency.getName().equals(ModuleLinkWrapper.ABSENCE)) {
 				figure.setAbsenceStyle();
-			} else if (dependency.getName().equals(
-					ModuleLinkWrapper.DIVERGENCE)) {
+			} else if (dependency.getName()
+					.equals(ModuleLinkWrapper.DIVERGENCE)) {
 				figure.setDivergneceStyle();
 			} else if (dependency.getName().equals(
 					ModuleLinkWrapper.CONFORMANCE)) {

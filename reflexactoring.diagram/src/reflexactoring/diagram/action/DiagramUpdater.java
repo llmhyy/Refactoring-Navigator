@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.draw2d.Label;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -18,7 +19,6 @@ import org.eclipse.gmf.runtime.diagram.core.edithelpers.CreateElementRequestAdap
 import org.eclipse.gmf.runtime.diagram.ui.commands.DeferredCreateConnectionViewAndElementCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
@@ -91,6 +91,11 @@ public class DiagramUpdater {
 		//clearCanvas(diagramRoot);
 		try {
 			clearCanvas(diagramRoot);
+			
+			Reflexactoring rootf = GEFDiagramUtil.findReflexactoring(diagramRoot);
+			EList list0 = rootf.getImplements();
+			EList list1 = rootf.getClassExtends();
+			EList list2 = rootf.getTypeDependencies();
 			
 			generateLowLevelModel(diagramRoot, compilationUnitWrapperList);
 			generateLowLevelConnection(diagramRoot, compilationUnitWrapperList);
@@ -287,6 +292,10 @@ public class DiagramUpdater {
 		CompoundCommand c = new CompoundCommand();
 		c.add(new ICommandProxy(createRelationCommand));
 		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);
+		
+		
+		
+		System.currentTimeMillis();
 	}
 	
 	

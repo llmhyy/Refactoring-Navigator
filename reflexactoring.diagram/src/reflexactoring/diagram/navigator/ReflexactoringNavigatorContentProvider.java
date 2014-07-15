@@ -230,158 +230,46 @@ public class ReflexactoringNavigatorContentProvider implements
 	private Object[] getViewChildren(View view, Object parentElement) {
 		switch (ReflexactoringVisualIDRegistry.getVisualID(view)) {
 
-		case TypeDependencyEditPart.VISUAL_ID: {
+		case ClassEditPart.VISUAL_ID: {
 			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
-			Edge sv = (Edge) view;
-			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_TypeDependency_4003_target,
-					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_TypeDependency_4003_source,
-					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			Node sv = (Node) view;
+			ReflexactoringNavigatorGroup incominglinks = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_Class_2001_incominglinks,
+					"icons/incomingLinksNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			ReflexactoringNavigatorGroup outgoinglinks = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_Class_2001_outgoinglinks,
+					"icons/outgoingLinksNavigatorGroup.gif", parentElement); //$NON-NLS-1$
 			Collection<View> connectedViews;
-			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+			connectedViews = getIncomingLinksByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(ClassEditPart.VISUAL_ID));
-			target.addChildren(createNavigatorItems(connectedViews, target,
-					true));
-			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+							.getType(ClassExtendEditPart.VISUAL_ID));
+			incominglinks.addChildren(createNavigatorItems(connectedViews,
+					incominglinks, true));
+			connectedViews = getOutgoingLinksByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(InterfaceEditPart.VISUAL_ID));
-			target.addChildren(createNavigatorItems(connectedViews, target,
-					true));
-			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+							.getType(ClassExtendEditPart.VISUAL_ID));
+			outgoinglinks.addChildren(createNavigatorItems(connectedViews,
+					outgoinglinks, true));
+			connectedViews = getIncomingLinksByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(Class2EditPart.VISUAL_ID));
-			target.addChildren(createNavigatorItems(connectedViews, target,
-					true));
-			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+							.getType(TypeDependencyEditPart.VISUAL_ID));
+			incominglinks.addChildren(createNavigatorItems(connectedViews,
+					incominglinks, true));
+			connectedViews = getOutgoingLinksByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(Interface2EditPart.VISUAL_ID));
-			target.addChildren(createNavigatorItems(connectedViews, target,
-					true));
-			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+							.getType(TypeDependencyEditPart.VISUAL_ID));
+			outgoinglinks.addChildren(createNavigatorItems(connectedViews,
+					outgoinglinks, true));
+			connectedViews = getOutgoingLinksByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(ClassEditPart.VISUAL_ID));
-			source.addChildren(createNavigatorItems(connectedViews, source,
-					true));
-			connectedViews = getLinksSourceByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(InterfaceEditPart.VISUAL_ID));
-			source.addChildren(createNavigatorItems(connectedViews, source,
-					true));
-			connectedViews = getLinksSourceByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(Class2EditPart.VISUAL_ID));
-			source.addChildren(createNavigatorItems(connectedViews, source,
-					true));
-			connectedViews = getLinksSourceByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(Interface2EditPart.VISUAL_ID));
-			source.addChildren(createNavigatorItems(connectedViews, source,
-					true));
-			if (!target.isEmpty()) {
-				result.add(target);
+							.getType(ImplementEditPart.VISUAL_ID));
+			outgoinglinks.addChildren(createNavigatorItems(connectedViews,
+					outgoinglinks, true));
+			if (!incominglinks.isEmpty()) {
+				result.add(incominglinks);
 			}
-			if (!source.isEmpty()) {
-				result.add(source);
-			}
-			return result.toArray();
-		}
-
-		case InterfaceExtendEditPart.VISUAL_ID: {
-			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
-			Edge sv = (Edge) view;
-			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_InterfaceExtend_4004_target,
-					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_InterfaceExtend_4004_source,
-					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			Collection<View> connectedViews;
-			connectedViews = getLinksTargetByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(InterfaceEditPart.VISUAL_ID));
-			target.addChildren(createNavigatorItems(connectedViews, target,
-					true));
-			connectedViews = getLinksTargetByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(Interface2EditPart.VISUAL_ID));
-			target.addChildren(createNavigatorItems(connectedViews, target,
-					true));
-			connectedViews = getLinksSourceByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(InterfaceEditPart.VISUAL_ID));
-			source.addChildren(createNavigatorItems(connectedViews, source,
-					true));
-			connectedViews = getLinksSourceByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(Interface2EditPart.VISUAL_ID));
-			source.addChildren(createNavigatorItems(connectedViews, source,
-					true));
-			if (!target.isEmpty()) {
-				result.add(target);
-			}
-			if (!source.isEmpty()) {
-				result.add(source);
-			}
-			return result.toArray();
-		}
-
-		case ModuleExtendEditPart.VISUAL_ID: {
-			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
-			Edge sv = (Edge) view;
-			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_ModuleExtend_4006_target,
-					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_ModuleExtend_4006_source,
-					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			Collection<View> connectedViews;
-			connectedViews = getLinksTargetByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(ModuleEditPart.VISUAL_ID));
-			target.addChildren(createNavigatorItems(connectedViews, target,
-					true));
-			connectedViews = getLinksSourceByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(ModuleEditPart.VISUAL_ID));
-			source.addChildren(createNavigatorItems(connectedViews, source,
-					true));
-			if (!target.isEmpty()) {
-				result.add(target);
-			}
-			if (!source.isEmpty()) {
-				result.add(source);
-			}
-			return result.toArray();
-		}
-
-		case ModuleDependencyEditPart.VISUAL_ID: {
-			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
-			Edge sv = (Edge) view;
-			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_ModuleDependency_4001_target,
-					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_ModuleDependency_4001_source,
-					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			Collection<View> connectedViews;
-			connectedViews = getLinksTargetByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(ModuleEditPart.VISUAL_ID));
-			target.addChildren(createNavigatorItems(connectedViews, target,
-					true));
-			connectedViews = getLinksSourceByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(ModuleEditPart.VISUAL_ID));
-			source.addChildren(createNavigatorItems(connectedViews, source,
-					true));
-			if (!target.isEmpty()) {
-				result.add(target);
-			}
-			if (!source.isEmpty()) {
-				result.add(source);
+			if (!outgoinglinks.isEmpty()) {
+				result.add(outgoinglinks);
 			}
 			return result.toArray();
 		}
@@ -434,89 +322,6 @@ public class ReflexactoringNavigatorContentProvider implements
 			links.addChildren(createNavigatorItems(connectedViews, links, false));
 			if (!links.isEmpty()) {
 				result.add(links);
-			}
-			return result.toArray();
-		}
-
-		case ClassExtendEditPart.VISUAL_ID: {
-			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
-			Edge sv = (Edge) view;
-			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_ClassExtend_4002_target,
-					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_ClassExtend_4002_source,
-					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			Collection<View> connectedViews;
-			connectedViews = getLinksTargetByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(ClassEditPart.VISUAL_ID));
-			target.addChildren(createNavigatorItems(connectedViews, target,
-					true));
-			connectedViews = getLinksTargetByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(Class2EditPart.VISUAL_ID));
-			target.addChildren(createNavigatorItems(connectedViews, target,
-					true));
-			connectedViews = getLinksSourceByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(ClassEditPart.VISUAL_ID));
-			source.addChildren(createNavigatorItems(connectedViews, source,
-					true));
-			connectedViews = getLinksSourceByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(Class2EditPart.VISUAL_ID));
-			source.addChildren(createNavigatorItems(connectedViews, source,
-					true));
-			if (!target.isEmpty()) {
-				result.add(target);
-			}
-			if (!source.isEmpty()) {
-				result.add(source);
-			}
-			return result.toArray();
-		}
-
-		case InterfaceEditPart.VISUAL_ID: {
-			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
-			Node sv = (Node) view;
-			ReflexactoringNavigatorGroup incominglinks = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_Interface_2002_incominglinks,
-					"icons/incomingLinksNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			ReflexactoringNavigatorGroup outgoinglinks = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_Interface_2002_outgoinglinks,
-					"icons/outgoingLinksNavigatorGroup.gif", parentElement); //$NON-NLS-1$
-			Collection<View> connectedViews;
-			connectedViews = getIncomingLinksByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(TypeDependencyEditPart.VISUAL_ID));
-			incominglinks.addChildren(createNavigatorItems(connectedViews,
-					incominglinks, true));
-			connectedViews = getOutgoingLinksByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(TypeDependencyEditPart.VISUAL_ID));
-			outgoinglinks.addChildren(createNavigatorItems(connectedViews,
-					outgoinglinks, true));
-			connectedViews = getIncomingLinksByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(InterfaceExtendEditPart.VISUAL_ID));
-			incominglinks.addChildren(createNavigatorItems(connectedViews,
-					incominglinks, true));
-			connectedViews = getOutgoingLinksByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(InterfaceExtendEditPart.VISUAL_ID));
-			outgoinglinks.addChildren(createNavigatorItems(connectedViews,
-					outgoinglinks, true));
-			connectedViews = getIncomingLinksByType(Collections.singleton(sv),
-					ReflexactoringVisualIDRegistry
-							.getType(ImplementEditPart.VISUAL_ID));
-			incominglinks.addChildren(createNavigatorItems(connectedViews,
-					incominglinks, true));
-			if (!incominglinks.isEmpty()) {
-				result.add(incominglinks);
-			}
-			if (!outgoinglinks.isEmpty()) {
-				result.add(outgoinglinks);
 			}
 			return result.toArray();
 		}
@@ -574,6 +379,45 @@ public class ReflexactoringNavigatorContentProvider implements
 			}
 			if (!outgoinglinks.isEmpty()) {
 				result.add(outgoinglinks);
+			}
+			return result.toArray();
+		}
+
+		case ImplementEditPart.VISUAL_ID: {
+			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
+			Edge sv = (Edge) view;
+			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_Implement_4005_target,
+					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_Implement_4005_source,
+					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			Collection<View> connectedViews;
+			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(InterfaceEditPart.VISUAL_ID));
+			target.addChildren(createNavigatorItems(connectedViews, target,
+					true));
+			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(Interface2EditPart.VISUAL_ID));
+			target.addChildren(createNavigatorItems(connectedViews, target,
+					true));
+			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(ClassEditPart.VISUAL_ID));
+			source.addChildren(createNavigatorItems(connectedViews, source,
+					true));
+			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(Class2EditPart.VISUAL_ID));
+			source.addChildren(createNavigatorItems(connectedViews, source,
+					true));
+			if (!target.isEmpty()) {
+				result.add(target);
+			}
+			if (!source.isEmpty()) {
+				result.add(source);
 			}
 			return result.toArray();
 		}
@@ -666,24 +510,53 @@ public class ReflexactoringNavigatorContentProvider implements
 			return result.toArray();
 		}
 
-		case ImplementEditPart.VISUAL_ID: {
+		case ModuleExtendEditPart.VISUAL_ID: {
 			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
 			Edge sv = (Edge) view;
 			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_Implement_4005_target,
+					Messages.NavigatorGroupName_ModuleExtend_4006_target,
 					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
 			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_Implement_4005_source,
+					Messages.NavigatorGroupName_ModuleExtend_4006_source,
 					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
 			Collection<View> connectedViews;
 			connectedViews = getLinksTargetByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(InterfaceEditPart.VISUAL_ID));
+							.getType(ModuleEditPart.VISUAL_ID));
+			target.addChildren(createNavigatorItems(connectedViews, target,
+					true));
+			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(ModuleEditPart.VISUAL_ID));
+			source.addChildren(createNavigatorItems(connectedViews, source,
+					true));
+			if (!target.isEmpty()) {
+				result.add(target);
+			}
+			if (!source.isEmpty()) {
+				result.add(source);
+			}
+			return result.toArray();
+		}
+
+		case ClassExtendEditPart.VISUAL_ID: {
+			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
+			Edge sv = (Edge) view;
+			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_ClassExtend_4002_target,
+					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_ClassExtend_4002_source,
+					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			Collection<View> connectedViews;
+			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(ClassEditPart.VISUAL_ID));
 			target.addChildren(createNavigatorItems(connectedViews, target,
 					true));
 			connectedViews = getLinksTargetByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(Interface2EditPart.VISUAL_ID));
+							.getType(Class2EditPart.VISUAL_ID));
 			target.addChildren(createNavigatorItems(connectedViews, target,
 					true));
 			connectedViews = getLinksSourceByType(Collections.singleton(sv),
@@ -705,46 +578,173 @@ public class ReflexactoringNavigatorContentProvider implements
 			return result.toArray();
 		}
 
-		case ClassEditPart.VISUAL_ID: {
+		case TypeDependencyEditPart.VISUAL_ID: {
+			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
+			Edge sv = (Edge) view;
+			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_TypeDependency_4003_target,
+					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_TypeDependency_4003_source,
+					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			Collection<View> connectedViews;
+			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(ClassEditPart.VISUAL_ID));
+			target.addChildren(createNavigatorItems(connectedViews, target,
+					true));
+			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(InterfaceEditPart.VISUAL_ID));
+			target.addChildren(createNavigatorItems(connectedViews, target,
+					true));
+			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(Class2EditPart.VISUAL_ID));
+			target.addChildren(createNavigatorItems(connectedViews, target,
+					true));
+			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(Interface2EditPart.VISUAL_ID));
+			target.addChildren(createNavigatorItems(connectedViews, target,
+					true));
+			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(ClassEditPart.VISUAL_ID));
+			source.addChildren(createNavigatorItems(connectedViews, source,
+					true));
+			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(InterfaceEditPart.VISUAL_ID));
+			source.addChildren(createNavigatorItems(connectedViews, source,
+					true));
+			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(Class2EditPart.VISUAL_ID));
+			source.addChildren(createNavigatorItems(connectedViews, source,
+					true));
+			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(Interface2EditPart.VISUAL_ID));
+			source.addChildren(createNavigatorItems(connectedViews, source,
+					true));
+			if (!target.isEmpty()) {
+				result.add(target);
+			}
+			if (!source.isEmpty()) {
+				result.add(source);
+			}
+			return result.toArray();
+		}
+
+		case InterfaceEditPart.VISUAL_ID: {
 			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
 			Node sv = (Node) view;
 			ReflexactoringNavigatorGroup incominglinks = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_Class_2001_incominglinks,
+					Messages.NavigatorGroupName_Interface_2002_incominglinks,
 					"icons/incomingLinksNavigatorGroup.gif", parentElement); //$NON-NLS-1$
 			ReflexactoringNavigatorGroup outgoinglinks = new ReflexactoringNavigatorGroup(
-					Messages.NavigatorGroupName_Class_2001_outgoinglinks,
+					Messages.NavigatorGroupName_Interface_2002_outgoinglinks,
 					"icons/outgoingLinksNavigatorGroup.gif", parentElement); //$NON-NLS-1$
 			Collection<View> connectedViews;
 			connectedViews = getIncomingLinksByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(ClassExtendEditPart.VISUAL_ID));
+							.getType(TypeDependencyEditPart.VISUAL_ID));
 			incominglinks.addChildren(createNavigatorItems(connectedViews,
 					incominglinks, true));
 			connectedViews = getOutgoingLinksByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(ClassExtendEditPart.VISUAL_ID));
+							.getType(TypeDependencyEditPart.VISUAL_ID));
 			outgoinglinks.addChildren(createNavigatorItems(connectedViews,
 					outgoinglinks, true));
 			connectedViews = getIncomingLinksByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(TypeDependencyEditPart.VISUAL_ID));
+							.getType(InterfaceExtendEditPart.VISUAL_ID));
 			incominglinks.addChildren(createNavigatorItems(connectedViews,
 					incominglinks, true));
 			connectedViews = getOutgoingLinksByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
-							.getType(TypeDependencyEditPart.VISUAL_ID));
+							.getType(InterfaceExtendEditPart.VISUAL_ID));
 			outgoinglinks.addChildren(createNavigatorItems(connectedViews,
 					outgoinglinks, true));
-			connectedViews = getOutgoingLinksByType(Collections.singleton(sv),
+			connectedViews = getIncomingLinksByType(Collections.singleton(sv),
 					ReflexactoringVisualIDRegistry
 							.getType(ImplementEditPart.VISUAL_ID));
-			outgoinglinks.addChildren(createNavigatorItems(connectedViews,
-					outgoinglinks, true));
+			incominglinks.addChildren(createNavigatorItems(connectedViews,
+					incominglinks, true));
 			if (!incominglinks.isEmpty()) {
 				result.add(incominglinks);
 			}
 			if (!outgoinglinks.isEmpty()) {
 				result.add(outgoinglinks);
+			}
+			return result.toArray();
+		}
+
+		case ModuleDependencyEditPart.VISUAL_ID: {
+			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
+			Edge sv = (Edge) view;
+			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_ModuleDependency_4001_target,
+					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_ModuleDependency_4001_source,
+					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			Collection<View> connectedViews;
+			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(ModuleEditPart.VISUAL_ID));
+			target.addChildren(createNavigatorItems(connectedViews, target,
+					true));
+			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(ModuleEditPart.VISUAL_ID));
+			source.addChildren(createNavigatorItems(connectedViews, source,
+					true));
+			if (!target.isEmpty()) {
+				result.add(target);
+			}
+			if (!source.isEmpty()) {
+				result.add(source);
+			}
+			return result.toArray();
+		}
+
+		case InterfaceExtendEditPart.VISUAL_ID: {
+			LinkedList<ReflexactoringAbstractNavigatorItem> result = new LinkedList<ReflexactoringAbstractNavigatorItem>();
+			Edge sv = (Edge) view;
+			ReflexactoringNavigatorGroup target = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_InterfaceExtend_4004_target,
+					"icons/linkTargetNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			ReflexactoringNavigatorGroup source = new ReflexactoringNavigatorGroup(
+					Messages.NavigatorGroupName_InterfaceExtend_4004_source,
+					"icons/linkSourceNavigatorGroup.gif", parentElement); //$NON-NLS-1$
+			Collection<View> connectedViews;
+			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(InterfaceEditPart.VISUAL_ID));
+			target.addChildren(createNavigatorItems(connectedViews, target,
+					true));
+			connectedViews = getLinksTargetByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(Interface2EditPart.VISUAL_ID));
+			target.addChildren(createNavigatorItems(connectedViews, target,
+					true));
+			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(InterfaceEditPart.VISUAL_ID));
+			source.addChildren(createNavigatorItems(connectedViews, source,
+					true));
+			connectedViews = getLinksSourceByType(Collections.singleton(sv),
+					ReflexactoringVisualIDRegistry
+							.getType(Interface2EditPart.VISUAL_ID));
+			source.addChildren(createNavigatorItems(connectedViews, source,
+					true));
+			if (!target.isEmpty()) {
+				result.add(target);
+			}
+			if (!source.isEmpty()) {
+				result.add(source);
 			}
 			return result.toArray();
 		}

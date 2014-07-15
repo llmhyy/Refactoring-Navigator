@@ -131,7 +131,8 @@ public class Class2ItemSemanticEditPolicy extends
 	}
 
 	/**
-	 * @generated
+	 * I do not understand why, the generated code will not create *implement* relation, its default code is *return null*!
+	 * @not generated
 	 */
 	protected Command getCompleteCreateRelationshipCommand(
 			CreateRelationshipRequest req) {
@@ -145,7 +146,9 @@ public class Class2ItemSemanticEditPolicy extends
 					req.getSource(), req.getTarget()));
 		}
 		if (ReflexactoringElementTypes.Implement_4005 == req.getElementType()) {
-			return null;
+			//return null;
+			return getGEFWrapper(new ImplementCreateCommand(req,
+					req.getSource(), req.getTarget()));
 		}
 		return null;
 	}
