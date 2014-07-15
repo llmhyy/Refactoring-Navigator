@@ -120,7 +120,7 @@
       <?gmfgen generated="true"?>
       <page
             id="reflexactoring.diagram.general"
-            name="%prefpage.reflexactoring.diagram.general"
+            name="Refleactoring"
             class="reflexactoring.diagram.preferences.DiagramGeneralPreferencePage">
       </page>
       <page
@@ -146,6 +146,18 @@
             name="%prefpage.reflexactoring.diagram.rulersAndGrid"
             category="reflexactoring.diagram.general"
             class="reflexactoring.diagram.preferences.DiagramRulersAndGridPreferencePage">
+      </page>
+      <page
+            category="reflexactoring.diagram.general"
+            class="reflexactoring.diagram.preferences.ProjectInfoPage"
+            id="reflexactoring.diagram.projectInfo"
+            name="Project Information">
+      </page>
+      <page
+            category="reflexactoring.diagram.general"
+            class="reflexactoring.diagram.preferences.RecommendSettingPage"
+            id="reflexactoring.diagram.recommend"
+            name="Recommend Settings">
       </page>
    </extension>
 
