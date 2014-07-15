@@ -27,7 +27,7 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  *
  */
 public class ICompilationUnitWrapper extends Document implements LowLevelSuggestionObject, LowLevelGraphNode{
-	private ICompilationUnit compilationUnit;
+	private ICompilationUnit compilationUnit; 
 	private ModuleWrapper mappingModule;
 	private CompilationUnit javaUnit;
 	
