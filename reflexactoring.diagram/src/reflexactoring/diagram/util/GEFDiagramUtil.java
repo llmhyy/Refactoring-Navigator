@@ -30,17 +30,26 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.ClassExtend;
+import reflexactoring.Implement;
+import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
 import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.Type;
+import reflexactoring.TypeDependency;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.edit.parts.ClassExtendEditPart;
+import reflexactoring.diagram.edit.parts.ImplementEditPart;
+import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
+import reflexactoring.diagram.edit.parts.ModuleLinkEditPart;
 import reflexactoring.diagram.edit.parts.ModuleTypeContainerCompartmentEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
+import reflexactoring.diagram.edit.parts.TypeDependencyEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
 import reflexactoring.diagram.providers.ReflexactoringElementTypes;
@@ -88,6 +97,18 @@ public class GEFDiagramUtil {
 		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(destroyCommand));
 	}
 	
+	public static void deleteEdgeOnCanvas(DiagramRootEditPart diagramRoot, Edge edge, EObject eObj){
+		DestroyElementRequest destroyRequest = new DestroyElementRequest(eObj, false);
+		DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
+		DeleteCommand deleteCommand = new DeleteCommand(GEFDiagramUtil.getRootEditPart(diagramRoot).getEditingDomain(), edge);
+		
+		CompoundCommand comCommand = new CompoundCommand();
+		comCommand.add(new ICommandProxy(destroyCommand));
+		comCommand.add(new ICommandProxy(deleteCommand));
+		
+		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(comCommand);
+	}
+	
 	public static View findViewOfSpecificModule(DiagramRootEditPart diagramRoot, Module module){
 		for(Object obj: diagramRoot.getChildren()){
 			if(obj instanceof ReflexactoringEditPart){
@@ -115,15 +136,15 @@ public class GEFDiagramUtil {
 				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
 				List<?> connectionList = rootEditPart.getConnections();
 				for(Object connObj: connectionList){
-					if(connObj instanceof ModuleDependencyEditPart){
-						ModuleDependencyEditPart dependencyPart = (ModuleDependencyEditPart)connObj;
-						EObject eObj = dependencyPart.resolveSemanticElement();
-						if(eObj instanceof ModuleDependency){
-							ModuleDependency d = (ModuleDependency)eObj;
+					if(connObj instanceof ModuleLinkEditPart){
+						ModuleLinkEditPart linkPart = (ModuleLinkEditPart)connObj;
+						EObject eObj = linkPart.resolveSemanticElement();
+						if(eObj instanceof ModuleLink){
+							ModuleLink d = (ModuleLink)eObj;
 							if(d.getName().equals(link.getName()) &&
 									d.getDestination().getDescription().equals(link.getDestination().getDescription()) &&
 									d.getOrigin().getDescription().equals(link.getOrigin().getDescription())){
-								return dependencyPart.getPrimaryView();
+								return linkPart.getPrimaryView();
 							}
 						}
 						
@@ -368,5 +389,132 @@ public class GEFDiagramUtil {
 				}
 			}
 		}
+	}
+
+	public static View findViewOfSpecificDependency(
+			DiagramRootEditPart diagramRoot, Implement implement) {
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
+				List<?> connectionList = rootEditPart.getConnections();
+				for(Object connObj: connectionList){
+					if(connObj instanceof ImplementEditPart){
+						ImplementEditPart implementConnection = (ImplementEditPart)connObj;
+						EObject eObj = implementConnection.resolveSemanticElement();
+						if(eObj instanceof Implement){
+							Implement d = (Implement)eObj;
+							if(d.getName().equals(implement.getName()) &&
+									d.getClass_().getName().equals(implement.getClass_().getName()) &&
+									d.getInterface().getName().equals(implement.getInterface().getName())){
+								return implementConnection.getPrimaryView();
+							}
+						}
+						
+					}
+					
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	/**
+	 * @param diagramRoot
+	 * @param classExtend
+	 * @return
+	 */
+	public static View findViewOfSpecificDependency(
+			DiagramRootEditPart diagramRoot, ClassExtend classExtend) {
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
+				List<?> connectionList = rootEditPart.getConnections();
+				for(Object connObj: connectionList){
+					if(connObj instanceof ClassExtendEditPart){
+						ClassExtendEditPart classExtendConnection = (ClassExtendEditPart)connObj;
+						EObject eObj = classExtendConnection.resolveSemanticElement();
+						if(eObj instanceof ClassExtend){
+							ClassExtend d = (ClassExtend)eObj;
+							if(d.getName().equals(classExtend.getName()) &&
+									d.getSubClass().getName().equals(classExtend.getSubClass().getName()) &&
+									d.getSuperClass().getName().equals(classExtend.getSuperClass().getName())){
+								return classExtendConnection.getPrimaryView();
+							}
+						}
+						
+					}
+					
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	/**
+	 * @param diagramRoot
+	 * @param interfaceExtend
+	 * @return
+	 */
+	public static View findViewOfSpecificDependency(
+			DiagramRootEditPart diagramRoot, InterfaceExtend interfaceExtend) {
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
+				List<?> connectionList = rootEditPart.getConnections();
+				for(Object connObj: connectionList){
+					if(connObj instanceof InterfaceExtendEditPart){
+						InterfaceExtendEditPart interfaceExtendConnection = (InterfaceExtendEditPart)connObj;
+						EObject eObj = interfaceExtendConnection.resolveSemanticElement();
+						if(eObj instanceof InterfaceExtend){
+							InterfaceExtend d = (InterfaceExtend)eObj;
+							if(d.getName().equals(interfaceExtend.getName()) &&
+									d.getSubInterface().getName().equals(interfaceExtend.getSubInterface().getName()) &&
+									d.getSuperInterface().getName().equals(interfaceExtend.getSuperInterface().getName())){
+								return interfaceExtendConnection.getPrimaryView();
+							}
+						}
+						
+					}
+					
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * @param diagramRoot
+	 * @param typeDependency
+	 * @return
+	 */
+	public static View findViewOfSpecificDependency(
+			DiagramRootEditPart diagramRoot, TypeDependency typeDependency) {
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
+				List<?> connectionList = rootEditPart.getConnections();
+				for(Object connObj: connectionList){
+					if(connObj instanceof TypeDependencyEditPart){
+						TypeDependencyEditPart typeDependencyConnection = (TypeDependencyEditPart)connObj;
+						EObject eObj = typeDependencyConnection.resolveSemanticElement();
+						if(eObj instanceof TypeDependency){
+							TypeDependency d = (TypeDependency)eObj;
+							if(d.getName().equals(typeDependency.getName()) &&
+									d.getDestination().getName().equals(typeDependency.getDestination().getName()) &&
+									d.getOrigin().getName().equals(typeDependency.getOrigin().getName())){
+								return typeDependencyConnection.getPrimaryView();
+							}
+						}
+						
+					}
+					
+				}
+			}
+		}
+		
+		return null;
 	}
 }

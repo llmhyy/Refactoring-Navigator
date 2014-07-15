@@ -100,6 +100,16 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		return false;
 	}
 	
+	public boolean hasCalleeCompilationUnit(ICompilationUnitWrapper unit){
+		for(ICompilationUnitWrapper calleeUnit: this.calleeCompilationUnitList.keySet()){
+			if(calleeUnit.equals(unit)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	public String getSimpleName(){
 		String uniqueName = this.compilationUnit.getElementName();
 		uniqueName = uniqueName.substring(0, uniqueName.indexOf(".java"));

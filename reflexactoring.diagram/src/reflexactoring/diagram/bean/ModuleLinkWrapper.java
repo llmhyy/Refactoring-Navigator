@@ -17,27 +17,41 @@ public class ModuleLinkWrapper implements SuggestionObject{
 	public static final String DIVERGENCE = "divergence";
 	public static final String ABSENCE = "absence";
 	
+	public static final int MODULE_EXTEND = 1;
+	public static final int MODULE_DEPENDENCY = 2;
+	
 	private ModuleWrapper sourceModule;
 	private ModuleWrapper targetModule;
+	private int linkType;
 	
-	public ModuleLinkWrapper(ModuleWrapper sourceModule, ModuleWrapper targetModule){
+	public ModuleLinkWrapper(ModuleWrapper sourceModule, ModuleWrapper targetModule, int linkType){
 		this.sourceModule = sourceModule;
 		this.targetModule = targetModule;
+		this.setLinkType(linkType);
 	}
 
 	public String toString(){
-		return sourceModule.getName() + "=>" + targetModule.getName();
+		String relation = "rel";
+		if(getLinkType() == ModuleLinkWrapper.MODULE_DEPENDENCY){
+			relation = " depends on ";
+		}
+		else if(getLinkType() == ModuleLinkWrapper.MODULE_EXTEND){
+			relation = " extends ";
+		}
+		
+		return sourceModule.getName() + relation + targetModule.getName();
 	}
 	
 	public int hashCode(){
-		return (sourceModule.getDescription() + targetModule.getDescription()).hashCode();
+		return (sourceModule.getDescription() + targetModule.getDescription()).hashCode() + getLinkType();
 	}
 	
 	public boolean equals(Object obj){
 		if(obj instanceof ModuleLinkWrapper){
 			ModuleLinkWrapper connection = (ModuleLinkWrapper)obj;
 			if(connection.getSourceModule().equals(getSourceModule())
-					&& connection.getTargetModule().equals(getTargetModule())){
+					&& connection.getTargetModule().equals(getTargetModule())
+					&& connection.getLinkType() == getLinkType()){
 				return true;
 			}
 		}
@@ -85,5 +99,19 @@ public class ModuleLinkWrapper implements SuggestionObject{
 	public String getNameWithTag() {
 		// TODO Auto-generated method stub
 		return "dependency";
+	}
+
+	/**
+	 * @return the linkType
+	 */
+	public int getLinkType() {
+		return linkType;
+	}
+
+	/**
+	 * @param linkType the linkType to set
+	 */
+	public void setLinkType(int linkType) {
+		this.linkType = linkType;
 	}
 }

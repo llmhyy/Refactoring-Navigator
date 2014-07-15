@@ -185,7 +185,7 @@ public class RefactoringRecommender {
 				action.setDestination(targetModule);	
 			}
 			
-			ModuleLinkWrapper dependency = new ModuleLinkWrapper(sourceModule, targetModule);
+			ModuleLinkWrapper dependency = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_DEPENDENCY);
 			SuggestionMove suggestion = new SuggestionMove(dependency, action);
 			suggestions.add(suggestion);
 		}
