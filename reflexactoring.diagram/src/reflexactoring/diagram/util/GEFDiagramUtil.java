@@ -35,11 +35,13 @@ import reflexactoring.Implement;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
 import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleExtend;
 import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.Type;
 import reflexactoring.TypeDependency;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.edit.parts.ClassExtendEditPart;
 import reflexactoring.diagram.edit.parts.ImplementEditPart;
@@ -272,12 +274,18 @@ public class GEFDiagramUtil {
 		return null;
 	}
 	
-	public static void addModuleDependency(ModuleWrapper sourceModuleWrapper, ModuleWrapper targetModuleWrapper){
+	public static void addModuleLink(ModuleWrapper sourceModuleWrapper, ModuleWrapper targetModuleWrapper, int linkType){
 		DiagramRootEditPart diagramRoot = GEFDiagramUtil.getRootEditPart();
 		Module sourceModule = GEFDiagramUtil.findModule(diagramRoot, sourceModuleWrapper.getModule());
 		Module targetModule = GEFDiagramUtil.findModule(diagramRoot, targetModuleWrapper.getModule());
 		
-		IElementType relationType = ReflexactoringElementTypes.ModuleDependency_4001;
+		IElementType relationType = null;
+		if(linkType == ModuleLinkWrapper.MODULE_DEPENDENCY){
+			relationType = ReflexactoringElementTypes.ModuleDependency_4001;
+		}
+		else if(linkType == ModuleLinkWrapper.MODULE_EXTEND){
+			relationType = ReflexactoringElementTypes.ModuleExtend_4006;
+		}
 		
 		CreateRelationshipRequest req = new CreateRelationshipRequest(sourceModule, targetModule, relationType);
 		
@@ -300,8 +308,8 @@ public class GEFDiagramUtil {
 		c.add(new ICommandProxy(createRelationCommand));
 		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);	
 	}
-	
-	public static void removeModuleDependency(ModuleWrapper sourceModuleWrapper, ModuleWrapper targetModuleWrapper){
+
+	public static void removeModuleLink(ModuleWrapper sourceModuleWrapper, ModuleWrapper targetModuleWrapper, int linkType){
 		DiagramRootEditPart diagramRoot = GEFDiagramUtil.getRootEditPart();
 		Reflexactoring reflexactoring = GEFDiagramUtil.findReflexactoring(diagramRoot);
 		
@@ -311,18 +319,22 @@ public class GEFDiagramUtil {
 			if(link.getOrigin().getName().equals(sourceModuleWrapper.getName())
 					&& link.getDestination().getName().equals(targetModuleWrapper.getName())){
 				
-				Edge edge = (Edge)GEFDiagramUtil.findViewOfSpecificModuleDependency(diagramRoot, link);
-				
-				DestroyElementRequest destroyRequest = new DestroyElementRequest(link, false);
-				DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
-				DeleteCommand deleteCommand = new DeleteCommand(GEFDiagramUtil.getRootEditPart(diagramRoot).getEditingDomain(), edge);
-				
-				CompoundCommand comCommand = new CompoundCommand();
-				comCommand.add(new ICommandProxy(destroyCommand));
-				comCommand.add(new ICommandProxy(deleteCommand));
-				
-				GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(comCommand);
-				
+				if((linkType == ModuleLinkWrapper.MODULE_DEPENDENCY && (link instanceof ModuleDependency))
+						|| (linkType == ModuleLinkWrapper.MODULE_EXTEND && (link instanceof ModuleExtend))){
+					Edge edge = (Edge)GEFDiagramUtil.findViewOfSpecificModuleDependency(diagramRoot, link);
+					
+					DestroyElementRequest destroyRequest = new DestroyElementRequest(link, false);
+					DestroyElementCommand destroyCommand = new DestroyElementCommand(destroyRequest);
+					DeleteCommand deleteCommand = new DeleteCommand(GEFDiagramUtil.getRootEditPart(diagramRoot).getEditingDomain(), edge);
+					
+					CompoundCommand comCommand = new CompoundCommand();
+					comCommand.add(new ICommandProxy(destroyCommand));
+					comCommand.add(new ICommandProxy(deleteCommand));
+					
+					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(comCommand);
+					break;
+				}
+
 			}
 		}
 	}

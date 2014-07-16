@@ -46,12 +46,10 @@ public class AddExtendAction extends ExtendAction {
 	@Override
 	public void execute(SuggestionObject suggestionObj) {
 		if(suggestionObj instanceof ModuleLinkWrapper){
-			/*ModuleLinkWrapper dependencyWrapper = (ModuleLinkWrapper)suggestionObj;
+			ModuleLinkWrapper dependencyWrapper = (ModuleLinkWrapper)suggestionObj;
 			
-			GEFDiagramUtil.addModuleDependency(dependencyWrapper.getSourceModule(), 
-					dependencyWrapper.getTargetModule());*/
-			
-			//TODO
+			GEFDiagramUtil.addModuleLink(dependencyWrapper.getSourceModule(), 
+					dependencyWrapper.getTargetModule(), ModuleLinkWrapper.MODULE_EXTEND);
 		}
 		
 	}
@@ -62,12 +60,10 @@ public class AddExtendAction extends ExtendAction {
 	@Override
 	public void undoExecute(SuggestionObject suggestionObj) {
 		if(suggestionObj instanceof ModuleLinkWrapper){
-			/*ModuleLinkWrapper dependencyWrapper = (ModuleLinkWrapper)suggestionObj;
+			ModuleLinkWrapper dependencyWrapper = (ModuleLinkWrapper)suggestionObj;
 			
-			GEFDiagramUtil.removeModuleDependency(dependencyWrapper.getSourceModule(), 
-					dependencyWrapper.getTargetModule());*/
-			
-			//TODO
+			GEFDiagramUtil.removeModuleLink(dependencyWrapper.getSourceModule(), 
+					dependencyWrapper.getTargetModule(), ModuleLinkWrapper.MODULE_EXTEND);
 		}
 		
 	}

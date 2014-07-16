@@ -97,8 +97,12 @@ public class ModuleLinkWrapper implements SuggestionObject{
 	 */
 	@Override
 	public String getNameWithTag() {
-		// TODO Auto-generated method stub
-		return "dependency";
+		if(this.linkType == ModuleLinkWrapper.MODULE_EXTEND){
+			return "inheritance";
+		}
+		else{
+			return "dependency";			
+		}
 	}
 
 	/**

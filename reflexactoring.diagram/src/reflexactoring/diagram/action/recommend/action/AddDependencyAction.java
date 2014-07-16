@@ -48,8 +48,8 @@ public class AddDependencyAction extends DependencyAction {
 		if(suggestionObj instanceof ModuleLinkWrapper){
 			ModuleLinkWrapper dependencyWrapper = (ModuleLinkWrapper)suggestionObj;
 			
-			GEFDiagramUtil.addModuleDependency(dependencyWrapper.getSourceModule(), 
-					dependencyWrapper.getTargetModule());
+			GEFDiagramUtil.addModuleLink(dependencyWrapper.getSourceModule(), 
+					dependencyWrapper.getTargetModule(), ModuleLinkWrapper.MODULE_DEPENDENCY);
 		}
 		
 	}
@@ -62,8 +62,8 @@ public class AddDependencyAction extends DependencyAction {
 		if(suggestionObj instanceof ModuleLinkWrapper){
 			ModuleLinkWrapper dependencyWrapper = (ModuleLinkWrapper)suggestionObj;
 			
-			GEFDiagramUtil.removeModuleDependency(dependencyWrapper.getSourceModule(), 
-					dependencyWrapper.getTargetModule());
+			GEFDiagramUtil.removeModuleLink(dependencyWrapper.getSourceModule(), 
+					dependencyWrapper.getTargetModule(), ModuleLinkWrapper.MODULE_DEPENDENCY);
 		}
 		
 	}
