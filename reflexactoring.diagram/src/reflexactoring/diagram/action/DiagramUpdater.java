@@ -374,7 +374,7 @@ public class DiagramUpdater {
 				iterator.remove();
 				realisticConnectionList.remove(connection);
 				
-				ModuleLinkFigure connectionFigure = findCorrespondingDepedencyEditPart(diagramRoot, 
+				ModuleLinkFigure connectionFigure = GEFDiagramUtil.findCorrespondingDepedencyEditPart(diagramRoot, 
 						connection).getPrimaryShape();
 				connectionFigure.setConformanceStyle();
 				
@@ -388,7 +388,7 @@ public class DiagramUpdater {
 		 * 
 		 */
 		for(ModuleLinkWrapper conceivedConnection: conceivedConnectionList){
-			ModuleLinkFigure connectionFigure = findCorrespondingDepedencyEditPart(diagramRoot, 
+			ModuleLinkFigure connectionFigure = GEFDiagramUtil.findCorrespondingDepedencyEditPart(diagramRoot, 
 					conceivedConnection).getPrimaryShape();
 			connectionFigure.setAbsenceStyle();
 			setDependencyType(diagramRoot, conceivedConnection, ModuleLinkWrapper.ABSENCE);
@@ -443,49 +443,12 @@ public class DiagramUpdater {
 		/*ModuleLinkEditPart part = findCorrespondingDepedencyEditPart(diagramRoot, connection);
 		EObject obj = part.resolveSemanticElement();*/
 		
-		ModuleLinkFigure connectionFigure = findCorrespondingDepedencyEditPart(diagramRoot, connection).getPrimaryShape();
+		ModuleLinkFigure connectionFigure = GEFDiagramUtil.findCorrespondingDepedencyEditPart(diagramRoot, connection).getPrimaryShape();
 		
 		return connectionFigure;
 	}
 	
-	private ModuleLinkEditPart findCorrespondingDepedencyEditPart(DiagramRootEditPart diagramRoot,
-			ModuleLinkWrapper connection){
-		
-		for(Object obj: diagramRoot.getChildren()){
-			if(obj instanceof ReflexactoringEditPart){
-				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
-				
-				List editPartList = rootEditPart.getConnections();
-				for(Object connectionObj: editPartList){
-					ConnectionEditPart connectionPart = (ConnectionEditPart)connectionObj;
-					if(connectionPart instanceof ModuleLinkEditPart){
-						//ModuleDependencyEditPart dependencyPart = (ModuleDependencyEditPart)connectionPart;
-						ModuleEditPart sourceEditPart = (ModuleEditPart)connectionPart.getSource();
-						ModuleEditPart targetEditPart = (ModuleEditPart)connectionPart.getTarget();
-						
-						ModuleWrapper sourceModule = new ModuleWrapper((Module)sourceEditPart.resolveSemanticElement());
-						ModuleWrapper targetModule = new ModuleWrapper((Module)targetEditPart.resolveSemanticElement());
-						
-						if(connectionPart instanceof ModuleDependencyEditPart){
-							ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_DEPENDENCY);
-							if(connectionWrapper.equals(connection)){
-								return (ModuleLinkEditPart)connectionPart;
-							}
-						}
-						else if(connectionPart instanceof ModuleExtendEditPart){
-							ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);
-							if(connectionWrapper.equals(connection)){
-								return (ModuleLinkEditPart)connectionPart;
-							}
-						}
-						
-					}
-				}
-			}
-		}
-		
-		return null;
-	}
+	
 	
 	private HashSet<ModuleLinkWrapper> recoverRealisticConnectionList(
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList){
@@ -528,7 +491,7 @@ public class DiagramUpdater {
 	}
 	
 	private void setDependencyType(DiagramRootEditPart diagramRoot, ModuleLinkWrapper connection, String connectionType){
-		ModuleLinkEditPart part = findCorrespondingDepedencyEditPart(diagramRoot, connection);
+		ModuleLinkEditPart part = GEFDiagramUtil.findCorrespondingDepedencyEditPart(diagramRoot, connection);
 		ModuleLink link = (ModuleLink)part.resolveSemanticElement();
 		setDependencyType(diagramRoot, link, connectionType);	
 	}

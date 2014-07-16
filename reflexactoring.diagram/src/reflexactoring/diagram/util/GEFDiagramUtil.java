@@ -14,6 +14,7 @@ import org.eclipse.gmf.runtime.diagram.core.commands.DeleteCommand;
 import org.eclipse.gmf.runtime.diagram.core.edithelpers.CreateElementRequestAdapter;
 import org.eclipse.gmf.runtime.diagram.ui.commands.DeferredCreateConnectionViewAndElementCommand;
 import org.eclipse.gmf.runtime.diagram.ui.commands.ICommandProxy;
+import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
@@ -48,7 +49,9 @@ import reflexactoring.diagram.edit.parts.ImplementEditPart;
 import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
+import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
 import reflexactoring.diagram.edit.parts.ModuleLinkEditPart;
+import reflexactoring.diagram.edit.parts.ModuleLinkFigure;
 import reflexactoring.diagram.edit.parts.ModuleTypeContainerCompartmentEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.edit.parts.TypeDependencyEditPart;
@@ -287,26 +290,37 @@ public class GEFDiagramUtil {
 			relationType = ReflexactoringElementTypes.ModuleExtend_4006;
 		}
 		
-		CreateRelationshipRequest req = new CreateRelationshipRequest(sourceModule, targetModule, relationType);
+		ModuleLinkWrapper connection = new ModuleLinkWrapper(sourceModuleWrapper, targetModuleWrapper, linkType);
+		ModuleLinkEditPart editPart = findCorrespondingDepedencyEditPart(diagramRoot, connection);
 		
-		ConnectionViewAndElementDescriptor viewDescriptor = new ConnectionViewAndElementDescriptor(
-				new CreateElementRequestAdapter(req),
-				((IHintedType) relationType).getSemanticHint(),
-				ReflexactoringDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT);
+		if(editPart != null){
+			ModuleLinkFigure existingDivergentEdge =  editPart.getPrimaryShape();
+			existingDivergentEdge.setOriginStyle();
+		}
+		else{
+			CreateRelationshipRequest req = new CreateRelationshipRequest(sourceModule, targetModule, relationType);
+			
+			ConnectionViewAndElementDescriptor viewDescriptor = new ConnectionViewAndElementDescriptor(
+					new CreateElementRequestAdapter(req),
+					((IHintedType) relationType).getSemanticHint(),
+					ReflexactoringDiagramEditorPlugin.DIAGRAM_PREFERENCES_HINT);
+			
+			CreateConnectionViewAndElementRequest request = new CreateConnectionViewAndElementRequest(
+					viewDescriptor);
+			
+			View callerView = GEFDiagramUtil.findViewOfSpecificModule(diagramRoot, sourceModule);
+			View calleeView = GEFDiagramUtil.findViewOfSpecificModule(diagramRoot, targetModule);
+			
+			ICommand createRelationCommand = new DeferredCreateConnectionViewAndElementCommand(
+					request, new EObjectAdapter(callerView),
+					new EObjectAdapter(calleeView),
+					diagramRoot.getViewer());
+			CompoundCommand c = new CompoundCommand();
+			c.add(new ICommandProxy(createRelationCommand));
+			GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);
+		}
 		
-		CreateConnectionViewAndElementRequest request = new CreateConnectionViewAndElementRequest(
-				viewDescriptor);
-		
-		View callerView = GEFDiagramUtil.findViewOfSpecificModule(diagramRoot, sourceModule);
-		View calleeView = GEFDiagramUtil.findViewOfSpecificModule(diagramRoot, targetModule);
-		
-		ICommand createRelationCommand = new DeferredCreateConnectionViewAndElementCommand(
-				request, new EObjectAdapter(callerView),
-				new EObjectAdapter(calleeView),
-				diagramRoot.getViewer());
-		CompoundCommand c = new CompoundCommand();
-		c.add(new ICommandProxy(createRelationCommand));
-		GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(c);	
+			
 	}
 
 	public static void removeModuleLink(ModuleWrapper sourceModuleWrapper, ModuleWrapper targetModuleWrapper, int linkType){
@@ -523,6 +537,45 @@ public class GEFDiagramUtil {
 						
 					}
 					
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public static ModuleLinkEditPart findCorrespondingDepedencyEditPart(DiagramRootEditPart diagramRoot,
+			ModuleLinkWrapper connection){
+		
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
+				
+				List editPartList = rootEditPart.getConnections();
+				for(Object connectionObj: editPartList){
+					ConnectionEditPart connectionPart = (ConnectionEditPart)connectionObj;
+					if(connectionPart instanceof ModuleLinkEditPart){
+						//ModuleDependencyEditPart dependencyPart = (ModuleDependencyEditPart)connectionPart;
+						ModuleEditPart sourceEditPart = (ModuleEditPart)connectionPart.getSource();
+						ModuleEditPart targetEditPart = (ModuleEditPart)connectionPart.getTarget();
+						
+						ModuleWrapper sourceModule = new ModuleWrapper((Module)sourceEditPart.resolveSemanticElement());
+						ModuleWrapper targetModule = new ModuleWrapper((Module)targetEditPart.resolveSemanticElement());
+						
+						if(connectionPart instanceof ModuleDependencyEditPart){
+							ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_DEPENDENCY);
+							if(connectionWrapper.equals(connection)){
+								return (ModuleLinkEditPart)connectionPart;
+							}
+						}
+						else if(connectionPart instanceof ModuleExtendEditPart){
+							ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);
+							if(connectionWrapper.equals(connection)){
+								return (ModuleLinkEditPart)connectionPart;
+							}
+						}
+						
+					}
 				}
 			}
 		}
