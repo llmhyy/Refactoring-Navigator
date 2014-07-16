@@ -17,7 +17,7 @@ import reflexactoring.diagram.action.UnitMemberExtractor;
 import reflexactoring.diagram.action.recommend.action.AddDependencyAction;
 import reflexactoring.diagram.action.recommend.action.AddModuleAction;
 import reflexactoring.diagram.action.recommend.action.DeleteDependencyAction;
-import reflexactoring.diagram.action.recommend.action.DependencyAction;
+import reflexactoring.diagram.action.recommend.action.LinkAction;
 import reflexactoring.diagram.action.recommend.suboptimalold_representation.GeneticOptimizer;
 import reflexactoring.diagram.action.recommend.suboptimalold_representation.Genotype;
 import reflexactoring.diagram.action.recommend.suboptimalold_representation.Violation;
@@ -161,7 +161,7 @@ public class RefactoringRecommenderForOldRepresentation {
 				ModuleWrapper sourceModule = moduleList.get(violation.getSourceModuleIndex());
 				ModuleWrapper targetModule = moduleList.get(violation.getDestModuleIndex());
 				
-				DependencyAction action = null;
+				LinkAction action = null;
 				
 				if(violation.getType() == Violation.ABSENCE){
 					action = new DeleteDependencyAction();

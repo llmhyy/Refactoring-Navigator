@@ -11,11 +11,20 @@ public class Violation {
 	/**
 	 * a dependency exist in high level model but not in low level model.
 	 */
-	public final static int ABSENCE = 1;
+	public final static int DEPENDENCY_ABSENCE = 1;
 	/**
 	 * a dependency exist in low level model but not in high level model.
 	 */
-	public final static int DIVERGENCE = 2;
+	public final static int DEPENDENCY_DIVERGENCE = 2;
+	
+	/**
+	 * an inheritance exist in high level model but not in low level model.
+	 */
+	public final static int INHERITANCE_ABSENCE = 3;
+	/**
+	 * an inheritance exist in low level model but not in high level model.
+	 */
+	public final static int INHERITANCE_DIVERGENCE = 4;
 	
 	private int sourceModuleIndex;
 	private int destModuleIndex;

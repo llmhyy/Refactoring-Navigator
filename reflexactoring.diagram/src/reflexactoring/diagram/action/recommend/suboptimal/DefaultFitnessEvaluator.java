@@ -50,7 +50,7 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 					if(highLevelNodeMatrix[i][j] == 0){
 						int violationNum = countDivergenceViolation(gene, i, j);
 						if(violationNum != 0){
-							Violation violation = new Violation(i, j, Violation.DIVERGENCE);
+							Violation violation = new Violation(i, j, Violation.DEPENDENCY_DIVERGENCE);
 							violationList.add(violation);
 						}
 						result += confidenceTable[i][j] * violationNum;
@@ -61,7 +61,7 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 					else{
 						int violationNum = countAbsenceViolation(gene, i, j);
 						if(violationNum != 0){
-							Violation violation = new Violation(i, j, Violation.ABSENCE);
+							Violation violation = new Violation(i, j, Violation.DEPENDENCY_ABSENCE);
 							violationList.add(violation);
 						}
 						result += confidenceTable[i][j] * violationNum;

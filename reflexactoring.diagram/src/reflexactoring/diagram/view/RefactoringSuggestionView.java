@@ -54,7 +54,7 @@ import reflexactoring.Activator;
 import reflexactoring.Module;
 import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
-import reflexactoring.diagram.action.recommend.action.DependencyAction;
+import reflexactoring.diagram.action.recommend.action.LinkAction;
 import reflexactoring.diagram.action.recommend.action.DirectOrientedAction;
 import reflexactoring.diagram.action.recommend.action.MoveAction;
 import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
@@ -186,7 +186,7 @@ public class RefactoringSuggestionView extends ViewPart {
 				buffer.append("<a href=\"ForbidMember\">Reject</a> ");	
 				buffer.append("<a href=\"AllowMember\">Undo</a>");
 			}
-			else if(move.getAction() instanceof DependencyAction){
+			else if(move.getAction() instanceof LinkAction){
 				buffer.append("<a href=\"Stick\">Reject</a> ");	
 				buffer.append("<a href=\"Unstick\">Undo</a>");	
 			}
@@ -348,8 +348,8 @@ public class RefactoringSuggestionView extends ViewPart {
 						
 						SuggestionObject obj = suggestion.getSuggeestionObject();
 						RefactoringAction action = suggestion.getAction();
-						if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
-							DependencyAction depAction =(DependencyAction)action;
+						if(obj instanceof ModuleLinkWrapper && action instanceof LinkAction){
+							LinkAction depAction =(LinkAction)action;
 							for(ModuleDependencyConfidence confidence: Settings.confidenceTable){
 								if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
 									for(int i=0; i<confidence.getModuleList().size(); i++){
@@ -374,8 +374,8 @@ public class RefactoringSuggestionView extends ViewPart {
 					else if(e.getHref().equals("Unstick")){
 						SuggestionObject obj = suggestion.getSuggeestionObject();
 						RefactoringAction action = suggestion.getAction();
-						if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
-							DependencyAction depAction =(DependencyAction)action;
+						if(obj instanceof ModuleLinkWrapper && action instanceof LinkAction){
+							LinkAction depAction =(LinkAction)action;
 							for(ModuleDependencyConfidence confidence: Settings.confidenceTable){
 								if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
 									for(int i=0; i<confidence.getModuleList().size(); i++){

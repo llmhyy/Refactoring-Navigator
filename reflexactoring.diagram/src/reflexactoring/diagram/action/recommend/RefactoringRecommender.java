@@ -12,9 +12,13 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.recommend.action.AddDependencyAction;
+import reflexactoring.diagram.action.recommend.action.AddExtendAction;
 import reflexactoring.diagram.action.recommend.action.AddModuleAction;
 import reflexactoring.diagram.action.recommend.action.DeleteDependencyAction;
-import reflexactoring.diagram.action.recommend.action.DependencyAction;
+import reflexactoring.diagram.action.recommend.action.DeleteExtendAction;
+import reflexactoring.diagram.action.recommend.action.LinkAction;
+import reflexactoring.diagram.action.recommend.suboptimal.AdvancedCrossoverer;
+import reflexactoring.diagram.action.recommend.suboptimal.AdvancedFitnessEvaluator;
 import reflexactoring.diagram.action.recommend.suboptimal.DefaultCrossoverer;
 import reflexactoring.diagram.action.recommend.suboptimal.DefaultFitnessEvaluator;
 import reflexactoring.diagram.action.recommend.suboptimal.DefaultMutator;
@@ -101,8 +105,10 @@ public class RefactoringRecommender {
 		
 		PopulationGenerator popGenerator = new PopulationGenerator(Integer.valueOf(ReflexactoringUtil.getPopulationSize()));
 		Population population = popGenerator.createPopulation(Settings.scope.getScopeCompilationUnitList(), moduleList);
+		/*GeneticOptimizer optimizer = new GeneticOptimizer(population, new DefaultSelector(), 
+				new DefaultCrossoverer(), new DefaultMutator(rules.getUnitModuleFixList(), rules.getUnitModuleStopList(), moduleList.size()));*/
 		GeneticOptimizer optimizer = new GeneticOptimizer(population, new DefaultSelector(), 
-				new DefaultCrossoverer(), new DefaultMutator(rules.getUnitModuleFixList(), rules.getUnitModuleStopList(), moduleList.size()));
+				new AdvancedCrossoverer(), new DefaultMutator(rules.getUnitModuleFixList(), rules.getUnitModuleStopList(), moduleList.size()));
 		
 		Population pop = optimizer.optimize();
 		
@@ -123,8 +129,10 @@ public class RefactoringRecommender {
 		
 		PopulationGenerator popGenerator = new PopulationGenerator(Integer.valueOf(ReflexactoringUtil.getPopulationSize()));
 		Population population = popGenerator.createPopulation(Settings.scope.getScopeMemberList(), moduleList);
+		/*GeneticOptimizer optimizer = new GeneticOptimizer(population, new DefaultSelector(), 
+				new DefaultCrossoverer(), new DefaultMutator(rules.getMemberModuleFixList(), rules.getMemberModuleStopList(), moduleList.size()));*/
 		GeneticOptimizer optimizer = new GeneticOptimizer(population, new DefaultSelector(), 
-				new DefaultCrossoverer(), new DefaultMutator(rules.getMemberModuleFixList(), rules.getMemberModuleStopList(), moduleList.size()));
+				new AdvancedCrossoverer(), new DefaultMutator(rules.getUnitModuleFixList(), rules.getUnitModuleStopList(), moduleList.size()));
 		
 		Population pop = optimizer.optimize();
 		
@@ -167,26 +175,41 @@ public class RefactoringRecommender {
 	private ArrayList<SuggestionMove> findHighLevelModificationSuggestion(Genotype bestGene, ArrayList<ModuleWrapper> moduleList){
 		ArrayList<SuggestionMove> suggestions = new ArrayList<>();
 		
-		ArrayList<Violation> violations = ((DefaultFitnessEvaluator)bestGene.getEvaluator()).getViolationList();
+		/*ArrayList<Violation> violations = ((DefaultFitnessEvaluator)bestGene.getEvaluator()).getViolationList();*/
+		ArrayList<Violation> violations = ((AdvancedFitnessEvaluator)bestGene.getEvaluator()).getViolationList();
 		for(Violation violation: violations){
 			ModuleWrapper sourceModule = moduleList.get(violation.getSourceModuleIndex());
 			ModuleWrapper targetModule = moduleList.get(violation.getDestModuleIndex());
 			
-			DependencyAction action = null;
+			LinkAction action = null;
+			ModuleLinkWrapper link = null;
 			
-			if(violation.getType() == Violation.ABSENCE){
+			if(violation.getType() == Violation.DEPENDENCY_ABSENCE){
 				action = new DeleteDependencyAction();
 				action.setOrigin(sourceModule);
 				action.setDestination(targetModule);
+				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_DEPENDENCY);
 			}
-			else if(violation.getType() == Violation.DIVERGENCE){
+			else if(violation.getType() == Violation.DEPENDENCY_DIVERGENCE){
 				action = new AddDependencyAction();
 				action.setOrigin(sourceModule);
 				action.setDestination(targetModule);	
+				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_DEPENDENCY);
+			}
+			else if(violation.getType() == Violation.INHERITANCE_ABSENCE){
+				action = new DeleteExtendAction();
+				action.setOrigin(sourceModule);
+				action.setDestination(targetModule);
+				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);
+			}
+			else if(violation.getType() == Violation.INHERITANCE_DIVERGENCE){
+				action = new AddExtendAction();
+				action.setOrigin(sourceModule);
+				action.setDestination(targetModule);	
+				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);
 			}
 			
-			ModuleLinkWrapper dependency = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_DEPENDENCY);
-			SuggestionMove suggestion = new SuggestionMove(dependency, action);
+			SuggestionMove suggestion = new SuggestionMove(link, action);
 			suggestions.add(suggestion);
 		}
 		

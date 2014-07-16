@@ -34,7 +34,7 @@ import reflexactoring.diagram.util.GEFDiagramUtil;
  * @author linyun
  *
  */
-public class AddDependencyAction extends DependencyAction {
+public class AddDependencyAction extends LinkAction {
 	
 	public AddDependencyAction(){
 		this.actionName = RefactoringAction.ADD;

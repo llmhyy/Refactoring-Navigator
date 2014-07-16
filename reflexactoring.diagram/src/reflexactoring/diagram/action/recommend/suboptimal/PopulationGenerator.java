@@ -25,6 +25,12 @@ import reflexactoring.diagram.util.Settings;
  *
  */
 public class PopulationGenerator {
+
+	/**
+	 * Graph types 
+	 */
+	public static final int GRAPH_DEPENDENCY = 1;
+	public static final int GRAPH_INHERITANCE = 2;
 	
 	private int populationSize;
 	
@@ -125,14 +131,18 @@ public class PopulationGenerator {
 		
 		Population population = new Population();
 		
-		double[][] highLevelNodeMatrix = extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath));
-		double[][] lowLevelNodeMatrix;
+		double[][] highLevelNodeDependencyMatrix = extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath), GRAPH_DEPENDENCY);
+		double[][] highLevelNodeInheritanceMatrix = extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath), GRAPH_INHERITANCE);
+		double[][] lowLevelNodeDependencyMatrix;
+		double[][] lowLevelNodeInheritanceMatrix;
 		
 		if(isForTypePopulation){
-			lowLevelNodeMatrix = extractGraph(Settings.scope.getScopeCompilationUnitList());
+			lowLevelNodeDependencyMatrix = extractGraph(Settings.scope.getScopeCompilationUnitList(), GRAPH_DEPENDENCY);
+			lowLevelNodeInheritanceMatrix = extractGraph(Settings.scope.getScopeCompilationUnitList(), GRAPH_INHERITANCE);
 		}
 		else{
-			lowLevelNodeMatrix = extractGraph(Settings.scope.getScopeMemberList());
+			lowLevelNodeDependencyMatrix = extractGraph(Settings.scope.getScopeMemberList(), GRAPH_DEPENDENCY);
+			lowLevelNodeInheritanceMatrix = extractGraph(Settings.scope.getScopeMemberList(), GRAPH_INHERITANCE);
 		}
 		
 		
@@ -186,15 +196,18 @@ public class PopulationGenerator {
 				System.currentTimeMillis();
 			}*/
 			
+			/*Genotype gene = new Genotype(DNA, seedDNA, 
+					new DefaultFitnessEvaluator(similarityTable, highLevelNodeMatrix, lowLevelNodeMatrix));*/
 			Genotype gene = new Genotype(DNA, seedDNA, 
-					new DefaultFitnessEvaluator(similarityTable, highLevelNodeMatrix, lowLevelNodeMatrix));
+					new AdvancedFitnessEvaluator(similarityTable, highLevelNodeDependencyMatrix, lowLevelNodeDependencyMatrix, 
+							highLevelNodeInheritanceMatrix, lowLevelNodeInheritanceMatrix));
 			population.add(gene);
 		}
 		
 		return population;
 	}
 	
-	private double[][] extractGraph(ArrayList<? extends GraphNode> nodes){
+	private double[][] extractGraph(ArrayList<? extends GraphNode> nodes, int graphType){
 		
 		int dimension = nodes.size();
 		double[][] graphMatrix = new double[dimension][dimension];
@@ -205,8 +218,14 @@ public class PopulationGenerator {
 					GraphNode nodeI = nodes.get(i);
 					GraphNode nodeJ = nodes.get(j);
 					
-					if(nodeI.getCalleeList().contains(nodeJ)){
-						graphMatrix[i][j] = 1;
+					if(graphType == GRAPH_DEPENDENCY){
+						if(nodeI.getCalleeList().contains(nodeJ)){
+							graphMatrix[i][j] = 1;
+						}
+					}else if(graphType == GRAPH_INHERITANCE){
+						if(nodeI.getParentList().contains(nodeJ)){
+							graphMatrix[i][j] = 1;
+						}
 					}
 				}
 			}
