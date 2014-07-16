@@ -39,7 +39,7 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 	private double computeStructureViolation(Genotype gene){
 		double result = 0;
 		
-		double[][] confidenceTable = Settings.confidenceTable.convertToRawTable();
+		double[][] confidenceTable = Settings.dependencyConfidenceTable.convertToRawTable();
 		
 		for(int i=0; i<highLevelNodeMatrix.length; i++){
 			for(int j=0; j<highLevelNodeMatrix.length; j++){

@@ -54,6 +54,8 @@ import reflexactoring.Activator;
 import reflexactoring.Module;
 import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
+import reflexactoring.diagram.action.recommend.action.DependencyAction;
+import reflexactoring.diagram.action.recommend.action.ExtendAction;
 import reflexactoring.diagram.action.recommend.action.LinkAction;
 import reflexactoring.diagram.action.recommend.action.DirectOrientedAction;
 import reflexactoring.diagram.action.recommend.action.MoveAction;
@@ -67,6 +69,7 @@ import reflexactoring.diagram.bean.HeuristicModuleUnitStopMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
+import reflexactoring.diagram.bean.ModuleExtendConfidence;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
@@ -187,8 +190,13 @@ public class RefactoringSuggestionView extends ViewPart {
 				buffer.append("<a href=\"AllowMember\">Undo</a>");
 			}
 			else if(move.getAction() instanceof LinkAction){
-				buffer.append("<a href=\"Stick\">Reject</a> ");	
-				buffer.append("<a href=\"Unstick\">Undo</a>");	
+				if(move.getAction() instanceof DependencyAction){
+					buffer.append("<a href=\"StickDependency\">Reject</a> ");	
+					buffer.append("<a href=\"UnstickDependency\">Undo</a>");	
+				}else if(move.getAction() instanceof ExtendAction){
+					buffer.append("<a href=\"StickExtend\">Reject</a> ");	
+					buffer.append("<a href=\"UnstickExtend\">Undo</a>");	
+				}
 			}
 			buffer.append("<b>]</b>");
 			buffer.append("</li>");
@@ -343,14 +351,14 @@ public class RefactoringSuggestionView extends ViewPart {
 						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
 						t.setBackground(colors.getColor("white"));
 					}
-					else if(e.getHref().equals("Stick")){
+					else if(e.getHref().equals("StickDependency")){
 						RecordParameters.recordTime++;
 						
 						SuggestionObject obj = suggestion.getSuggeestionObject();
 						RefactoringAction action = suggestion.getAction();
-						if(obj instanceof ModuleLinkWrapper && action instanceof LinkAction){
+						if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
 							LinkAction depAction =(LinkAction)action;
-							for(ModuleDependencyConfidence confidence: Settings.confidenceTable){
+							for(ModuleDependencyConfidence confidence: Settings.dependencyConfidenceTable){
 								if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
 									for(int i=0; i<confidence.getModuleList().size(); i++){
 										ModuleWrapper calleeModule = confidence.getModuleList().get(i);
@@ -361,7 +369,7 @@ public class RefactoringSuggestionView extends ViewPart {
 								}
 							}
 							ViewUpdater updater = new ViewUpdater();
-							updater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, true);
+							updater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, true);
 						}
 						
 						FormText t = (FormText) e.getSource();
@@ -371,12 +379,12 @@ public class RefactoringSuggestionView extends ViewPart {
 						t.setBackground(colors.getColor("gray"));
 						t.setForeground(colors.getColor("white"));
 					}
-					else if(e.getHref().equals("Unstick")){
+					else if(e.getHref().equals("UnstickDependency")){
 						SuggestionObject obj = suggestion.getSuggeestionObject();
 						RefactoringAction action = suggestion.getAction();
-						if(obj instanceof ModuleLinkWrapper && action instanceof LinkAction){
+						if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
 							LinkAction depAction =(LinkAction)action;
-							for(ModuleDependencyConfidence confidence: Settings.confidenceTable){
+							for(ModuleDependencyConfidence confidence: Settings.dependencyConfidenceTable){
 								if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
 									for(int i=0; i<confidence.getModuleList().size(); i++){
 										ModuleWrapper calleeModule = confidence.getModuleList().get(i);
@@ -387,7 +395,60 @@ public class RefactoringSuggestionView extends ViewPart {
 								}
 							}
 							ViewUpdater updater = new ViewUpdater();
-							updater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, true);
+							updater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, true);
+						}
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+						t.setForeground(colors.getColor("black"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("StickExtend")){
+						RecordParameters.recordTime++;
+						
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleLinkWrapper && action instanceof ExtendAction){
+							LinkAction extAction =(LinkAction)action;
+							for(ModuleExtendConfidence confidence: Settings.extendConfidenceTable){
+								if(confidence.getModule().getName().equals(extAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper parentModule = confidence.getModuleList().get(i);
+										if(parentModule.getName().equals(extAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] += 2;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, true);
+						}
+						
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("gray", new RGB(207,207,207));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("gray"));
+						t.setForeground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("UnstickExtend")){
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleLinkWrapper && action instanceof ExtendAction){
+							LinkAction extAction =(LinkAction)action;
+							for(ModuleExtendConfidence confidence: Settings.extendConfidenceTable){
+								if(confidence.getModule().getName().equals(extAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper parentModule = confidence.getModuleList().get(i);
+										if(parentModule.getName().equals(extAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] = 0.5;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, true);
 						}
 						FormText t = (FormText) e.getSource();
 						FormColors colors = toolkit.getColors();

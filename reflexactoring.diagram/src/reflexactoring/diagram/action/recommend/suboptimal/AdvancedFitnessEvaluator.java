@@ -39,7 +39,7 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 	private double computeStructureDependencyViolation(Genotype gene){
 		double result = 0;
 		
-		double[][] confidenceTable = Settings.confidenceTable.convertToRawTable();
+		double[][] confidenceTable = Settings.dependencyConfidenceTable.convertToRawTable();
 		
 		for(int i=0; i<highLevelNodeDependencyMatrix.length; i++){
 			for(int j=0; j<highLevelNodeDependencyMatrix.length; j++){
@@ -76,7 +76,7 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 	private double computeStructureInheritanceViolation(Genotype gene){
 		double result = 0;
 		
-		double[][] confidenceTable = Settings.confidenceTable.convertToRawTable();
+		double[][] confidenceTable = Settings.extendConfidenceTable.convertToRawTable();
 		
 		for(int i=0; i<highLevelNodeInheritanceMatrix.length; i++){
 			for(int j=0; j<highLevelNodeInheritanceMatrix.length; j++){

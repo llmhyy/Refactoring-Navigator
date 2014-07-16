@@ -14,6 +14,7 @@ import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
 import reflexactoring.diagram.bean.HeuristicModuleUnitStopMapList;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
+import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.Scope;
@@ -74,7 +75,14 @@ public class Settings {
 	 * it means user is not quite confident in such a dependency constraint, which will lead 
 	 * my algorithm considering tolerating some violation.
 	 */
-	public static ModuleDependencyConfidenceTable confidenceTable = new ModuleDependencyConfidenceTable();
+	public static ModuleDependencyConfidenceTable dependencyConfidenceTable = new ModuleDependencyConfidenceTable();
+	
+	/**
+	 * It is used to record module-module extend confidence. If the confidence is low, e.g., 0.1,
+	 * it means user is not quite confident in such a dependency constraint, which will lead 
+	 * my algorithm considering tolerating some violation.
+	 */
+	public static ModuleExtendConfidenceTable extendConfidenceTable = new ModuleExtendConfidenceTable();
 	
 	/**
 	 * If a module is frozen on diagram, no member will be recommended to move into it, nor will any member

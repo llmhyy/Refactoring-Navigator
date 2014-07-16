@@ -12,6 +12,7 @@ import reflexactoring.diagram.action.popup.ReferenceDetailMap;
 import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
+import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 
@@ -21,10 +22,15 @@ import reflexactoring.diagram.perspective.ReflexactoringPerspective;
  */
 public class ViewUpdater {
 	public void updateView(String viewId, Object inputData, boolean isNeedReveal){
-		if(viewId.equals(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW)){
-			ConstraintConfidenceView view = (ConstraintConfidenceView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+		if(viewId.equals(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW)){
+			DependencyConstraintConfidenceView view = (DependencyConstraintConfidenceView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 					getActivePage().findView(viewId);
 			view.refreshUI((ModuleDependencyConfidenceTable) inputData);
+		}
+		else if(viewId.equals(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW)){
+			ExtendConstraintConfidenceView view = (ExtendConstraintConfidenceView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().findView(viewId);
+			view.refreshUI((ModuleExtendConfidenceTable) inputData);
 		}
 		else if(viewId.equals(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW)){
 			ModuleMemberForbiddenView view = (ModuleMemberForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().

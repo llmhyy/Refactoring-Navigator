@@ -143,7 +143,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 							inputMerger.mergeHeuristicMappingTable();
 							inputMerger.mergeHeuristicFixMemberMappingTable();
 							inputMerger.mergeForbiddenModuleMemberTable();
-							inputMerger.mergeConfidenceTable();
+							inputMerger.mergeDependencyConfidenceTable();
 							inputMerger.mergeHeuristicFixPartMemberMappingTable();
 							/**
 							 * refresh above four view
@@ -153,7 +153,8 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 							viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW, Settings.heuristicModuleUnitMemberFixList, false);
 							viewUpdater.updateView(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, false);
 							viewUpdater.updateView(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW, Settings.heuristicModuleUnitStopMapList, false);
-							viewUpdater.updateView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW, Settings.confidenceTable, false);
+							viewUpdater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, false);
+							viewUpdater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, false);
 							viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW, Settings.heuristicModuleMemberPartFixList, false);
 							viewUpdater.updateView(ReflexactoringPerspective.REFACTORING_SUGGESTION, new ArrayList<Suggestion>(), false);
 							

@@ -27,12 +27,12 @@ import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
-public class ConstraintConfidenceView extends ViewPart {
+public class DependencyConstraintConfidenceView extends ViewPart {
 
 	private TableViewer tableViewer;
 	private Composite composite;
 	
-	public ConstraintConfidenceView() {
+	public DependencyConstraintConfidenceView() {
 		
 	}
 
@@ -47,7 +47,7 @@ public class ConstraintConfidenceView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if(tableViewer != null){
-					tableViewer.setInput(Settings.confidenceTable);;
+					tableViewer.setInput(Settings.dependencyConfidenceTable);;
 					tableViewer.refresh();					
 				}
 				else{
@@ -64,9 +64,9 @@ public class ConstraintConfidenceView extends ViewPart {
 		this.composite.setMenu(pop); 
 		
 		
-		if (Settings.confidenceTable != null
-				&& Settings.confidenceTable.size() > 0) {
-			refreshUI(Settings.confidenceTable);
+		if (Settings.dependencyConfidenceTable != null
+				&& Settings.dependencyConfidenceTable.size() > 0) {
+			refreshUI(Settings.dependencyConfidenceTable);
 		}
 
 	}
@@ -111,11 +111,11 @@ public class ConstraintConfidenceView extends ViewPart {
 	
 	private void createColumns(final Composite parent, final TableViewer viewer) {
 
-		String[] titles = new String[Settings.confidenceTable.getColumnNumber() + 1];
-		int[] bounds = new int[Settings.confidenceTable.getColumnNumber() + 1];
+		String[] titles = new String[Settings.dependencyConfidenceTable.getColumnNumber() + 1];
+		int[] bounds = new int[Settings.dependencyConfidenceTable.getColumnNumber() + 1];
 		titles[0] = "Confidence";
 		bounds[0] = 100;
-		ModuleDependencyConfidence confidendenceList = Settings.confidenceTable
+		ModuleDependencyConfidence confidendenceList = Settings.dependencyConfidenceTable
 				.get(0);
 		for (int i = 1; i < titles.length; i++) {
 			titles[i] = confidendenceList.getModuleList().get(i - 1).getName();

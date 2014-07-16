@@ -32,6 +32,8 @@ import reflexactoring.diagram.action.semantic.WordNetDict;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
+import reflexactoring.diagram.bean.ModuleExtendConfidence;
+import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarity;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
@@ -380,7 +382,7 @@ public class ReflexactoringUtil {
 	
 	public static void getModuleDependencyConfidenceTable(){
 		
-		if(Settings.confidenceTable.size() == 0){
+		if(Settings.dependencyConfidenceTable.size() == 0){
 			ModuleDependencyConfidenceTable table = new ModuleDependencyConfidenceTable();
 			
 			ArrayList<ModuleWrapper> moduleList = getModuleList(Settings.diagramPath);
@@ -396,11 +398,37 @@ public class ReflexactoringUtil {
 				table.add(confidence);
 			}
 			
-			Settings.confidenceTable = table;
+			Settings.dependencyConfidenceTable = table;
 		}
 		else{
 			UserInputMerger merger = new UserInputMerger();
-			merger.mergeConfidenceTable();
+			merger.mergeDependencyConfidenceTable();
+		}
+	}
+	
+	public static void getModuleExtendConfidenceTable(){
+		
+		if(Settings.extendConfidenceTable.size() == 0){
+			ModuleExtendConfidenceTable table = new ModuleExtendConfidenceTable();
+			
+			ArrayList<ModuleWrapper> moduleList = getModuleList(Settings.diagramPath);
+			
+			for(ModuleWrapper moduleWrapper: moduleList){
+				double[] confidenceList = new double[moduleList.size()];
+				for(int i=0; i<confidenceList.length; i++){
+					confidenceList[i] = 0.5;
+				}
+				
+				ModuleExtendConfidence confidence = 
+						new ModuleExtendConfidence(moduleWrapper, moduleList, confidenceList);
+				table.add(confidence);
+			}
+			
+			Settings.extendConfidenceTable = table;
+		}
+		else{
+			UserInputMerger merger = new UserInputMerger();
+			merger.mergeExtendConfidenceTable();
 		}
 	}
 	
@@ -429,7 +457,8 @@ public class ReflexactoringUtil {
 	
 	public static boolean isModuleChaged(ArrayList<ModuleWrapper> newModuleList){
 		if(Settings.similarityTable.size() != newModuleList.size() 
-				|| Settings.confidenceTable.size() != newModuleList.size()){
+				|| Settings.dependencyConfidenceTable.size() != newModuleList.size()
+				|| Settings.extendConfidenceTable.size() != newModuleList.size()){
 			return true;
 		}
 		
@@ -445,7 +474,7 @@ public class ReflexactoringUtil {
 			}
 		}
 		
-		for(ModuleDependencyConfidence moduleConfidence: Settings.confidenceTable){
+		for(ModuleDependencyConfidence moduleConfidence: Settings.dependencyConfidenceTable){
 			ModuleWrapper originalModule = moduleConfidence.getModule();
 			ModuleWrapper newModule = findCorrespondingModule(originalModule, newModuleList);
 			
@@ -456,7 +485,18 @@ public class ReflexactoringUtil {
 				return true;
 			}
 		}
-		
+
+		for(ModuleExtendConfidence moduleConfidence: Settings.extendConfidenceTable){
+			ModuleWrapper originalModule = moduleConfidence.getModule();
+			ModuleWrapper newModule = findCorrespondingModule(originalModule, newModuleList);
+			
+			if(newModule == null){
+				return true;
+			}
+			else if(!newModule.getDescription().equals(originalModule.getDescription())){
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -479,7 +519,7 @@ public class ReflexactoringUtil {
 	 */
 	public static boolean isReflexionModelChanged(){
 		return Settings.isCompliationUnitChanged || isModuleChaged(getModuleList(Settings.diagramPath))
-				|| Settings.similarityTable.size()==0 || Settings.confidenceTable.size()==0;
+				|| Settings.similarityTable.size()==0 || Settings.dependencyConfidenceTable.size()==0;
 		
 		//return true;
 	}

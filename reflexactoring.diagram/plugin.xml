@@ -729,10 +729,18 @@
       </view>
       <view
             category="reflexactoring.diagram.view.category"
-            class="reflexactoring.diagram.view.ConstraintConfidenceView"
+            class="reflexactoring.diagram.view.DependencyConstraintConfidenceView"
             icon="icons/view/constraint_confidence.gif"
-            id="reflexactoring.diagram.view.constraintConfidence"
-            name="Constraint Confidence"
+            id="reflexactoring.diagram.view.dependencyConstraintConfidence"
+            name="Dependency Constraint Confidence"
+            restorable="true">
+      </view>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.ExtendConstraintConfidenceView"
+            icon="icons/view/constraint_confidence.gif"
+            id="reflexactoring.diagram.view.extendConstraintConfidence"
+            name="Extend Constraint Confidence"
             restorable="true">
       </view>
       <view

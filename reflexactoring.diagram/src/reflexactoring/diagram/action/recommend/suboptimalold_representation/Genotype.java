@@ -342,8 +342,8 @@ public class Genotype {
 						 *  exam the confidence of violation
 						 */
 						double confidence;
-						if(Settings.confidenceTable.size() > 0){
-							confidence = Settings.confidenceTable.get(i).getConfidenceList()[j];
+						if(Settings.dependencyConfidenceTable.size() > 0){
+							confidence = Settings.dependencyConfidenceTable.get(i).getConfidenceList()[j];
 							vio *= confidence;
 						}
 						violatedNum += vio;
@@ -357,8 +357,8 @@ public class Genotype {
 						 *  exam the confidence of violation
 						 */
 						double confidence;
-						if(Settings.confidenceTable.size() > 0){
-							confidence = Settings.confidenceTable.get(i).getConfidenceList()[j];
+						if(Settings.dependencyConfidenceTable.size() > 0){
+							confidence = Settings.dependencyConfidenceTable.get(i).getConfidenceList()[j];
 							vio *= confidence;
 						}
 						

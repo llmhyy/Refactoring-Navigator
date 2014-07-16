@@ -15,6 +15,8 @@ import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
+import reflexactoring.diagram.bean.ModuleExtendConfidence;
+import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -131,8 +133,8 @@ public class UserInputMerger {
 		}
 	}
 	
-	public void mergeConfidenceTable(){
-		if(Settings.confidenceTable.size() > 0){
+	public void mergeDependencyConfidenceTable(){
+		if(Settings.dependencyConfidenceTable.size() > 0){
 			ModuleDependencyConfidenceTable table = new ModuleDependencyConfidenceTable();
 			
 			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
@@ -140,7 +142,7 @@ public class UserInputMerger {
 			for(ModuleWrapper moduleWrapper: moduleList){
 				double[] confidenceList = new double[moduleList.size()];
 				for(int i=0; i<confidenceList.length; i++){
-					Double conf = findCorrespondingConfidence(moduleWrapper, moduleList.get(i));
+					Double conf = findCorrespondingDependencyConfidence(moduleWrapper, moduleList.get(i));
 					if(conf == null){
 						confidenceList[i] = 0.5;							
 					}
@@ -154,13 +156,57 @@ public class UserInputMerger {
 				table.add(confidence);
 			}
 			
-			Settings.confidenceTable = table;
+			Settings.dependencyConfidenceTable = table;
 			
 		}
 	}
 	
-	private Double findCorrespondingConfidence(ModuleWrapper sourceModule, ModuleWrapper targetModule){
-		for(ModuleDependencyConfidence confidence: Settings.confidenceTable){
+	public void mergeExtendConfidenceTable(){
+		if(Settings.extendConfidenceTable.size() > 0){
+			ModuleExtendConfidenceTable table = new ModuleExtendConfidenceTable();
+			
+			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			
+			for(ModuleWrapper moduleWrapper: moduleList){
+				double[] confidenceList = new double[moduleList.size()];
+				for(int i=0; i<confidenceList.length; i++){
+					Double conf = findCorrespondingExtendConfidence(moduleWrapper, moduleList.get(i));
+					if(conf == null){
+						confidenceList[i] = 0.5;							
+					}
+					else{
+						confidenceList[i] = conf;
+					}
+				}
+				
+				ModuleExtendConfidence confidence = 
+						new ModuleExtendConfidence(moduleWrapper, moduleList, confidenceList);
+				table.add(confidence);
+			}
+			
+			Settings.extendConfidenceTable = table;
+			
+		}
+	}
+	
+	private Double findCorrespondingDependencyConfidence(ModuleWrapper sourceModule, ModuleWrapper targetModule){
+		for(ModuleDependencyConfidence confidence: Settings.dependencyConfidenceTable){
+			if(confidence.getModule().getName().equals(sourceModule.getName())){
+				
+				for(int i=0; i<confidence.getModuleList().size(); i++){
+					ModuleWrapper module = confidence.getModuleList().get(i);
+					if(module.getName().equals(targetModule.getName())){
+						return confidence.getConfidenceList()[i];
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	private Double findCorrespondingExtendConfidence(ModuleWrapper sourceModule, ModuleWrapper targetModule){
+		for(ModuleExtendConfidence confidence: Settings.extendConfidenceTable){
 			if(confidence.getModule().getName().equals(sourceModule.getName())){
 				
 				for(int i=0; i<confidence.getModuleList().size(); i++){

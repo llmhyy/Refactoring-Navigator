@@ -18,7 +18,8 @@ import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
-import reflexactoring.diagram.view.ConstraintConfidenceView;
+import reflexactoring.diagram.view.DependencyConstraintConfidenceView;
+import reflexactoring.diagram.view.ExtendConstraintConfidenceView;
 import reflexactoring.diagram.view.ModuleUnitsSimilarityView;
 
 public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
@@ -55,10 +56,16 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		similarityView.refreshUI(Settings.similarityTable);
 		
 		
-		ConstraintConfidenceView confidenceView = (ConstraintConfidenceView) PlatformUI.getWorkbench().
-				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.CONSTRAINT_CONFIDENCE_VIEW);
+		DependencyConstraintConfidenceView dependencyConfidenceView = (DependencyConstraintConfidenceView) PlatformUI.getWorkbench().
+				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW);
 		ReflexactoringUtil.getModuleDependencyConfidenceTable();
-		confidenceView.refreshUI(Settings.confidenceTable);
+		dependencyConfidenceView.refreshUI(Settings.dependencyConfidenceTable);
+		
+		
+		ExtendConstraintConfidenceView extendConfidenceView = (ExtendConstraintConfidenceView) PlatformUI.getWorkbench().
+				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW);
+		ReflexactoringUtil.getModuleExtendConfidenceTable();
+		extendConfidenceView.refreshUI(Settings.extendConfidenceTable);
 		
 		//view.getViewer().setContentProvider(new ArrayContentProvider());
 		//view.getViewer().setInput(Settings.similarityTable);

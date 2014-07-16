@@ -11,7 +11,7 @@ import reflexactoring.diagram.util.GEFDiagramUtil;
  * @author adi
  *
  */
-public class DeleteExtendAction extends LinkAction {
+public class DeleteExtendAction extends ExtendAction {
 	public DeleteExtendAction(){
 		this.actionName = RefactoringAction.DEL;
 	}
