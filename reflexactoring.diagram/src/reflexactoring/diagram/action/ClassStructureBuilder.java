@@ -157,6 +157,8 @@ public class ClassStructureBuilder {
 					
 					if(superType != null && superType.getJavaElement().equals(referee.getJavaElement())){
 						refererUnit.setSuperClass(refereeUnit);
+						refererUnit.addParentCompilationUnit(refereeUnit);
+						refereeUnit.addChildCompilationUnit(refererUnit);
 					}
 					else{
 						for(int i=0; i<interfaceList.length; i++){
@@ -165,6 +167,8 @@ public class ClassStructureBuilder {
 							}
 							if(referee.getJavaElement().equals(interfaceList[i].getJavaElement())){
 								refererUnit.addSuperInterface(refereeUnit);
+								refererUnit.addParentCompilationUnit(refereeUnit);
+								refereeUnit.addChildCompilationUnit(refererUnit);
 							}
 						}
 					}

@@ -22,6 +22,8 @@ import org.eclipse.ui.PartInitException;
 
 import reflexactoring.Activator;
 import reflexactoring.Module;
+import reflexactoring.ModuleDependency;
+import reflexactoring.ModuleExtend;
 import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.diagram.action.UserInputMerger;
@@ -325,18 +327,23 @@ public class ReflexactoringUtil {
 				/**
 				 * Build calling relation amongst modules.
 				 */
-				for(ModuleLink moduleDependency: reflexactoring.getModuleDenpencies()){
-					
-					if(!moduleDependency.getName().equals(ModuleLinkWrapper.DIVERGENCE)){
-						Module origin = moduleDependency.getOrigin();
-						Module destination = moduleDependency.getDestination();
+				for(ModuleLink moduleLink: reflexactoring.getModuleDenpencies()){
+										
+					if(!moduleLink.getName().equals(ModuleLinkWrapper.DIVERGENCE)){
+						Module origin = moduleLink.getOrigin();
+						Module destination = moduleLink.getDestination();
 						
 						ModuleWrapper originWrapper = findModule(moduleList, origin);
 						ModuleWrapper destinationWrapper = findModule(moduleList, destination);
 						
 						if(originWrapper != null && destinationWrapper != null){
-							originWrapper.addCalleeModule(destinationWrapper);
-							destinationWrapper.addCallerModule(originWrapper);
+							if(moduleLink instanceof ModuleDependency){
+								originWrapper.addCalleeModule(destinationWrapper);
+								destinationWrapper.addCallerModule(originWrapper);								
+							}else if(moduleLink instanceof ModuleExtend){
+								originWrapper.addParentModule(destinationWrapper);
+								destinationWrapper.addChildModule(originWrapper);	
+							}
 						}
 					}
 					

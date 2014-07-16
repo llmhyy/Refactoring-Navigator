@@ -15,7 +15,6 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
-import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun

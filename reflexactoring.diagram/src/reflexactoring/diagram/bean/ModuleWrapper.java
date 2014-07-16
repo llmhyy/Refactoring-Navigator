@@ -17,6 +17,8 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	private Module module;
 	private ArrayList<ModuleWrapper> calleeModuleList = new ArrayList<>();
 	private ArrayList<ModuleWrapper> callerModuleList = new ArrayList<>();
+	private ArrayList<ModuleWrapper> parentModuleList = new ArrayList<>();
+	private ArrayList<ModuleWrapper> childModuleList = new ArrayList<>();
 	//private ArrayList<ICompilationUnitWrapper> mappingList = new ArrayList<>();
 	
 	/**
@@ -126,6 +128,56 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 		this.callerModuleList = callerModuleList;
 	}
 
+	/**
+	 * @return the parentModuleList
+	 */
+	public ArrayList<ModuleWrapper> getParentModuleList() {
+		return parentModuleList;
+	}
+
+	public void addParentModule(ModuleWrapper callerWrapper){
+		for(ModuleWrapper module: this.parentModuleList){
+			if(module.getName().equals(callerWrapper.getName())
+					&& module.getDescription().equals(callerWrapper.getDescription())){
+				return;
+			}
+		}
+		
+		this.parentModuleList.add(callerWrapper);
+	}
+	
+	/**
+	 * @param parentModuleList the parentModuleList to set
+	 */
+	public void setParentModuleList(ArrayList<ModuleWrapper> parentModuleList) {
+		this.parentModuleList = parentModuleList;
+	}
+
+	/**
+	 * @return the getChildModuleList
+	 */
+	public ArrayList<ModuleWrapper> getChildModuleList() {
+		return childModuleList;
+	}
+
+	public void addChildModule(ModuleWrapper callerWrapper){
+		for(ModuleWrapper module: this.childModuleList){
+			if(module.getName().equals(callerWrapper.getName())
+					&& module.getDescription().equals(callerWrapper.getDescription())){
+				return;
+			}
+		}
+		
+		this.childModuleList.add(callerWrapper);
+	}
+	
+	/**
+	 * @param childModuleList the childModuleList to set
+	 */
+	public void setChildModuleList(ArrayList<ModuleWrapper> childModuleList) {
+		this.childModuleList = childModuleList;
+	}
+	
 	/** 
 	 * (non-Javadoc)
 	 * @see reflexactoring.diagram.bean.GraphNode#getCallerList()
@@ -143,6 +195,21 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 		return this.calleeModuleList;
 	}
 
+	/** (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.GraphNode#getParentList()
+	 */
+	@Override
+	public List<? extends GraphNode> getParentList() {
+		return this.parentModuleList;
+	}
+
+	/** (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.GraphNode#getChildList()
+	 */
+	@Override
+	public List<? extends GraphNode> getChildList() {
+		return this.childModuleList;
+	}
 	/* (non-Javadoc)
 	 * @see reflexactoring.diagram.bean.SuggestionObject#getNameWithTag()
 	 */
@@ -158,4 +225,5 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	protected String getDocName() {
 		return getName();
 	}
+
 }

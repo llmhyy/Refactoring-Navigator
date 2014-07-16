@@ -110,5 +110,22 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	public ModuleWrapper getMappingModule() {
 		return this.unitWrapper.getMappingModule();
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.UnitMemberWrapper#getParentList()
+	 */
+	@Override
+	public List<? extends GraphNode> getParentList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.UnitMemberWrapper#getChildList()
+	 */
+	@Override
+	public List<? extends GraphNode> getChildList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

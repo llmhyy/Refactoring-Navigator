@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.bean;
 
+import java.util.List;
+
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -96,4 +98,8 @@ public class FieldWrapper extends UnitMemberWrapper{
 	protected String getDocName() {
 		return getName();
 	}
+
+	
+
+	
 }

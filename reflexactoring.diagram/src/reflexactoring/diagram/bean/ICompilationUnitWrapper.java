@@ -20,7 +20,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
-import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun
@@ -33,6 +32,9 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	
 	private ICompilationUnitWrapper superClass;
 	private ArrayList<ICompilationUnitWrapper> superInterfaceList = new ArrayList<>();
+	
+	private ArrayList<ICompilationUnitWrapper> parentList = new ArrayList<>();
+	private ArrayList<ICompilationUnitWrapper> childList = new ArrayList<>();
 	
 	private HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList = new HashMap<>();
 	private HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList = new HashMap<>();
@@ -219,6 +221,18 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		this.callerCompilationUnitList = callerCompilationUnitList;
 	}
 	
+	public void addParentCompilationUnit(ICompilationUnitWrapper unit){
+		if(hasSuperCompilationUnit(unit) && !this.parentList.contains(unit)){
+			this.parentList.add(unit);
+		}
+	}
+	
+	public void addChildCompilationUnit(ICompilationUnitWrapper unit){
+		if(!this.childList.contains(unit)){
+			this.childList.add(unit);
+		}
+	}
+	
 	public void addCallerCompilationUnit(ICompilationUnitWrapper unit){
 		int count = 0;
 		if(this.callerCompilationUnitList.containsKey(unit)){
@@ -260,6 +274,23 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	@Override
 	public List<? extends GraphNode> getCalleeList() {
 		return convertToList(calleeCompilationUnitList);
+	}
+	
+
+	/** (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.GraphNode#getParentList()
+	 */
+	@Override
+	public List<? extends GraphNode> getParentList() {
+		return this.parentList;
+	}
+
+	/** (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.GraphNode#getChildList()
+	 */
+	@Override
+	public List<? extends GraphNode> getChildList() {
+		return this.childList;
 	}
 	
 	private ArrayList<ICompilationUnitWrapper> convertToList(HashMap<ICompilationUnitWrapper, Integer> map){
@@ -364,4 +395,5 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	public void addSuperInterface(ICompilationUnitWrapper superInterface){
 		this.superInterfaceList.add(superInterface);
 	}
+
 }
