@@ -9,6 +9,6 @@ package reflexactoring.diagram.action.recommend.action;
  */
 public abstract class ExtendAction extends LinkAction {
 	public String getTagActionName(){
-		return "<b>" + "Extend Prerequiste: " + actionName + "</b>";	}
+		return "<b>" + "Prerequiste: " + actionName + "</b>";	}
 
 }
