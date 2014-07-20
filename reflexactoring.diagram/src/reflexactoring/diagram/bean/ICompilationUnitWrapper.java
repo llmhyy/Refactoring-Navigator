@@ -32,14 +32,16 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	private ModuleWrapper mappingModule;
 	private CompilationUnit javaUnit;
 	
+	private boolean isInterface;
+	
 	private ICompilationUnitWrapper superClass;
 	private ArrayList<ICompilationUnitWrapper> superInterfaceList = new ArrayList<>();
 	
 	private ArrayList<ICompilationUnitWrapper> parentList = new ArrayList<>();
 	private ArrayList<ICompilationUnitWrapper> childList = new ArrayList<>();
 	
-	private HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList = new HashMap<>();
-	private HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList = new HashMap<>();
+	private ArrayList<ICompilationUnitWrapper> calleeCompilationUnitList = new ArrayList<>();
+	private ArrayList<ICompilationUnitWrapper> callerCompilationUnitList = new ArrayList<>();
 	
 	private HashMap<ICompilationUnitWrapper, ArrayList<ASTNode>> referingDetails
 		= new HashMap<>();
@@ -60,10 +62,13 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setResolveBindings(true);
-		
+
 		parser.setSource(compilationUnit);
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 		setJavaUnit(cu);
+		
+		TypeDeclaration typeDeclar = (TypeDeclaration) this.javaUnit.types().get(0);
+		this.isInterface = typeDeclar.isInterface();
 		
 		String content = new TokenExtractor(this).extractTokens(cu);
 		content = content + generateTitle();
@@ -73,8 +78,11 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public boolean isInterface(){
-		TypeDeclaration typeDeclar = (TypeDeclaration) this.javaUnit.types().get(0);
-		return typeDeclar.isInterface();
+		return isInterface;
+	}
+	
+	public void setInterface(boolean isInterface){
+		this.isInterface = isInterface;
 	}
 	
 	public String toString(){
@@ -110,7 +118,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public boolean hasCalleeCompilationUnit(ICompilationUnitWrapper unit){
-		for(ICompilationUnitWrapper calleeUnit: this.calleeCompilationUnitList.keySet()){
+		for(ICompilationUnitWrapper calleeUnit: this.calleeCompilationUnitList){
 			if(calleeUnit.equals(unit)){
 				return true;
 			}
@@ -201,7 +209,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	/**
 	 * @return the calleeCompilationUnitList
 	 */
-	public HashMap<ICompilationUnitWrapper, Integer> getCalleeCompilationUnitList() {
+	public ArrayList<ICompilationUnitWrapper> getCalleeCompilationUnitList() {
 		return calleeCompilationUnitList;
 	}
 
@@ -209,14 +217,14 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @param calleeCompilationUnitList the calleeCompilationUnitList to set
 	 */
 	public void setCalleeCompilationUnitList(
-			HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList) {
+			ArrayList<ICompilationUnitWrapper> calleeCompilationUnitList) {
 		this.calleeCompilationUnitList = calleeCompilationUnitList;
 	}
 
 	/**
 	 * @return the callerCompilationUnitList
 	 */
-	public HashMap<ICompilationUnitWrapper, Integer> getCallerCompilationUnitList() {
+	public ArrayList<ICompilationUnitWrapper> getCallerCompilationUnitList() {
 		return callerCompilationUnitList;
 	}
 
@@ -224,7 +232,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @param callerCompilationUnitList the callerCompilationUnitList to set
 	 */
 	public void setCallerCompilationUnitList(
-			HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList) {
+			ArrayList<ICompilationUnitWrapper> callerCompilationUnitList) {
 		this.callerCompilationUnitList = callerCompilationUnitList;
 	}
 	
@@ -241,21 +249,15 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public void addCaller(ICompilationUnitWrapper unit){
-		int count = 0;
-		if(this.callerCompilationUnitList.containsKey(unit)){
-			count = this.callerCompilationUnitList.get(unit);
+		if(!this.callerCompilationUnitList.contains(unit)){
+			this.callerCompilationUnitList.add(unit);
 		}
-		
-		this.callerCompilationUnitList.put(unit, ++count);
 	}
 	
 	public void addCallee(ICompilationUnitWrapper unit){
-		int count = 0;
-		if(this.calleeCompilationUnitList.containsKey(unit)){
-			count = this.calleeCompilationUnitList.get(unit);
+		if(this.calleeCompilationUnitList.contains(unit)){
+			this.calleeCompilationUnitList.add(unit);
 		}
-		
-		this.calleeCompilationUnitList.put(unit, ++count);
 	}
 
 	/* (non-Javadoc)
@@ -272,7 +274,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 */
 	@Override
 	public List<? extends GraphNode> getCallerList() {
-		return convertToList(callerCompilationUnitList);
+		return callerCompilationUnitList;
 	}
 
 	/** (non-Javadoc)
@@ -280,7 +282,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 */
 	@Override
 	public List<? extends GraphNode> getCalleeList() {
-		return convertToList(calleeCompilationUnitList);
+		return calleeCompilationUnitList;
 	}
 	
 

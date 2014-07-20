@@ -14,11 +14,109 @@ import reflexactoring.diagram.util.Settings;
  * @author linyun
  *
  */
-public class Scope{
+public class ProgramModel{
 	private ArrayList<ICompilationUnitWrapper> scopeCompilationUnitList = new ArrayList<>();
 	private UnitMemberWrapperList scopeMemberList = new UnitMemberWrapperList();
 	private ArrayList<ProgramReference> referenceList = new ArrayList<>();
 	
+	public ProgramModel clone(){
+		ProgramModel clonedModel = new ProgramModel();
+		ArrayList<ICompilationUnitWrapper> unitList = cloneUnits();
+		
+		clonedModel.setScopeCompilationUnitList(unitList);
+		cloneUnitRelations(clonedModel, this);
+		
+		cloneMembers();
+		cloneMemberRelations();
+		
+		cloneReferenceList();
+	}
+	
+	/**
+	 * In this step, only clone mapping module and java icompilation unit.
+	 * @return
+	 */
+	private ArrayList<ICompilationUnitWrapper> cloneUnits() {
+		ArrayList<ICompilationUnitWrapper> clonedUnits = new ArrayList<>();
+		for(ICompilationUnitWrapper unit: scopeCompilationUnitList){
+			
+			ICompilationUnitWrapper clonedUnit = new ICompilationUnitWrapper(unit.getCompilationUnit());			
+			clonedUnit.setMappingModule(unit.getMappingModule());
+			clonedUnit.setInterface(unit.isInterface());
+			clonedUnit.setJavaUnit(unit.getJavaUnit());
+			
+			clonedUnits.add(clonedUnit);
+		}
+		
+		return clonedUnits;
+	}
+	
+	private void cloneUnitRelations(ProgramModel clonedModel, ProgramModel model){
+		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.scopeCompilationUnitList;
+		ArrayList<ICompilationUnitWrapper> units = model.scopeCompilationUnitList;
+		for(int i=0; i<units.size(); i++){
+			ICompilationUnitWrapper unit = units.get(i);
+			ICompilationUnitWrapper clonedUnit = clonedUnits.get(i);
+			/**
+			 * clone super class relation
+			 */
+			ICompilationUnitWrapper superClass = unit.getSuperClass();
+			if(null != superClass){
+				int index = model.getICompilationUnitIndex(superClass);
+				ICompilationUnitWrapper clonedSuperclass = clonedModel.scopeCompilationUnitList.get(index);
+				clonedUnit.setSuperClass(clonedSuperclass);
+			}
+			
+			/**
+			 * clone interface relation
+			 */
+			ArrayList<ICompilationUnitWrapper> interfaceList = unit.getSuperInterfaceList();
+			for(ICompilationUnitWrapper interf: interfaceList){
+				int index = model.getICompilationUnitIndex(interf);
+				ICompilationUnitWrapper clonedInterface = clonedModel.scopeCompilationUnitList.get(index);
+				clonedUnit.addSuperInterface(clonedInterface);
+			}
+			
+			/**
+			 * clone parent list
+			 */
+			ArrayList<ICompilationUnitWrapper> parentList = (ArrayList<ICompilationUnitWrapper>) unit.getParentList();
+			for(ICompilationUnitWrapper parent: parentList){
+				int index = model.getICompilationUnitIndex(parent);
+				ICompilationUnitWrapper clonedParent = clonedModel.scopeCompilationUnitList.get(index);
+				clonedUnit.addParent(clonedParent);
+			}
+			
+			/**
+			 * clone child list
+			 */
+			ArrayList<ICompilationUnitWrapper> childList = (ArrayList<ICompilationUnitWrapper>) unit.getChildList();
+			for(ICompilationUnitWrapper child: childList){
+				int index = model.getICompilationUnitIndex(child);
+				ICompilationUnitWrapper clonedChild = clonedModel.scopeCompilationUnitList.get(index);
+				clonedUnit.addChild(clonedChild);
+			}
+			/**
+			 * clone caller list
+			 */
+			ArrayList<ICompilationUnitWrapper> callerList = unit.getCallerCompilationUnitList();
+			for(ICompilationUnitWrapper caller: callerList){
+				int index = model.getICompilationUnitIndex(caller);
+				ICompilationUnitWrapper clonedCaller = clonedModel.scopeCompilationUnitList.get(index);
+				clonedUnit.addCaller(clonedCaller);
+			}
+			/**
+			 * clone callee list
+			 */
+			ArrayList<ICompilationUnitWrapper> calleeList = unit.getCalleeCompilationUnitList();
+			for(ICompilationUnitWrapper caller: calleeList){
+				int index = model.getICompilationUnitIndex(caller);
+				ICompilationUnitWrapper clonedCallee = clonedModel.scopeCompilationUnitList.get(index);
+				clonedUnit.addCallee(clonedCallee);
+			}
+		}
+	}
+
 	public ProgramReference findReference(ProgramReference reference){
 		for(ProgramReference ref: referenceList){
 			if(ref.equals(reference)){

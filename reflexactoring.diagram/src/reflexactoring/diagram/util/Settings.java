@@ -17,7 +17,7 @@ import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.Scope;
+import reflexactoring.diagram.bean.ProgramModel;
 
 /**
  * @author linyun
@@ -28,7 +28,7 @@ public class Settings {
 	 * Temporarily used for global variable of user-selected 
 	 * java classes/interfaces.
 	 */
-	public static Scope scope = new Scope();
+	public static ProgramModel scope = new ProgramModel();
 	
 	/**
 	 * It is used for keeping user-specified module-type(unit) mapping relation.

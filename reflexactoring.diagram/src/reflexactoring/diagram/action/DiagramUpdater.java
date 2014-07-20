@@ -281,7 +281,7 @@ public class DiagramUpdater {
 		 * generate call relations between caller unit and callee unit.
 		 */
 		for(ICompilationUnitWrapper callerWrapper: compilationUnitWrapperList){
-			for(ICompilationUnitWrapper calleeWrapper: callerWrapper.getCalleeCompilationUnitList().keySet()){
+			for(ICompilationUnitWrapper calleeWrapper: callerWrapper.getCalleeCompilationUnitList()){
 				if(callerWrapper != calleeWrapper){
 					generateRelationsBetweenUnits(diagramRoot, callerWrapper, calleeWrapper, ReflexactoringElementTypes.TypeDependency_4003);	
 				}
