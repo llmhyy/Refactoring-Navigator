@@ -6,9 +6,11 @@ package reflexactoring.diagram.bean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -51,6 +53,11 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		super();
 		this.compilationUnit = compilationUnit;
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		
+		Map options = JavaCore.getOptions();
+		JavaCore.setComplianceOptions(JavaCore.VERSION_1_5, options);
+		parser.setCompilerOptions(options);
+		
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setResolveBindings(true);
 		
@@ -221,19 +228,19 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		this.callerCompilationUnitList = callerCompilationUnitList;
 	}
 	
-	public void addParentCompilationUnit(ICompilationUnitWrapper unit){
+	public void addParent(ICompilationUnitWrapper unit){
 		if(hasSuperCompilationUnit(unit) && !this.parentList.contains(unit)){
 			this.parentList.add(unit);
 		}
 	}
 	
-	public void addChildCompilationUnit(ICompilationUnitWrapper unit){
+	public void addChild(ICompilationUnitWrapper unit){
 		if(!this.childList.contains(unit)){
 			this.childList.add(unit);
 		}
 	}
 	
-	public void addCallerCompilationUnit(ICompilationUnitWrapper unit){
+	public void addCaller(ICompilationUnitWrapper unit){
 		int count = 0;
 		if(this.callerCompilationUnitList.containsKey(unit)){
 			count = this.callerCompilationUnitList.get(unit);
@@ -242,7 +249,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		this.callerCompilationUnitList.put(unit, ++count);
 	}
 	
-	public void addCalleeCompilationUnit(ICompilationUnitWrapper unit){
+	public void addCallee(ICompilationUnitWrapper unit){
 		int count = 0;
 		if(this.calleeCompilationUnitList.containsKey(unit)){
 			count = this.calleeCompilationUnitList.get(unit);

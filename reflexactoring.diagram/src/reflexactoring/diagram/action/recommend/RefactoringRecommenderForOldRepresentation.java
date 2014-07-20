@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import reflexactoring.diagram.action.UnitMemberExtractor;
 import reflexactoring.diagram.action.recommend.action.AddDependencyAction;
 import reflexactoring.diagram.action.recommend.action.AddModuleAction;
 import reflexactoring.diagram.action.recommend.action.DeleteDependencyAction;

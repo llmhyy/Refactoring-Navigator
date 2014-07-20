@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.eclipse.jdt.core.ICompilationUnit;
 
 import reflexactoring.Type;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
@@ -16,6 +17,35 @@ import reflexactoring.Type;
 public class Scope{
 	private ArrayList<ICompilationUnitWrapper> scopeCompilationUnitList = new ArrayList<>();
 	private UnitMemberWrapperList scopeMemberList = new UnitMemberWrapperList();
+	private ArrayList<ProgramReference> referenceList = new ArrayList<>();
+	
+	public ProgramReference findReference(ProgramReference reference){
+		for(ProgramReference ref: referenceList){
+			if(ref.equals(reference)){
+				return ref;
+			}
+		}
+		
+		return null;
+	}
+	
+	public void updateUnitCallingRelationByMemberRelations(){
+		for(ProgramReference reference: Settings.scope.getReferenceList()){
+			UnitMemberWrapper refererMember = reference.getReferer();
+			ICompilationUnitWrapper refererUnit = refererMember.getUnitWrapper();
+			
+			UnitMemberWrapper refereeMember = reference.getReferee();
+			ICompilationUnitWrapper refereeUnit = refereeMember.getUnitWrapper();
+			
+			if(!refererUnit.equals(refereeUnit)){
+				refererUnit.addCallee(refereeUnit);
+				refereeUnit.addCaller(refererUnit);
+				
+				refererUnit.putReferringDetail(refereeUnit, reference.getASTNode());
+			}
+		}
+	}
+	
 	/**
 	 * @return the scopeCompilationUnitList
 	 */
@@ -128,5 +158,19 @@ public class Scope{
 	 */
 	public void setScopeMemberList(UnitMemberWrapperList scopeMemberList) {
 		this.scopeMemberList = scopeMemberList;
+	}
+
+	/**
+	 * @return the referenceList
+	 */
+	public ArrayList<ProgramReference> getReferenceList() {
+		return referenceList;
+	}
+
+	/**
+	 * @param referenceList the referenceList to set
+	 */
+	public void setReferenceList(ArrayList<ProgramReference> referenceList) {
+		this.referenceList = referenceList;
 	}
 }

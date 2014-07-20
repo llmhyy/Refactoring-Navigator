@@ -46,7 +46,7 @@ public class FieldWrapper extends UnitMemberWrapper{
 	}
 	
 	public String toString(){
-		return getName();
+		return this.unitWrapper.getSimpleName() + "." + getName();
 	}
 
 	/**

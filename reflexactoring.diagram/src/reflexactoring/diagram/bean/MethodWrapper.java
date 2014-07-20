@@ -94,7 +94,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 	}
 	
 	public String toString(){
-		return getName();
+		return this.unitWrapper.getSimpleName() + "." + getName();
 	}
 	
 	public boolean isConstructor(){

@@ -75,7 +75,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			int scale = 50;
 			monitor.beginTask("build structural information", 4*totalWork*scale);
 			new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
-			new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
+			//new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 		}
 		
 	}
@@ -129,8 +129,8 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 					monitor.beginTask("build class structural information", 2*totalWork*scale);
 					new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 					
-					monitor.beginTask("build method/field structure inforamtion", 2*totalWork*scale);
-					new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
+					//monitor.beginTask("build method/field structure inforamtion", 2*totalWork*scale);
+					//new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 					
 					Display.getDefault().asyncExec(new Runnable() {
 						
@@ -181,7 +181,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 	 */
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -190,7 +190,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 	 */
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -199,7 +199,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 	 */
 	@Override
 	public void init(IWorkbenchWindow window) {
-		// TODO Auto-generated method stub
+		
 
 	}
 	
@@ -279,7 +279,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		 */
 		@Override
 		public void addListener(ILabelProviderListener listener) {
-			// TODO Auto-generated method stub
+			
 			
 		}
 
@@ -288,7 +288,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		 */
 		@Override
 		public void dispose() {
-			// TODO Auto-generated method stub
+			
 			
 		}
 
@@ -297,7 +297,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		 */
 		@Override
 		public boolean isLabelProperty(Object element, String property) {
-			// TODO Auto-generated method stub
+			
 			return false;
 		}
 
@@ -306,7 +306,6 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 		 */
 		@Override
 		public void removeListener(ILabelProviderListener listener) {
-			// TODO Auto-generated method stub
 			
 		}
 
@@ -329,7 +328,6 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 						return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_INTERFACE);
 					}
 				} catch (JavaModelException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

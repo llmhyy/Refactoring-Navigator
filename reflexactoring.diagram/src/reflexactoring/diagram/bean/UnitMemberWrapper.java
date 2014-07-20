@@ -25,8 +25,17 @@ import reflexactoring.diagram.util.JavaCodeUtil;
  */
 public abstract class UnitMemberWrapper extends Document implements LowLevelSuggestionObject, LowLevelGraphNode {
 	protected ICompilationUnitWrapper unitWrapper;
-	protected ArrayList<UnitMemberWrapper> callerList = new ArrayList<>();
-	protected ArrayList<UnitMemberWrapper> calleeList = new ArrayList<>();
+	/**
+	 * stands for the unit members referring this unit member
+	 */
+	protected ArrayList<ProgramReference> refererPointList = new ArrayList<>();
+	/**
+	 * stands for the unit members referred by this unit member
+	 */
+	protected ArrayList<ProgramReference> refereePointList = new ArrayList<>();
+	
+	//protected ArrayList<UnitMemberWrapper> callerList = new ArrayList<>();
+	//protected ArrayList<UnitMemberWrapper> calleeList = new ArrayList<>();
 
 	public UnitMemberWrapper(ICompilationUnitWrapper unitWrapper){
 		this.setUnitWrapper(unitWrapper);
@@ -74,16 +83,35 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 
 	@Override
 	public List<? extends GraphNode> getCallerList() {
-		return this.callerList;
+		
+		ArrayList<UnitMemberWrapper> callerList = new ArrayList<>();
+		for(ProgramReference reference: this.refererPointList){
+			callerList.add(reference.getReferer());
+		}
+		
+		return callerList;
 	}
 
 	
 	@Override
 	public List<? extends GraphNode> getCalleeList() {
-		return this.calleeList;
+		ArrayList<UnitMemberWrapper> calleeList = new ArrayList<>();
+		for(ProgramReference reference: this.refereePointList){
+			calleeList.add(reference.getReferee());
+		}
+		
+		return calleeList;
 	}
 	
-	public void addCaller(UnitMemberWrapper member){
+	public void addProgramReferer(ProgramReference reference){
+		this.refererPointList.add(reference);
+	}
+	
+	public void addProgramReferee(ProgramReference reference){
+		this.refereePointList.add(reference);
+	}
+	
+	/*public void addCaller(UnitMemberWrapper member){
 		for(UnitMemberWrapper m: callerList){
 			if(m.getJavaMember().equals(member.getJavaMember())){
 				return;
@@ -101,7 +129,7 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 		}
 		
 		this.calleeList.add(member);
-	}
+	}*/
 	
 	/* (non-Javadoc)
 	 * @see reflexactoring.diagram.bean.LowLevelGraphNode#getMappingModule()
