@@ -65,6 +65,121 @@
                id="reflexactoring.diagram.InitDiagramAction">
          </action>
       </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.module"
+            objectClass="reflexactoring.diagram.edit.parts.ModuleEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.UnfreezeMemberAction"
+               id="reflexactoring.diagram.action.unFreezeMemberAction"
+               label="Unfreeze Member">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.FreezeMemberAction"
+               id="reflexactoring.diagram.action.freezeMemberAction"
+               label="Freeze Member">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.EditModuleDescriptionAction"
+               id="reflexactoring.diagram.action.editdescription"
+               label="Edit Name or Description">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.classOnCanvas"
+            objectClass="reflexactoring.diagram.edit.parts.ClassEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
+               id="reflexactoring.diagram.action.removeClassOnCanvas"
+               label="Remove from Scope">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.OpenSourceAction"
+               id="reflexactoring.diagram.action.open"
+               label="Open Source">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.classInModule"
+            objectClass="reflexactoring.diagram.edit.parts.Class2EditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
+               id="reflexactoring.diagram.action.removeClassOnModule"
+               label="Remove from Scope">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.OpenSourceAction"
+               id="reflexactoring.diagram.action.open"
+               label="Open Source">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.FixMappingMemberAction"
+               id="reflexactoring.diagram.action.fixMember"
+               label="Fix All Members">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.FixPartOfMappingMemberAction"
+               id="reflexactoring.diagram.action.fixPartMembers"
+               label="Fix Part Members">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.interfaceOnCanvas"
+            objectClass="reflexactoring.diagram.edit.parts.InterfaceEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
+               id="reflexactoring.diagram.action.removeIntefaceOnCanvas"
+               label="Remove from Scope">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.OpenSourceAction"
+               id="reflexactoring.diagram.action.open"
+               label="Open Source">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.interfaceInModule"
+            objectClass="reflexactoring.diagram.edit.parts.Interface2EditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.RemoveFromScopeAction"
+               id="reflexactoring.diagram.action.removeIntefaceOnModule"
+               label="Remove from Scope">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.OpenSourceAction"
+               id="reflexactoring.diagram.action.open"
+               label="Open Source">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.moduleDependency"
+            objectClass="reflexactoring.diagram.edit.parts.ModuleDependencyEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.HideContributionAction"
+               id="reflexactoring.diagram.action.hideContribution"
+               label="Hide Contribution">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.HighlightContributionAction"
+               id="reflexactoring.diagram.action.highlightContribution"
+               label="Highlight Contribution">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.typeDependency"
+            objectClass="reflexactoring.diagram.edit.parts.TypeDependencyEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.ShowReferenceDetailAction"
+               id="reflexactoring.diagram.action.showReferenceDetail"
+               label="Show Reference Detail">
+         </action>
+      </objectContribution>
    </extension>
 	
    <extension point="org.eclipse.gmf.runtime.common.ui.services.action.globalActionHandlerProviders" id="global-actions">
