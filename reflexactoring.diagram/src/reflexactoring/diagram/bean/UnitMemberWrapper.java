@@ -4,6 +4,7 @@
 package reflexactoring.diagram.bean;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -154,6 +155,37 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	@Override
 	public List<? extends GraphNode> getChildList() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public abstract void setName(String name);
+
+	public ArrayList<ProgramReference> getRefererPointList() {
+		return refererPointList;
+	}
+
+	public void setRefererPointList(ArrayList<ProgramReference> refererPointList) {
+		this.refererPointList = refererPointList;
+	}
+
+	public ArrayList<ProgramReference> getRefereePointList() {
+		return refereePointList;
+	}
+
+	public void setRefereePointList(ArrayList<ProgramReference> refereePointList) {
+		this.refereePointList = refereePointList;
+	}
+	
+	public ProgramReference removeReferer(ProgramReference reference){
+		Iterator<ProgramReference> refIter = this.refererPointList.iterator();
+		while(refIter.hasNext()){
+			ProgramReference programReference = refIter.next();
+			if(programReference.equals(reference)){
+				refIter.remove();
+				return programReference;
+			}
+		}
+		
 		return null;
 	}
 }

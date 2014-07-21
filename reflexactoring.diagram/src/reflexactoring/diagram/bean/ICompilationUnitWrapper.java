@@ -33,6 +33,8 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	private CompilationUnit javaUnit;
 	
 	private boolean isInterface;
+	private String simpleName;
+	private String packageName;
 	
 	private ICompilationUnitWrapper superClass;
 	private ArrayList<ICompilationUnitWrapper> superInterfaceList = new ArrayList<>();
@@ -49,27 +51,61 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	private ArrayList<UnitMemberWrapper> members = new ArrayList<>();
 	
 	/**
+	 * @param mappingModule
+	 * @param isInterface
+	 * @param simpleName
+	 * @param packageName
+	 */
+	public ICompilationUnitWrapper(ModuleWrapper mappingModule,
+			boolean isInterface, String simpleName, String packageName) {
+		super();
+		this.mappingModule = mappingModule;
+		this.isInterface = isInterface;
+		this.simpleName = simpleName;
+		this.packageName = packageName;
+	}
+
+	/**
 	 * @param compilationUnit
 	 */
 	public ICompilationUnitWrapper(ICompilationUnit compilationUnit) {
 		super();
+		
+		/**
+		 * retrieve JDT related properties, like AST node and Java model element.
+		 */
 		this.compilationUnit = compilationUnit;
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
-		
 		Map options = JavaCore.getOptions();
 		JavaCore.setComplianceOptions(JavaCore.VERSION_1_5, options);
 		parser.setCompilerOptions(options);
-		
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setResolveBindings(true);
-
 		parser.setSource(compilationUnit);
 		CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 		setJavaUnit(cu);
 		
+		/**
+		 * generate necessary data, we need this step because JDT API may get
+		 * obsolete during some steps (e.g., we may create a new compilation unit wrapper)
+		 * when searching/simulating for a proper refactoring solution)
+		 */
 		TypeDeclaration typeDeclar = (TypeDeclaration) this.javaUnit.types().get(0);
 		this.isInterface = typeDeclar.isInterface();
 		
+		this.packageName = "";
+		try {
+			this.packageName = this.compilationUnit.getPackageDeclarations()[0].getElementName();
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+		}
+		String uniqueName = this.compilationUnit.getElementName();
+		uniqueName = uniqueName.substring(0, uniqueName.indexOf(".java"));
+		this.simpleName = uniqueName;
+		
+		/**
+		 * Extract some keywords used for lexical similarity
+		 */
 		String content = new TokenExtractor(this).extractTokens(cu);
 		content = content + generateTitle();
 		
@@ -128,19 +164,19 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public String getSimpleName(){
-		String uniqueName = this.compilationUnit.getElementName();
-		uniqueName = uniqueName.substring(0, uniqueName.indexOf(".java"));
-		return uniqueName;
+		return this.simpleName;
+	}
+	
+	public void setSimpleName(String simpleName){
+		this.simpleName = simpleName;
 	}
 	
 	public String getPackageName(){
-		try {
-			return this.compilationUnit.getPackageDeclarations()[0].getElementName();
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-		
-		return "";
+		return this.packageName;
+	}
+	
+	public void setPackageName(String packageName){
+		this.packageName = packageName;
 	}
 	
 	public String getFullQualifiedName(){

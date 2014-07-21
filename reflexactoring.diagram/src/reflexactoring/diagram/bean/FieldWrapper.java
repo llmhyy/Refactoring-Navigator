@@ -19,10 +19,13 @@ import reflexactoring.diagram.action.semantic.TokenExtractor;
 public class FieldWrapper extends UnitMemberWrapper{
 	
 	private FieldDeclaration field;
+	private String name;
 	
 	public FieldWrapper(FieldDeclaration field, ICompilationUnitWrapper unitWrapper){
 		super(unitWrapper);
 		this.setField(field);
+		
+		this.name = ((VariableDeclaration)field.fragments().get(0)).getName().getIdentifier();
 		
 		String content = new TokenExtractor(unitWrapper).extractTokens(field);
 		content = content + " " + generateTitle();
@@ -42,12 +45,18 @@ public class FieldWrapper extends UnitMemberWrapper{
 	
 	@Override
 	public String getName() {
-		return ((VariableDeclaration)field.fragments().get(0)).getName().getIdentifier();
+		return this.name;
+	}
+	
+	@Override
+	public void setName(String name){
+		this.name = name;
 	}
 	
 	public String toString(){
 		return this.unitWrapper.getSimpleName() + "." + getName();
 	}
+	
 
 	/**
 	 * @return the field

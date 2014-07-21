@@ -23,10 +23,24 @@ import reflexactoring.diagram.action.semantic.TokenExtractor;
 public class MethodWrapper extends UnitMemberWrapper {
 	
 	private MethodDeclaration method;
+	private String name;
+	private ArrayList<String> parameters;
+	private boolean isConstructor;
+	
+	public MethodWrapper(String name, ArrayList<String> parameters, boolean isConstructor, ICompilationUnitWrapper unitWrapper){
+		super(unitWrapper);
+		this.name = name;
+		this.parameters = parameters;
+		this.isConstructor = isConstructor;
+	}
 	
 	public MethodWrapper(MethodDeclaration method, ICompilationUnitWrapper unitWrapper){
 		super(unitWrapper);
 		this.setMethod(method);
+		
+		this.name = this.method.getName().getIdentifier();
+		this.parameters = getParameterTypes();
+		this.isConstructor = this.method.resolveBinding().isConstructor();
 		
 		String content = new TokenExtractor(unitWrapper).extractTokens(method);
 		content = content + generateTitle();
@@ -39,7 +53,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public boolean equals(Object obj){
 		if(obj instanceof MethodWrapper){
 			MethodWrapper methodWrapper = (MethodWrapper)obj;
-			if(methodWrapper.getJavaElement().toString().equals(this.getJavaElement().toString())
+			if(methodWrapper.getName().equals(this.getName())
 					&& methodWrapper.getUnitWrapper().equals(this.getUnitWrapper())){
 				return this.hasSameParameters(methodWrapper);
 			};
@@ -69,18 +83,18 @@ public class MethodWrapper extends UnitMemberWrapper {
 	}
 	
 	private boolean hasSameParameters(MethodWrapper methodWrapper){
-		ArrayList<String> thisParameters = getParameterTypes();
-		ArrayList<String> thatParameters = methodWrapper.getParameterTypes();
 		
-		if(thisParameters.size() != thatParameters.size()){
+		ArrayList<String> thatParameters = methodWrapper.getParameters();
+		
+		if(this.parameters.size() != thatParameters.size()){
 			return false;
 		}
 		
-		Collections.sort(thisParameters);
+		Collections.sort(this.parameters);
 		Collections.sort(thatParameters);
 		
-		for(int i=0; i<thisParameters.size(); i++){
-			if(!thisParameters.get(i).equals(thatParameters.get(i))){
+		for(int i=0; i<this.parameters.size(); i++){
+			if(!this.parameters.get(i).equals(thatParameters.get(i))){
 				return false;
 			}
 		}
@@ -90,15 +104,24 @@ public class MethodWrapper extends UnitMemberWrapper {
 	
 	@Override
 	public String getName() {
-		return this.method.getName().getIdentifier();
+		return this.name;
 	}
 	
+	@Override
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public String toString(){
 		return this.unitWrapper.getSimpleName() + "." + getName();
 	}
 	
 	public boolean isConstructor(){
-		return this.method.resolveBinding().isConstructor();
+		return this.isConstructor;
+	}
+	
+	public void setConstructor(boolean isConstructor){
+		this.isConstructor = isConstructor;
 	}
 
 	/**
@@ -153,6 +176,20 @@ public class MethodWrapper extends UnitMemberWrapper {
 	@Override
 	protected String getDocName() {
 		return getName();
+	}
+
+	/**
+	 * @return the parameters
+	 */
+	public ArrayList<String> getParameters() {
+		return parameters;
+	}
+
+	/**
+	 * @param parameters the parameters to set
+	 */
+	public void setParameters(ArrayList<String> parameters) {
+		this.parameters = parameters;
 	}
 
 }

@@ -13,7 +13,7 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
  *
  */
 public abstract class PullUpMethodOpportunity extends RefactoringOpportunity{
-	protected ArrayList<UnitMemberWrapper> toBePulledMethodList;
+	protected ArrayList<UnitMemberWrapper> toBePulledMethodList = new ArrayList<>();
 	protected ICompilationUnitWrapper targetUnit;
 	
 }
