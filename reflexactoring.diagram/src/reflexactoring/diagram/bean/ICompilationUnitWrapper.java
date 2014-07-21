@@ -295,6 +295,12 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 			this.calleeCompilationUnitList.add(unit);
 		}
 	}
+	
+	public void addMember(UnitMemberWrapper member){
+		if(!this.members.contains(member)){
+			this.members.add(member);
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see reflexactoring.diagram.bean.SuggestionObject#getName()

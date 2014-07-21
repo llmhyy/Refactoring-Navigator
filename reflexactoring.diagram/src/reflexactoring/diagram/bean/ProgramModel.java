@@ -21,15 +21,20 @@ public class ProgramModel{
 	
 	public ProgramModel clone(){
 		ProgramModel clonedModel = new ProgramModel();
-		ArrayList<ICompilationUnitWrapper> unitList = cloneUnits();
 		
+		ArrayList<ICompilationUnitWrapper> unitList = cloneUnits();		
 		clonedModel.setScopeCompilationUnitList(unitList);
 		cloneUnitRelations(clonedModel, this);
 		
-		cloneMembers();
-		cloneMemberRelations();
+		UnitMemberWrapperList memberList = cloneMembers(clonedModel, this);
+		clonedModel.setScopeMemberList(memberList);
+		cloneMemberRelations(clonedModel, this);
 		
-		cloneReferenceList();
+		ArrayList<ProgramReference> prList = cloneReference(clonedModel, this);
+		clonedModel.setReferenceList(prList);
+		cloneReferenceRelations(clonedModel, this);
+		
+		return clonedModel;
 	}
 	
 	/**
@@ -116,6 +121,105 @@ public class ProgramModel{
 			}
 		}
 	}
+	
+	/**
+	 * In this step, clone the member list, including its field/method and its corresponding belonging ICompilationUnitWrapper
+	 */
+	private UnitMemberWrapperList cloneMembers(ProgramModel clonedModel, ProgramModel model){
+		UnitMemberWrapperList clonedMembers = new UnitMemberWrapperList();
+		for(UnitMemberWrapper member: scopeMemberList){			
+			/**
+			 * As the constructor method of Member need its ICompilationUnitWrapper, 
+			 * we have to get the corresponding ICompilationUnitWrapper at the mean time.
+			 */
+			ICompilationUnitWrapper memberUnit = member.getUnitWrapper();
+			int index = model.getICompilationUnitIndex(memberUnit);
+			ICompilationUnitWrapper clonedMemberUnit = clonedModel.scopeCompilationUnitList.get(index);						
+
+			UnitMemberWrapper clonedMember = null;			
+			if(member instanceof FieldWrapper){
+				clonedMember = new FieldWrapper(((FieldWrapper) member).getField(), clonedMemberUnit);
+			}else if(member instanceof MethodWrapper){
+				clonedMember = new MethodWrapper(((MethodWrapper) member).getMethod(), clonedMemberUnit);
+			}
+			clonedMembers.add(clonedMember);
+		}
+		return clonedMembers;		
+	}
+	
+	private void cloneMemberRelations(ProgramModel clonedModel, ProgramModel model){
+		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.scopeCompilationUnitList;
+		ArrayList<ICompilationUnitWrapper> units = model.scopeCompilationUnitList;
+		for(int i=0; i<units.size(); i++){
+			ICompilationUnitWrapper unit = units.get(i);
+			ICompilationUnitWrapper clonedUnit = clonedUnits.get(i);
+			
+			/**
+			 * clone member relation
+			 */
+			ArrayList<UnitMemberWrapper> memberList = unit.getMembers();
+			for(UnitMemberWrapper member: memberList){
+				int index = model.getUnitMemberIndex(member);
+				UnitMemberWrapper clonedMember = clonedModel.scopeMemberList.get(index);
+				clonedUnit.addMember(clonedMember);
+			}
+		}
+		
+	}
+
+	/**
+	 * In this step, clone the reference list, including its type, ASTnode and its corresponding referer/referee member
+	 */
+	private ArrayList<ProgramReference> cloneReference(ProgramModel clonedModel, ProgramModel model){
+		ArrayList<ProgramReference> clonedReferences = new ArrayList<ProgramReference>();
+		for(ProgramReference reference: referenceList){
+			/**
+			 * As the constructor method of ProgramReference need its referer and referee member, 
+			 * we have to get the corresponding UnitMemberWrappers at the mean time.
+			 */
+			UnitMemberWrapper referer = reference.getReferer();
+			UnitMemberWrapper referee = reference.getReferee();
+			int refererIndex = model.getUnitMemberIndex(referer);
+			int refereeIndex = model.getUnitMemberIndex(referee);
+			UnitMemberWrapper clonedReferer = clonedModel.scopeMemberList.get(refererIndex);
+			UnitMemberWrapper clonedReferee = clonedModel.scopeMemberList.get(refereeIndex);
+			
+			ProgramReference clonedReference = new ProgramReference(clonedReferer, clonedReferee, reference.getASTNode());
+			clonedReference.setReferenceType(reference.getReferenceType());
+			
+			clonedReferences.add(clonedReference);
+		}
+		return clonedReferences;
+	}
+	
+	private void cloneReferenceRelations(ProgramModel clonedModel, ProgramModel model){
+		UnitMemberWrapperList clonedMembers = clonedModel.scopeMemberList;
+		UnitMemberWrapperList members = model.scopeMemberList;
+		for(int i=0; i<members.size(); i++){
+			UnitMemberWrapper member = members.get(i);
+			UnitMemberWrapper clonedMember = clonedMembers.get(i);
+			
+			/**
+			 * clone reference relation of referer
+			 */
+			ArrayList<ProgramReference> refererList = member.refererPointList;
+			for(ProgramReference refererPoint: refererList){
+				int index = model.getProgramReferenceIndex(refererPoint);
+				ProgramReference clonedRefererPoint = clonedModel.referenceList.get(index);
+				clonedMember.addProgramReferer(clonedRefererPoint);
+			}
+
+			/**
+			 * clone reference relation of referee
+			 */
+			ArrayList<ProgramReference> refereeList = member.refereePointList;
+			for(ProgramReference refereePoint: refereeList){
+				int index = model.getProgramReferenceIndex(refereePoint);
+				ProgramReference clonedRefereePoint = clonedModel.referenceList.get(index);
+				clonedMember.addProgramReferee(clonedRefereePoint);
+			}
+		}		
+	}	
 
 	public ProgramReference findReference(ProgramReference reference){
 		for(ProgramReference ref: referenceList){
@@ -200,6 +304,17 @@ public class ProgramModel{
 		
 		return -1;
 
+	}
+	
+	public int getProgramReferenceIndex(ProgramReference r){
+		for(int i=0; i<this.referenceList.size(); i++){
+			ProgramReference reference = this.referenceList.get(i);
+			if(reference.equals(r)){
+				return i;
+			}
+		}
+		
+		return -1;
 	}
 	
 	public ICompilationUnitWrapper findUnit(Type type){
