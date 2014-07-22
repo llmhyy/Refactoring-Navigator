@@ -122,7 +122,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public String toString(){
-		return this.compilationUnit.getElementName();
+		return this.getFullQualifiedName();
 	}
 	
 	public void openInEditor(){
@@ -291,7 +291,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public void addCallee(ICompilationUnitWrapper unit){
-		if(this.calleeCompilationUnitList.contains(unit)){
+		if(!this.calleeCompilationUnitList.contains(unit)){
 			this.calleeCompilationUnitList.add(unit);
 		}
 	}
