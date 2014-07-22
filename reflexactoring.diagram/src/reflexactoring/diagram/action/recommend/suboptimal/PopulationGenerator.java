@@ -6,11 +6,9 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.ui.PartInitException;
-
-import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import reflexactoring.diagram.action.recommend.MemberModuleValidityExaminer;
-import reflexactoring.diagram.bean.GraphNode;
+import reflexactoring.diagram.action.recommend.RecommendUtil;
+import reflexactoring.diagram.bean.GraphRelationType;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -25,12 +23,6 @@ import reflexactoring.diagram.util.Settings;
  *
  */
 public class PopulationGenerator {
-
-	/**
-	 * Graph types 
-	 */
-	public static final int GRAPH_DEPENDENCY = 1;
-	public static final int GRAPH_INHERITANCE = 2;
 	
 	private int populationSize;
 	
@@ -131,18 +123,18 @@ public class PopulationGenerator {
 		
 		Population population = new Population();
 		
-		double[][] highLevelNodeDependencyMatrix = extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath), GRAPH_DEPENDENCY);
-		double[][] highLevelNodeInheritanceMatrix = extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath), GRAPH_INHERITANCE);
+		double[][] highLevelNodeDependencyMatrix = RecommendUtil.extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath), GraphRelationType.GRAPH_DEPENDENCY);
+		double[][] highLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath), GraphRelationType.GRAPH_INHERITANCE);
 		double[][] lowLevelNodeDependencyMatrix;
 		double[][] lowLevelNodeInheritanceMatrix;
 		
 		if(isForTypePopulation){
-			lowLevelNodeDependencyMatrix = extractGraph(Settings.scope.getScopeCompilationUnitList(), GRAPH_DEPENDENCY);
-			lowLevelNodeInheritanceMatrix = extractGraph(Settings.scope.getScopeCompilationUnitList(), GRAPH_INHERITANCE);
+			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), GraphRelationType.GRAPH_DEPENDENCY);
+			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), GraphRelationType.GRAPH_INHERITANCE);
 		}
 		else{
-			lowLevelNodeDependencyMatrix = extractGraph(Settings.scope.getScopeMemberList(), GRAPH_DEPENDENCY);
-			lowLevelNodeInheritanceMatrix = extractGraph(Settings.scope.getScopeMemberList(), GRAPH_INHERITANCE);
+			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), GraphRelationType.GRAPH_DEPENDENCY);
+			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), GraphRelationType.GRAPH_INHERITANCE);
 		}
 		
 		
@@ -205,32 +197,5 @@ public class PopulationGenerator {
 		}
 		
 		return population;
-	}
-	
-	private double[][] extractGraph(ArrayList<? extends GraphNode> nodes, int graphType){
-		
-		int dimension = nodes.size();
-		double[][] graphMatrix = new double[dimension][dimension];
-		
-		for(int i=0; i<dimension; i++){
-			for(int j=0; j<dimension; j++){
-				if(i != j){
-					GraphNode nodeI = nodes.get(i);
-					GraphNode nodeJ = nodes.get(j);
-					
-					if(graphType == GRAPH_DEPENDENCY){
-						if(nodeI.getCalleeList().contains(nodeJ)){
-							graphMatrix[i][j] = 1;
-						}
-					}else if(graphType == GRAPH_INHERITANCE){
-						if(nodeI.getParentList().contains(nodeJ)){
-							graphMatrix[i][j] = 1;
-						}
-					}
-				}
-			}
-		}
-		
-		return graphMatrix;
 	}
 }

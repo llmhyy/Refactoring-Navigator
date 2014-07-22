@@ -4,8 +4,8 @@
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
+import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
@@ -38,7 +38,7 @@ public class PullUpMethodToInterfaceOpportunity extends PullUpMethodOpportunity 
 		/**
 		 * may calculate which module is proper to hold the newly created interface
 		 */
-		ModuleWrapper bestMappingModule = calculateBestMappingModule(newInterfaceUnit);
+		ModuleWrapper bestMappingModule = calculateBestMappingModule(newModel, newInterfaceUnit);
 		newInterfaceUnit.setMappingModule(bestMappingModule);
 		
 		return newModel;
@@ -49,10 +49,28 @@ public class PullUpMethodToInterfaceOpportunity extends PullUpMethodOpportunity 
 	 * @param newInterfaceUnit
 	 * @return
 	 */
-	private ModuleWrapper calculateBestMappingModule(
+	private ModuleWrapper calculateBestMappingModule(ProgramModel model,
 			ICompilationUnitWrapper newInterfaceUnit) {
-		// TODO Auto-generated method stub
-		return newInterfaceUnit.getMappingModule();
+		
+		ModuleWrapper module = null;
+		double fitness = 0;
+		
+		for(ModuleWrapper m: moduleList){
+			newInterfaceUnit.setMappingModule(m);
+			double f = new AdvanceEvaluatorAdapter().computeFitness(model, moduleList);
+			if(module == null){
+				module = m;
+				fitness = f;
+			}
+			else{
+				if(f > fitness){
+					module = m;
+					fitness = f;
+				}
+			}
+		}
+		
+		return module;
 	}
 
 
