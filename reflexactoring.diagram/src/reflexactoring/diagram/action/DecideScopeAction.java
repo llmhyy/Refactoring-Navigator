@@ -43,7 +43,9 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Activator;
 import reflexactoring.diagram.action.recommend.Suggestion;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToInterfaceOpportunity;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
@@ -129,6 +131,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 					monitor.beginTask("build class structural information", 2*totalWork*scale);
 					new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 					
+					
 					//monitor.beginTask("build method/field structure inforamtion", 2*totalWork*scale);
 					//new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 					
@@ -159,7 +162,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 							viewUpdater.updateView(ReflexactoringPerspective.REFACTORING_SUGGESTION, new ArrayList<Suggestion>(), false);
 							
 							AutoMappingAction mappingAction = new AutoMappingAction();
-							mappingAction.run(null);							
+							mappingAction.run(null);						
 						}
 					});
 					

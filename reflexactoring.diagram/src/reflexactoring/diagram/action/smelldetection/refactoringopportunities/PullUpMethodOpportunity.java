@@ -15,5 +15,13 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
 public abstract class PullUpMethodOpportunity extends RefactoringOpportunity{
 	protected ArrayList<UnitMemberWrapper> toBePulledMethodList = new ArrayList<>();
 	protected ICompilationUnitWrapper targetUnit;
+	public ArrayList<UnitMemberWrapper> getToBePulledMethodList() {
+		return toBePulledMethodList;
+	}
+	public void setToBePulledMethodList(
+			ArrayList<UnitMemberWrapper> toBePulledMethodList) {
+		this.toBePulledMethodList = toBePulledMethodList;
+	}
+	
 	
 }

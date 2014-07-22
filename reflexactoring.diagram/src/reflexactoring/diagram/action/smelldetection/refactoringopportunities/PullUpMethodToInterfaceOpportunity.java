@@ -9,6 +9,7 @@ import java.util.Iterator;
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
+import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.ProgramReference;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -30,41 +31,28 @@ public class PullUpMethodToInterfaceOpportunity extends PullUpMethodOpportunity 
 		/**
 		 * create a new method in the newly created interface and change reference
 		 */
-		MethodWrapper newMethod = createNewMethod(newModel, newInterfaceUnit);
+		createNewMethod(newModel, newInterfaceUnit);
+		
+		newModel.updateUnitCallingRelationByMemberRelations();
 		
 		/**
 		 * may calculate which module is proper to hold the newly created interface
 		 */
+		ModuleWrapper bestMappingModule = calculateBestMappingModule(newInterfaceUnit);
+		newInterfaceUnit.setMappingModule(bestMappingModule);
 		
 		return newModel;
 	}
 
 	
 	/**
-	 * In this method, a new method is created, the following relations are built: containment relation between method and unit,
-	 * all the references to to-be-pulled methods now point to the new method in unit.
-	 * 
-	 * @param newModel
 	 * @param newInterfaceUnit
 	 * @return
 	 */
-	private MethodWrapper createNewMethod(ProgramModel newModel, ICompilationUnitWrapper newInterfaceUnit) {
-		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMethodList.get(0);
-		MethodWrapper newMethod = new MethodWrapper(methodWrapper.getName(), methodWrapper.getParameters(), 
-				methodWrapper.isConstructor(), newInterfaceUnit);
-		newModel.getScopeMemberList().add(newMethod);
-		newInterfaceUnit.getMembers().add(newMethod);
-		
-		for(UnitMemberWrapper member: toBePulledMethodList){
-			for(ProgramReference reference: member.getRefererPointList()){
-				reference.setReferer(newMethod);
-				newMethod.addProgramReferer(reference);
-			}
-			
-			member.setRefererPointList(new ArrayList<ProgramReference>());
-		}
-		
-		return newMethod;
+	private ModuleWrapper calculateBestMappingModule(
+			ICompilationUnitWrapper newInterfaceUnit) {
+		// TODO Auto-generated method stub
+		return newInterfaceUnit.getMappingModule();
 	}
 
 
@@ -90,7 +78,9 @@ public class PullUpMethodToInterfaceOpportunity extends PullUpMethodOpportunity 
 		newModel.getScopeCompilationUnitList().add(newInterfaceUnit);
 		
 		for(UnitMemberWrapper member: toBePulledMethodList){
-			ICompilationUnitWrapper unit = member.getUnitWrapper();
+			UnitMemberWrapper newMember = newModel.findMember(member);
+			
+			ICompilationUnitWrapper unit = newMember.getUnitWrapper();
 			unit.addSuperInterface(newInterfaceUnit);
 			
 			unit.addParent(newInterfaceUnit);
@@ -99,6 +89,36 @@ public class PullUpMethodToInterfaceOpportunity extends PullUpMethodOpportunity 
 		
 		return newInterfaceUnit;
 	}
+
+
+	/**
+	 * In this method, a new method is created, the following relations are built: containment relation between method and unit,
+	 * all the references to to-be-pulled methods now point to the new method in unit.
+	 * 
+	 * @param newModel
+	 * @param newInterfaceUnit
+	 * @return
+	 */
+	private MethodWrapper createNewMethod(ProgramModel newModel, ICompilationUnitWrapper newInterfaceUnit) {
+		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMethodList.get(0);
+		MethodWrapper newMethod = new MethodWrapper(methodWrapper.getName(), methodWrapper.getParameters(), 
+				methodWrapper.isConstructor(), newInterfaceUnit);
+		newModel.getScopeMemberList().add(newMethod);
+		newInterfaceUnit.getMembers().add(newMethod);
+		
+		for(UnitMemberWrapper member: toBePulledMethodList){
+			UnitMemberWrapper newMember = newModel.findMember(member);
+			for(ProgramReference reference: newMember.getRefererPointList()){
+				reference.setReferee(newMethod);
+				newMethod.addProgramReferer(reference);
+			}
+			
+			newMember.setRefererPointList(new ArrayList<ProgramReference>());
+		}
+		
+		return newMethod;
+	}
+
 
 	@Override
 	public void apply() {

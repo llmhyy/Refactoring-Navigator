@@ -11,10 +11,14 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToInterfaceOpportunity;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.refactoring.test.PullUpMethodInInterfaceOperatorTest;
 import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
@@ -71,9 +75,11 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		//view.getViewer().setInput(Settings.similarityTable);
 		//view.getViewer().refresh();
 		
+		//ProgramModel model = Settings.scope;
+		ProgramModel model = new PullUpMethodInInterfaceOperatorTest().test(Settings.scope);
 		
-		
-		new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
+		new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
+		//new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
 		
 		/**
 		 * after all, the recompute settings should be set false to improve efficiency

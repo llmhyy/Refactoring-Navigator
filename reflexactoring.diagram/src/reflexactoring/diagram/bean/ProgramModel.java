@@ -57,8 +57,8 @@ public class ProgramModel{
 	}
 	
 	private void cloneUnitRelations(ProgramModel clonedModel, ProgramModel model){
-		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.scopeCompilationUnitList;
-		ArrayList<ICompilationUnitWrapper> units = model.scopeCompilationUnitList;
+		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.getScopeCompilationUnitList();
+		ArrayList<ICompilationUnitWrapper> units = model.getScopeCompilationUnitList();
 		for(int i=0; i<units.size(); i++){
 			ICompilationUnitWrapper unit = units.get(i);
 			ICompilationUnitWrapper clonedUnit = clonedUnits.get(i);
@@ -68,7 +68,7 @@ public class ProgramModel{
 			ICompilationUnitWrapper superClass = unit.getSuperClass();
 			if(null != superClass){
 				int index = model.getICompilationUnitIndex(superClass);
-				ICompilationUnitWrapper clonedSuperclass = clonedModel.scopeCompilationUnitList.get(index);
+				ICompilationUnitWrapper clonedSuperclass = clonedModel.getScopeCompilationUnitList().get(index);
 				clonedUnit.setSuperClass(clonedSuperclass);
 			}
 			
@@ -78,7 +78,7 @@ public class ProgramModel{
 			ArrayList<ICompilationUnitWrapper> interfaceList = unit.getSuperInterfaceList();
 			for(ICompilationUnitWrapper interf: interfaceList){
 				int index = model.getICompilationUnitIndex(interf);
-				ICompilationUnitWrapper clonedInterface = clonedModel.scopeCompilationUnitList.get(index);
+				ICompilationUnitWrapper clonedInterface = clonedModel.getScopeCompilationUnitList().get(index);
 				clonedUnit.addSuperInterface(clonedInterface);
 			}
 			
@@ -88,7 +88,7 @@ public class ProgramModel{
 			ArrayList<ICompilationUnitWrapper> parentList = (ArrayList<ICompilationUnitWrapper>) unit.getParentList();
 			for(ICompilationUnitWrapper parent: parentList){
 				int index = model.getICompilationUnitIndex(parent);
-				ICompilationUnitWrapper clonedParent = clonedModel.scopeCompilationUnitList.get(index);
+				ICompilationUnitWrapper clonedParent = clonedModel.getScopeCompilationUnitList().get(index);
 				clonedUnit.addParent(clonedParent);
 			}
 			
@@ -98,7 +98,7 @@ public class ProgramModel{
 			ArrayList<ICompilationUnitWrapper> childList = (ArrayList<ICompilationUnitWrapper>) unit.getChildList();
 			for(ICompilationUnitWrapper child: childList){
 				int index = model.getICompilationUnitIndex(child);
-				ICompilationUnitWrapper clonedChild = clonedModel.scopeCompilationUnitList.get(index);
+				ICompilationUnitWrapper clonedChild = clonedModel.getScopeCompilationUnitList().get(index);
 				clonedUnit.addChild(clonedChild);
 			}
 			/**
@@ -107,7 +107,7 @@ public class ProgramModel{
 			ArrayList<ICompilationUnitWrapper> callerList = unit.getCallerCompilationUnitList();
 			for(ICompilationUnitWrapper caller: callerList){
 				int index = model.getICompilationUnitIndex(caller);
-				ICompilationUnitWrapper clonedCaller = clonedModel.scopeCompilationUnitList.get(index);
+				ICompilationUnitWrapper clonedCaller = clonedModel.getScopeCompilationUnitList().get(index);
 				clonedUnit.addCaller(clonedCaller);
 			}
 			/**
@@ -116,7 +116,7 @@ public class ProgramModel{
 			ArrayList<ICompilationUnitWrapper> calleeList = unit.getCalleeCompilationUnitList();
 			for(ICompilationUnitWrapper caller: calleeList){
 				int index = model.getICompilationUnitIndex(caller);
-				ICompilationUnitWrapper clonedCallee = clonedModel.scopeCompilationUnitList.get(index);
+				ICompilationUnitWrapper clonedCallee = clonedModel.getScopeCompilationUnitList().get(index);
 				clonedUnit.addCallee(clonedCallee);
 			}
 		}
@@ -127,14 +127,14 @@ public class ProgramModel{
 	 */
 	private UnitMemberWrapperList cloneMembers(ProgramModel clonedModel, ProgramModel model){
 		UnitMemberWrapperList clonedMembers = new UnitMemberWrapperList();
-		for(UnitMemberWrapper member: scopeMemberList){			
+		for(UnitMemberWrapper member: model.getScopeMemberList()){			
 			/**
 			 * As the constructor method of Member need its ICompilationUnitWrapper, 
 			 * we have to get the corresponding ICompilationUnitWrapper at the mean time.
 			 */
 			ICompilationUnitWrapper memberUnit = member.getUnitWrapper();
 			int index = model.getICompilationUnitIndex(memberUnit);
-			ICompilationUnitWrapper clonedMemberUnit = clonedModel.scopeCompilationUnitList.get(index);						
+			ICompilationUnitWrapper clonedMemberUnit = clonedModel.getScopeCompilationUnitList().get(index);						
 
 			UnitMemberWrapper clonedMember = null;			
 			if(member instanceof FieldWrapper){
@@ -148,8 +148,8 @@ public class ProgramModel{
 	}
 	
 	private void cloneMemberRelations(ProgramModel clonedModel, ProgramModel model){
-		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.scopeCompilationUnitList;
-		ArrayList<ICompilationUnitWrapper> units = model.scopeCompilationUnitList;
+		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.getScopeCompilationUnitList();
+		ArrayList<ICompilationUnitWrapper> units = model.getScopeCompilationUnitList();
 		for(int i=0; i<units.size(); i++){
 			ICompilationUnitWrapper unit = units.get(i);
 			ICompilationUnitWrapper clonedUnit = clonedUnits.get(i);
@@ -160,7 +160,7 @@ public class ProgramModel{
 			ArrayList<UnitMemberWrapper> memberList = unit.getMembers();
 			for(UnitMemberWrapper member: memberList){
 				int index = model.getUnitMemberIndex(member);
-				UnitMemberWrapper clonedMember = clonedModel.scopeMemberList.get(index);
+				UnitMemberWrapper clonedMember = clonedModel.getScopeMemberList().get(index);
 				clonedUnit.addMember(clonedMember);
 			}
 		}
@@ -172,7 +172,7 @@ public class ProgramModel{
 	 */
 	private ArrayList<ProgramReference> cloneReference(ProgramModel clonedModel, ProgramModel model){
 		ArrayList<ProgramReference> clonedReferences = new ArrayList<ProgramReference>();
-		for(ProgramReference reference: referenceList){
+		for(ProgramReference reference: model.getReferenceList()){
 			/**
 			 * As the constructor method of ProgramReference need its referer and referee member, 
 			 * we have to get the corresponding UnitMemberWrappers at the mean time.
@@ -232,7 +232,15 @@ public class ProgramModel{
 	}
 	
 	public void updateUnitCallingRelationByMemberRelations(){
-		for(ProgramReference reference: Settings.scope.getReferenceList()){
+		/**
+		 * clear original call relations between compilation unit.
+		 */
+		for(ICompilationUnitWrapper unitWrapper: this.scopeCompilationUnitList){
+			unitWrapper.setCalleeCompilationUnitList(new ArrayList<ICompilationUnitWrapper>());
+			unitWrapper.setCallerCompilationUnitList(new ArrayList<ICompilationUnitWrapper>());
+		}
+		
+		for(ProgramReference reference: this.getReferenceList()){
 			UnitMemberWrapper refererMember = reference.getReferer();
 			ICompilationUnitWrapper refererUnit = refererMember.getUnitWrapper();
 			

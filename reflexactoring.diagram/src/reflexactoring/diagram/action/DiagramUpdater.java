@@ -195,23 +195,22 @@ public class DiagramUpdater {
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList) throws JavaModelException {
 		for(ICompilationUnitWrapper unitWrapper: compilationUnitWrapperList){
 			ModuleWrapper mappingModuleWrapper = unitWrapper.getMappingModule();
-			ICompilationUnit unit = unitWrapper.getCompilationUnit();
-			IType type = unit.getTypes()[0];
+			
 			
 			if(mappingModuleWrapper != null){
 				Module module = GEFDiagramUtil.findModule(diagramRoot, mappingModuleWrapper.getModule());
-				IElementType elementType = type.isClass() ? 
-						ReflexactoringElementTypes.Class_3001 : ReflexactoringElementTypes.Interface_3002;
+				IElementType elementType = unitWrapper.isInterface() ? 
+						ReflexactoringElementTypes.Interface_3002: ReflexactoringElementTypes.Class_3001;
 				
 				CreateElementRequest req = new CreateElementRequest(module, elementType);
 				
-				if(type.isClass()){
-					Class2CreateCommand createTypeCommand = new Class2CreateCommand(req);
-					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));					
-				}
-				else{
+				if(unitWrapper.isInterface()){
 					Interface2CreateCommand createTypeCommand = new Interface2CreateCommand(req);
 					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));
+				}
+				else{
+					Class2CreateCommand createTypeCommand = new Class2CreateCommand(req);
+					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));	
 				}
 			
 				setTypeValue(req.getNewElement(), unitWrapper, GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain());
@@ -222,15 +221,15 @@ public class DiagramUpdater {
 			 */
 			else{
 				Reflexactoring reflexactoring = GEFDiagramUtil.findReflexactoring(diagramRoot);
-				IElementType elementType = type.isClass() ? 
-						ReflexactoringElementTypes.Class_2001 : ReflexactoringElementTypes.Interface_2002;
+				IElementType elementType = unitWrapper.isInterface() ? 
+						ReflexactoringElementTypes.Interface_2002 : ReflexactoringElementTypes.Class_2001;
 				CreateElementRequest req = new CreateElementRequest(reflexactoring, elementType);
-				if(type.isClass()){
-					ClassCreateCommand createTypeCommand = new ClassCreateCommand(req);
-					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));					
+				if(unitWrapper.isInterface()){
+					InterfaceCreateCommand createTypeCommand = new InterfaceCreateCommand(req);
+					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));
 				}
 				else{
-					InterfaceCreateCommand createTypeCommand = new InterfaceCreateCommand(req);
+					ClassCreateCommand createTypeCommand = new ClassCreateCommand(req);
 					GEFDiagramUtil.getRootEditPart(diagramRoot).getDiagramEditDomain().getDiagramCommandStack().execute(new ICommandProxy(createTypeCommand));
 				}
 				
