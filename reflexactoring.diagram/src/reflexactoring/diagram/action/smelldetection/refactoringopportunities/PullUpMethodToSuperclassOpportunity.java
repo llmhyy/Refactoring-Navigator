@@ -3,9 +3,8 @@
  */
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
-import java.util.ArrayList;
-
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 
 /**
@@ -14,18 +13,39 @@ import reflexactoring.diagram.bean.ProgramModel;
  */
 public class PullUpMethodToSuperclassOpportunity extends PullUpMethodOpportunity{
 
-	/* (non-Javadoc)
-	 * @see reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity#simulate(reflexactoring.diagram.bean.ProgramModel)
-	 */
 	@Override
 	public ProgramModel simulate(ProgramModel model) {
-		// TODO Auto-generated method stub
-		return null;
+		ProgramModel newModel = model.clone();
+		/**
+		 * get the parent class
+		 */
+		ICompilationUnitWrapper superClassUnit = getSuperClass(newModel);
+		
+		/**
+		 * create a new method in the parent class and change reference
+		 */
+		createNewMethod(newModel, superClassUnit);
+		
+		newModel.updateUnitCallingRelationByMemberRelations();
+		
+		return newModel;
 	}
 
-	/* (non-Javadoc)
-	 * @see reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity#apply()
+	/**
+	 * Find the super class of the method referring class.
+	 * 
+	 * @param newModel
+	 * @return
 	 */
+	private ICompilationUnitWrapper getSuperClass(ProgramModel newModel) {
+		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMethodList.get(0);
+		ICompilationUnitWrapper referringUnit = methodWrapper.getUnitWrapper();
+		ICompilationUnitWrapper subClassUnit = newModel.findUnit(referringUnit.getFullQualifiedName());
+		ICompilationUnitWrapper superClassUnit = subClassUnit.getSuperClass();
+		
+		return superClassUnit;
+	}
+	
 	@Override
 	public void apply() {
 		// TODO Auto-generated method stub

@@ -19,6 +19,8 @@ import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.refactoring.test.PullUpMethodInInterfaceOperatorTest;
+import reflexactoring.diagram.refactoring.test.PullUpMethodNewSuperclassOperatorTest;
+import reflexactoring.diagram.refactoring.test.PullUpMethodSuperclassOperatorTest;
 import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
@@ -77,6 +79,8 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		
 		ProgramModel model = Settings.scope;
 		//ProgramModel model = new PullUpMethodInInterfaceOperatorTest().test(Settings.scope);
+		//ProgramModel model = new PullUpMethodSuperclassOperatorTest().test(Settings.scope);
+		//ProgramModel model = new PullUpMethodNewSuperclassOperatorTest().test(Settings.scope);		
 		
 		new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
 		//new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
