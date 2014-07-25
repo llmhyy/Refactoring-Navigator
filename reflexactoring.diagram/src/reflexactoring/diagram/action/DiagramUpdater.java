@@ -35,8 +35,12 @@ import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 
 import reflexactoring.ClassExtend;
 import reflexactoring.Implement;
@@ -66,6 +70,7 @@ import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
 import reflexactoring.diagram.providers.ReflexactoringElementTypes;
 import reflexactoring.diagram.util.GEFDiagramUtil;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * This class is used to update the diagram according to corresponding computation,
@@ -85,22 +90,44 @@ public class DiagramUpdater {
 	public void generateReflexionModel(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitWrapperList) {
 		IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		ReflexactoringDiagramEditor editor = (ReflexactoringDiagramEditor)workbenchPage.getActiveEditor();
-		DiagramGraphicalViewer diagram = (DiagramGraphicalViewer)editor.getDiagramGraphicalViewer();
 		
-		RootEditPart root = diagram.getRootEditPart();
-		DiagramRootEditPart diagramRoot = (DiagramRootEditPart)root;
-		//clearCanvas(diagramRoot);
-		try {
-			clearCanvas(diagramRoot);
+		ReflexactoringDiagramEditor editor = chooseEditorPart(workbenchPage);
+		if(editor != null){
+			try {
+				workbenchPage.openEditor(editor.getEditorInput(), ReflexactoringDiagramEditor.ID, true);
+			} catch (PartInitException e1) {
+				e1.printStackTrace();
+			}
 			
-			generateLowLevelModel(diagramRoot, compilationUnitWrapperList);
-			generateLowLevelConnection(diagramRoot, compilationUnitWrapperList);
+			DiagramGraphicalViewer diagram = (DiagramGraphicalViewer)editor.getDiagramGraphicalViewer();
 			
-			showModelConformance(diagramRoot, moduleList, compilationUnitWrapperList);
-		} catch (JavaModelException e) {
-			e.printStackTrace();
+			RootEditPart root = diagram.getRootEditPart();
+			DiagramRootEditPart diagramRoot = (DiagramRootEditPart)root;
+			//clearCanvas(diagramRoot);
+			try {
+				clearCanvas(diagramRoot);
+				
+				generateLowLevelModel(diagramRoot, compilationUnitWrapperList);
+				generateLowLevelConnection(diagramRoot, compilationUnitWrapperList);
+				
+				showModelConformance(diagramRoot, moduleList, compilationUnitWrapperList);
+			} catch (JavaModelException e) {
+				e.printStackTrace();
+			}
+			
 		}
+		
+	}
+	
+	private ReflexactoringDiagramEditor chooseEditorPart(IWorkbenchPage workbenchPage){
+		for(IEditorReference reference: workbenchPage.getEditorReferences()){
+			IEditorPart part = reference.getEditor(true);
+			if(part instanceof ReflexactoringDiagramEditor){
+				return (ReflexactoringDiagramEditor)part;
+			}
+		}
+		
+		return null;
 	}
 	
 	

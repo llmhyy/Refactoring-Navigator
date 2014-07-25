@@ -3,6 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="experiment"/>
+	<classpathentry exported="true" kind="lib" path="lib/antlr-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jccd-1.0.6.jar" sourcepath="lib/jccd.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/colt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/concurrent.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/edu.mit.jwi_2.1.5.jar"/>

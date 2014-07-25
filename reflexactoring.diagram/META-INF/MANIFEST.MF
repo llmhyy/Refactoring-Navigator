@@ -10,7 +10,10 @@ Bundle-ClassPath: .,
  lib/pageranking.jar,
  lib/optimization.jar,
  lib/colt.jar,
- lib/concurrent.jar
+ lib/concurrent.jar,
+ lib/antlr-3.0.1.jar,
+ lib/jccd-1.0.6.jar,
+ lib/log4j-1.2.8.jar
 Bundle-Activator: reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
