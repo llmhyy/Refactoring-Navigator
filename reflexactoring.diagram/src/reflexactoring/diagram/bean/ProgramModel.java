@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import org.eclipse.jdt.core.ICompilationUnit;
 
 import reflexactoring.Type;
-import reflexactoring.diagram.util.Settings;
+import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 
 /**
  * @author linyun
@@ -18,6 +18,7 @@ public class ProgramModel{
 	private ArrayList<ICompilationUnitWrapper> scopeCompilationUnitList = new ArrayList<>();
 	private UnitMemberWrapperList scopeMemberList = new UnitMemberWrapperList();
 	private ArrayList<ProgramReference> referenceList = new ArrayList<>();
+	private ArrayList<CloneSet> cloneSets = new ArrayList<>();
 	
 	public ProgramModel clone(){
 		ProgramModel clonedModel = new ProgramModel();
@@ -366,6 +367,17 @@ public class ProgramModel{
 	public UnitMemberWrapper findMember(UnitMemberWrapper member){
 		return getScopeMemberList().findMember(member);
 	}
+	
+	public ArrayList<ProgramReference> findProgramReferenceByCallerMember(UnitMemberWrapper callerMember){
+		ArrayList<ProgramReference> references = new ArrayList<>();
+		for(ProgramReference reference: this.referenceList){
+			if(reference.getReferer().equals(callerMember)){
+				references.add(reference);
+			}
+		}
+		
+		return references;
+	}
 
 	/**
 	 * @return the scopeMemberList
@@ -393,5 +405,19 @@ public class ProgramModel{
 	 */
 	public void setReferenceList(ArrayList<ProgramReference> referenceList) {
 		this.referenceList = referenceList;
+	}
+
+	/**
+	 * @return the cloneSets
+	 */
+	public ArrayList<CloneSet> getCloneSets() {
+		return cloneSets;
+	}
+
+	/**
+	 * @param cloneSets the cloneSets to set
+	 */
+	public void setCloneSets(ArrayList<CloneSet> cloneSets) {
+		this.cloneSets = cloneSets;
 	}
 }

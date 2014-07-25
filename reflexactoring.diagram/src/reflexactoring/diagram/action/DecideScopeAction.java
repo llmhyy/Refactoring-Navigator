@@ -43,6 +43,7 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Activator;
 import reflexactoring.diagram.action.recommend.Suggestion;
+import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToInterfaceOpportunity;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
@@ -131,7 +132,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 					monitor.beginTask("build class structural information", 2*totalWork*scale);
 					new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 					
-					
+					new BadSmellDetector().detect(Settings.scope);
 					//monitor.beginTask("build method/field structure inforamtion", 2*totalWork*scale);
 					//new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 					

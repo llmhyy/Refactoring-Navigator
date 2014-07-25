@@ -99,7 +99,7 @@ public class FieldWrapper extends UnitMemberWrapper{
 	}
 
 	@Override
-	protected ASTNode getJavaElement() {
+	public ASTNode getJavaElement() {
 		return getField();
 	}
 

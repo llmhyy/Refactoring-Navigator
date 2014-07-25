@@ -166,7 +166,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 	 * @see reflexactoring.diagram.bean.UnitMemberWrapper#getJavaElement()
 	 */
 	@Override
-	protected ASTNode getJavaElement() {
+	public ASTNode getJavaElement() {
 		return getMethod();
 	}
 

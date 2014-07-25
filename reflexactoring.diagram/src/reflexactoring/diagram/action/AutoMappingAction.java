@@ -75,8 +75,8 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		//view.getViewer().setInput(Settings.similarityTable);
 		//view.getViewer().refresh();
 		
-		//ProgramModel model = Settings.scope;
-		ProgramModel model = new PullUpMethodInInterfaceOperatorTest().test(Settings.scope);
+		ProgramModel model = Settings.scope;
+		//ProgramModel model = new PullUpMethodInInterfaceOperatorTest().test(Settings.scope);
 		
 		new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
 		//new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
