@@ -33,7 +33,7 @@ public class ProgramModel{
 		
 		ArrayList<ProgramReference> prList = cloneReference(clonedModel, this);
 		clonedModel.setReferenceList(prList);
-		cloneReferenceRelations(clonedModel, this);
+		//cloneReferenceRelations(clonedModel, this);
 		
 		return clonedModel;
 	}
@@ -189,20 +189,22 @@ public class ProgramModel{
 			clonedReference.setReferenceType(reference.getReferenceType());
 			
 			clonedReferences.add(clonedReference);
+			clonedReferer.addProgramReferee(clonedReference);
+			clonedReferee.addProgramReferer(clonedReference);
 		}
 		return clonedReferences;
 	}
 	
-	private void cloneReferenceRelations(ProgramModel clonedModel, ProgramModel model){
+	/*private void cloneReferenceRelations(ProgramModel clonedModel, ProgramModel model){
 		UnitMemberWrapperList clonedMembers = clonedModel.scopeMemberList;
 		UnitMemberWrapperList members = model.scopeMemberList;
 		for(int i=0; i<members.size(); i++){
 			UnitMemberWrapper member = members.get(i);
 			UnitMemberWrapper clonedMember = clonedMembers.get(i);
 			
-			/**
+			*//**
 			 * clone reference relation of referer
-			 */
+			 *//*
 			ArrayList<ProgramReference> refererList = member.refererPointList;
 			for(ProgramReference refererPoint: refererList){
 				int index = model.getProgramReferenceIndex(refererPoint);
@@ -210,9 +212,9 @@ public class ProgramModel{
 				clonedMember.addProgramReferer(clonedRefererPoint);
 			}
 
-			/**
+			*//**
 			 * clone reference relation of referee
-			 */
+			 *//*
 			ArrayList<ProgramReference> refereeList = member.refereePointList;
 			for(ProgramReference refereePoint: refereeList){
 				int index = model.getProgramReferenceIndex(refereePoint);
@@ -220,7 +222,7 @@ public class ProgramModel{
 				clonedMember.addProgramReferee(clonedRefereePoint);
 			}
 		}		
-	}	
+	}*/	
 
 	public ProgramReference findReference(ProgramReference reference){
 		for(ProgramReference ref: referenceList){
