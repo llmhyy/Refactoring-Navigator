@@ -544,6 +544,27 @@ public class GEFDiagramUtil {
 		return null;
 	}
 	
+	public static ModuleEditPart findCorrespondingModuleEditPart(DiagramRootEditPart diagramRoot, ModuleWrapper moduleWrapper){
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
+				
+				List editPartList = rootEditPart.getChildren();
+				for(Object objEditPart: editPartList){
+					if(objEditPart instanceof ModuleEditPart){
+						ModuleEditPart editPart = (ModuleEditPart)objEditPart;
+						ModuleWrapper modW = new ModuleWrapper((Module)editPart.resolveSemanticElement());
+						if(modW.equals(moduleWrapper)){
+							return editPart;
+						}
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	public static ModuleLinkEditPart findCorrespondingDepedencyEditPart(DiagramRootEditPart diagramRoot,
 			ModuleLinkWrapper connection){
 		

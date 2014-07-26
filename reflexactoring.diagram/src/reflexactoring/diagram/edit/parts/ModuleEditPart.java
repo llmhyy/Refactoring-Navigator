@@ -125,7 +125,8 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 		if (childEditPart instanceof ModuleTypeContainerCompartmentEditPart) {
 			IFigure pane = getPrimaryShape().getFigureTypeContainer();
 			//setupContentPane(pane); // FIXME each comparment should handle his content pane in his own way 
-
+			//pane.add(((ModuleTypeContainerCompartmentEditPart) childEditPart).getFigure());
+			
 			pane.setLayoutManager(new GridLayout());
 			GridData gridData = new GridData();
 			gridData.verticalAlignment = GridData.FILL;
@@ -135,9 +136,8 @@ public class ModuleEditPart extends ShapeNodeEditPart {
 			gridData.verticalSpan = 1;
 			gridData.grabExcessHorizontalSpace = true;
 			gridData.grabExcessVerticalSpace = true;
+			pane.add(((ModuleTypeContainerCompartmentEditPart) childEditPart).getFigure(), gridData);
 
-			pane.add(((ModuleTypeContainerCompartmentEditPart) childEditPart)
-					.getFigure(), gridData);
 			return true;
 		}
 		return false;

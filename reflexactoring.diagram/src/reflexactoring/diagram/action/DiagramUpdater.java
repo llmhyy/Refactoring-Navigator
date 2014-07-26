@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gef.RootEditPart;
@@ -65,6 +66,7 @@ import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
 import reflexactoring.diagram.edit.parts.ModuleLinkEditPart;
 import reflexactoring.diagram.edit.parts.ModuleLinkFigure;
+import reflexactoring.diagram.edit.parts.ModuleTypeContainerCompartmentEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
@@ -111,12 +113,30 @@ public class DiagramUpdater {
 				generateLowLevelConnection(diagramRoot, compilationUnitWrapperList);
 				
 				showModelConformance(diagramRoot, moduleList, compilationUnitWrapperList);
+				
+				//layoutModuleContent(diagramRoot, moduleList);
 			} catch (JavaModelException e) {
 				e.printStackTrace();
 			}
 			
 		}
 		
+	}
+	
+	private void layoutModuleContent(DiagramRootEditPart diagramRoot, ArrayList<ModuleWrapper> moduleList){
+		for(ModuleWrapper module: moduleList){
+			ModuleEditPart moduleEditPart = GEFDiagramUtil.findCorrespondingModuleEditPart(diagramRoot, module);
+			List list = moduleEditPart.getChildren();
+			for(Object editPart: list){
+				if(editPart instanceof ModuleTypeContainerCompartmentEditPart){
+					ModuleTypeContainerCompartmentEditPart containerPart = (ModuleTypeContainerCompartmentEditPart)editPart;
+					IFigure containerFigure = (IFigure) ((IFigure) ((IFigure) containerPart.getFigure().getChildren().get(1)).getChildren().get(0)).getChildren().get(0);
+					containerFigure.getLayoutManager().layout(containerFigure);
+				}
+			}
+			
+			System.currentTimeMillis();
+		}
 	}
 	
 	private ReflexactoringDiagramEditor chooseEditorPart(IWorkbenchPage workbenchPage){
