@@ -6,6 +6,7 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.UnitMemberWrapper;
 
 /**
  * @author linyun
@@ -25,6 +26,13 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 		 * create a new method in the parent class and change reference
 		 */
 		createNewMethod(newModel, superClassUnit);
+		
+		/**
+		 * delete the to-be-pulled members in model
+		 */
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			newModel.removeMember(member);
+		}
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		

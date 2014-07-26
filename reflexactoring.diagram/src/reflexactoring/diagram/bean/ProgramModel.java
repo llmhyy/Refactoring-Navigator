@@ -4,6 +4,7 @@
 package reflexactoring.diagram.bean;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 
@@ -36,6 +37,17 @@ public class ProgramModel{
 		//cloneReferenceRelations(clonedModel, this);
 		
 		return clonedModel;
+	}
+	
+	public void removeMember(UnitMemberWrapper toBeDeletedMember){
+		Iterator<UnitMemberWrapper> memberIter = this.scopeMemberList.iterator();
+		while(memberIter.hasNext()){
+			UnitMemberWrapper member = memberIter.next();
+			if(member.equals(toBeDeletedMember)){
+				memberIter.remove();
+				return;
+			}
+		}
 	}
 	
 	/**
