@@ -4,6 +4,7 @@
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
@@ -46,8 +47,11 @@ public abstract class PullUpMethodOpportunity extends RefactoringOpportunity{
 		superUnit.getMembers().add(newMethod);
 		
 		for(UnitMemberWrapper member: toBePulledMethodList){
-			UnitMemberWrapper newMember = newModel.findMember(member);
-			for(ProgramReference reference: newMember.getRefererPointList()){
+			UnitMemberWrapper newToBePulledMember = newModel.findMember(member);
+			
+			Iterator<ProgramReference> refIter = newToBePulledMember.getRefererPointList().iterator();
+			while(refIter.hasNext()){
+				ProgramReference reference = refIter.next();
 				UnitMemberWrapper referer = reference.getReferer();
 				UnitMemberWrapper referee = reference.getReferee();
 				/**
@@ -59,10 +63,10 @@ public abstract class PullUpMethodOpportunity extends RefactoringOpportunity{
 					/**
 					 * remove from program reference list, refer's referee list and refee's referer list.
 					 */
-					//TODO
+					//referee.getRefererPointList().remove(reference);
+					refIter.remove();
 					newModel.getReferenceList().remove(reference);
 					referer.getRefereePointList().remove(reference);
-					referee.getRefererPointList().remove(reference);
 					
 					System.currentTimeMillis();
 				}
@@ -73,10 +77,9 @@ public abstract class PullUpMethodOpportunity extends RefactoringOpportunity{
 					reference.setReferee(newMethod);
 					newMethod.addProgramReferer(reference);					
 				}
-				
 			}
 			
-			newMember.setRefererPointList(new ArrayList<ProgramReference>());
+			newToBePulledMember.setRefererPointList(new ArrayList<ProgramReference>());
 		}
 		
 		return newMethod;
