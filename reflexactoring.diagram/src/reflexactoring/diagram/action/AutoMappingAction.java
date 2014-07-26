@@ -11,7 +11,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToInterfaceOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -78,9 +78,9 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		//view.getViewer().refresh();
 		
 		//ProgramModel model = Settings.scope;
-		ProgramModel model = new PullUpMethodInInterfaceOperatorTest().test(Settings.scope);
+		//ProgramModel model = new PullUpMethodInInterfaceOperatorTest().test(Settings.scope);
 		//ProgramModel model = new PullUpMethodSuperclassOperatorTest().test(Settings.scope);
-		//ProgramModel model = new PullUpMethodNewSuperclassOperatorTest().test(Settings.scope);		
+		ProgramModel model = new PullUpMethodNewSuperclassOperatorTest().test(Settings.scope);		
 		
 		new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
 		//new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());

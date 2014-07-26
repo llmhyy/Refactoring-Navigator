@@ -11,7 +11,7 @@ import reflexactoring.diagram.bean.ProgramModel;
  * @author linyun
  *
  */
-public class CreateSuperclassAndPullUpMethodOpportunity  extends PullUpMethodOpportunity {
+public class CreateSuperclassAndPullUpMethodOpportunity  extends PullUpMemberOpportunity {
 
 	@Override
 	public ProgramModel simulate(ProgramModel model) {

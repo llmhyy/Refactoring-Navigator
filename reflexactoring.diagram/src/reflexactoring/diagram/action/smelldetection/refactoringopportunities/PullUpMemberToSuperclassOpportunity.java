@@ -11,7 +11,7 @@ import reflexactoring.diagram.bean.ProgramModel;
  * @author linyun
  *
  */
-public class PullUpMethodToSuperclassOpportunity extends PullUpMethodOpportunity{
+public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity{
 
 	@Override
 	public ProgramModel simulate(ProgramModel model) {
@@ -38,7 +38,7 @@ public class PullUpMethodToSuperclassOpportunity extends PullUpMethodOpportunity
 	 * @return
 	 */
 	private ICompilationUnitWrapper getSuperClass(ProgramModel newModel) {
-		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMethodList.get(0);
+		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMemberList.get(0);
 		ICompilationUnitWrapper referringUnit = methodWrapper.getUnitWrapper();
 		ICompilationUnitWrapper subClassUnit = newModel.findUnit(referringUnit.getFullQualifiedName());
 		ICompilationUnitWrapper superClassUnit = subClassUnit.getSuperClass();

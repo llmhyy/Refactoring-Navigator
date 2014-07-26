@@ -11,7 +11,7 @@ import reflexactoring.diagram.bean.ProgramModel;
  * @author linyun
  *
  */
-public class PullUpMethodToInterfaceOpportunity extends PullUpMethodOpportunity {
+public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity {
 	
 	@Override
 	public ProgramModel simulate(ProgramModel model) {

@@ -5,7 +5,7 @@ package reflexactoring.diagram.refactoring.test;
 
 import java.util.ArrayList;
 
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToSuperclassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToSuperclassOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -25,7 +25,7 @@ public class PullUpMethodSuperclassOperatorTest {
 		
 		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		
-		PullUpMethodToSuperclassOpportunity opp = new PullUpMethodToSuperclassOpportunity();
+		PullUpMemberToSuperclassOpportunity opp = new PullUpMemberToSuperclassOpportunity();
 		
 		opp.setModuleList(moduleList);
 		opp.setToBePulledMethodList(toBePulledList);

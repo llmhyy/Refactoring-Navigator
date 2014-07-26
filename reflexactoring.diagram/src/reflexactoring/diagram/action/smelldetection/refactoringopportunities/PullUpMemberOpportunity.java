@@ -19,15 +19,15 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
  * @author linyun
  *
  */
-public abstract class PullUpMethodOpportunity extends RefactoringOpportunity{
-	protected ArrayList<UnitMemberWrapper> toBePulledMethodList = new ArrayList<>();
+public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
+	protected ArrayList<UnitMemberWrapper> toBePulledMemberList = new ArrayList<>();
 	protected ICompilationUnitWrapper targetUnit;
 	public ArrayList<UnitMemberWrapper> getToBePulledMethodList() {
-		return toBePulledMethodList;
+		return toBePulledMemberList;
 	}
 	public void setToBePulledMethodList(
 			ArrayList<UnitMemberWrapper> toBePulledMethodList) {
-		this.toBePulledMethodList = toBePulledMethodList;
+		this.toBePulledMemberList = toBePulledMethodList;
 	}
 	
 
@@ -40,51 +40,60 @@ public abstract class PullUpMethodOpportunity extends RefactoringOpportunity{
 	 * @return
 	 */
 	protected MethodWrapper createNewMethod(ProgramModel newModel, ICompilationUnitWrapper superUnit) {
-		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMethodList.get(0);
+		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMemberList.get(0);
 		MethodWrapper newMethod = new MethodWrapper(methodWrapper.getName(), methodWrapper.getParameters(), 
 				methodWrapper.isConstructor(), superUnit);
 		newModel.getScopeMemberList().add(newMethod);
 		superUnit.getMembers().add(newMethod);
 		
-		for(UnitMemberWrapper member: toBePulledMethodList){
+		for(UnitMemberWrapper member: toBePulledMemberList){
 			UnitMemberWrapper newToBePulledMember = newModel.findMember(member);
+			handleReferersOfToBePulledMember(newToBePulledMember, newMethod);
 			
-			Iterator<ProgramReference> refIter = newToBePulledMember.getRefererPointList().iterator();
-			while(refIter.hasNext()){
-				ProgramReference reference = refIter.next();
-				UnitMemberWrapper referer = reference.getReferer();
-				UnitMemberWrapper referee = reference.getReferee();
-				/**
-				 * if referer (caller) member is inside the same subclass of referee member (the one to be pulled), 
-				 * I simply remove such reference. It is because the static dependency is transfered to inheritance 
-				 * relation.
-				 */
-				if(referer.getUnitWrapper().equals(referee.getUnitWrapper())){
-					/**
-					 * remove from program reference list, refer's referee list and refee's referer list.
-					 */
-					//referee.getRefererPointList().remove(reference);
-					refIter.remove();
-					newModel.getReferenceList().remove(reference);
-					referer.getRefereePointList().remove(reference);
-					
-					System.currentTimeMillis();
-				}
-				/**
-				 * if referer member is outside the subclass, I change the refering pointer.
-				 */
-				else{
-					reference.setReferee(newMethod);
-					newMethod.addProgramReferer(reference);					
-				}
+			if(!superUnit.isInterface()){
+				handleRefereesOfToBePulledMember(newToBePulledMember, newMethod);
 			}
 			
-			newToBePulledMember.setRefererPointList(new ArrayList<ProgramReference>());
 		}
 		
 		return newMethod;
 	}
 	
+	/**
+	 * On creating a new member, new_mem in super class (or interface) to be overriden by the to-be-pulled member, tbp_mem, this method will do
+	 * the following things:
+	 * 
+	 * 1) all the referers of tbp_mem (but are not located in the class declaring tbp_m) will now refer to new_mem.
+	 * 2) the refer pointer list in tbp_mem is set empty.
+	 * @param newToBePulledMember
+	 * @param newMethod
+	 */
+	private void handleReferersOfToBePulledMember(UnitMemberWrapper newToBePulledMember, MethodWrapper newMethod){
+		for(ProgramReference reference: newToBePulledMember.getRefererPointList()){
+			reference.setReferee(newMethod);
+			newMethod.addProgramReferer(reference);		
+		}
+		
+		newToBePulledMember.setRefererPointList(new ArrayList<ProgramReference>());
+	}
+	
+	/**
+	 * On creating a new member, new_mem in super class to be overriden by the to-be-pulled member, tbp_mem, this method will do
+	 * the following things:
+	 * 
+	 * 1) all the referees of tbp_mem (but are not located in the class declaring tbp_m) will now be refered by new_mem.
+	 * 2) the referee pointer list in tbp_mem is set empty.
+	 * @param newToBePulledMember
+	 * @param newMethod
+	 */
+	private void handleRefereesOfToBePulledMember(UnitMemberWrapper newToBePulledMember, MethodWrapper newMethod){
+		for(ProgramReference reference: newToBePulledMember.getRefereePointList()){
+			reference.setReferer(newMethod);
+			newMethod.addProgramReferee(reference);
+		}
+		
+		newToBePulledMember.setRefereePointList(new ArrayList<ProgramReference>());
+	}
 
 	/**
 	 * A new interface will be named by ***able, class will be named by ***Parent, and the inheritance relation will be formed as well.
@@ -93,7 +102,7 @@ public abstract class PullUpMethodOpportunity extends RefactoringOpportunity{
 	 * @return
 	 */
 	protected ICompilationUnitWrapper createNewUnit(ProgramModel newModel, boolean isInterface) {
-		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMethodList.get(0);
+		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMemberList.get(0);
 		ICompilationUnitWrapper referringUnit = methodWrapper.getUnitWrapper();
 		ICompilationUnitWrapper subClassUnit = newModel.findUnit(referringUnit.getFullQualifiedName());
 		
@@ -112,7 +121,7 @@ public abstract class PullUpMethodOpportunity extends RefactoringOpportunity{
 		
 		newModel.getScopeCompilationUnitList().add(newUnit);
 		
-		for(UnitMemberWrapper member: toBePulledMethodList){
+		for(UnitMemberWrapper member: toBePulledMemberList){
 			UnitMemberWrapper newMember = newModel.findMember(member);
 			
 			ICompilationUnitWrapper unit = newMember.getUnitWrapper();
