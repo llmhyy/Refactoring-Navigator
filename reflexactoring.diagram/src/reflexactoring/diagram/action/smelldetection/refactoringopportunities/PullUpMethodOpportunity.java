@@ -48,8 +48,32 @@ public abstract class PullUpMethodOpportunity extends RefactoringOpportunity{
 		for(UnitMemberWrapper member: toBePulledMethodList){
 			UnitMemberWrapper newMember = newModel.findMember(member);
 			for(ProgramReference reference: newMember.getRefererPointList()){
-				reference.setReferee(newMethod);
-				newMethod.addProgramReferer(reference);
+				UnitMemberWrapper referer = reference.getReferer();
+				UnitMemberWrapper referee = reference.getReferee();
+				/**
+				 * if referer (caller) member is inside the same subclass of referee member (the one to be pulled), 
+				 * I simply remove such reference. It is because the static dependency is transfered to inheritance 
+				 * relation.
+				 */
+				if(referer.getUnitWrapper().equals(referee.getUnitWrapper())){
+					/**
+					 * remove from program reference list, refer's referee list and refee's referer list.
+					 */
+					//TODO
+					newModel.getReferenceList().remove(reference);
+					referer.getRefereePointList().remove(reference);
+					referee.getRefererPointList().remove(reference);
+					
+					System.currentTimeMillis();
+				}
+				/**
+				 * if referer member is outside the subclass, I change the refering pointer.
+				 */
+				else{
+					reference.setReferee(newMethod);
+					newMethod.addProgramReferer(reference);					
+				}
+				
 			}
 			
 			newMember.setRefererPointList(new ArrayList<ProgramReference>());

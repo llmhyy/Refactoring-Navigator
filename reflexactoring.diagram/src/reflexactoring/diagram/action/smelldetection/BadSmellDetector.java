@@ -48,8 +48,44 @@ public class BadSmellDetector {
 	
 	public void detect(ProgramModel model){
 		detectClone(model);
+		/**
+		 * should be followed by other smell detection methods
+		 */
+		detectCloneBasedRefactoringOpportunities(model);
+		//detectMetricBasedRefactoringOpportunities(model);
 	}
 	
+	/**
+	 * @param model
+	 */
+	private void detectCloneBasedRefactoringOpportunities(ProgramModel model) {
+		// TODO for Lin Yun
+		/**
+		 * First, identify the *counter* methods across different classes, those class should be with same inheritance hierarchy.
+		 */
+		ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList = detectCounterMembers(model);
+		/**
+		 * If those methods occupy the whole (sufficient) method body, it is a (create-and-)pull-up-to-super-class opportunity,
+		 * otherwise, 
+		 * * if those methods only occupy parts of method body, it is a extract-method-to-super-class opportunity.
+		 * * if those methods do not share code clones, it is a pull-up-to-new-interface opportunity.
+		 */
+		
+		/**
+		 * Then, we look for those clone sets whose instances are distributed irregularly, they are extract-method-to-utility-class.
+		 */
+	}
+
+	/**
+	 * @param model
+	 * @return
+	 */
+	private ArrayList<ArrayList<UnitMemberWrapper>> detectCounterMembers(
+			ProgramModel model) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	private void detectClone(ProgramModel model){
 		
 		ArrayList<JCCDFile> fileList = new ArrayList<JCCDFile>();
