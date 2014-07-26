@@ -192,4 +192,46 @@ public class MethodWrapper extends UnitMemberWrapper {
 		this.parameters = parameters;
 	}
 
+	/* (non-Javadoc)
+	 * @see reflexactoring.diagram.bean.UnitMemberWrapper#hasSameSignatureWith(reflexactoring.diagram.bean.UnitMemberWrapper)
+	 */
+	@Override
+	public boolean hasSameSignatureWith(UnitMemberWrapper member) {
+		if(member instanceof MethodWrapper){
+			MethodWrapper methodWrapper = (MethodWrapper)member;
+			
+			boolean isSameReturnType = true;
+			if(methodWrapper.getMethod() != null && this.getMethod() != null){
+				String thatTypeName = methodWrapper.getMethod().getReturnType2().toString();
+				String thisTypeName = methodWrapper.getMethod().getReturnType2().toString();
+				
+				isSameReturnType = thatTypeName.equals(thisTypeName);
+			}
+			
+			return isSameReturnType && methodWrapper.getName().endsWith(this.getName()) &&
+					isWithSameParameter(methodWrapper.getParameters(), this.getParameters());
+		}
+		return false;
+	}
+	
+	private boolean isWithSameParameter(ArrayList<String> params1, ArrayList<String> params2){
+		if(params1.size() != params2.size()){
+			return false;
+		}
+		else if(params1.size() == 0){
+			return true;
+		}
+		
+		Collections.sort(params1);
+		Collections.sort(params2);
+		
+		for(int i=0; i<params1.size(); i++){
+			if(!params1.get(i).equals(params2.get(i))){
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 }

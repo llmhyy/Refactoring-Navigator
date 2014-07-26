@@ -108,6 +108,24 @@ public class FieldWrapper extends UnitMemberWrapper{
 		return getName();
 	}
 
+	@Override
+	public boolean hasSameSignatureWith(UnitMemberWrapper member) {
+		if(member instanceof FieldWrapper){
+			FieldWrapper fieldWrapper = (FieldWrapper)member;
+			
+			boolean isSameType = true;
+			FieldDeclaration thatField = fieldWrapper.getField();
+			if(thatField != null && this.field != null){
+				String thatTypeName = thatField.getType().toString();
+				String thisTypeName = this.field.getType().toString();
+				isSameType = thatTypeName.equals(thisTypeName);
+			}
+			
+			return isSameType && fieldWrapper.getName().equals(this.getName());
+		}
+		return false;
+	}
+
 	
 
 	

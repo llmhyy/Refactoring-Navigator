@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eposoft.jccd.data.ASourceUnit;
@@ -74,16 +75,57 @@ public class BadSmellDetector {
 		/**
 		 * Then, we look for those clone sets whose instances are distributed irregularly, they are extract-method-to-utility-class.
 		 */
+		
+		System.currentTimeMillis();
 	}
 
 	/**
+	 * This method is used to identify the "counter member" across the refactoring scope, that is, 
+	 * 1) those members are with the same signature across different classes
+	 * 2) those members do not override some member in super class or interface
+	 * 
+	 * Note that, current version only identify counter members in class instead of interface.
+	 * 
 	 * @param model
 	 * @return
 	 */
-	private ArrayList<ArrayList<UnitMemberWrapper>> detectCounterMembers(
-			ProgramModel model) {
-		// TODO Auto-generated method stub
-		return null;
+	private ArrayList<ArrayList<UnitMemberWrapper>> detectCounterMembers(ProgramModel model) {
+		ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList = new ArrayList<>();
+		ArrayList<UnitMemberWrapper> markedMemberList = new ArrayList<>();
+		for(ICompilationUnitWrapper unit: model.getScopeCompilationUnitList()){
+			if(unit.isInterface())continue;
+			
+			ArrayList<ICompilationUnitWrapper> otherUnits = model.findOtherUnits(unit);
+			for(UnitMemberWrapper member: unit.getMembers()){
+				if(markedMemberList.contains(member))continue;
+				
+				ArrayList<UnitMemberWrapper> counterMemberList = new ArrayList<>();
+				if(!member.isOverrideSuperMember()){
+					counterMemberList.add(member);					
+					for(ICompilationUnitWrapper otherUnit: otherUnits){
+						if(otherUnit.isInterface())continue;
+						
+						for(UnitMemberWrapper otherMember: otherUnit.getMembers()){
+							if(markedMemberList.contains(otherMember))continue;
+							
+							if(member.hasSameSignatureWith(otherMember)){
+								if(!otherMember.isOverrideSuperMember()){
+									counterMemberList.add(otherMember);
+									break;								
+								}
+							}
+						}
+					}
+				}
+				
+				if(counterMemberList.size() >= 2){
+					refactoringPlaceList.add(counterMemberList);
+					markedMemberList.addAll(counterMemberList);
+				}
+			}
+		}
+		
+		return refactoringPlaceList;
 	}
 
 	private void detectClone(ProgramModel model){

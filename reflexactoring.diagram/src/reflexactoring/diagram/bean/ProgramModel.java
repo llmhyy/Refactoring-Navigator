@@ -434,4 +434,20 @@ public class ProgramModel{
 	public void setCloneSets(ArrayList<CloneSet> cloneSets) {
 		this.cloneSets = cloneSets;
 	}
+
+	/**
+	 * Given a unit, find other unit in this model
+	 * @param unit
+	 * @return
+	 */
+	public ArrayList<ICompilationUnitWrapper> findOtherUnits(
+			ICompilationUnitWrapper unit) {
+		ArrayList<ICompilationUnitWrapper> otherUnits = new ArrayList<>();
+		for(ICompilationUnitWrapper otherUnit: this.scopeCompilationUnitList){
+			if(!unit.equals(otherUnit)){
+				otherUnits.add(otherUnit);
+			}
+		}
+		return otherUnits;
+	}
 }
