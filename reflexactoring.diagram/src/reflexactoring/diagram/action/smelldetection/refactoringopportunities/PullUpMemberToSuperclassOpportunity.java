@@ -3,7 +3,10 @@
  */
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
+import java.util.ArrayList;
+
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 
@@ -13,18 +16,32 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
  */
 public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity{
 
+	/**
+	 * @param toBePulledMemberList
+	 */
+	public PullUpMemberToSuperclassOpportunity(
+			ArrayList<UnitMemberWrapper> toBePulledMemberList, ArrayList<ModuleWrapper> moduleList, 
+			ICompilationUnitWrapper targetUnit) {
+		super(toBePulledMemberList, moduleList);
+		this.targetUnit = targetUnit;
+	}
+	
+	@Override
+	public String toString(){
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(super.toString());
+		buffer.append(" to super class " + targetUnit.toString());
+		return buffer.toString();
+	}
+
 	@Override
 	public ProgramModel simulate(ProgramModel model) {
 		ProgramModel newModel = model.clone();
-		/**
-		 * get the parent class
-		 */
-		ICompilationUnitWrapper superClassUnit = getSuperClass(newModel);
 		
 		/**
 		 * create a new method in the parent class and change reference
 		 */
-		createNewMember(newModel, superClassUnit);
+		createNewMember(newModel, this.targetUnit);
 		
 		/**
 		 * delete the to-be-pulled members in model
@@ -36,21 +53,6 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
 		return newModel;
-	}
-
-	/**
-	 * Find the super class of the member referring class.
-	 * 
-	 * @param newModel
-	 * @return
-	 */
-	private ICompilationUnitWrapper getSuperClass(ProgramModel newModel) {
-		UnitMemberWrapper memberWrapper = toBePulledMemberList.get(0);
-		ICompilationUnitWrapper referringUnit = memberWrapper.getUnitWrapper();
-		ICompilationUnitWrapper subClassUnit = newModel.findUnit(referringUnit.getFullQualifiedName());
-		ICompilationUnitWrapper superClassUnit = subClassUnit.getSuperClass();
-		
-		return superClassUnit;
 	}
 	
 	@Override

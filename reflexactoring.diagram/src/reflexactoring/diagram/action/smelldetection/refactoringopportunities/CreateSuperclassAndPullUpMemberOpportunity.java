@@ -3,7 +3,10 @@
  */
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
+import java.util.ArrayList;
+
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -12,7 +15,23 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
  * @author linyun
  *
  */
-public class CreateSuperclassAndPullUpMethodOpportunity  extends PullUpMemberOpportunity {
+public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpportunity {
+
+	/**
+	 * @param toBePulledMemberList
+	 */
+	public CreateSuperclassAndPullUpMemberOpportunity(
+			ArrayList<UnitMemberWrapper> toBePulledMemberList, ArrayList<ModuleWrapper> moduleList) {
+		super(toBePulledMemberList, moduleList);
+	}
+	
+	@Override
+	public String toString(){
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(super.toString());
+		buffer.append(" to newly created super class");
+		return buffer.toString();
+	}
 
 	@Override
 	public ProgramModel simulate(ProgramModel model) {

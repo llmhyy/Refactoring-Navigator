@@ -22,6 +22,13 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
 public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	protected ArrayList<UnitMemberWrapper> toBePulledMemberList = new ArrayList<>();
 	protected ICompilationUnitWrapper targetUnit;
+	
+	public PullUpMemberOpportunity(ArrayList<UnitMemberWrapper> toBePulledMemberList, ArrayList<ModuleWrapper> moduleList){
+		this.moduleList = moduleList;
+		this.toBePulledMemberList = toBePulledMemberList;
+	}
+	
+	
 	public ArrayList<UnitMemberWrapper> getToBePulledMemberList() {
 		return toBePulledMemberList;
 	}
@@ -30,6 +37,17 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		this.toBePulledMemberList = toBePulledMemberList;
 	}
 	
+	@Override
+	public String toString(){
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("Pull up ");
+		String elementType = (toBePulledMemberList.get(0) instanceof MethodWrapper)?"method":"field";
+		buffer.append(elementType + " ");
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			buffer.append(member.toString()+",");
+		}
+		return buffer.toString();
+	}
 
 	/**
 	 * In this method, a new member is created, the following relations are built: containment relation between member and unit,
