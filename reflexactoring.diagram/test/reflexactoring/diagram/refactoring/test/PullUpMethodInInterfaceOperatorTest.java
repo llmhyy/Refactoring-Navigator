@@ -28,7 +28,7 @@ public class PullUpMethodInInterfaceOperatorTest {
 		PullUpMemberToInterfaceOpportunity opp = new PullUpMemberToInterfaceOpportunity();
 		
 		opp.setModuleList(moduleList);
-		opp.setToBePulledMethodList(toBePulledList);
+		opp.setToBePulledMemberList(toBePulledList);
 		ProgramModel newModel = opp.simulate(model);
 		
 		return newModel;

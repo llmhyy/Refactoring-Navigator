@@ -4,7 +4,6 @@
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 
@@ -25,7 +24,7 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 		/**
 		 * create a new method in the parent class and change reference
 		 */
-		createNewMethod(newModel, superClassUnit);
+		createNewMember(newModel, superClassUnit);
 		
 		/**
 		 * delete the to-be-pulled members in model
@@ -40,14 +39,14 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 	}
 
 	/**
-	 * Find the super class of the method referring class.
+	 * Find the super class of the member referring class.
 	 * 
 	 * @param newModel
 	 * @return
 	 */
 	private ICompilationUnitWrapper getSuperClass(ProgramModel newModel) {
-		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMemberList.get(0);
-		ICompilationUnitWrapper referringUnit = methodWrapper.getUnitWrapper();
+		UnitMemberWrapper memberWrapper = toBePulledMemberList.get(0);
+		ICompilationUnitWrapper referringUnit = memberWrapper.getUnitWrapper();
 		ICompilationUnitWrapper subClassUnit = newModel.findUnit(referringUnit.getFullQualifiedName());
 		ICompilationUnitWrapper superClassUnit = subClassUnit.getSuperClass();
 		

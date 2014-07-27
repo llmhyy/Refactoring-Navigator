@@ -4,10 +4,10 @@
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
+import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -22,41 +22,53 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
 public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	protected ArrayList<UnitMemberWrapper> toBePulledMemberList = new ArrayList<>();
 	protected ICompilationUnitWrapper targetUnit;
-	public ArrayList<UnitMemberWrapper> getToBePulledMethodList() {
+	public ArrayList<UnitMemberWrapper> getToBePulledMemberList() {
 		return toBePulledMemberList;
 	}
-	public void setToBePulledMethodList(
-			ArrayList<UnitMemberWrapper> toBePulledMethodList) {
-		this.toBePulledMemberList = toBePulledMethodList;
+	public void setToBePulledMemberList(
+			ArrayList<UnitMemberWrapper> toBePulledMemberList) {
+		this.toBePulledMemberList = toBePulledMemberList;
 	}
 	
 
 	/**
-	 * In this method, a new method is created, the following relations are built: containment relation between method and unit,
-	 * all the references to to-be-pulled methods now point to the new method in unit.
+	 * In this method, a new member is created, the following relations are built: containment relation between member and unit,
+	 * all the references to to-be-pulled members now point to the new member in unit.
 	 * 
 	 * @param newModel
 	 * @param superUnit
 	 * @return
 	 */
-	protected MethodWrapper createNewMethod(ProgramModel newModel, ICompilationUnitWrapper superUnit) {
-		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMemberList.get(0);
-		MethodWrapper newMethod = new MethodWrapper(methodWrapper.getName(), methodWrapper.getParameters(), 
-				methodWrapper.isConstructor(), superUnit);
-		newModel.getScopeMemberList().add(newMethod);
-		superUnit.getMembers().add(newMethod);
+	protected UnitMemberWrapper createNewMember(ProgramModel newModel, ICompilationUnitWrapper superUnit) {
+		UnitMemberWrapper memberWrapper = toBePulledMemberList.get(0);
+		
+		UnitMemberWrapper newMember = null;
+		if(memberWrapper instanceof MethodWrapper){
+			MethodWrapper methodWrapper = (MethodWrapper)memberWrapper;
+			newMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getParameters(), 
+					methodWrapper.isConstructor(), superUnit);			
+		}
+		else{
+			FieldWrapper fieldWrapper = (FieldWrapper)memberWrapper;
+			newMember = new FieldWrapper(fieldWrapper.getName(), superUnit);
+		}
+		
+		if(newMember == null)return null;
+		
+		newModel.getScopeMemberList().add(newMember);
+		superUnit.getMembers().add(newMember);
 		
 		for(UnitMemberWrapper member: toBePulledMemberList){
 			UnitMemberWrapper newToBePulledMember = newModel.findMember(member);
-			handleReferersOfToBePulledMember(newToBePulledMember, newMethod);
+			handleReferersOfToBePulledMember(newToBePulledMember, newMember);
 			
 			if(!superUnit.isInterface()){
-				handleRefereesOfToBePulledMember(newToBePulledMember, newMethod);
+				handleRefereesOfToBePulledMember(newToBePulledMember, newMember);
 			}
 			
 		}
 		
-		return newMethod;
+		return newMember;
 	}
 	
 	/**
@@ -66,12 +78,12 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * 1) all the referers of tbp_mem (but are not located in the class declaring tbp_m) will now refer to new_mem.
 	 * 2) the refer pointer list in tbp_mem is set empty.
 	 * @param newToBePulledMember
-	 * @param newMethod
+	 * @param newMember
 	 */
-	private void handleReferersOfToBePulledMember(UnitMemberWrapper newToBePulledMember, MethodWrapper newMethod){
+	private void handleReferersOfToBePulledMember(UnitMemberWrapper newToBePulledMember, UnitMemberWrapper newMember){
 		for(ProgramReference reference: newToBePulledMember.getRefererPointList()){
-			reference.setReferee(newMethod);
-			newMethod.addProgramReferer(reference);		
+			reference.setReferee(newMember);
+			newMember.addProgramReferer(reference);		
 		}
 		
 		newToBePulledMember.setRefererPointList(new ArrayList<ProgramReference>());
@@ -84,12 +96,12 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * 1) all the referees of tbp_mem (but are not located in the class declaring tbp_m) will now be refered by new_mem.
 	 * 2) the referee pointer list in tbp_mem is set empty.
 	 * @param newToBePulledMember
-	 * @param newMethod
+	 * @param newMember
 	 */
-	private void handleRefereesOfToBePulledMember(UnitMemberWrapper newToBePulledMember, MethodWrapper newMethod){
+	private void handleRefereesOfToBePulledMember(UnitMemberWrapper newToBePulledMember, UnitMemberWrapper newMember){
 		for(ProgramReference reference: newToBePulledMember.getRefereePointList()){
-			reference.setReferer(newMethod);
-			newMethod.addProgramReferee(reference);
+			reference.setReferer(newMember);
+			newMember.addProgramReferee(reference);
 		}
 		
 		newToBePulledMember.setRefereePointList(new ArrayList<ProgramReference>());
@@ -102,14 +114,14 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @return
 	 */
 	protected ICompilationUnitWrapper createNewUnit(ProgramModel newModel, boolean isInterface) {
-		MethodWrapper methodWrapper = (MethodWrapper)toBePulledMemberList.get(0);
-		ICompilationUnitWrapper referringUnit = methodWrapper.getUnitWrapper();
+		UnitMemberWrapper memberWrapper = toBePulledMemberList.get(0);
+		ICompilationUnitWrapper referringUnit = memberWrapper.getUnitWrapper();
 		ICompilationUnitWrapper subClassUnit = newModel.findUnit(referringUnit.getFullQualifiedName());
 		
 		/**
 		 * find a way to name the new unit
 		 */
-		String simpleName = methodWrapper.getName();
+		String simpleName = memberWrapper.getName();
 		if(isInterface){
 			simpleName += "able" + NameGernationCounter.retrieveNumber();
 		}else{

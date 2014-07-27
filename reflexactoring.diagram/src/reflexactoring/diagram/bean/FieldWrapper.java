@@ -21,6 +21,11 @@ public class FieldWrapper extends UnitMemberWrapper{
 	private FieldDeclaration field;
 	private String name;
 	
+	public FieldWrapper(String name, ICompilationUnitWrapper unitWrapper){
+		super(unitWrapper);
+		this.name = name;
+	}
+	
 	public FieldWrapper(FieldDeclaration field, ICompilationUnitWrapper unitWrapper){
 		super(unitWrapper);
 		this.setField(field);

@@ -25,7 +25,7 @@ public class CreateSuperclassAndPullUpMethodOpportunity  extends PullUpMemberOpp
 		/**
 		 * create a new method in the parent class and change reference
 		 */
-		createNewMethod(newModel, newSuperClassUnit);
+		createNewMember(newModel, newSuperClassUnit);
 		
 		/**
 		 * delete the to-be-pulled members in model
