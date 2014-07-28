@@ -13,8 +13,6 @@ public class CloneSet {
 	
 	private String id;
 	private ArrayList<CloneInstance> instances = new ArrayList<>();
-
-	
 	
 	/**
 	 * @param id

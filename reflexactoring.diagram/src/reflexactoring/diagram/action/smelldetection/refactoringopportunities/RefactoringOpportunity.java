@@ -5,6 +5,8 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
 
+import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 
@@ -50,5 +52,31 @@ public abstract class RefactoringOpportunity {
 		this.moduleList = moduleList;
 	}
 	
-	
+	/**
+	 * @param newUnit
+	 * @return
+	 */
+	protected ModuleWrapper calculateBestMappingModule(ProgramModel model,
+			ICompilationUnitWrapper newUnit) {
+		
+		ModuleWrapper module = null;
+		double fitness = 0;
+		
+		for(ModuleWrapper m: moduleList){
+			newUnit.setMappingModule(m);
+			double f = new AdvanceEvaluatorAdapter().computeFitness(model, moduleList);
+			if(module == null){
+				module = m;
+				fitness = f;
+			}
+			else{
+				if(f > fitness){
+					module = m;
+					fitness = f;
+				}
+			}
+		}
+		
+		return module;
+	}
 }

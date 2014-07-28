@@ -82,14 +82,14 @@ public class BadSmellDetector {
 
 	/**
 	 * If those methods occupy the whole (sufficient) method body, it is a (create-and-)pull-up-to-super-class opportunity,
-	 * otherwise, i.e., if those methods do not share code clones, it is a pull-up-to-new-interface opportunity.
+	 * otherwise, i.e., if those methods do not share code clones, it is a pull-up-to-new-interface opportunity.<p>
 	 * 
 	 * Noteworthy, if the declaring classes of those counter members share the same common ancestor, I create a pull-up-to-superclass
 	 * opportunity, if the declaring classes of them share no super class, I create a create-and-pull-up-to-superclass
 	 * opportunity. In other cases, e.g., some of the declaring classes share super class while others not, I will not consider
-	 * such cases as pull-up-to-superclass opportunity.
+	 * such cases as pull-up-to-superclass opportunity.<p>
 	 * 
-	 * Moreover, for each (create-and-)pull-up-to-superclass opportunity of counter method, there will always be a pull-up-to-interface 
+	 * Moreover, for each (create-and-)pull-up-to-superclass opportunity of counter methods, there will always be a pull-up-to-interface 
 	 * opportunity, of course, they conflicts with each other, which means the search algorithm should know to remove some 
 	 * opportunities after applying some others.
 	 */

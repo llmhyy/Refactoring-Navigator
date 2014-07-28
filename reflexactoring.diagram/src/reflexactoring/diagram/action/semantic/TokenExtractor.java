@@ -65,7 +65,7 @@ public class TokenExtractor {
 						String content = source.substring(element.getStartPosition(), element.getStartPosition() + element.getLength());
 						content = ReflexactoringUtil.removeDelimit(content);
 						content = ReflexactoringUtil.removeStopWord(content);
-						content = ReflexactoringUtil.performStemming(content);
+						//content = ReflexactoringUtil.performStemming(content);
 						
 						buffer.append(content + " ");
 						

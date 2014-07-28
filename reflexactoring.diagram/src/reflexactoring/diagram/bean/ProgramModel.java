@@ -9,6 +9,7 @@ import java.util.Iterator;
 import org.eclipse.jdt.core.ICompilationUnit;
 
 import reflexactoring.Type;
+import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 
 /**
@@ -35,10 +36,53 @@ public class ProgramModel{
 		ArrayList<ProgramReference> prList = cloneReference(clonedModel, this);
 		clonedModel.setReferenceList(prList);
 		//cloneReferenceRelations(clonedModel, this);
+		ArrayList<CloneSet> cloneSets = cloneCloneSets(clonedModel, this);
+		clonedModel.setCloneSets(cloneSets);
 		
 		return clonedModel;
 	}
 	
+	/**
+	 * This method must be invoked after other clone methods.
+	 * 
+	 * @param newModel
+	 * @param programModel
+	 * @return
+	 */
+	private ArrayList<CloneSet> cloneCloneSets(ProgramModel newModel, ProgramModel oldModel) {
+		ArrayList<CloneSet> cloneSets = new ArrayList<>();
+		for(CloneSet oldSet: oldModel.getCloneSets()){
+			CloneSet newSet = new CloneSet(oldSet.getId());
+			ArrayList<CloneInstance> newInstanceList = new ArrayList<>();
+			
+			for(CloneInstance oldInstance: oldSet.getInstances()){
+				CloneInstance newInstance = new CloneInstance(newSet, oldInstance.getFileName(), 
+						oldInstance.getStartLineNumber(), oldInstance.getEndLineNumber());
+				
+				int memberIndex = oldModel.getUnitMemberIndex(oldInstance.getMember());
+				UnitMemberWrapper newMember = newModel.getScopeMemberList().get(memberIndex);
+				newInstance.setMember(newMember);
+				
+				ArrayList<ProgramReference> newCoveringReferenceList = new ArrayList<>();
+				for(ProgramReference oldReference: oldInstance.getCoveringReferenceList()){
+					int referenceIndex = oldModel.getProgramReferenceIndexByAddress(oldReference);
+					ProgramReference newReference = newModel.getReferenceList().get(referenceIndex);
+					
+					newCoveringReferenceList.add(newReference);
+				}
+				newInstance.setCoveringReferenceList(newCoveringReferenceList);
+				
+				newInstanceList.add(newInstance);
+			}
+			
+			newSet.setInstances(newInstanceList);
+			cloneSets.add(newSet);
+		}
+		
+		
+		return cloneSets;
+	}
+
 	public void removeMember(UnitMemberWrapper toBeDeletedMember){
 		Iterator<UnitMemberWrapper> memberIter = this.scopeMemberList.iterator();
 		while(memberIter.hasNext()){
@@ -235,7 +279,12 @@ public class ProgramModel{
 			}
 		}		
 	}*/	
-
+	
+	/**
+	 * Compare address of two references, not only the content.
+	 * @param reference
+	 * @return
+	 */
 	public ProgramReference findReference(ProgramReference reference){
 		for(ProgramReference ref: referenceList){
 			if(ref.equals(reference)){
@@ -329,10 +378,15 @@ public class ProgramModel{
 
 	}
 	
-	public int getProgramReferenceIndex(ProgramReference r){
+	/**
+	 * compare the address of program reference, this require the input r should be the element inside reference list.
+	 * @param r
+	 * @return
+	 */
+	public int getProgramReferenceIndexByAddress(ProgramReference r){
 		for(int i=0; i<this.referenceList.size(); i++){
 			ProgramReference reference = this.referenceList.get(i);
-			if(reference.equals(r)){
+			if(reference == r){
 				return i;
 			}
 		}
