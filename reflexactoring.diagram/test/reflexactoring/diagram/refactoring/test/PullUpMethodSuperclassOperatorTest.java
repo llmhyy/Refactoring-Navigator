@@ -25,10 +25,8 @@ public class PullUpMethodSuperclassOperatorTest {
 		
 		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		
-		PullUpMemberToSuperclassOpportunity opp = new PullUpMemberToSuperclassOpportunity();
+		PullUpMemberToSuperclassOpportunity opp = null;//new PullUpMemberToSuperclassOpportunity(toBePulledList, moduleList);
 		
-		opp.setModuleList(moduleList);
-		opp.setToBePulledMemberList(toBePulledList);
 		ProgramModel newModel = opp.simulate(model);
 		
 		return newModel;

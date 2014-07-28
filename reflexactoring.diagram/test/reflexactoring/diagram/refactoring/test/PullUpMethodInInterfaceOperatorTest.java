@@ -25,10 +25,8 @@ public class PullUpMethodInInterfaceOperatorTest {
 		
 		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		
-		PullUpMemberToInterfaceOpportunity opp = new PullUpMemberToInterfaceOpportunity();
-		
-		opp.setModuleList(moduleList);
-		opp.setToBePulledMemberList(toBePulledList);
+		PullUpMemberToInterfaceOpportunity opp = new PullUpMemberToInterfaceOpportunity(toBePulledList, moduleList);
+	
 		ProgramModel newModel = opp.simulate(model);
 		
 		return newModel;
