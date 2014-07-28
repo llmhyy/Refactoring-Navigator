@@ -33,6 +33,7 @@ import org.eposoft.jccd.preprocessors.java.RemoveSemicolons;
 import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.CreateSuperclassAndPullUpMemberOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractUtilityClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToSuperclassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
@@ -67,17 +68,29 @@ public class BadSmellDetector {
 	 */
 	private void detectCloneBasedRefactoringOpportunities(ProgramModel model) {
 		// TODO for Lin Yun
+		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		/**
 		 * First, identify the *counter* methods across different classes, those class should be with same inheritance hierarchy.
 		 */
 		ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList = detectCounterMembers(model);
 		
-		detectPullingUpOpportunities(model, refactoringPlaceList);
+		detectPullingUpOpportunities(model, refactoringPlaceList, moduleList);
 		/**
-		 * Then, we look for those clone sets whose instances are distributed irregularly, they are extract-method-to-utility-class.
+		 * Then, for each clone set, there will be an extract-method-to-utility-class opportunity.
 		 */
+		detectClonesForUtilityClass(model, moduleList);
 		
 		System.currentTimeMillis();
+	}
+
+	/**
+	 * @param model
+	 */
+	private void detectClonesForUtilityClass(ProgramModel model, ArrayList<ModuleWrapper> moduleList) {
+		for(CloneSet set: model.getCloneSets()){
+			ExtractUtilityClassOpportunity opp = new ExtractUtilityClassOpportunity(set, moduleList);
+			this.opporuntities.add(opp);
+		}
 	}
 
 	/**
@@ -93,8 +106,9 @@ public class BadSmellDetector {
 	 * opportunity, of course, they conflicts with each other, which means the search algorithm should know to remove some 
 	 * opportunities after applying some others.
 	 */
-	private void detectPullingUpOpportunities(ProgramModel model, ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList) {
-		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+	private void detectPullingUpOpportunities(ProgramModel model, ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList,
+			ArrayList<ModuleWrapper> moduleList) {
+		
 		
 		for(ArrayList<UnitMemberWrapper> refactoringPlace: refactoringPlaceList){
 			ICompilationUnitWrapper commonAncestor = findCommonAncestor(refactoringPlace);
