@@ -29,6 +29,17 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 	}
 	
 	@Override
+	public String toString(){
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("extract the cloned code ");
+		for(CloneInstance instance: cloneSet.getInstances()){
+			buffer.append(instance.toString() + ",");
+		}
+		buffer.append("to a utility class");
+		return buffer.toString();
+	}
+	
+	@Override
 	public ProgramModel simulate(ProgramModel model) {
 		ProgramModel newModel = model.clone();
 		/**
@@ -56,27 +67,19 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 			UnitMemberWrapper member = newModel.findMember(instance.getMember());
 			for(ProgramReference reference: instance.getCoveringReferenceList()){
 				/**
-				 * member's referee
+				 * new member's referee
 				 */
 				if(reference.getReferer().equals(member)){
 					member.getRefereePointList().remove(reference);
 					reference.setReferer(utilityMethod);
 					utilityMethod.addProgramReferee(reference);
 				}
-				/**
-				 * member's referer
-				 */
-				else{
-					member.getRefererPointList().remove(reference);
-					reference.setReferee(utilityMethod);
-					utilityMethod.addProgramReferer(reference);
-				}
-				
-				ProgramReference newReference = new ProgramReference(member, utilityMethod, member.getJavaElement());
-				newModel.getReferenceList().add(newReference);
-				member.addProgramReferee(newReference);
-				utilityMethod.addProgramReferer(newReference);
 			}
+			
+			ProgramReference newReference = new ProgramReference(member, utilityMethod, member.getJavaElement());
+			newModel.getReferenceList().add(newReference);
+			member.addProgramReferee(newReference);
+			utilityMethod.addProgramReferer(newReference);
 		}
 		
 		/**
