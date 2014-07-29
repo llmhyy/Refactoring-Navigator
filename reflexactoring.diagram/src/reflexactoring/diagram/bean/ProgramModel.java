@@ -344,6 +344,18 @@ public class ProgramModel{
 		return null;
 	}
 	
+	public CloneSet findCloneSet(UnitMemberWrapper member){
+		for(CloneSet set: this.cloneSets){
+			for(CloneInstance ins: set.getInstances()){
+				if(ins.getMember().equals(member)){
+					return set;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	public void updateUnitCallingRelationByMemberRelations(){
 		/**
 		 * clear original call relations between compilation unit.

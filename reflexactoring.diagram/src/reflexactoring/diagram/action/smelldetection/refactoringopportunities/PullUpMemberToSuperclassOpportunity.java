@@ -5,6 +5,7 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
 
+import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
@@ -49,6 +50,12 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 		for(UnitMemberWrapper member: toBePulledMemberList){
 			newModel.removeMember(member);
 		}
+		
+		/**
+		 * remove relevant clone set
+		 */
+		CloneSet set = newModel.findCloneSet(toBePulledMemberList.get(0));
+		newModel.getCloneSets().remove(set);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
