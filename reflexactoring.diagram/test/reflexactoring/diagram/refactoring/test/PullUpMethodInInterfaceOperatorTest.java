@@ -19,9 +19,9 @@ import reflexactoring.diagram.util.Settings;
 public class PullUpMethodInInterfaceOperatorTest {
 	public ProgramModel test(ProgramModel model){
 		ArrayList<UnitMemberWrapper> toBePulledList = new ArrayList<>();
-		toBePulledList.add(model.getScopeMemberList().get(0));
-		toBePulledList.add(model.getScopeMemberList().get(2));
-		toBePulledList.add(model.getScopeMemberList().get(3));
+		toBePulledList.add(model.getScopeMemberList().get(1));
+		toBePulledList.add(model.getScopeMemberList().get(4));
+		toBePulledList.add(model.getScopeMemberList().get(6));
 		
 		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		

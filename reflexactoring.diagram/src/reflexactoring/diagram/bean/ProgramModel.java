@@ -101,11 +101,18 @@ public class ProgramModel{
 	private ArrayList<ICompilationUnitWrapper> cloneUnits() {
 		ArrayList<ICompilationUnitWrapper> clonedUnits = new ArrayList<>();
 		for(ICompilationUnitWrapper unit: scopeCompilationUnitList){
+			ICompilationUnitWrapper clonedUnit;			
+			if(unit.getCompilationUnit() != null){
+				clonedUnit = new ICompilationUnitWrapper(unit.getCompilationUnit());
+				clonedUnit.setMappingModule(unit.getMappingModule());
+				clonedUnit.setInterface(unit.isInterface());
+				clonedUnit.setJavaUnit(unit.getJavaUnit());
+			}
+			else{
+				clonedUnit = new ICompilationUnitWrapper(unit.getMappingModule(), 
+						unit.isInterface(), unit.getSimpleName(), unit.getPackageName());
+			}
 			
-			ICompilationUnitWrapper clonedUnit = new ICompilationUnitWrapper(unit.getCompilationUnit());			
-			clonedUnit.setMappingModule(unit.getMappingModule());
-			clonedUnit.setInterface(unit.isInterface());
-			clonedUnit.setJavaUnit(unit.getJavaUnit());
 			
 			clonedUnits.add(clonedUnit);
 		}
@@ -194,10 +201,21 @@ public class ProgramModel{
 			ICompilationUnitWrapper clonedMemberUnit = clonedModel.getScopeCompilationUnitList().get(index);						
 
 			UnitMemberWrapper clonedMember = null;			
-			if(member instanceof FieldWrapper){
-				clonedMember = new FieldWrapper(((FieldWrapper) member).getField(), clonedMemberUnit);
-			}else if(member instanceof MethodWrapper){
-				clonedMember = new MethodWrapper(((MethodWrapper) member).getMethod(), clonedMemberUnit);
+			if(member.getJavaElement() != null){
+				if(member instanceof FieldWrapper){
+					clonedMember = new FieldWrapper(((FieldWrapper) member).getField(), clonedMemberUnit);
+				}else if(member instanceof MethodWrapper){
+					clonedMember = new MethodWrapper(((MethodWrapper) member).getMethod(), clonedMemberUnit);
+				}				
+			}
+			else{
+				if(member instanceof FieldWrapper){
+					clonedMember = new FieldWrapper(member.getName(), clonedMemberUnit);
+				}else if(member instanceof MethodWrapper){
+					MethodWrapper methodWrapper = (MethodWrapper)member;
+					clonedMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getParameters(), 
+							methodWrapper.isConstructor(), clonedMemberUnit);
+				}	
 			}
 			clonedMembers.add(clonedMember);
 		}

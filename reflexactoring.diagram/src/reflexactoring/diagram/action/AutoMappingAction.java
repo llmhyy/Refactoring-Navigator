@@ -83,6 +83,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		//ProgramModel model = new PullUpMethodSuperclassOperatorTest().test(Settings.scope);
 		//ProgramModel model = new PullUpMethodNewSuperclassOperatorTest().test(Settings.scope);		
 		ProgramModel model = new ExtractUtilityClassOperatorTest().test(Settings.scope);
+		model = new PullUpMethodInInterfaceOperatorTest().test(model);
 		
 		new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
 		//new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
