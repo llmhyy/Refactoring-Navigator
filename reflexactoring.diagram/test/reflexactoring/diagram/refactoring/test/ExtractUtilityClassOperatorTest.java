@@ -18,7 +18,7 @@ import reflexactoring.diagram.util.Settings;
  */
 public class ExtractUtilityClassOperatorTest {
 	public ProgramModel test(ProgramModel model){
-		CloneSet set = model.getCloneSets().get(2);
+		CloneSet set = model.getCloneSets().get(0);
 		
 		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		

@@ -34,11 +34,13 @@ public abstract class RefactoringOpportunity {
 	 * this method is used to apply refactoring on real code
 	 */
 	public abstract void apply();
-	
-	protected boolean isValid(ProgramModel model){
-		//TODO 
-		return false;
-	}
+	/**
+	 * this method is used to check whether a refactoring opportunity still hold true, on the process of checking
+	 * validity, some opportunity might be updated and then get validated.
+	 * @param model
+	 * @return
+	 */
+	protected abstract boolean checkLegal(ProgramModel model);
 	/**
 	 * @return the moduleList
 	 */

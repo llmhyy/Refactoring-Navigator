@@ -16,6 +16,7 @@ import reflexactoring.diagram.bean.ProgramModel;
 public abstract class RefactoringPrecondition {
 	private ArrayList<ModuleWrapper> moduleList;
 	public abstract ArrayList<RefactoringOpportunity> detectOpportunities(ProgramModel model);
+	public abstract boolean checkLegal(ProgramModel model);
 	
 	/**
 	 * @return the moduleList
@@ -29,6 +30,4 @@ public abstract class RefactoringPrecondition {
 	public void setModuleList(ArrayList<ModuleWrapper> moduleList) {
 		this.moduleList = moduleList;
 	}
-	
-	
 }

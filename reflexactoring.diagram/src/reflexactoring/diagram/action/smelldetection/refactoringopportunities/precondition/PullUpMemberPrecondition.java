@@ -52,7 +52,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	 * @param model
 	 * @return
 	 */
-	private ArrayList<ArrayList<UnitMemberWrapper>> detectCounterMembers(ProgramModel model) {
+	protected ArrayList<ArrayList<UnitMemberWrapper>> detectCounterMembers(ProgramModel model) {
 		ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList = new ArrayList<>();
 		ArrayList<UnitMemberWrapper> markedMemberList = new ArrayList<>();
 		for(ICompilationUnitWrapper unit: model.getScopeCompilationUnitList()){
@@ -104,7 +104,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	 * opportunity, of course, they conflicts with each other, which means the search algorithm should know to remove some 
 	 * opportunities after applying some others.
 	 */
-	private ArrayList<RefactoringOpportunity> detectPullingUpOpportunities(ProgramModel model, ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList,
+	protected ArrayList<RefactoringOpportunity> detectPullingUpOpportunities(ProgramModel model, ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList,
 			ArrayList<ModuleWrapper> moduleList) {
 		ArrayList<RefactoringOpportunity> opportunities = new ArrayList<>();
 		
@@ -141,7 +141,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	 * @param refactoringPlace
 	 * @return
 	 */
-	private ICompilationUnitWrapper findCommonAncestor(ArrayList<UnitMemberWrapper> refactoringPlace) {
+	protected ICompilationUnitWrapper findCommonAncestor(ArrayList<UnitMemberWrapper> refactoringPlace) {
 		int smallestSize = -1;
 		
 		ArrayList<ArrayList<ICompilationUnitWrapper>> list = new ArrayList<>();
@@ -195,7 +195,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	 * @param refactoringPlace
 	 * @return
 	 */
-	private boolean isWithoutAnySuperclass(
+	protected boolean isWithoutAnySuperclass(
 			ArrayList<UnitMemberWrapper> refactoringPlace) {
 		for(UnitMemberWrapper member: refactoringPlace){
 			ICompilationUnitWrapper unitWrapper = member.getUnitWrapper();
@@ -210,7 +210,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	 * @param refactoringPlace
 	 * @return
 	 */
-	private boolean isWithSimilarBody(ProgramModel model, ArrayList<UnitMemberWrapper> refactoringPlace) {
+	protected boolean isWithSimilarBody(ProgramModel model, ArrayList<UnitMemberWrapper> refactoringPlace) {
 		for(CloneSet set: model.getCloneSets()){
 			boolean isAllCloneInstanceSufficientlyOccupyMemberBody = true;
 			for(CloneInstance instance: set.getInstances()){
@@ -228,7 +228,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		return false;
 	}
 	
-	private boolean isCloneInstanceSufficientlyOccupyOneOfTheMember(CloneInstance instance, 
+	protected boolean isCloneInstanceSufficientlyOccupyOneOfTheMember(CloneInstance instance, 
 			ArrayList<UnitMemberWrapper> refactoringPlace){
 		for(UnitMemberWrapper member: refactoringPlace){
 			if(instance.getMember().equals(member)){
@@ -251,5 +251,10 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		}
 		
 		return false;
+	}
+
+	@Override
+	public boolean checkLegal(ProgramModel model) {
+		return true;
 	}
 }

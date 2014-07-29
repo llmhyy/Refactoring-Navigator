@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -108,4 +109,34 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		
 	}
 	
+	@Override
+	protected boolean checkLegal(ProgramModel model) {
+		Precondition precondition = new Precondition(getModuleList());
+		return precondition.checkLegal(model);
+	}
+
+	public class Precondition extends RefactoringPrecondition{
+		/**
+		 * @param moduleList
+		 */
+		public Precondition(ArrayList<ModuleWrapper> moduleList) {
+			setModuleList(moduleList);
+		}
+
+		@Override
+		public ArrayList<RefactoringOpportunity> detectOpportunities(ProgramModel model) {
+			ArrayList<RefactoringOpportunity> opportunities = new ArrayList<>();
+			
+			for(CloneSet set: model.getCloneSets()){
+				ExtractUtilityClassOpportunity opp = new ExtractUtilityClassOpportunity(set, getModuleList());
+				opportunities.add(opp);
+			}
+			
+			return opportunities;
+		}
+		
+		public boolean checkLegal(ProgramModel model){
+			return model.findCloneSet(cloneSet.getId()) != null;
+		}
+	}
 }
