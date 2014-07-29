@@ -49,6 +49,17 @@ public class CloneInstance {
 		this.endLineNumber = endLineNumber;
 	}
 	
+	public boolean equals(Object obj){
+		if(obj instanceof CloneInstance){
+			CloneInstance thatInstance = (CloneInstance)obj;
+			return thatInstance.getFileName().equals(this.getFileName())
+					&& thatInstance.getStartLineNumber() == this.getStartLineNumber()
+					&& thatInstance.getEndLineNumber() == this.getEndLineNumber();
+		}
+		
+		return false;
+	}
+	
 	public int getLength(){
 		return this.endLineNumber - this.startLineNumber + 1;
 	}

@@ -83,6 +83,12 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		}
 		
 		/**
+		 * remove the corresponding clones
+		 */
+		CloneSet cloneSet = newModel.findCloneSet(this.cloneSet.getId());
+		newModel.getCloneSets().remove(cloneSet);
+		
+		/**
 		 * update new model
 		 */
 		newModel.updateUnitCallingRelationByMemberRelations();

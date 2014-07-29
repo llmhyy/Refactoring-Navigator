@@ -313,6 +313,37 @@ public class ProgramModel{
 		return null;
 	}
 	
+	public CloneInstance findCloneInstance(CloneInstance instance){
+		for(CloneSet set: this.cloneSets){
+			for(CloneInstance ins: set.getInstances()){
+				if(ins.equals(instance)){
+					return ins;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public CloneSet findCloneSet(String id){
+		for(CloneSet set: this.cloneSets){
+			if(set.getId().equals(id)){
+				return set;
+			}
+		}
+		
+		return null;
+	}
+	
+	public CloneSet findCloneSet(CloneInstance instance){
+		CloneInstance ins = findCloneInstance(instance);
+		if(ins != null){
+			return ins.getSet();
+		}
+		
+		return null;
+	}
+	
 	public void updateUnitCallingRelationByMemberRelations(){
 		/**
 		 * clear original call relations between compilation unit.
