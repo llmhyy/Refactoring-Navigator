@@ -157,7 +157,13 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		@Override
 		public boolean checkLegal(ProgramModel model) {
-			// TODO Auto-generated method stub
+			MethodWrapper method = (MethodWrapper)model.findMember(objectMethod);
+			ICompilationUnitWrapper unit = model.findUnit(targetUnit.getFullQualifiedName());
+			
+			if(method.isLegalMethodToBeMoved() && unit.isLegalTargetClassToMoveMethodIn(method)){
+				return isFeatureEnvy(unit, method);				
+			}
+			
 			return false;
 		}
 		
