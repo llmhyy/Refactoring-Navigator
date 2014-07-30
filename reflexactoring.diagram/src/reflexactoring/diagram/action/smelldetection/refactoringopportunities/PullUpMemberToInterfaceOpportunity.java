@@ -5,9 +5,7 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
 
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractUtilityClassOpportunity.Precondition;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
-import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;

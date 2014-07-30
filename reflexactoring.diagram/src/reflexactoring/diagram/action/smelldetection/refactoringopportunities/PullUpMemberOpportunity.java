@@ -5,7 +5,6 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
 
-import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
@@ -66,7 +65,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			newMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getParameters(), 
 					methodWrapper.isConstructor(), superUnit);			
 		}
-		else{
+		else if(memberWrapper instanceof FieldWrapper){
 			FieldWrapper fieldWrapper = (FieldWrapper)memberWrapper;
 			newMember = new FieldWrapper(fieldWrapper.getName(), superUnit);
 		}
