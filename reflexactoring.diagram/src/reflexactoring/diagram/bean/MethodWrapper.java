@@ -297,7 +297,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 			UnitMemberWrapper calleeMember = reference.getReferee();
 			
 			if(calleeMember instanceof FieldWrapper && this.getUnitWrapper().getMembers().contains(calleeMember)){
-				ASTNode node = calleeMember.getJavaElement();
+				ASTNode node = reference.getASTNode();
 				if(null == node){
 					return true;
 				}
