@@ -210,10 +210,10 @@ public class ProgramModel{
 			}
 			else{
 				if(member instanceof FieldWrapper){
-					clonedMember = new FieldWrapper(member.getName(), clonedMemberUnit);
+					clonedMember = new FieldWrapper(member.getName(), ((FieldWrapper) member).getType(), clonedMemberUnit);
 				}else if(member instanceof MethodWrapper){
 					MethodWrapper methodWrapper = (MethodWrapper)member;
-					clonedMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getParameters(), 
+					clonedMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), methodWrapper.getParameters(), 
 							methodWrapper.isConstructor(), clonedMemberUnit);
 				}	
 			}

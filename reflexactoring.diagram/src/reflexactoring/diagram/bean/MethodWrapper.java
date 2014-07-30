@@ -29,10 +29,12 @@ public class MethodWrapper extends UnitMemberWrapper {
 	private String name;
 	private ArrayList<String> parameters;
 	private boolean isConstructor;
+	private String returnType;
 	
-	public MethodWrapper(String name, ArrayList<String> parameters, boolean isConstructor, ICompilationUnitWrapper unitWrapper){
+	public MethodWrapper(String name, String returnType, ArrayList<String> parameters, boolean isConstructor, ICompilationUnitWrapper unitWrapper){
 		super(unitWrapper);
 		this.name = name;
+		this.setReturnType(returnType);
 		this.parameters = parameters;
 		this.isConstructor = isConstructor;
 	}
@@ -44,6 +46,8 @@ public class MethodWrapper extends UnitMemberWrapper {
 		this.name = this.method.getName().getIdentifier();
 		this.parameters = getParameterTypes();
 		this.isConstructor = this.method.resolveBinding().isConstructor();
+		Type type = this.method.getReturnType2();
+		this.returnType = (type == null)? null : type.toString();
 		
 		String content = new TokenExtractor(unitWrapper).extractTokens(method);
 		content = content + generateTitle();
@@ -69,7 +73,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 		ArrayList<String> parameterTypes = new ArrayList<>();
 		
 		Object obj = this.getMethod().getStructuralProperty(MethodDeclaration.PARAMETERS_PROPERTY);
-		List list = (List)obj;
+		List<?> list = (List<?>)obj;
 		for(Object node: list){
 			if(node instanceof ASTNode){
 				ASTNode astNode = (ASTNode)node;
@@ -324,5 +328,19 @@ public class MethodWrapper extends UnitMemberWrapper {
 				!isOverrideSuperMember() &&
 				!isCallingSuperMember() &&
 				!isAssignFieldInUnit();
+	}
+
+	/**
+	 * @return the returnType
+	 */
+	public String getReturnType() {
+		return returnType;
+	}
+
+	/**
+	 * @param returnType the returnType to set
+	 */
+	public void setReturnType(String returnType) {
+		this.returnType = returnType;
 	}
 }

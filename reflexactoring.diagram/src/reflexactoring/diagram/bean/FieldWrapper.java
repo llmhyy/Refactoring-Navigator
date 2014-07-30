@@ -3,8 +3,6 @@
  */
 package reflexactoring.diagram.bean;
 
-import java.util.List;
-
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -20,9 +18,11 @@ public class FieldWrapper extends UnitMemberWrapper{
 	
 	private FieldDeclaration field;
 	private String name;
+	private String type;
 	
-	public FieldWrapper(String name, ICompilationUnitWrapper unitWrapper){
+	public FieldWrapper(String name, String type, ICompilationUnitWrapper unitWrapper){
 		super(unitWrapper);
+		this.type = type;
 		this.name = name;
 	}
 	
@@ -31,6 +31,7 @@ public class FieldWrapper extends UnitMemberWrapper{
 		this.setField(field);
 		
 		this.name = ((VariableDeclaration)field.fragments().get(0)).getName().getIdentifier();
+		this.type = field.getType().toString();
 		
 		String content = new TokenExtractor(unitWrapper).extractTokens(field);
 		content = content + " " + generateTitle();
@@ -129,6 +130,20 @@ public class FieldWrapper extends UnitMemberWrapper{
 			return isSameType && fieldWrapper.getName().equals(this.getName());
 		}
 		return false;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	
