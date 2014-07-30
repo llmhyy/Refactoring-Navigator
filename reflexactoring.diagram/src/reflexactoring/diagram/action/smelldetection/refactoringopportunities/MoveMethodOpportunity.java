@@ -3,7 +3,12 @@
  */
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.ProgramReference;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -20,6 +25,16 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	public MoveMethodOpportunity(UnitMemberWrapper objectMethod, ICompilationUnitWrapper targetUnit){
 		this.objectMethod = objectMethod;
 		this.targetUnit = targetUnit;
+	}
+	
+	@Override
+	public String toString(){
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("Move method ");
+		buffer.append(this.objectMethod.toString() + " ");
+		buffer.append("to class ");
+		buffer.append(this.targetUnit.toString());
+		return buffer.toString();
 	}
 	
 	@Override
@@ -81,4 +96,70 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		this.targetUnit = targetUnit;
 	}
 
+	public class Precodition extends RefactoringPrecondition{
+		/**
+		 * I will check all the combinations between methods and units to identify whether there is a chance.
+		 */
+		@Override
+		public ArrayList<RefactoringOpportunity> detectOpportunities(ProgramModel model) {
+			ArrayList<RefactoringOpportunity> oppList = new ArrayList<>();
+			
+			for(UnitMemberWrapper member: model.getScopeMemberList()){
+				if(member instanceof MethodWrapper){
+					MethodWrapper method = (MethodWrapper)member;
+					if(method.isLegalMethodToBeMoved()){
+						for(ICompilationUnitWrapper unit: model.getScopeCompilationUnitList()){
+							if(unit.isLegalTargetClassToMoveMethodIn(method)){
+								if(isFeatureEnvy(unit, method)){
+									MoveMethodOpportunity opp = new MoveMethodOpportunity(method, unit);
+									oppList.add(opp);									
+								}
+							}
+						}						
+					}
+				}
+			}
+			
+			return oppList;
+		}
+
+		private boolean isFeatureEnvy(ICompilationUnitWrapper unit, MethodWrapper method){
+			HashMap<ICompilationUnitWrapper, Double> map = new HashMap<>();
+			
+			double totalFreq = 0;
+			for(ProgramReference reference: method.getRefereePointList()){
+				UnitMemberWrapper calleeMember = reference.getReferee();
+				if(calleeMember instanceof MethodWrapper){
+					ICompilationUnitWrapper calleeUnit = calleeMember.getUnitWrapper();
+					
+					if(map.get(calleeUnit) == null){
+						map.put(calleeUnit, 1.0);
+					}
+					else{
+						Double freq = map.get(calleeUnit);
+						freq++;
+						map.put(calleeUnit, freq);
+					}
+					totalFreq++;					
+				}
+			}
+			
+			if(totalFreq == 0 || map.get(unit) == null){
+				return false;
+			}
+			else{
+				double freq = map.get(unit);
+				double ratio = freq/totalFreq;
+				return ratio > 0.5;
+			}
+		}
+		
+		
+		@Override
+		public boolean checkLegal(ProgramModel model) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+	}
 }

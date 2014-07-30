@@ -405,12 +405,43 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		}
 		this.referingDetails.put(refereeCompilationUnit, nodeList);
 	}
+	
+	public boolean isLegalTargetClassToMoveMethodIn(MethodWrapper method){
+		return !isInterface() &&
+				!this.getMembers().contains(method) &&
+				!alreadyHasAMethodWithSameSignature(method) &&
+				!alreadyHasAMethodInSuperTypeWithSameSingature(method);
+				
+	}
+	
+	public boolean alreadyHasAMethodInSuperTypeWithSameSingature(MethodWrapper method){
+		for(GraphNode node: this.getParentList()){
+			ICompilationUnitWrapper superUnit = (ICompilationUnitWrapper)node;
+			if(superUnit.alreadyHasAMethodWithSameSignature(method)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean alreadyHasAMethodWithSameSignature(MethodWrapper method){
+		for(UnitMemberWrapper member: this.getMembers()){
+			if(member instanceof MethodWrapper){
+				MethodWrapper m = (MethodWrapper)member;
+				if(m.hasSameSignatureWith(method)){
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
 
 	@Override
 	protected String getDocName() {
 		return getName();
 	}
-
 
 	/**
 	 * @return the superClass

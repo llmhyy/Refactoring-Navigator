@@ -33,6 +33,7 @@ import org.eposoft.jccd.preprocessors.java.RemoveSemicolons;
 import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractUtilityClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
@@ -60,9 +61,10 @@ public class BadSmellDetector {
 		
 		
 		ArrayList<RefactoringPrecondition> preconditionList = new ArrayList<>();
-		preconditionList.add(new PullUpMemberPrecondition(moduleList));	
 		//preconditionList.add(new PullUpMemberToInterfaceOpportunity(null,null).new Precondition(moduleList));
-		preconditionList.add(new ExtractUtilityClassOpportunity(null,null).new Precondition(moduleList));
+		//preconditionList.add(new PullUpMemberPrecondition(moduleList));	
+		//preconditionList.add(new ExtractUtilityClassOpportunity(null,null).new Precondition(moduleList));
+		preconditionList.add(new MoveMethodOpportunity(null, null).new Precodition());
 		
 		for(RefactoringPrecondition precondition: preconditionList){
 			ArrayList<RefactoringOpportunity> oppList = precondition.detectOpportunities(model);

@@ -9,12 +9,15 @@ import java.util.List;
 
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun
@@ -234,4 +237,92 @@ public class MethodWrapper extends UnitMemberWrapper {
 		return true;
 	}
 
+	public boolean isGetter(){
+		boolean isGetter = fitGetOrSetPrefix("get");
+		return isGetter;
+	}
+	
+	public boolean isSetter(){
+		boolean isSetter = fitGetOrSetPrefix("set");
+		return isSetter;
+	}
+	
+	private boolean fitGetOrSetPrefix(String prefixName){
+		String[] words = ReflexactoringUtil.mixedSplitting(name);
+		if(words[0].equals(prefixName)){
+			StringBuffer buffer = new StringBuffer();
+			for(int i=1; i<words.length; i++){
+				buffer.append(words[i]);
+			}
+			String fieldName = buffer.toString();
+			
+			ICompilationUnitWrapper unit = this.getUnitWrapper();
+			for(UnitMemberWrapper member: unit.getMembers()){
+				if(member instanceof FieldWrapper){
+					if(member.getName().toLowerCase().equals(fieldName.toLowerCase())){
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean isCallingSuperMember(){
+		for(ProgramReference reference: this.refereePointList){
+			UnitMemberWrapper calleeMember = reference.getReferee();
+			
+			for(GraphNode node: this.getUnitWrapper().getParentList()){
+				ICompilationUnitWrapper superUnit = (ICompilationUnitWrapper)node;
+				if(superUnit.getMembers().contains(calleeMember)){
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * this member assign some fields inside the declaring class.
+	 * @return
+	 */
+	public boolean isAssignFieldInUnit(){
+		for(ProgramReference reference: this.refereePointList){
+			UnitMemberWrapper calleeMember = reference.getReferee();
+			
+			if(calleeMember instanceof FieldWrapper && this.getUnitWrapper().getMembers().contains(calleeMember)){
+				ASTNode node = calleeMember.getJavaElement();
+				if(null == node){
+					return true;
+				}
+				else{
+					boolean isAssignment = false;
+					while(!(node instanceof Statement) && node != null){
+						if(node instanceof Assignment){
+							isAssignment = true;
+							break;
+						}
+						
+						node = node.getParent();
+					}
+					
+					if(isAssignment){
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean isLegalMethodToBeMoved(){
+		return !isConstructor() && 
+				!(isGetter() || isSetter()) &&
+				!isOverrideSuperMember() &&
+				!isCallingSuperMember() &&
+				!isAssignFieldInUnit();
+	}
 }
