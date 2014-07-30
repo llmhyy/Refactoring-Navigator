@@ -15,7 +15,7 @@ import reflexactoring.diagram.bean.ProgramModel;
 public class MoveMethodOperatorTest {
 	public ProgramModel test(ProgramModel model){
 		
-		MethodWrapper objectMethod = (MethodWrapper)model.getScopeMemberList().get(22);
+		MethodWrapper objectMethod = (MethodWrapper)model.getScopeMemberList().get(26);
 		ICompilationUnitWrapper targetUnit = model.getScopeCompilationUnitList().get(0);
 		
 		MoveMethodOpportunity opp = new MoveMethodOpportunity(objectMethod, targetUnit);

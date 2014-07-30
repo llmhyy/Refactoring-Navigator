@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
+import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
@@ -41,20 +42,62 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	public ProgramModel simulate(ProgramModel model) {
 		ProgramModel newModel = model.clone();
 		
-		UnitMemberWrapper objMethod = newModel.findMember(this.objectMethod);
+		MethodWrapper objMethod = (MethodWrapper)newModel.findMember(this.objectMethod);
 		ICompilationUnitWrapper tarUnit = newModel.findUnit(this.targetUnit.getFullQualifiedName());
 		
 		/**
 		 * change containing relations
 		 */
-		objMethod.getUnitWrapper().getMembers().remove(objMethod);
+		ICompilationUnitWrapper originalUnit = objMethod.getUnitWrapper();
+		originalUnit.getMembers().remove(objMethod);
 		objMethod.setUnitWrapper(tarUnit);
 		tarUnit.addMember(objMethod);
+		
+		/**
+		 * change the parameters of method
+		 */
+		ArrayList<String> newParameters = extractParameters(originalUnit, objMethod);
+		objMethod.getParameters().addAll(newParameters);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
 		return newModel;
 	}
+	
+	private ArrayList<String> extractParameters(ICompilationUnitWrapper originalUnit, MethodWrapper objMethod){
+		ArrayList<FieldWrapper> calleeMemberList = new ArrayList<>();
+		boolean isMethodInvolved = false;
+		for(ProgramReference reference: objMethod.getRefereePointList()){
+			UnitMemberWrapper calleeMember = reference.getReferee();
+			if(originalUnit.getMembers().contains(calleeMember)){
+				if(calleeMember instanceof MethodWrapper){
+					isMethodInvolved = true;
+				}
+				else if(calleeMember instanceof FieldWrapper){
+					if(!calleeMemberList.contains(calleeMember)){
+						calleeMemberList.add((FieldWrapper)calleeMember);
+					}
+				}
+			}
+		}
+		
+		ArrayList<String> parameters = new ArrayList<>();
+		for(FieldWrapper calleeMember: calleeMemberList){
+			String parameter = calleeMember.getUnitWrapper().getName();
+			if(!parameters.contains(parameter)){
+				parameters.add(parameter);				
+			}
+		}
+		if(isMethodInvolved){
+			String parameter = originalUnit.getName();
+			if(!parameters.contains(parameter)){
+				parameters.add(parameter);				
+			}
+		}
+		
+		return parameters;
+	}
+	
 
 	@Override
 	public void apply() {
