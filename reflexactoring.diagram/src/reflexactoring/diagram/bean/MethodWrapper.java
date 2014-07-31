@@ -51,7 +51,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 		
 		//String content = new TokenExtractor(unitWrapper).extractTokens(method);
 		//content = content + generateTitle();
-		String content = generateTitle();
+		String content = generateTitle().toLowerCase();
 		this.extractTermFrequency(content);
 		
 		System.currentTimeMillis();

@@ -34,7 +34,7 @@ public class FieldWrapper extends UnitMemberWrapper{
 		this.type = field.getType().toString();
 		
 		String content = new TokenExtractor(unitWrapper).extractTokens(field);
-		content = content + " " + generateTitle();
+		content = content + " " + generateTitle().toLowerCase();
 		this.extractTermFrequency(content);
 	}
 	

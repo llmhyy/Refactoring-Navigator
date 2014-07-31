@@ -108,7 +108,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		 */
 		//String content = new TokenExtractor(this).extractTokens(cu);
 		//content = content + generateTitle();
-		String content = generateTitle();
+		String content = generateTitle().toLowerCase();
 		
 		this.setDescription(content);
 		this.extractTermFrequency(content);
