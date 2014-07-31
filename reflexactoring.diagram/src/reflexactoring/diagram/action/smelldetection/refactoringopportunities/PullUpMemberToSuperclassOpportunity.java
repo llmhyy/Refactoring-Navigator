@@ -124,11 +124,11 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 		private boolean isLegal(ProgramModel model, ArrayList<UnitMemberWrapper> refactoringPlace){
 			ICompilationUnitWrapper commonAncestor = findCommonAncestor(refactoringPlace);
 			boolean isWithoutAnySuperclass = isWithoutAnySuperclass(refactoringPlace);
-			//boolean isRelyOnOtherMemberInDeclaringClass = isRelyOnOtherMemberInDeclaringClass(refactoringPlace);
+			boolean isRelyOnOtherMemberInDeclaringClass = isRelyOnOtherMemberInDeclaringClass(refactoringPlace);
 			boolean isWithSimilarBody = isWithSimilarBody(model, refactoringPlace);
 			UnitMemberWrapper member = refactoringPlace.get(0);
 			
-			if((isWithSimilarBody || (member instanceof FieldWrapper)) && /*!isRelyOnOtherMemberInDeclaringClass &&*/
+			if((isWithSimilarBody || (member instanceof FieldWrapper)) && !isRelyOnOtherMemberInDeclaringClass &&
 					((commonAncestor != null) || (isWithoutAnySuperclass))){
 				if(commonAncestor != null){
 					return true;

@@ -112,10 +112,12 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		for(ArrayList<UnitMemberWrapper> refactoringPlace: refactoringPlaceList){
 			ICompilationUnitWrapper commonAncestor = findCommonAncestor(refactoringPlace);
 			boolean isWithoutAnySuperclass = isWithoutAnySuperclass(refactoringPlace);
+			boolean isRelyOnOtherMemberInDeclaringClass = isRelyOnOtherMemberInDeclaringClass(refactoringPlace);
 			boolean isWithSimilarBody = isWithSimilarBody(model, refactoringPlace);
 			UnitMemberWrapper member = refactoringPlace.get(0);
 			
-			if((isWithSimilarBody || (member instanceof FieldWrapper)) && ((commonAncestor != null) || (isWithoutAnySuperclass))){
+			if((isWithSimilarBody || (member instanceof FieldWrapper)) && !isRelyOnOtherMemberInDeclaringClass &&
+					((commonAncestor != null) || (isWithoutAnySuperclass))){
 				if(commonAncestor != null){
 					PullUpMemberToSuperclassOpportunity opp = 
 							new PullUpMemberToSuperclassOpportunity(refactoringPlace, moduleList, commonAncestor);
@@ -267,12 +269,12 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			for(ProgramReference reference: member.getRefereePointList()){
 				UnitMemberWrapper calleeMember = reference.getReferee();
 				if(calleeMember.getUnitWrapper().equals(member.getUnitWrapper())){
-					return false;
+					return true;
 				}
 			}
 		}
 		
-		return true;
+		return false;
 	}
 
 	@Override
