@@ -751,17 +751,24 @@
                icon="icons/menu/recommend_member.gif"
                id="reflexactoring.diagram.action.MemberRecommend"
                label="Start by Member Level (Recommend)"
-               menubarPath="reflexactoring.diagram.menu/process"
                style="push"
-               toolbarPath="process"
                tooltip="Split Direct on Fields and Methods">
             >
          </action>
          <action
+               class="reflexactoring.diagram.action.SearchRefactoringSolutionAcion"
+               icon="icons/menu/search.jpg"
+               id="reflexactoring.diagram.action.searchSolution"
+               label="Search Refactoring Solution"
+               menubarPath="reflexactoring.diagram.menu/process"
+               style="push"
+               toolbarPath="process">
+         </action>
+         <action
                class="reflexactoring.diagram.action.recommend.ClassRecommendAction"
-               icon="icons/menu/recommend.gif"
+               icon="icons/menu/adjust_mapping.jpg"
                id="reflexactoring.diagram.action.recommendRefacotring"
-               label="Start by Class Level (Recommend)"
+               label="Adjust Mapping"
                menubarPath="reflexactoring.diagram.menu/process"
                style="push"
                toolbarPath="process">

@@ -132,7 +132,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 					monitor.beginTask("build class structural information", 2*totalWork*scale);
 					new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 					
-					new BadSmellDetector().detect(Settings.scope);
+					//new BadSmellDetector().detect(Settings.scope);
 					//monitor.beginTask("build method/field structure inforamtion", 2*totalWork*scale);
 					//new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 					
