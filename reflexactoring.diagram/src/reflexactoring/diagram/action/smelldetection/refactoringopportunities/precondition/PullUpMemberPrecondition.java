@@ -18,6 +18,7 @@ import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.ProgramReference;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 
 /**
@@ -251,6 +252,27 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * If a member to be pulled up relies on other member in its declaring class, this member cannot be pulled
+	 * up. Otherwise, it will cause compilation errors. 
+	 * 
+	 * @param refactoringPlace
+	 * @return
+	 */
+	protected boolean isRelyOnOtherMemberInDeclaringClass(
+			ArrayList<UnitMemberWrapper> refactoringPlace) {
+		for(UnitMemberWrapper member: refactoringPlace){
+			for(ProgramReference reference: member.getRefereePointList()){
+				UnitMemberWrapper calleeMember = reference.getReferee();
+				if(calleeMember.getUnitWrapper().equals(member.getUnitWrapper())){
+					return false;
+				}
+			}
+		}
+		
+		return true;
 	}
 
 	@Override

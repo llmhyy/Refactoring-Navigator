@@ -39,6 +39,14 @@ public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpp
 	public ProgramModel simulate(ProgramModel model) {
 		ProgramModel newModel = model.clone();
 		/**
+		 * remove relevant clone set
+		 */
+		ArrayList<CloneSet> setList = newModel.findCloneSet(toBePulledMemberList);
+		for(CloneSet set: setList){
+			newModel.getCloneSets().remove(set);			
+		}
+		
+		/**
 		 * create a new class
 		 */
 		ICompilationUnitWrapper newSuperClassUnit = createNewUnit(newModel, false);
@@ -46,22 +54,17 @@ public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpp
 		/**
 		 * create a new method in the parent class and change reference
 		 */
-		createNewMember(newModel, newSuperClassUnit);
+		createNewMemberInSuperClass(newModel, newSuperClassUnit);
 		
 		/**
 		 * delete the to-be-pulled members in model
 		 */
-		for(UnitMemberWrapper member: toBePulledMemberList){
-			newModel.removeMember(member);
+		for(UnitMemberWrapper oldMember: toBePulledMemberList){
+			UnitMemberWrapper newMember = newModel.findMember(oldMember);
+			newModel.removeMember(newMember);
 		}
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
-		
-		/**
-		 * remove relevant clone set
-		 */
-		CloneSet set = newModel.findCloneSet(toBePulledMemberList.get(0));
-		newModel.getCloneSets().remove(set);
 		
 		/**
 		 * may calculate which module is proper to hold the newly created super class
@@ -130,10 +133,12 @@ public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpp
 		private boolean isLegal(ProgramModel model, ArrayList<UnitMemberWrapper> refactoringPlace){
 			ICompilationUnitWrapper commonAncestor = findCommonAncestor(refactoringPlace);
 			boolean isWithoutAnySuperclass = isWithoutAnySuperclass(refactoringPlace);
+			//boolean isRelyOnOtherMemberInDeclaringClass = isRelyOnOtherMemberInDeclaringClass(refactoringPlace);
 			boolean isWithSimilarBody = isWithSimilarBody(model, refactoringPlace);
 			UnitMemberWrapper member = refactoringPlace.get(0);
 			
-			if((isWithSimilarBody || (member instanceof FieldWrapper)) && ((commonAncestor != null) || (isWithoutAnySuperclass))){
+			if((isWithSimilarBody || (member instanceof FieldWrapper)) && /*!isRelyOnOtherMemberInDeclaringClass &&*/
+					((commonAncestor != null) || (isWithoutAnySuperclass))){
 				if(commonAncestor == null){
 					return true;
 				}

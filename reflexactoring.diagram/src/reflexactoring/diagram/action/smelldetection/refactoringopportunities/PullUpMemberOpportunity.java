@@ -56,17 +56,17 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @param superUnit
 	 * @return
 	 */
-	protected UnitMemberWrapper createNewMember(ProgramModel newModel, ICompilationUnitWrapper superUnit) {
-		UnitMemberWrapper memberWrapper = toBePulledMemberList.get(0);
+	protected UnitMemberWrapper createNewMemberInSuperClass(ProgramModel newModel, ICompilationUnitWrapper superUnit) {
+		UnitMemberWrapper oldMember = toBePulledMemberList.get(0);
 		
 		UnitMemberWrapper newMember = null;
-		if(memberWrapper instanceof MethodWrapper){
-			MethodWrapper methodWrapper = (MethodWrapper)memberWrapper;
+		if(oldMember instanceof MethodWrapper){
+			MethodWrapper methodWrapper = (MethodWrapper)oldMember;
 			newMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), methodWrapper.getParameters(), 
 					methodWrapper.isConstructor(), superUnit);			
 		}
-		else if(memberWrapper instanceof FieldWrapper){
-			FieldWrapper fieldWrapper = (FieldWrapper)memberWrapper;
+		else if(oldMember instanceof FieldWrapper){
+			FieldWrapper fieldWrapper = (FieldWrapper)oldMember;
 			newMember = new FieldWrapper(fieldWrapper.getName(), fieldWrapper.getType(), superUnit);
 		}
 		
@@ -75,8 +75,8 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		newModel.getScopeMemberList().add(newMember);
 		superUnit.getMembers().add(newMember);
 		
-		for(UnitMemberWrapper member: toBePulledMemberList){
-			UnitMemberWrapper newToBePulledMember = newModel.findMember(member);
+		for(UnitMemberWrapper oldMem: toBePulledMemberList){
+			UnitMemberWrapper newToBePulledMember = newModel.findMember(oldMem);
 			handleReferersOfToBePulledMember(newToBePulledMember, newMember);
 			
 			if(!superUnit.isInterface()){

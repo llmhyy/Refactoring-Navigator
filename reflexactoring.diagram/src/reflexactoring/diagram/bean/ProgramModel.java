@@ -84,6 +84,9 @@ public class ProgramModel{
 						oldInstance.getStartLineNumber(), oldInstance.getEndLineNumber());
 				
 				int memberIndex = oldModel.getUnitMemberIndex(oldInstance.getMember());
+				if(memberIndex == -1){
+					System.out.println(oldInstance.getMember());
+				}
 				UnitMemberWrapper newMember = newModel.getScopeMemberList().get(memberIndex);
 				newInstance.setMember(newMember);
 				
@@ -107,15 +110,23 @@ public class ProgramModel{
 		return cloneSets;
 	}
 
+	/**
+	 * This method is invoked with the following precondition:
+	 * All this relevant reference must be changed!
+	 * 
+	 * @param toBeDeletedMember
+	 */
 	public void removeMember(UnitMemberWrapper toBeDeletedMember){
 		Iterator<UnitMemberWrapper> memberIter = this.scopeMemberList.iterator();
 		while(memberIter.hasNext()){
 			UnitMemberWrapper member = memberIter.next();
 			if(member.equals(toBeDeletedMember)){
 				memberIter.remove();
+				toBeDeletedMember.getUnitWrapper().getMembers().remove(toBeDeletedMember);
 				return;
 			}
 		}
+		
 	}
 	
 	/**
@@ -246,19 +257,22 @@ public class ProgramModel{
 		return clonedMembers;		
 	}
 	
-	private void cloneMemberRelations(ProgramModel clonedModel, ProgramModel model){
+	private void cloneMemberRelations(ProgramModel clonedModel, ProgramModel oldModel){
 		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.getScopeCompilationUnitList();
-		ArrayList<ICompilationUnitWrapper> units = model.getScopeCompilationUnitList();
-		for(int i=0; i<units.size(); i++){
-			ICompilationUnitWrapper unit = units.get(i);
+		ArrayList<ICompilationUnitWrapper> oldUnits = oldModel.getScopeCompilationUnitList();
+		for(int i=0; i<oldUnits.size(); i++){
+			ICompilationUnitWrapper oldUnit = oldUnits.get(i);
 			ICompilationUnitWrapper clonedUnit = clonedUnits.get(i);
 			
 			/**
 			 * clone member relation
 			 */
-			ArrayList<UnitMemberWrapper> memberList = unit.getMembers();
-			for(UnitMemberWrapper member: memberList){
-				int index = model.getUnitMemberIndex(member);
+			ArrayList<UnitMemberWrapper> oldMemberList = oldUnit.getMembers();
+			for(UnitMemberWrapper oldMember: oldMemberList){
+				int index = oldModel.getUnitMemberIndex(oldMember);
+				if(index == -1){
+					System.out.print(oldMember);
+				}
 				UnitMemberWrapper clonedMember = clonedModel.getScopeMemberList().get(index);
 				clonedUnit.addMember(clonedMember);
 			}
@@ -371,16 +385,19 @@ public class ProgramModel{
 		return null;
 	}
 	
-	public CloneSet findCloneSet(UnitMemberWrapper member){
+	public ArrayList<CloneSet> findCloneSet(ArrayList<UnitMemberWrapper> refactoringPalce){
+		ArrayList<CloneSet> setList = new ArrayList<>();
 		for(CloneSet set: this.cloneSets){
 			for(CloneInstance ins: set.getInstances()){
-				if(ins.getMember().equals(member)){
-					return set;
+				for(UnitMemberWrapper member: refactoringPalce){
+					if(ins.getMember().equals(member) && !setList.contains(set)){
+						setList.add(set);
+					}					
 				}
 			}
 		}
 		
-		return null;
+		return setList;
 	}
 	
 	public void updateUnitCallingRelationByMemberRelations(){
