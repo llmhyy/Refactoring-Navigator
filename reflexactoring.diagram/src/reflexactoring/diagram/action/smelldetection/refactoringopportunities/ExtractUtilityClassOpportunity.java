@@ -66,7 +66,8 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		 */
 		for(CloneInstance instance: this.cloneSet.getInstances()){
 			UnitMemberWrapper member = newModel.findMember(instance.getMember());
-			for(ProgramReference reference: instance.getCoveringReferenceList()){
+			CloneInstance newInstance = newModel.findCloneInstance(instance);
+			for(ProgramReference reference: newInstance.getCoveringReferenceList()){
 				/**
 				 * new member's referee
 				 */
