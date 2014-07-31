@@ -1,14 +1,13 @@
 package reflexactoring.diagram.action;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.PlatformUI;
 
-import reflexactoring.diagram.action.recommend.suboptimal.AdvancedFitnessEvaluator;
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
@@ -16,8 +15,10 @@ import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElem
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
+import reflexactoring.diagram.view.RefactoringSuggestionsView;
 
 public class SearchRefactoringSolutionAcion implements
 		IWorkbenchWindowActionDelegate {
@@ -25,6 +26,7 @@ public class SearchRefactoringSolutionAcion implements
 	@Override
 	public void run(IAction action) {
 		// TODO Lin Yun
+		ArrayList<RefactoringSequence> suggestionList = new ArrayList<>();
 		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		ProgramModel model = Settings.scope;
 		BadSmellDetector smellDetector = new BadSmellDetector(moduleList);
@@ -46,6 +48,12 @@ public class SearchRefactoringSolutionAcion implements
 			}
 			
 		}
+		
+		suggestionList.add(sequence);
+		
+		RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
+				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
+		view.refreshSuggestionsOnUI(suggestionList);
 		
 		System.currentTimeMillis();
 	}

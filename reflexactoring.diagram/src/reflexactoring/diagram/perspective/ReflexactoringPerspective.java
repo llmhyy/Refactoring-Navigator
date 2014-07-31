@@ -9,6 +9,7 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 
 	public static String HEURISTIC_MAPPING_VIEW = "reflexactoring.diagram.view.mappingAjustion";
 	public static String REFACTORING_SUGGESTION = "reflexactoring.diagram.view.suggestion";
+	public static String REFACTORING_SUGGESTIONS = "reflexactoring.diagram.view.refactoringSuggestion";
 	public static String MODULE_TYPE_SIMILARITY_VIEW = "reflexactoring.diagram.view.moduleTypeSimilarity";
 	public static String REFERENCE_DETAIL_VIEW = "reflexactoring.diagram.view.referenceDetail";
 	public static String MODULE_MEMBER_FORBIDDEN_VIEW = "reflexactoring.diagram.view.moduleMemberForbidMap";
@@ -38,6 +39,7 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 		
 		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT, 0.7f, editorArea);
 		right.addView(ReflexactoringPerspective.REFACTORING_SUGGESTION);
+		right.addView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
 		right.addView(IPageLayout.ID_OUTLINE);
 	}
 
