@@ -23,8 +23,7 @@ public class BadSmellDetector {
 	
 	private ArrayList<RefactoringPrecondition> preconditionList = new ArrayList<>();
 	
-	public BadSmellDetector(){
-		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+	public BadSmellDetector(ArrayList<ModuleWrapper> moduleList){
 		//preconditionList.add(new PullUpMemberToInterfaceOpportunity(null,null).new Precondition(moduleList));
 		preconditionList.add(new PullUpMemberPrecondition(moduleList));	
 		preconditionList.add(new ExtractUtilityClassOpportunity(null,null).new Precondition(moduleList));

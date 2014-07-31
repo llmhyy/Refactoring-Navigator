@@ -106,8 +106,9 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		/**
 		 * Extract some keywords used for lexical similarity
 		 */
-		String content = new TokenExtractor(this).extractTokens(cu);
-		content = content + generateTitle();
+		//String content = new TokenExtractor(this).extractTokens(cu);
+		//content = content + generateTitle();
+		String content = generateTitle();
 		
 		this.setDescription(content);
 		this.extractTermFrequency(content);

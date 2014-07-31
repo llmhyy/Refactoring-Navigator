@@ -49,8 +49,9 @@ public class MethodWrapper extends UnitMemberWrapper {
 		Type type = this.method.getReturnType2();
 		this.returnType = (type == null)? null : type.toString();
 		
-		String content = new TokenExtractor(unitWrapper).extractTokens(method);
-		content = content + generateTitle();
+		//String content = new TokenExtractor(unitWrapper).extractTokens(method);
+		//content = content + generateTitle();
+		String content = generateTitle();
 		this.extractTermFrequency(content);
 		
 		System.currentTimeMillis();

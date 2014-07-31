@@ -280,7 +280,10 @@ public class ProgramModel{
 			UnitMemberWrapper referee = reference.getReferee();
 			int refererIndex = model.getUnitMemberIndex(referer);
 			int refereeIndex = model.getUnitMemberIndex(referee);
-			UnitMemberWrapper clonedReferer = clonedModel.scopeMemberList.get(refererIndex);
+			if(refererIndex == -1){
+				System.out.println(reference);
+			}
+			UnitMemberWrapper clonedReferer = clonedModel.scopeMemberList.get(refererIndex);			
 			UnitMemberWrapper clonedReferee = clonedModel.scopeMemberList.get(refereeIndex);
 			
 			ProgramReference clonedReference = new ProgramReference(clonedReferer, clonedReferee, reference.getASTNode());
