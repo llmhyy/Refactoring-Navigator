@@ -19,7 +19,7 @@ import reflexactoring.diagram.util.Settings;
 public class PullUpMethodNewSuperclassOperatorTest {
 	public ProgramModel test(ProgramModel model){
 		ArrayList<UnitMemberWrapper> toBePulledList = new ArrayList<>();
-		//toBePulledList.add(model.getScopeMemberList().get(10));
+		toBePulledList.add(model.getScopeMemberList().get(10));
 		toBePulledList.add(model.getScopeMemberList().get(13));
 		toBePulledList.add(model.getScopeMemberList().get(15));
 		

@@ -75,6 +75,10 @@ public class ProgramModel{
 	 */
 	private ArrayList<CloneSet> cloneCloneSets(ProgramModel newModel, ProgramModel oldModel) {
 		ArrayList<CloneSet> cloneSets = new ArrayList<>();
+		if(oldModel.getCloneSets() == null){
+			return cloneSets;
+		}
+		
 		for(CloneSet oldSet: oldModel.getCloneSets()){
 			CloneSet newSet = new CloneSet(oldSet.getId());
 			ArrayList<CloneInstance> newInstanceList = new ArrayList<>();
@@ -416,7 +420,12 @@ public class ProgramModel{
 			UnitMemberWrapper refereeMember = reference.getReferee();
 			ICompilationUnitWrapper refereeUnit = refereeMember.getUnitWrapper();
 			
-			if(!refererUnit.equals(refereeUnit)){
+			/**
+			 * In current philosophy, if some methods of a super class are invoked by some methods of its subclasses,
+			 * I will not build a dependency relation between the super class and the subclass, because the inheritance
+			 * relation has already indicated the dependency relation. 
+			 */
+			if(!refererUnit.equals(refereeUnit) && !refererUnit.getParentList().contains(refereeUnit)){
 				refererUnit.addCallee(refereeUnit);
 				refereeUnit.addCaller(refererUnit);
 				
