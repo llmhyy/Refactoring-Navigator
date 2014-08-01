@@ -5,6 +5,7 @@ package reflexactoring.diagram.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IResource;
@@ -45,6 +46,70 @@ public class ProgramModel{
 	private UnitMemberWrapperList scopeMemberList = new UnitMemberWrapperList();
 	private ArrayList<ProgramReference> referenceList = new ArrayList<>();
 	private ArrayList<CloneSet> cloneSets;
+	
+	/**
+	 * calculate the CBO (coupling between objects)
+	 * @return
+	 */
+	public double computeNormalizedCBOMetrics(){
+		double links = 0;
+		for(ICompilationUnitWrapper callerUnit: this.scopeCompilationUnitList){
+			links += callerUnit.getCalleeCompilationUnitList().size();
+		}
+		
+		double maximumValue = this.scopeCompilationUnitList.size() * (this.scopeCompilationUnitList.size()-1); 
+		
+		return links/maximumValue;
+	}
+	
+	/**
+	 * calculate LCOM (lack of cohesion of methods)
+	 * @return
+	 */
+	public double computeNormalizedLCOMMetrics(){
+		double sum = 0;
+		
+		for(ICompilationUnitWrapper unit: this.scopeCompilationUnitList){
+			double methodNum = 0;
+			double fieldNum = 0;
+			double distinctAccessTime = 0;
+			
+			for(UnitMemberWrapper member: unit.getMembers()){
+				if(member instanceof MethodWrapper){
+					methodNum++;
+					
+					ArrayList<UnitMemberWrapper> visitedMemberList = new ArrayList<>();
+					double accessTime = 0;
+					for(ProgramReference reference: member.getRefereePointList()){
+						UnitMemberWrapper calleeMember = reference.getReferee();
+						if(calleeMember instanceof FieldWrapper && 
+								calleeMember.getUnitWrapper().equals(member.getUnitWrapper())){
+							if(!visitedMemberList.contains(calleeMember)){
+								accessTime++;
+								visitedMemberList.add(calleeMember);
+							}
+						}
+					}
+					
+					distinctAccessTime += accessTime;
+				}
+				else if(member instanceof FieldWrapper){
+					fieldNum++;
+				}
+			}
+			
+			double LCOM = 0; 
+			if(distinctAccessTime >= 2){
+				LCOM = (methodNum*fieldNum-distinctAccessTime)/(methodNum*fieldNum-fieldNum);
+			}
+			
+			double normalizedLCOM = LCOM/2;
+			sum += normalizedLCOM;
+		}
+		
+		
+		return sum/this.scopeCompilationUnitList.size();
+	}
 	
 	public ProgramModel clone(){
 		ProgramModel clonedModel = new ProgramModel();

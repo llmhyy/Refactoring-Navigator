@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import reflexactoring.diagram.action.recommend.RecommendUtil;
 import reflexactoring.diagram.action.recommend.suboptimal.AdvancedFitnessEvaluator;
 import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
+import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.bean.GraphRelationType;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
@@ -18,6 +19,8 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  *
  */
 public class AdvanceEvaluatorAdapter {
+	
+	private ArrayList<Violation> violationList = new ArrayList<>();
 	
 	public double computeFitness(ProgramModel model, ArrayList<ModuleWrapper> moduleList){
 		double[][] highLevelDependencyMatrix = RecommendUtil.extractGraph(moduleList, GraphRelationType.GRAPH_DEPENDENCY);
@@ -32,7 +35,21 @@ public class AdvanceEvaluatorAdapter {
 		
 		Genotype gene = new Genotype(DNA, null, evaluator);
 		
-		return gene.getFitness();
+		double structureAndLexicalFitness = gene.getFitness();
+		double CBO = model.computeNormalizedCBOMetrics();
+		double LCOM = model.computeNormalizedLCOMMetrics();
+		
+		this.violationList = ((AdvancedFitnessEvaluator)gene.getEvaluator()).getViolationList();
+		
+		double fitness = (1-CBO) + (1-LCOM) + structureAndLexicalFitness;
+		return fitness;
+	}
+
+	/**
+	 * @return the violationList
+	 */
+	public ArrayList<Violation> getViolationList() {
+		return violationList;
 	}
 
 	/**
