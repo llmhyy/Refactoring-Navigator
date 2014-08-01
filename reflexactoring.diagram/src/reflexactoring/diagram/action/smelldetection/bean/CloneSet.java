@@ -5,6 +5,8 @@ package reflexactoring.diagram.action.smelldetection.bean;
 
 import java.util.ArrayList;
 
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+
 /**
  * @author linyun
  *
@@ -60,5 +62,14 @@ public class CloneSet {
 		this.id = id;
 	}
 	
-	
+	public boolean isAllInstancesLocatedInSameUnit(){
+		ICompilationUnitWrapper unit = getInstances().get(0).getMember().getUnitWrapper();
+		for(int i=1; i<getInstances().size(); i++){
+			CloneInstance instance = getInstances().get(i);
+			if(!instance.getMember().getUnitWrapper().equals(unit)){
+				return false;
+			}
+		}
+		return true;
+	}
 }

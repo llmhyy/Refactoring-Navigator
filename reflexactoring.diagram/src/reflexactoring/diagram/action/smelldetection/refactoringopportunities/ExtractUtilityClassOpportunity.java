@@ -129,8 +129,10 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 			ArrayList<RefactoringOpportunity> opportunities = new ArrayList<>();
 			
 			for(CloneSet set: model.getCloneSets()){
-				ExtractUtilityClassOpportunity opp = new ExtractUtilityClassOpportunity(set, getModuleList());
-				opportunities.add(opp);
+				if(!set.isAllInstancesLocatedInSameUnit()){
+					ExtractUtilityClassOpportunity opp = new ExtractUtilityClassOpportunity(set, getModuleList());
+					opportunities.add(opp);					
+				}
 			}
 			
 			return opportunities;
