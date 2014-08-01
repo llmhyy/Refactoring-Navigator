@@ -42,7 +42,7 @@ public class Violation {
 	}
 	
 	public String toString(){
-		return sourceModuleIndex + "->" + destModuleIndex;
+		return sourceModuleIndex + "->" + destModuleIndex + "(" + type + ")";
 	}
 	
 	/**

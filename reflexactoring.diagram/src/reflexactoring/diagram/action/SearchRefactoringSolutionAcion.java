@@ -2,12 +2,18 @@ package reflexactoring.diagram.action;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
@@ -26,36 +32,52 @@ public class SearchRefactoringSolutionAcion implements
 	@Override
 	public void run(IAction action) {
 		// TODO Lin Yun
-		ArrayList<RefactoringSequence> suggestionList = new ArrayList<>();
-		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
-		ProgramModel model = Settings.scope;
-		BadSmellDetector smellDetector = new BadSmellDetector(moduleList);
 		
-		RefactoringSequence sequence = new RefactoringSequence();
-		ArrayList<RefactoringOpportunity> oppList = smellDetector.detect(model);
-		
-		int resursiveNum = 10;
-		
-		for(int i=0; i<resursiveNum; i++){
-			RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
-			if(sequence.isAnImprovement(element)){
-				sequence.addElement(element);
-				model = element.getConsequenceModel();
-				oppList = smellDetector.detect(model);
-			}
-			else{
-				break;
+		Job job = new Job("Searching for solutions by moving types"){
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				//monitor.beginTask("Searching Solution...", iterNum.intValue());
+				final ArrayList<RefactoringSequence> suggestionList = new ArrayList<>();
+				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+				ProgramModel model = Settings.scope;
+				BadSmellDetector smellDetector = new BadSmellDetector(moduleList);
+				
+				RefactoringSequence sequence = new RefactoringSequence();
+				ArrayList<RefactoringOpportunity> oppList = smellDetector.detect(model);
+				
+				int resursiveNum = 20;
+				
+				for(int i=0; i<resursiveNum; i++){
+					RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
+					if(sequence.isAnImprovement(element)){
+						sequence.addElement(element);
+						model = element.getConsequenceModel();
+						oppList = smellDetector.detect(model);
+					}
+					else{
+						break;
+					}
+					
+				}
+				
+				suggestionList.add(sequence);
+				
+				Display.getDefault().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
+								getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
+						view.refreshSuggestionsOnUI(suggestionList);
+						
+					}
+				});
+				
+				return Status.OK_STATUS;
 			}
 			
-		}
-		
-		suggestionList.add(sequence);
-		
-		RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
-				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
-		view.refreshSuggestionsOnUI(suggestionList);
-		
-		System.currentTimeMillis();
+		};
+		job.schedule();
 	}
 
 	/**
@@ -69,6 +91,7 @@ public class SearchRefactoringSolutionAcion implements
 		Double fitnessValue = null;
 		RefactoringOpportunity bestOpp = null;
 		ProgramModel consequenceModel = null;
+		ArrayList<Violation> violationList = null;
 		
 		for(RefactoringOpportunity opp: oppList){
 			ProgramModel testModel = opp.simulate(model);
@@ -78,17 +101,19 @@ public class SearchRefactoringSolutionAcion implements
 				fitnessValue = value;
 				bestOpp = opp;
 				consequenceModel = testModel;
+				violationList = evaluator.getViolationList();
 			}
 			else{
 				if(value > fitnessValue){
 					fitnessValue = value;
 					bestOpp = opp;
 					consequenceModel = testModel;
+					violationList = evaluator.getViolationList();
 				}
 			}
 		}
 		
-		return new RefactoringSequenceElement(bestOpp, consequenceModel, fitnessValue);
+		return new RefactoringSequenceElement(bestOpp, consequenceModel, fitnessValue, violationList);
 	}
 
 	@Override
