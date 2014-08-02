@@ -39,13 +39,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		this.parent = parent;
 		parent.setLayout(new GridLayout());
-		/*suggestionComposite = new Composite(parent, SWT.NONE);
-		
-		GridData data = new GridData(GridData.FILL, GridData.FILL, true, true);
-		suggestionComposite.setLayoutData(data);*/
-		
-		Label text = new Label(parent, SWT.NONE);
-		text.setText("Hello World" + (i++));;
 	}
 	
 	public void refreshSuggestionsOnUI(ArrayList<RefactoringSequence> suggestions){
@@ -55,16 +48,16 @@ public class RefactoringSuggestionsView extends ViewPart {
 		
 		//TODO
 		Label text = new Label(parent, SWT.NONE);
-		text.setText("Hello World" + (i++));;
+		text.setText("Refactoring Suggestions");;
 		
 		tabFolder = new TabFolder (parent, SWT.NONE);
 		for (RefactoringSequence sequence : suggestions) {
 		//for (int k = 0; k < 3; k++) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
-			item.setText ("Plan " + (suggestions.indexOf(sequence) + 1));
+			item.setText ("Suggestion " + (suggestions.indexOf(sequence) + 1));
 			//item.setText ("Plan " + (k + 1));
 			
-			final ScrolledComposite scrollComposite = new ScrolledComposite(tabFolder, SWT.BORDER | SWT.V_SCROLL);
+			final ScrolledComposite scrollComposite = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
 			item.setControl(scrollComposite);
 			
 			final Composite composite = new Composite(scrollComposite, SWT.FILL);
