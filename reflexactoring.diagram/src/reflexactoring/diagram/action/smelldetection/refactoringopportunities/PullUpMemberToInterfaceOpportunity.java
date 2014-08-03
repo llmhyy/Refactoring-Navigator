@@ -94,7 +94,7 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		
 		refactoringDetails.add(step1);
 		
-		String step2 = "create the member " + toBePulledMemberList.get(0).getName() + "in interface";
+		String step2 = "create the member " + toBePulledMemberList.get(0).getName() + " in interface";
 		refactoringDetails.add(step2);
 		
 		String step3 = "Those methods refer to ";

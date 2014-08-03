@@ -89,7 +89,7 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 	public ArrayList<String> getRefactoringDetails(){
 		ArrayList<String> refactoringDetails = new ArrayList<>();
 		
-		String step1 = "Pull the member " + toBePulledMemberList.get(0).getName() + "in subclasses to" + this.targetUnit.getName();
+		String step1 = "Pull the member " + toBePulledMemberList.get(0).getName() + " in subclasses to" + this.targetUnit.getName();
 		refactoringDetails.add(step1);
 		
 		String step2 = "Those methods refer to ";

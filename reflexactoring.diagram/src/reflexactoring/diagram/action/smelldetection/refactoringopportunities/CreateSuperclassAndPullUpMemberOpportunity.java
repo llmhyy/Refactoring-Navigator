@@ -108,7 +108,7 @@ public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpp
 		
 		refactoringDetails.add(step1);
 		
-		String step2 = "Pull the member " + toBePulledMemberList.get(0).getName() + "in subclasses to " + targetUnit.getName();
+		String step2 = "Pull the member " + toBePulledMemberList.get(0).getName() + " in subclasses to " + targetUnit.getName();
 		refactoringDetails.add(step2);
 		
 		String step3 = "Those methods refer to ";
