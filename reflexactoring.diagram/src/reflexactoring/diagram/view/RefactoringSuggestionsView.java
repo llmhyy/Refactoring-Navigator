@@ -13,7 +13,14 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ExpandBar;
+import org.eclipse.swt.widgets.ExpandItem;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormText;
@@ -26,13 +33,12 @@ import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 
 public class RefactoringSuggestionsView extends ViewPart {
-	private int i = 0;
 	private Composite parent;
 	
 	TabFolder tabFolder;
 	
 	public RefactoringSuggestionsView() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	@Override
@@ -52,7 +58,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 		
 		tabFolder = new TabFolder (parent, SWT.NONE);
 		for (RefactoringSequence sequence : suggestions) {
-		//for (int k = 0; k < 3; k++) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
 			item.setText ("Suggestion " + (suggestions.indexOf(sequence) + 1));
 			//item.setText ("Plan " + (k + 1));
@@ -67,20 +72,19 @@ public class RefactoringSuggestionsView extends ViewPart {
 			
 			//add suggestions
 			for(RefactoringSequenceElement element : sequence){
-			//for(int j = 0; j < 3; j++){
+			
 				//Composite for single suggestion
 				Composite elementComposite = new Composite(composite, SWT.BORDER);
 				elementComposite.setLayout(new GridLayout());
 				
 				//Label for "Step X"
 				Label title = new Label(elementComposite, SWT.NONE);
-				title.setText("Step " + (sequence.indexOf(element) + 1) + " (" + ")");
-				//title.setText("Step " + (j + 1) + " (" + ")");
-				title.setFont(new Font(Display.getCurrent(),"Arial", 14, SWT.NORMAL));
+				title.setText("Step " + (sequence.indexOf(element) + 1) + " (" + element.getOpportunity().getRefactoringName() + ")");
+				title.setFont(new Font(Display.getCurrent(), "Arial", 14, SWT.NORMAL));
 				
 				//Label for description
 				Label description = new Label(elementComposite, SWT.NONE);
-				description.setText("Description: just for test!");
+				description.setText("Description: " + element.getOpportunity().getRefactoringDescription());
 				
 				//ExpandBar for detail
 				final ExpandBar detailBar = new ExpandBar (elementComposite, SWT.V_SCROLL);
@@ -133,9 +137,10 @@ public class RefactoringSuggestionsView extends ViewPart {
 				Composite detailComposite = new Composite (detailBar, SWT.NONE);
 				detailComposite.setLayout(new GridLayout());
 				//generate detail?
-				for(int i = 0; i < 3; i++){
+				for(int i = 0; i < element.getOpportunity().getRefactoringDetails().size(); i++){
+					String detail = element.getOpportunity().getRefactoringDetails().get(i);
 					Label testDetail = new Label(detailComposite, SWT.NONE);
-					testDetail.setText((i + 1) + ". Detail test.");
+					testDetail.setText((i + 1) + ". " + detail +".");
 				}				
 				ExpandItem detailItem = new ExpandItem (detailBar, SWT.NONE, 0);
 				detailItem.setText("View Detail");

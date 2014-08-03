@@ -58,6 +58,8 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		ModuleWrapper bestMappingModule = calculateBestMappingModule(newModel,
 				newInterfaceUnit);
 		newInterfaceUnit.setMappingModule(bestMappingModule);
+		
+		this.targetUnit = newInterfaceUnit;
 
 		return newModel;
 	}
@@ -72,6 +74,42 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		Precondition precondition = new Precondition(getModuleList());
 		return precondition.checkLegal(model);
 	}
+	
+	@Override
+	public String getRefactoringName() {
+		return "Pull Up Member to New Interface";
+	}
+	
+	@Override
+	public ArrayList<String> getRefactoringDetails(){
+		ArrayList<String> refactoringDetails = new ArrayList<>();
+		String step1 = "Create an interface for ";
+		StringBuffer buffer1 = new StringBuffer();
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			buffer1.append(member.getUnitWrapper().getSimpleName() + ",");
+		}
+		String str = buffer1.toString();
+		str = str.substring(0, str.length()-1);
+		step1 += str;
+		
+		refactoringDetails.add(step1);
+		
+		String step2 = "create the member " + toBePulledMemberList.get(0).getName() + "in interface";
+		refactoringDetails.add(step2);
+		
+		String step3 = "Those methods refer to ";
+		StringBuffer buffer2 = new StringBuffer();
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			buffer2.append(member.toString()+ ",");
+		}
+		String memberString = buffer2.toString();
+		memberString = memberString.substring(0, memberString.length()-1);
+		step3 += memberString;
+		step3 += " now refer to the " + toBePulledMemberList.get(0).getName() + " in super class"; 
+		refactoringDetails.add(step3);
+		
+		return refactoringDetails;
+	};
 
 	public class Precondition extends
 			PullUpMemberPrecondition {

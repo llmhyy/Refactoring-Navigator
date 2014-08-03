@@ -30,6 +30,15 @@ public abstract class RefactoringOpportunity {
 	 * @return
 	 */
 	public abstract ProgramModel simulate(ProgramModel model);
+	
+	public abstract String getRefactoringName();
+	
+	public String getRefactoringDescription(){
+		return toString();
+	};
+	
+	public abstract ArrayList<String> getRefactoringDetails();
+	
 	/**
 	 * this method is used to apply refactoring on real code
 	 */

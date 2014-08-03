@@ -22,6 +22,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 
 	private UnitMemberWrapper objectMethod;
 	private ICompilationUnitWrapper targetUnit;
+	private ICompilationUnitWrapper sourceUnit;
 	
 	public MoveMethodOpportunity(UnitMemberWrapper objectMethod, ICompilationUnitWrapper targetUnit){
 		this.objectMethod = objectMethod;
@@ -49,6 +50,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		 * change containing relations
 		 */
 		ICompilationUnitWrapper originalUnit = objMethod.getUnitWrapper();
+		
+		this.sourceUnit = originalUnit;
+		
 		originalUnit.getMembers().remove(objMethod);
 		objMethod.setUnitWrapper(tarUnit);
 		tarUnit.addMember(objMethod);
@@ -60,6 +64,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		objMethod.getParameters().addAll(newParameters);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
+		
+		this.objectMethod = objMethod;
+		this.targetUnit = tarUnit;
 		
 		return newModel;
 	}
@@ -138,6 +145,36 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	public void setTargetUnit(ICompilationUnitWrapper targetUnit) {
 		this.targetUnit = targetUnit;
 	}
+	
+	/**
+	 * @return the sourceUnit
+	 */
+	public ICompilationUnitWrapper getSourceUnit() {
+		return sourceUnit;
+	}
+
+	/**
+	 * @param sourceUnit the sourceUnit to set
+	 */
+	public void setSourceUnit(ICompilationUnitWrapper sourceUnit) {
+		this.sourceUnit = sourceUnit;
+	}
+
+	@Override
+	public String getRefactoringName() {
+		return "Move Method";
+	}
+	
+	@Override
+	public ArrayList<String> getRefactoringDetails(){
+		ArrayList<String> refactoringDetails = new ArrayList<>();
+		String step1 = "Move method " + this.objectMethod.getName() + " from " 
+				+ this.sourceUnit.getName() + " to " + this.targetUnit.getName();
+		
+		refactoringDetails.add(step1);
+		
+		return refactoringDetails;
+	};
 
 	public class Precodition extends RefactoringPrecondition{
 		/**

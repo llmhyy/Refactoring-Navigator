@@ -23,6 +23,7 @@ import reflexactoring.diagram.bean.UnitMemberWrapper;
 public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 
 	private CloneSet cloneSet;
+	private ICompilationUnitWrapper utilityClass;
 	
 	public ExtractUtilityClassOpportunity(CloneSet cloneSet, ArrayList<ModuleWrapper> moduleList){
 		this.cloneSet = cloneSet;
@@ -101,6 +102,8 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		ModuleWrapper bestMappingModule = calculateBestMappingModule(newModel, utilityClass);
 		utilityClass.setMappingModule(bestMappingModule);
 		
+		this.utilityClass = utilityClass;
+		
 		return newModel;
 	}
 
@@ -114,6 +117,35 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 	protected boolean checkLegal(ProgramModel model) {
 		Precondition precondition = new Precondition(getModuleList());
 		return precondition.checkLegal(model);
+	}
+
+	@Override
+	public String getRefactoringName() {
+		return "Extract Clones to A Utility Class";
+	}
+	
+	@Override
+	public ArrayList<String> getRefactoringDetails(){
+		ArrayList<String> refactoringDetails = new ArrayList<>();
+		
+		String step1 = "Extract the cloned code in to newly created " + utilityClass.getName();
+		refactoringDetails.add(step1);
+		
+		return refactoringDetails;
+	};
+
+	/**
+	 * @return the utilityClass
+	 */
+	public ICompilationUnitWrapper getUtilityClass() {
+		return utilityClass;
+	}
+
+	/**
+	 * @param utilityClass the utilityClass to set
+	 */
+	public void setUtilityClass(ICompilationUnitWrapper utilityClass) {
+		this.utilityClass = utilityClass;
 	}
 
 	public class Precondition extends RefactoringPrecondition{

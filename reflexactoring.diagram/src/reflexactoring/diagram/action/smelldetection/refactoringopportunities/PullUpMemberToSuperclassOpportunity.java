@@ -51,7 +51,8 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 		/**
 		 * create a new method in the parent class and change reference
 		 */
-		createNewMemberInSuperClass(newModel, newModel.findUnit(this.targetUnit.getFullQualifiedName()));
+		ICompilationUnitWrapper newSuperclass = newModel.findUnit(this.targetUnit.getFullQualifiedName());
+		createNewMemberInSuperClass(newModel, newSuperclass);
 		
 		/**
 		 * delete the to-be-pulled members in model
@@ -61,6 +62,8 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 		}
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
+		
+		this.targetUnit = newSuperclass;
 		
 		return newModel;
 	}
@@ -76,6 +79,32 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 		Precondition precondition = new Precondition(getModuleList());
 		return precondition.checkLegal(model);
 	}
+	
+	@Override
+	public String getRefactoringName() {
+		return "Pull Up Member to Existing Class";
+	}
+	
+	@Override
+	public ArrayList<String> getRefactoringDetails(){
+		ArrayList<String> refactoringDetails = new ArrayList<>();
+		
+		String step1 = "Pull the member " + toBePulledMemberList.get(0).getName() + "in subclasses to" + this.targetUnit.getName();
+		refactoringDetails.add(step1);
+		
+		String step2 = "Those methods refer to ";
+		StringBuffer buffer2 = new StringBuffer();
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			buffer2.append(member.toString()+ ",");
+		}
+		String memberString = buffer2.toString();
+		memberString = memberString.substring(0, memberString.length()-1);
+		step2 += memberString;
+		step2 += " now refer to the " + toBePulledMemberList.get(0).getName() + " in " + this.targetUnit.getName(); 
+		refactoringDetails.add(step2);
+		
+		return refactoringDetails;
+	};
 
 	public class Precondition extends PullUpMemberPrecondition{
 
