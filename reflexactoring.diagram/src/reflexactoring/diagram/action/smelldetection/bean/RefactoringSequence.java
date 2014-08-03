@@ -5,6 +5,8 @@ package reflexactoring.diagram.action.smelldetection.bean;
 
 import java.util.ArrayList;
 
+import reflexactoring.diagram.action.recommend.SuggestionMove;
+
 /**
  * @author linyun
  *
@@ -12,6 +14,23 @@ import java.util.ArrayList;
 public class RefactoringSequence extends ArrayList<RefactoringSequenceElement>{
 
 	private Double currentFitnessValue;
+	
+	private ArrayList<SuggestionMove> prerequisite;
+	
+	/**
+	 * @return the prerequisite
+	 */
+	public ArrayList<SuggestionMove> getPrerequisite() {
+		return prerequisite;
+	}
+
+	/**
+	 * @param prerequisite the prerequisite to set
+	 */
+	public void setPrerequisite(ArrayList<SuggestionMove> prerequisite) {
+		this.prerequisite = prerequisite;
+	}
+
 	/**
 	 * 
 	 */

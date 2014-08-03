@@ -13,6 +13,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.diagram.action.recommend.RefactoringRecommender;
+import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
@@ -59,6 +61,15 @@ public class SearchRefactoringSolutionAcion implements
 					}
 					
 				}
+				
+				/**
+				 * prepare prerequisite
+				 */
+				ArrayList<Violation> violations = sequence.get(sequence.size()-1).getViolationList();
+				RefactoringRecommender recommender = new RefactoringRecommender();
+				ArrayList<SuggestionMove> prerequisite = recommender.findHighLevelModificationSuggestion(violations, moduleList);
+				
+				sequence.setPrerequisite(prerequisite);
 				
 				suggestionList.add(sequence);
 				

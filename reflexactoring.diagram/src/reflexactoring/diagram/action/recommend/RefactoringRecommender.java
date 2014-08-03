@@ -162,7 +162,9 @@ public class RefactoringRecommender {
 		}
 		else{
 			suggestion.setFeasible(false);
-			ArrayList<SuggestionMove> highLevelSuggestion = findHighLevelModificationSuggestion(bestGene, moduleList);
+			
+			ArrayList<SuggestionMove> highLevelSuggestion = findHighLevelModificationSuggestion(
+					((AdvancedFitnessEvaluator)bestGene.getEvaluator()).getViolationList(), moduleList);
 			for(SuggestionMove move: highLevelSuggestion){
 				suggestion.add(0, move);
 			}
@@ -172,11 +174,10 @@ public class RefactoringRecommender {
 		return suggestions;
 	}
 
-	private ArrayList<SuggestionMove> findHighLevelModificationSuggestion(Genotype bestGene, ArrayList<ModuleWrapper> moduleList){
+	public ArrayList<SuggestionMove> findHighLevelModificationSuggestion(ArrayList<Violation> violations, ArrayList<ModuleWrapper> moduleList){
 		ArrayList<SuggestionMove> suggestions = new ArrayList<>();
 		
 		/*ArrayList<Violation> violations = ((DefaultFitnessEvaluator)bestGene.getEvaluator()).getViolationList();*/
-		ArrayList<Violation> violations = ((AdvancedFitnessEvaluator)bestGene.getEvaluator()).getViolationList();
 		for(Violation violation: violations){
 			ModuleWrapper sourceModule = moduleList.get(violation.getSourceModuleIndex());
 			ModuleWrapper targetModule = moduleList.get(violation.getDestModuleIndex());
