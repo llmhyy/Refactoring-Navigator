@@ -29,13 +29,14 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.eclipse.ui.part.ViewPart;
 
+import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 
 public class RefactoringSuggestionsView extends ViewPart {
 	private Composite parent;
 	
-	TabFolder tabFolder;
+	GridLayout gridLayout = new GridLayout();
 	
 	public RefactoringSuggestionsView() {
 		
@@ -44,7 +45,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		this.parent = parent;
-		parent.setLayout(new GridLayout());
+		parent.setLayout(gridLayout);
 	}
 	
 	public void refreshSuggestionsOnUI(ArrayList<RefactoringSequence> suggestions){
@@ -53,43 +54,107 @@ public class RefactoringSuggestionsView extends ViewPart {
 		}
 		
 		//TODO
-		Label text = new Label(parent, SWT.NONE);
-		text.setText("Refactoring Suggestions");;
+		Label text = new Label(parent, SWT.WRAP | SWT.TOP);
+		text.setText("Refactoring Suggestions");
+		text.setFont(new Font(Display.getCurrent(), "Arial", 14, SWT.BOLD));
+		text.setForeground(new Color(Display.getCurrent(), 38, 81, 128));
+		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		
-		tabFolder = new TabFolder (parent, SWT.NONE);
+		TabFolder tabFolder = new TabFolder(parent, SWT.NONE);
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		for (RefactoringSequence sequence : suggestions) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
 			item.setText ("Suggestion " + (suggestions.indexOf(sequence) + 1));
-			//item.setText ("Plan " + (k + 1));
 			
 			final ScrolledComposite scrollComposite = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
+			scrollComposite.setLayout(gridLayout);
 			item.setControl(scrollComposite);
 			
 			final Composite composite = new Composite(scrollComposite, SWT.FILL);
-			composite.setLayout(new GridLayout());
+			composite.setLayout(gridLayout);
+			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			
-			GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
+			//add prerequisite
+			Composite prerequisiteComposite = new Composite(composite, SWT.BORDER);
+			prerequisiteComposite.setLayout(gridLayout);
+			prerequisiteComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+			prerequisiteComposite.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
+			//Label for "Prerequisite"
+			Label prerequisiteTitle = new Label(prerequisiteComposite, SWT.WRAP | SWT.TOP);
+			prerequisiteTitle.setText("Prerequisite");
+			prerequisiteTitle.setFont(new Font(Display.getCurrent(), "Arial", 14, SWT.NORMAL));
+			prerequisiteTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+			prerequisiteTitle.setForeground(new Color(Display.getCurrent(), 38, 81, 128));
+			prerequisiteTitle.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
+			//form for prerequisite actions
+			FormToolkit toolkitPre = new FormToolkit(parent.getDisplay());
+			Composite formCompositePre = toolkitPre.createComposite(prerequisiteComposite);
+			formCompositePre.setLayout(new TableWrapLayout());
+			formCompositePre.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+			FormText formTextPre = toolkitPre.createFormText(formCompositePre, true);
+			formTextPre.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
+			
+			StringBuffer bufferPre = new StringBuffer();
+			bufferPre.append("<form>");
+			for(SuggestionMove prerequisite : sequence.getPrerequisite()){
+				bufferPre.append("<li>");
+				bufferPre.append(prerequisite.generateTagedText());
+				bufferPre.append("</li>");	
+				
+				bufferPre.append("<li bindent=\"20\">");
+				bufferPre.append("<b>[</b> <a href=\"Forbid\">Reject</a> ");
+				bufferPre.append("<a href=\"Allow\">Undo</a> ");
+				bufferPre.append("<b>]</b>");
+				bufferPre.append("</li>");	
+				bufferPre.append("<li bindent=\"20\">");
+				bufferPre.append("<b>[</b> <a href=\"Exec\">Apply</a> ");
+				bufferPre.append("<a href=\"Undo\">Undo</a> ");
+				bufferPre.append("<b>]</b>");
+				bufferPre.append("</li>");
+			}			
+			bufferPre.append("</form>");
+			
+			formTextPre.setText(bufferPre.toString(), true, false);
+			//formTextPre.setData(move);
+			formTextPre.addHyperlinkListener(new HyperlinkAdapter() {
+				public void linkActivated(HyperlinkEvent e) {
+//					SuggestionMove suggestion = (SuggestionMove) text.getData();
+//					if(e.getHref().equals("Module")){
+//						
+//					}
+				}
+			});
 			
 			//add suggestions
 			for(RefactoringSequenceElement element : sequence){
 			
 				//Composite for single suggestion
 				Composite elementComposite = new Composite(composite, SWT.BORDER);
-				elementComposite.setLayout(new GridLayout());
+				elementComposite.setLayout(gridLayout);
+				elementComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 				
 				//Label for "Step X"
-				Label title = new Label(elementComposite, SWT.NONE);
+				Label title = new Label(elementComposite, SWT.WRAP | SWT.TOP);
 				title.setText("Step " + (sequence.indexOf(element) + 1) + " (" + element.getOpportunity().getRefactoringName() + ")");
 				title.setFont(new Font(Display.getCurrent(), "Arial", 14, SWT.NORMAL));
+				title.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 				
 				//Label for description
-				Label description = new Label(elementComposite, SWT.NONE);
+				Label description = new Label(elementComposite, SWT.WRAP | SWT.TOP);
 				description.setText("Description: " + element.getOpportunity().getRefactoringDescription());
+				description.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 				
 				//ExpandBar for detail
 				final ExpandBar detailBar = new ExpandBar (elementComposite, SWT.V_SCROLL);
-				detailBar.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+				//detailBar.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+				detailBar.setForeground(new Color(Display.getCurrent(), 38, 81, 128));
 				detailBar.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+				//Composite for details
+				final Composite detailComposite = new Composite (detailBar, SWT.NONE);
+				detailComposite.setLayout(gridLayout);
+				detailComposite.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
+				
 				detailBar.addExpandListener(new ExpandListener() {
 
 		            public void itemCollapsed(ExpandEvent e) {
@@ -115,6 +180,9 @@ public class RefactoringSuggestionsView extends ViewPart {
 		            public void itemExpanded(ExpandEvent e) {
 		            	if (e.item instanceof ExpandItem){
 		                    ExpandItem item = (ExpandItem)e.item;
+		                    //not able to get the actual height of detailComposite, only know the height difference between parent and the composite is about 65, use it to calculate the height...
+		                    item.setHeight(detailComposite.computeSize(parent.getBounds().width - 65, SWT.DEFAULT).y);
+		                    
 		                    detailBar.getParent().setSize(detailBar.getParent().getSize().x, detailBar.getParent().getSize().y + item.getHeight());
 
 		                    GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
@@ -134,24 +202,26 @@ public class RefactoringSuggestionsView extends ViewPart {
 
 		        });
 				
-				Composite detailComposite = new Composite (detailBar, SWT.NONE);
-				detailComposite.setLayout(new GridLayout());
 				//generate detail?
 				for(int i = 0; i < element.getOpportunity().getRefactoringDetails().size(); i++){
 					String detail = element.getOpportunity().getRefactoringDetails().get(i);
-					Label testDetail = new Label(detailComposite, SWT.NONE);
+					Label testDetail = new Label(detailComposite, SWT.WRAP | SWT.TOP);
 					testDetail.setText((i + 1) + ". " + detail +".");
+					testDetail.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+					testDetail.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
 				}				
 				ExpandItem detailItem = new ExpandItem (detailBar, SWT.NONE, 0);
 				detailItem.setText("View Detail");
-				detailItem.setHeight(detailComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+				//not able to get the actual height of detailComposite, only know the height difference between parent and the composite is about 65, use it to calculate the height...
+				detailItem.setHeight(detailComposite.computeSize(parent.getBounds().width - 65, SWT.DEFAULT).y);
+				//System.out.println(detailItem.getHeight() + " : " + detailComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + " : " + detailComposite.computeSize(parent.getBounds().width - 65, SWT.DEFAULT).y);
 				detailItem.setControl(detailComposite);
 				
 				//Form for actions				
 				FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 				Composite formComposite = toolkit.createComposite(elementComposite);
 				formComposite.setLayout(new TableWrapLayout());
-				formComposite.setLayoutData(data);
+				formComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 				FormText formText = toolkit.createFormText(formComposite, true);
 				formText.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
 				
@@ -202,7 +272,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 					elementComposite.setBackground(new Color(Display.getCurrent(), 240, 240, 240));
 					elementComposite.setEnabled(false);
 				}
-				elementComposite.setLayoutData(data);
+				elementComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 				//elementComposite.setEnabled(true);
 			}
 			
@@ -217,8 +287,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 				}
 			});
 		}
-		GridData data = new GridData(GridData.FILL, GridData.FILL, true, true);
-		tabFolder.setLayoutData(data);
 		
 		parent.layout();
 	}
