@@ -889,6 +889,14 @@
             name="Fix Member Mapping"
             restorable="true">
       </view>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.RefactoringOppForbiddenView"
+            icon="icons/view/forbid_opp.gif"
+            id="reflexactoring.diagram.view.refactoringOppForbiddenView"
+            name="Forbidden Opportunity View"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
