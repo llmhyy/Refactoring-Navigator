@@ -183,15 +183,15 @@ public class ProgramModel{
 	 * This method is invoked with the following precondition:
 	 * All this relevant reference must be changed!
 	 * 
-	 * @param toBeDeletedMember
+	 * @param oldToBeDeletedMember
 	 */
-	public void removeMember(UnitMemberWrapper toBeDeletedMember){
+	public void removeMember(UnitMemberWrapper oldToBeDeletedMember){
 		Iterator<UnitMemberWrapper> memberIter = this.scopeMemberList.iterator();
 		while(memberIter.hasNext()){
 			UnitMemberWrapper member = memberIter.next();
-			if(member.equals(toBeDeletedMember)){
+			if(member.equals(oldToBeDeletedMember)){
 				memberIter.remove();
-				toBeDeletedMember.getUnitWrapper().getMembers().remove(toBeDeletedMember);
+				member.getUnitWrapper().getMembers().remove(member);
 				return;
 			}
 		}
