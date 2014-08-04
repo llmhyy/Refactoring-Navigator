@@ -30,12 +30,12 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 		bottom.addView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW);
 		bottom.addView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
 		bottom.addView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW);
-		bottom.addView(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW);
-		bottom.addView(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW);
+		//bottom.addView(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW);
+		//bottom.addView(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW);
 		bottom.addView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW);
 		bottom.addView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW);
-		bottom.addView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW);
-		bottom.addView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW);
+		//bottom.addView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW);
+		//bottom.addView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW);
 		
 		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT, 0.7f, editorArea);
 		right.addView(ReflexactoringPerspective.REFACTORING_SUGGESTION);
