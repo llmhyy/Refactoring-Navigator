@@ -34,6 +34,18 @@ public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpp
 		buffer.append(" to newly created super class");
 		return buffer.toString();
 	}
+	
+	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof CreateSuperclassAndPullUpMemberOpportunity){
+			CreateSuperclassAndPullUpMemberOpportunity thatOpp = (CreateSuperclassAndPullUpMemberOpportunity)obj;
+			if(isHavingSameMemberList(thatOpp.getToBePulledMemberList())){
+				return true;
+			}
+		}
+		
+		return false;
+	} 
 
 	@Override
 	public ProgramModel simulate(ProgramModel model) {

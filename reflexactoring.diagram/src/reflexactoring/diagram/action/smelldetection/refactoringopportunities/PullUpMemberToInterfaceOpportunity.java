@@ -34,6 +34,18 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		buffer.append(" to created newly interface");
 		return buffer.toString();
 	}
+	
+	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof PullUpMemberToInterfaceOpportunity){
+			PullUpMemberToInterfaceOpportunity thatOpp = (PullUpMemberToInterfaceOpportunity)obj;
+			if(thatOpp.isHavingSameMemberList(toBePulledMemberList)){
+				return true;
+			}
+		}
+		
+		return false;
+	} 
 
 	@Override
 	public ProgramModel simulate(ProgramModel model) {
@@ -78,6 +90,10 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 	@Override
 	public String getRefactoringName() {
 		return "Pull Up Member to New Interface";
+	}
+	
+	public ICompilationUnitWrapper getTargetInterface(){
+		return this.targetUnit;
 	}
 	
 	@Override

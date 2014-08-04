@@ -30,7 +30,7 @@ import reflexactoring.diagram.view.RefactoringSuggestionsView;
 
 public class SearchRefactoringSolutionAcion implements
 		IWorkbenchWindowActionDelegate {
-
+	
 	@Override
 	public void run(IAction action) {
 		// TODO Lin Yun
@@ -105,6 +105,11 @@ public class SearchRefactoringSolutionAcion implements
 		ArrayList<Violation> violationList = null;
 		
 		for(RefactoringOpportunity opp: oppList){
+			
+			if(Settings.forbiddenOpps.contains(opp)){
+				continue;
+			}
+			
 			ProgramModel testModel = opp.simulate(model);
 			double value = evaluator.computeFitness(testModel, moduleList);
 			

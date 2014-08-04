@@ -33,6 +33,16 @@ public class CloneSet {
 		
 		return buffer.toString();
 	}
+	
+	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof CloneSet){
+			CloneSet set = (CloneSet)obj;
+			return set.getId().equals(getId());
+		}
+		
+		return false;
+	}
 
 	/**
 	 * @return the instances

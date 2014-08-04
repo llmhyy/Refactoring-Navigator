@@ -42,6 +42,19 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 	}
 	
 	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof ExtractUtilityClassOpportunity){
+			ExtractUtilityClassOpportunity thatOpp = (ExtractUtilityClassOpportunity)obj;
+			if(thatOpp.getCloneSet().equals(getCloneSet())){
+				return true;
+			}
+			return false;
+		}
+		
+		return false;
+	} 
+	
+	@Override
 	public ProgramModel simulate(ProgramModel model) {
 		ProgramModel newModel = model.clone();
 		/**
@@ -146,6 +159,20 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 	 */
 	public void setUtilityClass(ICompilationUnitWrapper utilityClass) {
 		this.utilityClass = utilityClass;
+	}
+
+	/**
+	 * @return the cloneSet
+	 */
+	public CloneSet getCloneSet() {
+		return cloneSet;
+	}
+
+	/**
+	 * @param cloneSet the cloneSet to set
+	 */
+	public void setCloneSet(CloneSet cloneSet) {
+		this.cloneSet = cloneSet;
 	}
 
 	public class Precondition extends RefactoringPrecondition{

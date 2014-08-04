@@ -40,6 +40,19 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	}
 	
 	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof MoveMethodOpportunity){
+			MoveMethodOpportunity thatOpp = (MoveMethodOpportunity)obj;
+			if(thatOpp.getObjectMethod().equals(getObjectMethod()) &&
+					thatOpp.getTargetUnit().equals(getTargetUnit())){
+				return true;
+			}
+		}
+		
+		return false;
+	} 
+	
+	@Override
 	public ProgramModel simulate(ProgramModel model) {
 		ProgramModel newModel = model.clone();
 		

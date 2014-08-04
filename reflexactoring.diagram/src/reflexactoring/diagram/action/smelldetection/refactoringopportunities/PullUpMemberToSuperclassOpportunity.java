@@ -36,6 +36,19 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 		buffer.append(" to super class " + targetUnit.toString());
 		return buffer.toString();
 	}
+	
+	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof PullUpMemberToSuperclassOpportunity){
+			PullUpMemberToSuperclassOpportunity thatOpp = (PullUpMemberToSuperclassOpportunity)obj;
+			if(thatOpp.isHavingSameMemberList(toBePulledMemberList) && 
+					thatOpp.getTargetSuperclass().equals(getTargetSuperclass())){
+				return true;
+			}
+		}
+		
+		return false;
+	} 
 
 	@Override
 	public ProgramModel simulate(ProgramModel model) {
@@ -83,6 +96,10 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 	@Override
 	public String getRefactoringName() {
 		return "Pull Up Member to Existing Class";
+	}
+	
+	public ICompilationUnitWrapper getTargetSuperclass(){
+		return this.targetUnit;
 	}
 	
 	@Override

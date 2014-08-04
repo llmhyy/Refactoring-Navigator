@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMapList;
 import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMapList;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
@@ -29,6 +30,11 @@ public class Settings {
 	 * java classes/interfaces.
 	 */
 	public static ProgramModel scope = new ProgramModel();
+	
+	/**
+	 * It is used for specifying user rejected refactoring suggestions, which will never be recommended again.
+	 */
+	public static ArrayList<RefactoringOpportunity> forbiddenOpps = new ArrayList<>();
 	
 	/**
 	 * It is used for keeping user-specified module-type(unit) mapping relation.

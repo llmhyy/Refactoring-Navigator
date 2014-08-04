@@ -166,4 +166,28 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		
 		return newUnit;
 	}
+	
+	protected boolean isHavingSameMemberList(ArrayList<UnitMemberWrapper> memberList){
+		if(memberList.size() == toBePulledMemberList.size()){
+			for(UnitMemberWrapper thatMember: memberList){
+				if(!canFindAnEqualMemberInList(toBePulledMemberList, thatMember)){
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean canFindAnEqualMemberInList(ArrayList<UnitMemberWrapper> list, UnitMemberWrapper member){
+		for(UnitMemberWrapper memberInList: list){
+			if(memberInList.equals(member)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
 }
