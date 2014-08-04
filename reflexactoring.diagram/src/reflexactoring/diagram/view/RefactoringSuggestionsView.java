@@ -10,6 +10,7 @@ import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.ExpandListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,6 +22,7 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.ui.forms.FormColors;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormText;
@@ -30,8 +32,20 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.eclipse.ui.part.ViewPart;
 
 import reflexactoring.diagram.action.recommend.SuggestionMove;
+import reflexactoring.diagram.action.recommend.action.DependencyAction;
+import reflexactoring.diagram.action.recommend.action.ExtendAction;
+import reflexactoring.diagram.action.recommend.action.LinkAction;
+import reflexactoring.diagram.action.recommend.action.RefactoringAction;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
+import reflexactoring.diagram.bean.ModuleDependencyConfidence;
+import reflexactoring.diagram.bean.ModuleExtendConfidence;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
+import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.SuggestionObject;
+import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.util.RecordParameters;
+import reflexactoring.diagram.util.Settings;
 
 public class RefactoringSuggestionsView extends ViewPart {
 	private Composite parent;
@@ -87,23 +101,31 @@ public class RefactoringSuggestionsView extends ViewPart {
 			prerequisiteTitle.setForeground(new Color(Display.getCurrent(), 38, 81, 128));
 			prerequisiteTitle.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
 			//form for prerequisite actions
-			FormToolkit toolkitPre = new FormToolkit(parent.getDisplay());
+			final FormToolkit toolkitPre = new FormToolkit(parent.getDisplay());
 			Composite formCompositePre = toolkitPre.createComposite(prerequisiteComposite);
 			formCompositePre.setLayout(new TableWrapLayout());
 			formCompositePre.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-			FormText formTextPre = toolkitPre.createFormText(formCompositePre, true);
-			formTextPre.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
 			
-			StringBuffer bufferPre = new StringBuffer();
-			bufferPre.append("<form>");
 			for(SuggestionMove prerequisite : sequence.getPrerequisite()){
+				final FormText formTextPre = toolkitPre.createFormText(formCompositePre, true);
+				formTextPre.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
+				StringBuffer bufferPre = new StringBuffer();
+				bufferPre.append("<form>");
 				bufferPre.append("<li>");
 				bufferPre.append(prerequisite.generateTagedText());
 				bufferPre.append("</li>");	
 				
 				bufferPre.append("<li bindent=\"20\">");
-				bufferPre.append("<b>[</b> <a href=\"Forbid\">Reject</a> ");
-				bufferPre.append("<a href=\"Allow\">Undo</a> ");
+				bufferPre.append("<b>[</b> ");
+				if(prerequisite.getAction() instanceof LinkAction){
+					if(prerequisite.getAction() instanceof DependencyAction){
+						bufferPre.append("<a href=\"StickDependency\">Reject</a> ");	
+						bufferPre.append("<a href=\"UnstickDependency\">Undo</a>");	
+					}else if(prerequisite.getAction() instanceof ExtendAction){
+						bufferPre.append("<a href=\"StickExtend\">Reject</a> ");	
+						bufferPre.append("<a href=\"UnstickExtend\">Undo</a>");	
+					}
+				}
 				bufferPre.append("<b>]</b>");
 				bufferPre.append("</li>");	
 				bufferPre.append("<li bindent=\"20\">");
@@ -111,19 +133,142 @@ public class RefactoringSuggestionsView extends ViewPart {
 				bufferPre.append("<a href=\"Undo\">Undo</a> ");
 				bufferPre.append("<b>]</b>");
 				bufferPre.append("</li>");
+				bufferPre.append("</form>");
+				
+				formTextPre.setText(bufferPre.toString(), true, false);
+				formTextPre.setData(prerequisite);
+				formTextPre.addHyperlinkListener(new HyperlinkAdapter() {
+					public void linkActivated(HyperlinkEvent e) {
+						SuggestionMove suggestion = (SuggestionMove) formTextPre.getData();
+						if(e.getHref().equals("Exec")){
+							RecordParameters.applyTime++;
+							
+							suggestion.apply();
+							FormText t = (FormText) e.getSource();
+							FormColors colors = toolkitPre.getColors();
+							colors.createColor("green", new RGB(154,205,50));
+							t.setForeground(colors.getColor("green"));
+							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+							t.setBackground(colors.getColor("white"));
+						}
+						else if(e.getHref().equals("Undo")){
+							suggestion.undoApply();
+							FormText t = (FormText) e.getSource();
+							FormColors colors = toolkitPre.getColors();
+							colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+							t.setForeground(colors.getColor("black"));
+							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+							t.setBackground(colors.getColor("white"));
+						}
+						else if(e.getHref().equals("StickDependency")){
+							RecordParameters.recordTime++;
+							
+							SuggestionObject obj = suggestion.getSuggeestionObject();
+							RefactoringAction action = suggestion.getAction();
+							if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
+								LinkAction depAction =(LinkAction)action;
+								for(ModuleDependencyConfidence confidence: Settings.dependencyConfidenceTable){
+									if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
+										for(int i=0; i<confidence.getModuleList().size(); i++){
+											ModuleWrapper calleeModule = confidence.getModuleList().get(i);
+											if(calleeModule.getName().equals(depAction.getDestination().getName())){
+												confidence.getConfidenceList()[i] += 2;
+											}
+										}
+									}
+								}
+								ViewUpdater updater = new ViewUpdater();
+								updater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, true);
+							}
+							
+							FormText t = (FormText) e.getSource();
+							FormColors colors = toolkitPre.getColors();
+							colors.createColor("gray", new RGB(207,207,207));
+							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+							t.setBackground(colors.getColor("gray"));
+							t.setForeground(colors.getColor("white"));
+						}
+						else if(e.getHref().equals("UnstickDependency")){
+							SuggestionObject obj = suggestion.getSuggeestionObject();
+							RefactoringAction action = suggestion.getAction();
+							if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
+								LinkAction depAction =(LinkAction)action;
+								for(ModuleDependencyConfidence confidence: Settings.dependencyConfidenceTable){
+									if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
+										for(int i=0; i<confidence.getModuleList().size(); i++){
+											ModuleWrapper calleeModule = confidence.getModuleList().get(i);
+											if(calleeModule.getName().equals(depAction.getDestination().getName())){
+												confidence.getConfidenceList()[i] = 0.5;
+											}
+										}
+									}
+								}
+								ViewUpdater updater = new ViewUpdater();
+								updater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, true);
+							}
+							FormText t = (FormText) e.getSource();
+							FormColors colors = toolkitPre.getColors();
+							colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+							t.setForeground(colors.getColor("black"));
+							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+							t.setBackground(colors.getColor("white"));
+						}
+						else if(e.getHref().equals("StickExtend")){
+							RecordParameters.recordTime++;
+							
+							SuggestionObject obj = suggestion.getSuggeestionObject();
+							RefactoringAction action = suggestion.getAction();
+							if(obj instanceof ModuleLinkWrapper && action instanceof ExtendAction){
+								LinkAction extAction =(LinkAction)action;
+								for(ModuleExtendConfidence confidence: Settings.extendConfidenceTable){
+									if(confidence.getModule().getName().equals(extAction.getOrigin().getName())){
+										for(int i=0; i<confidence.getModuleList().size(); i++){
+											ModuleWrapper parentModule = confidence.getModuleList().get(i);
+											if(parentModule.getName().equals(extAction.getDestination().getName())){
+												confidence.getConfidenceList()[i] += 2;
+											}
+										}
+									}
+								}
+								ViewUpdater updater = new ViewUpdater();
+								updater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, true);
+							}
+							
+							FormText t = (FormText) e.getSource();
+							FormColors colors = toolkitPre.getColors();
+							colors.createColor("gray", new RGB(207,207,207));
+							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+							t.setBackground(colors.getColor("gray"));
+							t.setForeground(colors.getColor("white"));
+						}
+						else if(e.getHref().equals("UnstickExtend")){
+							SuggestionObject obj = suggestion.getSuggeestionObject();
+							RefactoringAction action = suggestion.getAction();
+							if(obj instanceof ModuleLinkWrapper && action instanceof ExtendAction){
+								LinkAction extAction =(LinkAction)action;
+								for(ModuleExtendConfidence confidence: Settings.extendConfidenceTable){
+									if(confidence.getModule().getName().equals(extAction.getOrigin().getName())){
+										for(int i=0; i<confidence.getModuleList().size(); i++){
+											ModuleWrapper parentModule = confidence.getModuleList().get(i);
+											if(parentModule.getName().equals(extAction.getDestination().getName())){
+												confidence.getConfidenceList()[i] = 0.5;
+											}
+										}
+									}
+								}
+								ViewUpdater updater = new ViewUpdater();
+								updater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, true);
+							}
+							FormText t = (FormText) e.getSource();
+							FormColors colors = toolkitPre.getColors();
+							colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+							t.setForeground(colors.getColor("black"));
+							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+							t.setBackground(colors.getColor("white"));
+						}
+					}
+				});
 			}			
-			bufferPre.append("</form>");
-			
-			formTextPre.setText(bufferPre.toString(), true, false);
-			//formTextPre.setData(move);
-			formTextPre.addHyperlinkListener(new HyperlinkAdapter() {
-				public void linkActivated(HyperlinkEvent e) {
-//					SuggestionMove suggestion = (SuggestionMove) text.getData();
-//					if(e.getHref().equals("Module")){
-//						
-//					}
-				}
-			});
 			
 			//add suggestions
 			for(RefactoringSequenceElement element : sequence){
