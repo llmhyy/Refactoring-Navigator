@@ -1,6 +1,7 @@
 package reflexactoring.diagram.view;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -38,6 +39,8 @@ import reflexactoring.diagram.action.recommend.action.LinkAction;
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
+import reflexactoring.diagram.bean.HeuristicModuleUnitStopMap;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.ModuleExtendConfidence;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
@@ -363,11 +366,11 @@ public class RefactoringSuggestionsView extends ViewPart {
 				detailItem.setControl(detailComposite);
 				
 				//Form for actions				
-				FormToolkit toolkit = new FormToolkit(parent.getDisplay());
+				final FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 				Composite formComposite = toolkit.createComposite(elementComposite);
 				formComposite.setLayout(new TableWrapLayout());
 				formComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-				FormText formText = toolkit.createFormText(formComposite, true);
+				final FormText formText = toolkit.createFormText(formComposite, true);
 				formText.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
 				
 				StringBuffer buffer = new StringBuffer();
@@ -391,13 +394,45 @@ public class RefactoringSuggestionsView extends ViewPart {
 				buffer.append("</form>");
 				
 				formText.setText(buffer.toString(), true, false);
-				//formText.setData(move);
+				formText.setData(element.getOpportunity());
 				formText.addHyperlinkListener(new HyperlinkAdapter() {
 					public void linkActivated(HyperlinkEvent e) {
-//						SuggestionMove suggestion = (SuggestionMove) text.getData();
-//						if(e.getHref().equals("Module")){
-//							
-//						}
+						RefactoringOpportunity opportunity = (RefactoringOpportunity) formText.getData();
+						if(e.getHref().equals("Forbid")){
+							if(!Settings.forbiddenOpps.contains(opportunity)){
+								Settings.forbiddenOpps.add(opportunity);
+							}
+							
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.FORBIDDEN_REFACTORING_OPP_VIEW, Settings.forbiddenOpps, true);
+													
+							FormText t = (FormText) e.getSource();
+							FormColors colors = toolkit.getColors();
+							colors.createColor("gray", new RGB(207,207,207));
+							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+							t.setBackground(colors.getColor("gray"));
+							t.setForeground(colors.getColor("white"));
+						}else if(e.getHref().equals("Allow")){
+							
+							Iterator<RefactoringOpportunity> iterator = Settings.forbiddenOpps.iterator();
+							while(iterator.hasNext()){
+								RefactoringOpportunity opp = iterator.next();
+								if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
+										&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
+									iterator.remove();
+								}
+							}
+							
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.FORBIDDEN_REFACTORING_OPP_VIEW, Settings.forbiddenOpps, true);
+													
+							FormText t = (FormText) e.getSource();
+							FormColors colors = toolkit.getColors();
+							colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+							t.setForeground(colors.getColor("black"));
+							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+							t.setBackground(colors.getColor("white"));
+						}
 					}
 				});
 						

@@ -79,7 +79,12 @@ public class ViewUpdater {
 					getActivePage().findView(viewId);
 			view.refreshSuggestionsOnUI((ArrayList<Suggestion>) inputData);
 		}
-		
+		else if(viewId.equals(ReflexactoringPerspective.FORBIDDEN_REFACTORING_OPP_VIEW)){
+			RefactoringOppForbiddenView view = (RefactoringOppForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().findView(viewId);
+			view.getViewer().setInput(inputData);
+			view.getViewer().refresh();
+		}
 		if(isNeedReveal){
 			try {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewId);
