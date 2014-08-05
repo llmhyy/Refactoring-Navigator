@@ -32,7 +32,7 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 		bottom.addView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
 		bottom.addView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW);
 		//bottom.addView(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW);
-		//bottom.addView(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW);
+		bottom.addView(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW);
 		bottom.addView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW);
 		bottom.addView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW);
 		bottom.addView(ReflexactoringPerspective.FORBIDDEN_REFACTORING_OPP_VIEW);

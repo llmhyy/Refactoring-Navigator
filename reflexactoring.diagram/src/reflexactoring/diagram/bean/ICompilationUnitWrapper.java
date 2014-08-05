@@ -49,6 +49,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		= new HashMap<>();
 	
 	private ArrayList<UnitMemberWrapper> members = new ArrayList<>();
+	private ArrayList<ICompilationUnitWrapper> ancestors;
 	
 	/**
 	 * @param mappingModule
@@ -124,6 +125,30 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	
 	public String toString(){
 		return this.getFullQualifiedName();
+	}
+	
+	public ArrayList<ICompilationUnitWrapper> getAllAncestors(){
+		if(ancestors == null){
+			ArrayList<ICompilationUnitWrapper> ancestors = new ArrayList<>();
+			
+			if(this.superClass != null){
+				ancestors.add(this.superClass);
+			}
+			for(ICompilationUnitWrapper interf: this.superInterfaceList){
+				ancestors.add(interf);
+			}
+			
+			ArrayList<ICompilationUnitWrapper> ancestors0 = (ArrayList<ICompilationUnitWrapper>) ancestors.clone();
+			
+			for(ICompilationUnitWrapper unit: ancestors0){
+				ArrayList<ICompilationUnitWrapper> ancesList = unit.getAllAncestors();
+				ancestors.addAll(ancesList);
+			}
+			
+			this.ancestors = ancestors;
+		}
+		
+		return ancestors;
 	}
 	
 	public void openInEditor(){
