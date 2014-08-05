@@ -210,10 +210,22 @@ public class MethodWrapper extends UnitMemberWrapper {
 			
 			boolean isSameReturnType = true;
 			if(methodWrapper.getMethod() != null && this.getMethod() != null){
-				String thatTypeName = methodWrapper.getMethod().getReturnType2().toString();
-				String thisTypeName = methodWrapper.getMethod().getReturnType2().toString();
+				Type returnType1 = methodWrapper.getMethod().getReturnType2();
+				Type returnType2 = methodWrapper.getMethod().getReturnType2();
 				
-				isSameReturnType = thatTypeName.equals(thisTypeName);
+				if(returnType1 == null && returnType2 == null){
+					isSameReturnType = true;
+				}
+				else if(returnType1 != null && returnType2 != null){
+					String thatTypeName = returnType1.toString();
+					String thisTypeName = methodWrapper.getMethod().getReturnType2().toString();
+					
+					isSameReturnType = thatTypeName.equals(thisTypeName);					
+				}
+				else{
+					isSameReturnType = false;
+				}
+				
 			}
 			
 			return isSameReturnType && methodWrapper.getName().endsWith(this.getName()) &&
