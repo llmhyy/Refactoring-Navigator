@@ -31,7 +31,7 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	 */
 	protected ArrayList<ProgramReference> refererPointList = new ArrayList<>();
 	/**
-	 * stands for the unit members referred by this unit member
+	 * stands for the unit members referred by this unit or unit member
 	 */
 	protected ArrayList<ProgramReference> refereePointList = new ArrayList<>();
 	
@@ -98,16 +98,20 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	public List<? extends GraphNode> getCalleeList() {
 		ArrayList<UnitMemberWrapper> calleeList = new ArrayList<>();
 		for(ProgramReference reference: this.refereePointList){
-			calleeList.add(reference.getReferee());
+			if(reference.getReferee() instanceof UnitMemberWrapper){
+				calleeList.add((UnitMemberWrapper)reference.getReferee());				
+			}
 		}
 		
 		return calleeList;
 	}
 	
+	@Override
 	public void addProgramReferer(ProgramReference reference){
 		this.refererPointList.add(reference);
 	}
 	
+	@Override
 	public void addProgramReferee(ProgramReference reference){
 		this.refereePointList.add(reference);
 	}

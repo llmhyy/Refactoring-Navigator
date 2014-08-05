@@ -9,6 +9,7 @@ import java.util.HashMap;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.ProgramReference;
@@ -88,17 +89,21 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		ArrayList<FieldWrapper> calleeMemberList = new ArrayList<>();
 		boolean isMethodInvolved = false;
 		for(ProgramReference reference: objMethod.getRefereePointList()){
-			UnitMemberWrapper calleeMember = reference.getReferee();
-			if(originalUnit.getMembers().contains(calleeMember)){
-				if(calleeMember instanceof MethodWrapper){
-					isMethodInvolved = true;
-				}
-				else if(calleeMember instanceof FieldWrapper){
-					if(!calleeMemberList.contains(calleeMember)){
-						calleeMemberList.add((FieldWrapper)calleeMember);
+			LowLevelGraphNode calleeNode = reference.getReferee();
+			if(calleeNode instanceof UnitMemberWrapper){
+				UnitMemberWrapper calleeMember = (UnitMemberWrapper)calleeNode;
+				if(originalUnit.getMembers().contains(calleeMember)){
+					if(calleeMember instanceof MethodWrapper){
+						isMethodInvolved = true;
 					}
-				}
+					else if(calleeMember instanceof FieldWrapper){
+						if(!calleeMemberList.contains(calleeMember)){
+							calleeMemberList.add((FieldWrapper)calleeMember);
+						}
+					}
+				}				
 			}
+			
 		}
 		
 		ArrayList<String> parameters = new ArrayList<>();
@@ -221,8 +226,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			
 			double totalFreq = 0;
 			for(ProgramReference reference: method.getRefereePointList()){
-				UnitMemberWrapper calleeMember = reference.getReferee();
-				if(calleeMember instanceof MethodWrapper){
+				LowLevelGraphNode calleeNode = reference.getReferee();
+				if(calleeNode instanceof MethodWrapper){
+					MethodWrapper calleeMember = (MethodWrapper)calleeNode;
 					ICompilationUnitWrapper calleeUnit = calleeMember.getUnitWrapper();
 					
 					if(map.get(calleeUnit) == null){

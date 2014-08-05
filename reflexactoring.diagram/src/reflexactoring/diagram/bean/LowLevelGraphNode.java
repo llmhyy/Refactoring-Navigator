@@ -9,4 +9,7 @@ package reflexactoring.diagram.bean;
  */
 public interface LowLevelGraphNode extends GraphNode {
 	public ModuleWrapper getMappingModule();
+	
+	public void addProgramReferer(ProgramReference reference);
+	public void addProgramReferee(ProgramReference reference);
 }

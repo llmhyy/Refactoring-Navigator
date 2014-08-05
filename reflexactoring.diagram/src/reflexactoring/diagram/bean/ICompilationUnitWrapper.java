@@ -52,6 +52,15 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	private ArrayList<ICompilationUnitWrapper> ancestors;
 	
 	/**
+	 * stands for the unit members referring this unit member
+	 */
+	private ArrayList<ProgramReference> refererPointList = new ArrayList<>();
+	/**
+	 * stands for the unit members referred by this unit or unit member
+	 */
+	private ArrayList<ProgramReference> refereePointList = new ArrayList<>();
+	
+	/**
 	 * @param mappingModule
 	 * @param isInterface
 	 * @param simpleName
@@ -504,4 +513,13 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		this.superInterfaceList.add(superInterface);
 	}
 
+	@Override
+	public void addProgramReferer(ProgramReference reference){
+		this.refererPointList.add(reference);
+	}
+	
+	@Override
+	public void addProgramReferee(ProgramReference reference){
+		this.refereePointList.add(reference);
+	}
 }

@@ -81,13 +81,17 @@ public class ProgramModel{
 					ArrayList<UnitMemberWrapper> visitedMemberList = new ArrayList<>();
 					double accessTime = 0;
 					for(ProgramReference reference: member.getRefereePointList()){
-						UnitMemberWrapper calleeMember = reference.getReferee();
-						if(calleeMember instanceof FieldWrapper && 
-								calleeMember.getUnitWrapper().equals(member.getUnitWrapper())){
-							if(!visitedMemberList.contains(calleeMember)){
-								accessTime++;
-								visitedMemberList.add(calleeMember);
+						LowLevelGraphNode calleeNode = reference.getReferee();
+						if(calleeNode instanceof UnitMemberWrapper){
+							UnitMemberWrapper calleeMember = (UnitMemberWrapper)calleeNode;
+							if(calleeMember instanceof FieldWrapper && 
+									calleeMember.getUnitWrapper().equals(member.getUnitWrapper())){
+								if(!visitedMemberList.contains(calleeMember)){
+									accessTime++;
+									visitedMemberList.add(calleeMember);
+								}
 							}
+							
 						}
 					}
 					
@@ -360,21 +364,34 @@ public class ProgramModel{
 			 * we have to get the corresponding UnitMemberWrappers at the mean time.
 			 */
 			UnitMemberWrapper referer = reference.getReferer();
-			UnitMemberWrapper referee = reference.getReferee();
 			int refererIndex = model.getUnitMemberIndex(referer);
-			int refereeIndex = model.getUnitMemberIndex(referee);
 			if(refererIndex == -1){
 				System.out.println(reference);
 			}
 			UnitMemberWrapper clonedReferer = clonedModel.scopeMemberList.get(refererIndex);			
-			UnitMemberWrapper clonedReferee = clonedModel.scopeMemberList.get(refereeIndex);
 			
-			ProgramReference clonedReference = new ProgramReference(clonedReferer, clonedReferee, reference.getASTNode());
+			LowLevelGraphNode refereeNode = reference.getReferee();
+			LowLevelGraphNode clonedReferee = null;
+			if(refereeNode instanceof UnitMemberWrapper){
+				UnitMemberWrapper referee = (UnitMemberWrapper)refereeNode;
+				int refereeIndex = model.getUnitMemberIndex(referee);
+				clonedReferee = clonedModel.scopeMemberList.get(refereeIndex);
+			}
+			else if(refereeNode instanceof ICompilationUnitWrapper){
+				ICompilationUnitWrapper referee = (ICompilationUnitWrapper)refereeNode;
+				int refereeIndex = model.getICompilationUnitIndex(referee);
+				clonedReferee = clonedModel.scopeCompilationUnitList.get(refereeIndex);
+			}
+			
+			
+			ProgramReference clonedReference = new ProgramReference(clonedReferer, clonedReferee, 
+					reference.getASTNode(), reference.getReferenceType());
 			clonedReference.setReferenceType(reference.getReferenceType());
 			
 			clonedReferences.add(clonedReference);
 			clonedReferer.addProgramReferee(clonedReference);
 			clonedReferee.addProgramReferer(clonedReference);
+			
 		}
 		return clonedReferences;
 	}
@@ -482,8 +499,15 @@ public class ProgramModel{
 			UnitMemberWrapper refererMember = reference.getReferer();
 			ICompilationUnitWrapper refererUnit = refererMember.getUnitWrapper();
 			
-			UnitMemberWrapper refereeMember = reference.getReferee();
-			ICompilationUnitWrapper refereeUnit = refereeMember.getUnitWrapper();
+			ICompilationUnitWrapper refereeUnit = null;
+			LowLevelGraphNode refereeNode = reference.getReferee();
+			if(refereeNode instanceof UnitMemberWrapper){
+				UnitMemberWrapper refereeMember = (UnitMemberWrapper)refereeNode;
+				refereeUnit = refereeMember.getUnitWrapper();				
+			}
+			else if(refereeNode instanceof ICompilationUnitWrapper){
+				refereeUnit = (ICompilationUnitWrapper)refereeNode;
+			}
 			
 			/**
 			 * In current philosophy, if some methods of a super class are invoked by some methods of its subclasses,

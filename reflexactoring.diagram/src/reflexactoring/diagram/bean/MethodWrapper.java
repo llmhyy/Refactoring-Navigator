@@ -288,14 +288,17 @@ public class MethodWrapper extends UnitMemberWrapper {
 	
 	public boolean isCallingSuperMember(){
 		for(ProgramReference reference: this.refereePointList){
-			UnitMemberWrapper calleeMember = reference.getReferee();
-			
-			for(GraphNode node: this.getUnitWrapper().getParentList()){
-				ICompilationUnitWrapper superUnit = (ICompilationUnitWrapper)node;
-				if(superUnit.getMembers().contains(calleeMember)){
-					return true;
+			LowLevelGraphNode calleeNode = reference.getReferee();
+			if(calleeNode instanceof UnitMemberWrapper){
+				UnitMemberWrapper calleeMember = (UnitMemberWrapper)calleeNode;
+				for(GraphNode node: this.getUnitWrapper().getParentList()){
+					ICompilationUnitWrapper superUnit = (ICompilationUnitWrapper)node;
+					if(superUnit.getMembers().contains(calleeMember)){
+						return true;
+					}
 				}
 			}
+			
 		}
 		
 		return false;
@@ -307,29 +310,32 @@ public class MethodWrapper extends UnitMemberWrapper {
 	 */
 	public boolean isAssignFieldInUnit(){
 		for(ProgramReference reference: this.refereePointList){
-			UnitMemberWrapper calleeMember = reference.getReferee();
-			
-			if(calleeMember instanceof FieldWrapper && this.getUnitWrapper().getMembers().contains(calleeMember)){
-				ASTNode node = reference.getASTNode();
-				if(null == node){
-					return true;
-				}
-				else{
-					boolean isAssignment = false;
-					while(!(node instanceof Statement) && node != null){
-						if(node instanceof Assignment){
-							isAssignment = true;
-							break;
+			LowLevelGraphNode calleeNode = reference.getReferee();
+			if(calleeNode instanceof UnitMemberWrapper){
+				UnitMemberWrapper calleeMember = (UnitMemberWrapper)calleeNode;
+				if(calleeMember instanceof FieldWrapper && this.getUnitWrapper().getMembers().contains(calleeMember)){
+					ASTNode node = reference.getASTNode();
+					if(null == node){
+						return true;
+					}
+					else{
+						boolean isAssignment = false;
+						while(!(node instanceof Statement) && node != null){
+							if(node instanceof Assignment){
+								isAssignment = true;
+								break;
+							}
+							
+							node = node.getParent();
 						}
 						
-						node = node.getParent();
-					}
-					
-					if(isAssignment){
-						return true;
+						if(isAssignment){
+							return true;
+						}
 					}
 				}
 			}
+			
 		}
 		
 		return false;

@@ -15,17 +15,23 @@ import org.eclipse.jdt.core.dom.ASTNode;
 public class ProgramReference {
 	public static final int METHOD_INVOCATION = 1;
 	public static final int FIELD_ACCESS = 2;
+	/**
+	 * return type for method and type for field
+	 */
+	public static final int TYPE_DECLARATION = 3;
+	public static final int PARAMETER_ACCESS = 4;
 	
 	private int referenceType;
 	private ASTNode originalASTNode;
 	
 	private UnitMemberWrapper referer;
-	private UnitMemberWrapper referee;
+	private LowLevelGraphNode referee;
 	
-	public ProgramReference(UnitMemberWrapper referer, UnitMemberWrapper referee, ASTNode originalASTNode){
+	public ProgramReference(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode originalASTNode, int referenceType){
 		this.referer = referer;
 		this.referee = referee;
 		this.originalASTNode = originalASTNode;
+		this.referenceType = referenceType;
 		
 		if(referee instanceof MethodWrapper){
 			this.referenceType = ProgramReference.METHOD_INVOCATION;
@@ -33,6 +39,16 @@ public class ProgramReference {
 		else if(referee instanceof FieldWrapper){
 			this.referenceType = ProgramReference.FIELD_ACCESS;
 		}
+	}
+	
+	public boolean isInvocationOrAccess(){
+		return (this.referenceType == ProgramReference.METHOD_INVOCATION) ||
+				(this.referenceType == ProgramReference.FIELD_ACCESS);
+	}
+	
+	public boolean isTypeOrParameter(){
+		return (this.referenceType == ProgramReference.PARAMETER_ACCESS) ||
+				(this.referenceType == ProgramReference.TYPE_DECLARATION);
 	}
 	
 	@Override
@@ -79,6 +95,12 @@ public class ProgramReference {
 		else if(referenceType == ProgramReference.METHOD_INVOCATION){
 			buffer.append("invoke method ");
 		}
+		else if(referenceType == ProgramReference.PARAMETER_ACCESS){
+			buffer.append("use parameter of ");
+		}
+		else if(referenceType == ProgramReference.TYPE_DECLARATION){
+			buffer.append("of type ");
+		}
 		buffer.append(referee.toString());
 		
 		return buffer.toString();
@@ -123,13 +145,13 @@ public class ProgramReference {
 	/**
 	 * @return the referee
 	 */
-	public UnitMemberWrapper getReferee() {
+	public LowLevelGraphNode getReferee() {
 		return referee;
 	}
 	/**
 	 * @param referee the referee to set
 	 */
-	public void setReferee(UnitMemberWrapper referee) {
+	public void setReferee(LowLevelGraphNode referee) {
 		this.referee = referee;
 	}
 	

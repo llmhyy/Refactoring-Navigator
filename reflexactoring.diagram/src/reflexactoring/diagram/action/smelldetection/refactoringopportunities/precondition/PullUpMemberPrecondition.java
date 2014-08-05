@@ -15,6 +15,7 @@ import reflexactoring.diagram.action.smelldetection.refactoringopportunities.Pul
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
@@ -267,9 +268,12 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			ArrayList<UnitMemberWrapper> refactoringPlace) {
 		for(UnitMemberWrapper member: refactoringPlace){
 			for(ProgramReference reference: member.getRefereePointList()){
-				UnitMemberWrapper calleeMember = reference.getReferee();
-				if(calleeMember.getUnitWrapper().equals(member.getUnitWrapper())){
-					return true;
+				LowLevelGraphNode refereeNode = reference.getReferee();
+				if(refereeNode instanceof UnitMemberWrapper){
+					UnitMemberWrapper calleeMember = (UnitMemberWrapper)refereeNode;
+					if(calleeMember.getUnitWrapper().equals(member.getUnitWrapper())){
+						return true;
+					}
 				}
 			}
 		}

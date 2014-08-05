@@ -4,6 +4,7 @@
 package reflexactoring.diagram.action;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
@@ -11,7 +12,6 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -19,12 +19,14 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ProgramReference;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
@@ -57,13 +59,7 @@ public class ClassStructureBuilder {
 			this.members = members;
 		}
 		
-		private void buildRelation(UnitMemberWrapper referer, UnitMemberWrapper referee, ASTNode node){
-			ProgramReference reference = new ProgramReference(referer, referee, node);
-			referer.addProgramReferee(reference);
-			referee.addProgramReferer(reference);
-			
-			referenceList.add(reference);
-		}
+		
 		
 		public boolean visit(SimpleName name){
 			IBinding binding = name.resolveBinding();
@@ -73,7 +69,7 @@ public class ClassStructureBuilder {
 					if (calleeMember instanceof FieldWrapper) {
 						FieldWrapper fieldWrapper = (FieldWrapper) calleeMember;
 						if (element.equals(fieldWrapper.getJavaMember()) && !callerMember.equals(fieldWrapper)) {
-							buildRelation(callerMember, fieldWrapper, name);
+							buildRelation(callerMember, fieldWrapper, name, ProgramReference.FIELD_ACCESS);
 						}
 					}
 				}							
@@ -91,7 +87,7 @@ public class ClassStructureBuilder {
 				if (calleeMember instanceof MethodWrapper) {
 					MethodWrapper methodWrapper = (MethodWrapper) calleeMember;
 					if (element.equals(methodWrapper.getJavaMember())) {
-						buildRelation(callerMember, methodWrapper, invocation);
+						buildRelation(callerMember, methodWrapper, invocation, ProgramReference.METHOD_INVOCATION);
 					}
 				}
 			}
@@ -112,13 +108,21 @@ public class ClassStructureBuilder {
 							.resolveBinding().getKey();
 
 					if (key.equals(methodKey)) {
-						buildRelation(callerMember, methodWrapper, creation);
+						buildRelation(callerMember, methodWrapper, creation, ProgramReference.METHOD_INVOCATION);
 					}
 				}
 			}
 
 			return true;
 		}
+	}
+	
+	private void buildRelation(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode node, int referenceType){
+		ProgramReference reference = new ProgramReference(referer, referee, node, referenceType);
+		referer.addProgramReferee(reference);
+		referee.addProgramReferer(reference);
+		
+		referenceList.add(reference);
 	}
 
 	/**
@@ -187,6 +191,15 @@ public class ClassStructureBuilder {
 							unitWrapper);
 					unitWrapper.getMembers().add(fieldWrapper);
 					memberList.add(fieldWrapper);
+					/**
+					 * build relation for type declaration based program reference
+					 */
+					String typeName = fd.getType().resolveBinding().getQualifiedName();
+					for(ICompilationUnitWrapper searchingUnitWrapper: compilationUnitList){
+						if(searchingUnitWrapper.getFullQualifiedName().equals(typeName)){
+							buildRelation(fieldWrapper, searchingUnitWrapper, fd, ProgramReference.TYPE_DECLARATION);
+						}
+					}
 
 					return false;
 				}
@@ -196,7 +209,31 @@ public class ClassStructureBuilder {
 							unitWrapper);
 					unitWrapper.getMembers().add(methodWrapper);
 					memberList.add(methodWrapper);
-
+					
+					/**
+					 * build relation for type declaration based and parameter based program reference
+					 */
+					Type returnType = md.getReturnType2();
+					if(returnType != null){
+						String typeName = returnType.resolveBinding().getQualifiedName();
+						for(ICompilationUnitWrapper searchingUnitWrapper: compilationUnitList){
+							if(searchingUnitWrapper.getFullQualifiedName().equals(typeName)){
+								buildRelation(methodWrapper, searchingUnitWrapper, md, ProgramReference.TYPE_DECLARATION);
+							}
+						}
+					}
+					
+					@SuppressWarnings("unchecked")
+					List<SingleVariableDeclaration> parameters = md.parameters();
+					for(SingleVariableDeclaration svd: parameters){
+						String typeName = svd.getType().resolveBinding().getQualifiedName();
+						for(ICompilationUnitWrapper searchingUnitWrapper: compilationUnitList){
+							if(searchingUnitWrapper.getFullQualifiedName().equals(typeName)){
+								buildRelation(methodWrapper, searchingUnitWrapper, md, ProgramReference.PARAMETER_ACCESS);
+							}
+						}
+					}
+					
 					return false;
 				}
 			});
