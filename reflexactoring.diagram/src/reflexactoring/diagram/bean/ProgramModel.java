@@ -490,7 +490,7 @@ public class ProgramModel{
 			 * I will not build a dependency relation between the super class and the subclass, because the inheritance
 			 * relation has already indicated the dependency relation. 
 			 */
-			if(!refererUnit.equals(refereeUnit) && !refererUnit.getParentList().contains(refereeUnit)){
+			if(!refererUnit.equals(refereeUnit) && !refererUnit.getAllAncestors().contains(refereeUnit)){
 				refererUnit.addCallee(refereeUnit);
 				refereeUnit.addCaller(refererUnit);
 				

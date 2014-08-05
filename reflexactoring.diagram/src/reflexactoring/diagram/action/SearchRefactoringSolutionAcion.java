@@ -48,6 +48,9 @@ public class SearchRefactoringSolutionAcion implements
 				ArrayList<RefactoringOpportunity> oppList = smellDetector.detect(model);
 				
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()); i++){
+					
+					long t1 = System.currentTimeMillis();
+					
 					RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
 					if(sequence.isAnImprovement(element)){
 						sequence.addElement(element);
@@ -57,6 +60,9 @@ public class SearchRefactoringSolutionAcion implements
 					else{
 						break;
 					}
+					
+					long t2 = System.currentTimeMillis();
+					System.out.println(t2-t1);
 					
 				}
 				
