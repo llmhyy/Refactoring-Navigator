@@ -57,6 +57,7 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 	@Override
 	public ProgramModel simulate(ProgramModel model) {
 		ProgramModel newModel = model.clone();
+		this.cloneSet = newModel.findCloneSet(this.cloneSet.getId());
 		/**
 		 * create a new utility class
 		 */
