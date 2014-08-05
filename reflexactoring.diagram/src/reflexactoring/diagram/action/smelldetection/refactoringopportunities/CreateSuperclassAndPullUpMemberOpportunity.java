@@ -134,6 +134,9 @@ public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpp
 		step3 += " now refer to the " + toBePulledMemberList.get(0).getName() + " in "  + targetUnit.getName(); 
 		refactoringDetails.add(step3);
 		
+		String step4 = "Move the superclass " + this.targetUnit.getName() + " to module " + this.targetUnit.getMappingModule().getName();
+		refactoringDetails.add(step4);
+		
 		return refactoringDetails;
 	};
 

@@ -124,6 +124,9 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		step3 += " now refer to the " + toBePulledMemberList.get(0).getName() + " in super class"; 
 		refactoringDetails.add(step3);
 		
+		String step4 = "Move the interface " + this.targetUnit.getName() + " to module " + this.targetUnit.getMappingModule().getName();
+		refactoringDetails.add(step4);
+		
 		return refactoringDetails;
 	};
 

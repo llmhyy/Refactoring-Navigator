@@ -144,6 +144,9 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		String step1 = "Extract the cloned code in to newly created " + utilityClass.getName();
 		refactoringDetails.add(step1);
 		
+		String step2 = "Move " + utilityClass.getName() + " to the module " + utilityClass.getMappingModule().getName();
+		refactoringDetails.add(step2);
+		
 		return refactoringDetails;
 	};
 
