@@ -4,6 +4,7 @@
 package reflexactoring.diagram.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -83,27 +84,26 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	}
 
 	@Override
-	public List<? extends GraphNode> getCallerList() {
-		
-		ArrayList<UnitMemberWrapper> callerList = new ArrayList<>();
+	public HashMap<GraphNode, Integer> getCallerList() {
+		HashMap<GraphNode, Integer> map = new HashMap<>();
 		for(ProgramReference reference: this.refererPointList){
-			callerList.add(reference.getReferer());
+			map.put(reference.getReferer(), 1);
 		}
 		
-		return callerList;
+		return map;
 	}
 
 	
 	@Override
-	public List<? extends GraphNode> getCalleeList() {
-		ArrayList<UnitMemberWrapper> calleeList = new ArrayList<>();
+	public HashMap<GraphNode, Integer> getCalleeList() {
+		HashMap<GraphNode, Integer> map = new HashMap<>();
 		for(ProgramReference reference: this.refereePointList){
 			if(reference.getReferee() instanceof UnitMemberWrapper){
-				calleeList.add((UnitMemberWrapper)reference.getReferee());				
+				map.put((UnitMemberWrapper)reference.getReferee(), 1);				
 			}
 		}
 		
-		return calleeList;
+		return map;
 	}
 	
 	@Override

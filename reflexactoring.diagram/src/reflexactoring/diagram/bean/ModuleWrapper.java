@@ -4,6 +4,7 @@
 package reflexactoring.diagram.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import reflexactoring.Module;
@@ -183,16 +184,24 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	 * @see reflexactoring.diagram.bean.GraphNode#getCallerList()
 	 */
 	@Override
-	public List<? extends GraphNode> getCallerList() {
-		return this.callerModuleList;
+	public HashMap<GraphNode, Integer> getCallerList() {
+		HashMap<GraphNode, Integer> map = new HashMap<>();
+		for(ModuleWrapper module: this.callerModuleList){
+			map.put(module, new Integer(1));
+		}
+		return map;
 	}
 
 	/** (non-Javadoc)
 	 * @see reflexactoring.diagram.bean.GraphNode#getCalleeList()
 	 */
 	@Override
-	public List<? extends GraphNode> getCalleeList() {
-		return this.calleeModuleList;
+	public HashMap<GraphNode, Integer> getCalleeList() {
+		HashMap<GraphNode, Integer> map = new HashMap<>();
+		for(ModuleWrapper module: this.calleeModuleList){
+			map.put(module, new Integer(1));
+		}
+		return map;
 	}
 
 	/** (non-Javadoc)

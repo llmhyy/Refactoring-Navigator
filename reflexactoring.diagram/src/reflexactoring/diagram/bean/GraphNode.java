@@ -3,6 +3,7 @@
  */
 package reflexactoring.diagram.bean;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -10,8 +11,8 @@ import java.util.List;
  *
  */
 public interface GraphNode {
-	public List<? extends GraphNode> getCallerList();
-	public List<? extends GraphNode> getCalleeList();
+	public HashMap<GraphNode, Integer> getCallerList();
+	public HashMap<GraphNode, Integer> getCalleeList();
 	public List<? extends GraphNode> getParentList();
 	public List<? extends GraphNode> getChildList();
 }

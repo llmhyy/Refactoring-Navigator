@@ -150,7 +150,8 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 	 * @param gene 
 	 * @return
 	 */
-	private int countDivergenceViolation(Genotype gene, int callerModuleIndex, int calleeModuleIndex, double[][] lowLevelNodeMatrix) {
+	private int countDivergenceViolation(Genotype gene, int callerModuleIndex, 
+			int calleeModuleIndex, double[][] lowLevelNodeMatrix) {
 		int num = 0;
 		for(int i=0; i<gene.getLength(); i++){
 			/**

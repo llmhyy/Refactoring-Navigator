@@ -253,7 +253,7 @@ public abstract class Suboptimizer {
 					GraphNode nodeI = nodes.get(i);
 					GraphNode nodeJ = nodes.get(j);
 					
-					if(nodeI.getCalleeList().contains(nodeJ)){
+					if(nodeI.getCalleeList().keySet().contains(nodeJ)){
 						graphMatrix.set(i, j, 1);
 					}
 				}

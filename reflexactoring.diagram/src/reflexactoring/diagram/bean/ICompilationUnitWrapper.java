@@ -358,16 +358,26 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @see reflexactoring.diagram.bean.GraphNode#getCallerList()
 	 */
 	@Override
-	public List<? extends GraphNode> getCallerList() {
-		return convertToList(callerCompilationUnitList);
+	public HashMap<GraphNode, Integer> getCallerList() {
+		//return convertToList(callerCompilationUnitList);
+		HashMap<GraphNode, Integer> map = new HashMap<>();
+		for(ICompilationUnitWrapper unit: this.callerCompilationUnitList.keySet()){
+			map.put(unit, this.callerCompilationUnitList.get(unit));
+		}
+		return map;
 	}
 
 	/** (non-Javadoc)
 	 * @see reflexactoring.diagram.bean.GraphNode#getCalleeList()
 	 */
 	@Override
-	public List<? extends GraphNode> getCalleeList() {
-		return convertToList(calleeCompilationUnitList);
+	public HashMap<GraphNode, Integer> getCalleeList() {
+		//return convertToList(calleeCompilationUnitList);
+		HashMap<GraphNode, Integer> map = new HashMap<>();
+		for(ICompilationUnitWrapper unit: this.calleeCompilationUnitList.keySet()){
+			map.put(unit, this.calleeCompilationUnitList.get(unit));
+		}
+		return map;
 	}
 	
 

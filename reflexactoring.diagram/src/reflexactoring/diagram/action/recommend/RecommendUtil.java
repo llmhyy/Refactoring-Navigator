@@ -27,8 +27,8 @@ public class RecommendUtil {
 					GraphNode nodeJ = nodes.get(j);
 					
 					if(graphType == GraphRelationType.GRAPH_DEPENDENCY){
-						if(nodeI.getCalleeList().contains(nodeJ)){
-							graphMatrix[i][j] = 1;
+						if(nodeI.getCalleeList().keySet().contains(nodeJ)){
+							graphMatrix[i][j] = nodeI.getCalleeList().get(nodeJ);
 						}
 					}else if(graphType == GraphRelationType.GRAPH_INHERITANCE){
 						if(nodeI.getParentList().contains(nodeJ)){
