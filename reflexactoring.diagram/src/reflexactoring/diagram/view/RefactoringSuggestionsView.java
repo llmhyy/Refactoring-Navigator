@@ -179,10 +179,10 @@ public class RefactoringSuggestionsView extends ViewPart {
 				if(currentElement != null && sequence.contains(currentElement)){
 					currentElementIndex = sequence.indexOf(currentElement) + 1;
 					if(currentHeight == 0){
-						currentHeight = prerequisiteComposite.computeSize(composite.getBounds().width - 5, SWT.DEFAULT).y + 5;
+						currentHeight = prerequisiteComposite.computeSize(parent.getBounds().width, SWT.DEFAULT).y + 20;
 					}
 					if(sequence.indexOf(element) < currentElementIndex){
-						currentHeight += elementComposite.computeSize(composite.getBounds().width - 5, SWT.DEFAULT).y + 5;
+						currentHeight += elementComposite.computeSize(parent.getBounds().width - 10, SWT.DEFAULT).y + 10;
 					}
 				}
 				if(sequence.indexOf(element) < currentElementIndex){
@@ -199,9 +199,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 			}
 			
 			scrollComposite.setContent(composite);
-			System.out.println("currentHeight: " + currentHeight);
-			//scrollComposite.setOrigin(0, currentHeight);
-			//scrollComposite.setOrigin(0, 300);
 			scrollComposite.setExpandVertical(true);
 			scrollComposite.setExpandHorizontal(true);
 			scrollComposite.addControlListener(new ControlAdapter() {
@@ -209,6 +206,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 				public void controlResized(ControlEvent e) {
 					Rectangle r = scrollComposite.getClientArea();
 					scrollComposite.setMinSize(composite.computeSize(r.width, SWT.DEFAULT));
+					scrollComposite.setOrigin(0, currentHeight);
 				}
 			});
 		}
