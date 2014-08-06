@@ -5,7 +5,6 @@ package reflexactoring.diagram.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IResource;
@@ -228,18 +227,18 @@ public class ProgramModel{
 		return clonedUnits;
 	}
 	
-	private void cloneUnitRelations(ProgramModel clonedModel, ProgramModel model){
+	private void cloneUnitRelations(ProgramModel clonedModel, ProgramModel oldModel){
 		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.getScopeCompilationUnitList();
-		ArrayList<ICompilationUnitWrapper> units = model.getScopeCompilationUnitList();
-		for(int i=0; i<units.size(); i++){
-			ICompilationUnitWrapper unit = units.get(i);
+		ArrayList<ICompilationUnitWrapper> oldUnits = oldModel.getScopeCompilationUnitList();
+		for(int i=0; i<oldUnits.size(); i++){
+			ICompilationUnitWrapper oldUnit = oldUnits.get(i);
 			ICompilationUnitWrapper clonedUnit = clonedUnits.get(i);
 			/**
 			 * clone super class relation
 			 */
-			ICompilationUnitWrapper superClass = unit.getSuperClass();
+			ICompilationUnitWrapper superClass = oldUnit.getSuperClass();
 			if(null != superClass){
-				int index = model.getICompilationUnitIndex(superClass);
+				int index = oldModel.getICompilationUnitIndex(superClass);
 				ICompilationUnitWrapper clonedSuperclass = clonedModel.getScopeCompilationUnitList().get(index);
 				clonedUnit.setSuperClass(clonedSuperclass);
 			}
@@ -247,9 +246,9 @@ public class ProgramModel{
 			/**
 			 * clone interface relation
 			 */
-			ArrayList<ICompilationUnitWrapper> interfaceList = unit.getSuperInterfaceList();
+			ArrayList<ICompilationUnitWrapper> interfaceList = oldUnit.getSuperInterfaceList();
 			for(ICompilationUnitWrapper interf: interfaceList){
-				int index = model.getICompilationUnitIndex(interf);
+				int index = oldModel.getICompilationUnitIndex(interf);
 				ICompilationUnitWrapper clonedInterface = clonedModel.getScopeCompilationUnitList().get(index);
 				clonedUnit.addSuperInterface(clonedInterface);
 			}
@@ -257,9 +256,9 @@ public class ProgramModel{
 			/**
 			 * clone parent list
 			 */
-			ArrayList<ICompilationUnitWrapper> parentList = (ArrayList<ICompilationUnitWrapper>) unit.getParentList();
+			ArrayList<ICompilationUnitWrapper> parentList = (ArrayList<ICompilationUnitWrapper>) oldUnit.getParentList();
 			for(ICompilationUnitWrapper parent: parentList){
-				int index = model.getICompilationUnitIndex(parent);
+				int index = oldModel.getICompilationUnitIndex(parent);
 				ICompilationUnitWrapper clonedParent = clonedModel.getScopeCompilationUnitList().get(index);
 				clonedUnit.addParent(clonedParent);
 			}
@@ -267,29 +266,33 @@ public class ProgramModel{
 			/**
 			 * clone child list
 			 */
-			ArrayList<ICompilationUnitWrapper> childList = (ArrayList<ICompilationUnitWrapper>) unit.getChildList();
+			ArrayList<ICompilationUnitWrapper> childList = (ArrayList<ICompilationUnitWrapper>) oldUnit.getChildList();
 			for(ICompilationUnitWrapper child: childList){
-				int index = model.getICompilationUnitIndex(child);
+				int index = oldModel.getICompilationUnitIndex(child);
 				ICompilationUnitWrapper clonedChild = clonedModel.getScopeCompilationUnitList().get(index);
 				clonedUnit.addChild(clonedChild);
 			}
 			/**
 			 * clone caller list
 			 */
-			ArrayList<ICompilationUnitWrapper> callerList = unit.getCallerCompilationUnitList();
-			for(ICompilationUnitWrapper caller: callerList){
-				int index = model.getICompilationUnitIndex(caller);
+			HashMap<ICompilationUnitWrapper, Integer> oldCallerList = oldUnit.getCallerCompilationUnitList();
+			for(ICompilationUnitWrapper oldCaller: oldCallerList.keySet()){
+				int index = oldModel.getICompilationUnitIndex(oldCaller);
+				int value = oldCallerList.get(oldCaller);
 				ICompilationUnitWrapper clonedCaller = clonedModel.getScopeCompilationUnitList().get(index);
-				clonedUnit.addCaller(clonedCaller);
+				//clonedUnit.addCaller(clonedCaller);
+				clonedUnit.getCallerCompilationUnitList().put(clonedCaller, value);
 			}
 			/**
 			 * clone callee list
 			 */
-			ArrayList<ICompilationUnitWrapper> calleeList = unit.getCalleeCompilationUnitList();
-			for(ICompilationUnitWrapper caller: calleeList){
-				int index = model.getICompilationUnitIndex(caller);
+			HashMap<ICompilationUnitWrapper, Integer> oldCalleeList = oldUnit.getCalleeCompilationUnitList();
+			for(ICompilationUnitWrapper oldCallee: oldCalleeList.keySet()){
+				int index = oldModel.getICompilationUnitIndex(oldCallee);
+				int value = oldCalleeList.get(oldCallee);
 				ICompilationUnitWrapper clonedCallee = clonedModel.getScopeCompilationUnitList().get(index);
-				clonedUnit.addCallee(clonedCallee);
+				//clonedUnit.addCallee(clonedCallee);
+				clonedUnit.getCalleeCompilationUnitList().put(clonedCallee, value);
 			}
 		}
 	}
@@ -491,8 +494,8 @@ public class ProgramModel{
 		 * clear original call relations between compilation unit.
 		 */
 		for(ICompilationUnitWrapper unitWrapper: this.scopeCompilationUnitList){
-			unitWrapper.setCalleeCompilationUnitList(new ArrayList<ICompilationUnitWrapper>());
-			unitWrapper.setCallerCompilationUnitList(new ArrayList<ICompilationUnitWrapper>());
+			unitWrapper.setCalleeCompilationUnitList(new HashMap<ICompilationUnitWrapper, Integer>());
+			unitWrapper.setCallerCompilationUnitList(new HashMap<ICompilationUnitWrapper, Integer>());
 		}
 		
 		for(ProgramReference reference: this.getReferenceList()){

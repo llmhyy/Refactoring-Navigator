@@ -21,8 +21,6 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 
-import reflexactoring.diagram.action.semantic.TokenExtractor;
-
 /**
  * @author linyun
  *
@@ -42,8 +40,8 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	private ArrayList<ICompilationUnitWrapper> parentList = new ArrayList<>();
 	private ArrayList<ICompilationUnitWrapper> childList = new ArrayList<>();
 	
-	private ArrayList<ICompilationUnitWrapper> calleeCompilationUnitList = new ArrayList<>();
-	private ArrayList<ICompilationUnitWrapper> callerCompilationUnitList = new ArrayList<>();
+	private HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList = new HashMap<>();
+	private HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList = new HashMap<>();
 	
 	private HashMap<ICompilationUnitWrapper, ArrayList<ASTNode>> referingDetails
 		= new HashMap<>();
@@ -189,7 +187,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public boolean hasCalleeCompilationUnit(ICompilationUnitWrapper unit){
-		for(ICompilationUnitWrapper calleeUnit: this.calleeCompilationUnitList){
+		for(ICompilationUnitWrapper calleeUnit: this.calleeCompilationUnitList.keySet()){
 			if(calleeUnit.equals(unit)){
 				return true;
 			}
@@ -280,7 +278,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	/**
 	 * @return the calleeCompilationUnitList
 	 */
-	public ArrayList<ICompilationUnitWrapper> getCalleeCompilationUnitList() {
+	public HashMap<ICompilationUnitWrapper, Integer> getCalleeCompilationUnitList() {
 		return calleeCompilationUnitList;
 	}
 
@@ -288,14 +286,14 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @param calleeCompilationUnitList the calleeCompilationUnitList to set
 	 */
 	public void setCalleeCompilationUnitList(
-			ArrayList<ICompilationUnitWrapper> calleeCompilationUnitList) {
+			HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList) {
 		this.calleeCompilationUnitList = calleeCompilationUnitList;
 	}
 
 	/**
 	 * @return the callerCompilationUnitList
 	 */
-	public ArrayList<ICompilationUnitWrapper> getCallerCompilationUnitList() {
+	public HashMap<ICompilationUnitWrapper, Integer> getCallerCompilationUnitList() {
 		return callerCompilationUnitList;
 	}
 
@@ -303,7 +301,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @param callerCompilationUnitList the callerCompilationUnitList to set
 	 */
 	public void setCallerCompilationUnitList(
-			ArrayList<ICompilationUnitWrapper> callerCompilationUnitList) {
+			HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList) {
 		this.callerCompilationUnitList = callerCompilationUnitList;
 	}
 	
@@ -320,14 +318,24 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public void addCaller(ICompilationUnitWrapper unit){
-		if(!this.callerCompilationUnitList.contains(unit)){
-			this.callerCompilationUnitList.add(unit);
+		if(!this.callerCompilationUnitList.keySet().contains(unit)){
+			this.callerCompilationUnitList.put(unit, 1);
+		}
+		else{
+			int value = this.callerCompilationUnitList.get(unit);
+			value++;
+			this.callerCompilationUnitList.put(unit, value);
 		}
 	}
 	
 	public void addCallee(ICompilationUnitWrapper unit){
-		if(!this.calleeCompilationUnitList.contains(unit)){
-			this.calleeCompilationUnitList.add(unit);
+		if(!this.calleeCompilationUnitList.keySet().contains(unit)){
+			this.calleeCompilationUnitList.put(unit, 1);
+		}
+		else{
+			int value = this.calleeCompilationUnitList.get(unit);
+			value++;
+			this.calleeCompilationUnitList.put(unit, value);
 		}
 	}
 	
@@ -351,7 +359,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 */
 	@Override
 	public List<? extends GraphNode> getCallerList() {
-		return callerCompilationUnitList;
+		return convertToList(callerCompilationUnitList);
 	}
 
 	/** (non-Javadoc)
@@ -359,7 +367,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 */
 	@Override
 	public List<? extends GraphNode> getCalleeList() {
-		return calleeCompilationUnitList;
+		return convertToList(calleeCompilationUnitList);
 	}
 	
 

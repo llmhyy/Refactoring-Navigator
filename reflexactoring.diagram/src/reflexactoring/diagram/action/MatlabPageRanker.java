@@ -51,7 +51,7 @@ public class MatlabPageRanker{
 		ArrayList<Integer> callerNodeIndexes = new ArrayList<>();
 		
 		for(ICompilationUnitWrapper callerUnitWrapper: compilationUnitList){
-			for(ICompilationUnitWrapper calleeUnitWrapper: callerUnitWrapper.getCalleeCompilationUnitList()){
+			for(ICompilationUnitWrapper calleeUnitWrapper: callerUnitWrapper.getCalleeCompilationUnitList().keySet()){
 				int calleeNodeIndex = indexMap.get(callerUnitWrapper); 
 				int callerNodeIndex = indexMap.get(calleeUnitWrapper);
 				

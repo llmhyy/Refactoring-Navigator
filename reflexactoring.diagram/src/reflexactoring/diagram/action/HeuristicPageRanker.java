@@ -48,7 +48,7 @@ public class HeuristicPageRanker {
 		SparseDoubleMatrix2D A = new SparseDoubleMatrix2D(compilationUnitList.size(), compilationUnitList.size());
 		for(ICompilationUnitWrapper calleeUnitWrapper: compilationUnitList){
 			int denominator = calleeUnitWrapper.getCallerCompilationUnitList().size();
-			for(ICompilationUnitWrapper callerUnitWrapper: calleeUnitWrapper.getCallerCompilationUnitList()){
+			for(ICompilationUnitWrapper callerUnitWrapper: calleeUnitWrapper.getCallerCompilationUnitList().keySet()){
 				int calleeNodeIndex = indexMap.get(calleeUnitWrapper); 
 				int callerNodeIndex = indexMap.get(callerUnitWrapper);
 				
