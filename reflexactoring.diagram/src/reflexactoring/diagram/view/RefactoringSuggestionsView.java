@@ -32,6 +32,7 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.eclipse.ui.part.ViewPart;
 
+import reflexactoring.diagram.action.DiagramUpdater;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.recommend.action.DependencyAction;
 import reflexactoring.diagram.action.recommend.action.ExtendAction;
@@ -40,14 +41,15 @@ import reflexactoring.diagram.action.recommend.action.RefactoringAction;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
-import reflexactoring.diagram.bean.HeuristicModuleUnitStopMap;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.ModuleExtendConfidence;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.RecordParameters;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 public class RefactoringSuggestionsView extends ViewPart {
@@ -109,169 +111,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 			formCompositePre.setLayout(new TableWrapLayout());
 			formCompositePre.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			
-			for(SuggestionMove prerequisite : sequence.getPrerequisite()){
-				final FormText formTextPre = toolkitPre.createFormText(formCompositePre, true);
-				formTextPre.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
-				StringBuffer bufferPre = new StringBuffer();
-				bufferPre.append("<form>");
-				bufferPre.append("<li>");
-				bufferPre.append(prerequisite.generateTagedText());
-				bufferPre.append("</li>");	
-				
-				bufferPre.append("<li bindent=\"20\">");
-				bufferPre.append("<b>[</b> ");
-				if(prerequisite.getAction() instanceof LinkAction){
-					if(prerequisite.getAction() instanceof DependencyAction){
-						bufferPre.append("<a href=\"StickDependency\">Reject</a> ");	
-						bufferPre.append("<a href=\"UnstickDependency\">Undo</a>");	
-					}else if(prerequisite.getAction() instanceof ExtendAction){
-						bufferPre.append("<a href=\"StickExtend\">Reject</a> ");	
-						bufferPre.append("<a href=\"UnstickExtend\">Undo</a>");	
-					}
-				}
-				bufferPre.append("<b>]</b>");
-				bufferPre.append("</li>");	
-				bufferPre.append("<li bindent=\"20\">");
-				bufferPre.append("<b>[</b> <a href=\"Exec\">Apply</a> ");
-				bufferPre.append("<a href=\"Undo\">Undo</a> ");
-				bufferPre.append("<b>]</b>");
-				bufferPre.append("</li>");
-				bufferPre.append("</form>");
-				
-				formTextPre.setText(bufferPre.toString(), true, false);
-				formTextPre.setData(prerequisite);
-				formTextPre.addHyperlinkListener(new HyperlinkAdapter() {
-					public void linkActivated(HyperlinkEvent e) {
-						SuggestionMove suggestion = (SuggestionMove) formTextPre.getData();
-						if(e.getHref().equals("Exec")){
-							RecordParameters.applyTime++;
-							
-							suggestion.apply();
-							FormText t = (FormText) e.getSource();
-							FormColors colors = toolkitPre.getColors();
-							colors.createColor("green", new RGB(154,205,50));
-							t.setForeground(colors.getColor("green"));
-							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
-							t.setBackground(colors.getColor("white"));
-						}
-						else if(e.getHref().equals("Undo")){
-							suggestion.undoApply();
-							FormText t = (FormText) e.getSource();
-							FormColors colors = toolkitPre.getColors();
-							colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
-							t.setForeground(colors.getColor("black"));
-							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
-							t.setBackground(colors.getColor("white"));
-						}
-						else if(e.getHref().equals("StickDependency")){
-							RecordParameters.recordTime++;
-							
-							SuggestionObject obj = suggestion.getSuggeestionObject();
-							RefactoringAction action = suggestion.getAction();
-							if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
-								LinkAction depAction =(LinkAction)action;
-								for(ModuleDependencyConfidence confidence: Settings.dependencyConfidenceTable){
-									if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
-										for(int i=0; i<confidence.getModuleList().size(); i++){
-											ModuleWrapper calleeModule = confidence.getModuleList().get(i);
-											if(calleeModule.getName().equals(depAction.getDestination().getName())){
-												confidence.getConfidenceList()[i] += 2;
-											}
-										}
-									}
-								}
-								ViewUpdater updater = new ViewUpdater();
-								updater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, true);
-							}
-							
-							FormText t = (FormText) e.getSource();
-							FormColors colors = toolkitPre.getColors();
-							colors.createColor("gray", new RGB(207,207,207));
-							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
-							t.setBackground(colors.getColor("gray"));
-							t.setForeground(colors.getColor("white"));
-						}
-						else if(e.getHref().equals("UnstickDependency")){
-							SuggestionObject obj = suggestion.getSuggeestionObject();
-							RefactoringAction action = suggestion.getAction();
-							if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
-								LinkAction depAction =(LinkAction)action;
-								for(ModuleDependencyConfidence confidence: Settings.dependencyConfidenceTable){
-									if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
-										for(int i=0; i<confidence.getModuleList().size(); i++){
-											ModuleWrapper calleeModule = confidence.getModuleList().get(i);
-											if(calleeModule.getName().equals(depAction.getDestination().getName())){
-												confidence.getConfidenceList()[i] = 0.5;
-											}
-										}
-									}
-								}
-								ViewUpdater updater = new ViewUpdater();
-								updater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, true);
-							}
-							FormText t = (FormText) e.getSource();
-							FormColors colors = toolkitPre.getColors();
-							colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
-							t.setForeground(colors.getColor("black"));
-							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
-							t.setBackground(colors.getColor("white"));
-						}
-						else if(e.getHref().equals("StickExtend")){
-							RecordParameters.recordTime++;
-							
-							SuggestionObject obj = suggestion.getSuggeestionObject();
-							RefactoringAction action = suggestion.getAction();
-							if(obj instanceof ModuleLinkWrapper && action instanceof ExtendAction){
-								LinkAction extAction =(LinkAction)action;
-								for(ModuleExtendConfidence confidence: Settings.extendConfidenceTable){
-									if(confidence.getModule().getName().equals(extAction.getOrigin().getName())){
-										for(int i=0; i<confidence.getModuleList().size(); i++){
-											ModuleWrapper parentModule = confidence.getModuleList().get(i);
-											if(parentModule.getName().equals(extAction.getDestination().getName())){
-												confidence.getConfidenceList()[i] += 2;
-											}
-										}
-									}
-								}
-								ViewUpdater updater = new ViewUpdater();
-								updater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, true);
-							}
-							
-							FormText t = (FormText) e.getSource();
-							FormColors colors = toolkitPre.getColors();
-							colors.createColor("gray", new RGB(207,207,207));
-							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
-							t.setBackground(colors.getColor("gray"));
-							t.setForeground(colors.getColor("white"));
-						}
-						else if(e.getHref().equals("UnstickExtend")){
-							SuggestionObject obj = suggestion.getSuggeestionObject();
-							RefactoringAction action = suggestion.getAction();
-							if(obj instanceof ModuleLinkWrapper && action instanceof ExtendAction){
-								LinkAction extAction =(LinkAction)action;
-								for(ModuleExtendConfidence confidence: Settings.extendConfidenceTable){
-									if(confidence.getModule().getName().equals(extAction.getOrigin().getName())){
-										for(int i=0; i<confidence.getModuleList().size(); i++){
-											ModuleWrapper parentModule = confidence.getModuleList().get(i);
-											if(parentModule.getName().equals(extAction.getDestination().getName())){
-												confidence.getConfidenceList()[i] = 0.5;
-											}
-										}
-									}
-								}
-								ViewUpdater updater = new ViewUpdater();
-								updater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, true);
-							}
-							FormText t = (FormText) e.getSource();
-							FormColors colors = toolkitPre.getColors();
-							colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
-							t.setForeground(colors.getColor("black"));
-							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
-							t.setBackground(colors.getColor("white"));
-						}
-					}
-				});
-			}			
+			generatePrerequisiteUI(sequence, toolkitPre, formCompositePre);			
 			
 			//add suggestions
 			for(RefactoringSequenceElement element : sequence){
@@ -299,56 +139,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 				detailBar.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
 				//Composite for details
-				final Composite detailComposite = new Composite (detailBar, SWT.NONE);
-				detailComposite.setLayout(gridLayout);
-				detailComposite.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
-				
-				detailBar.addExpandListener(new ExpandListener() {
-
-		            public void itemCollapsed(ExpandEvent e) {
-		            	if (e.item instanceof ExpandItem){
-		                    ExpandItem item = (ExpandItem)e.item;
-		                    detailBar.getParent().setSize(detailBar.getParent().getSize().x, detailBar.getParent().getSize().y - item.getHeight());
-
-		                    GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		                    //gridData.widthHint = detailBar.getParent().getSize().x - detailBar.getSpacing();
-		                    gridData.heightHint = detailBar.getParent().getSize().y - detailBar.getSpacing();
-		                    detailBar.getParent().setLayoutData(gridData);
-		                    detailBar.getParent().getParent().layout();
-
-		                    detailBar.setSize(detailBar.getSize().x, detailBar.getSize().y - item.getHeight());	
-		                    
-		                    gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		                    gridData.heightHint = detailBar.getSize().y;
-		                    detailBar.setLayoutData(gridData);
-		                    detailBar.getParent().layout();
-		                }
-		            }
-
-		            public void itemExpanded(ExpandEvent e) {
-		            	if (e.item instanceof ExpandItem){
-		                    ExpandItem item = (ExpandItem)e.item;
-		                    //not able to get the actual height of detailComposite, only know the height difference between parent and the composite is about 65, use it to calculate the height...
-		                    item.setHeight(detailComposite.computeSize(parent.getBounds().width - 65, SWT.DEFAULT).y);
-		                    
-		                    detailBar.getParent().setSize(detailBar.getParent().getSize().x, detailBar.getParent().getSize().y + item.getHeight());
-
-		                    GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		                    //gridData.widthHint = detailBar.getParent().getSize().x - detailBar.getSpacing();
-		                    gridData.heightHint = detailBar.getParent().getSize().y - detailBar.getSpacing();
-		                    detailBar.getParent().setLayoutData(gridData);
-		                    detailBar.getParent().getParent().layout();
-		                    
-		                    detailBar.setSize(detailBar.getSize().x, detailBar.getSize().y + item.getHeight());	
-		                    
-		                    gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		                    gridData.heightHint = detailBar.getSize().y;
-		                    detailBar.setLayoutData(gridData);
-		                    detailBar.getParent().layout();
-		                }
-		            }
-
-		        });
+				final Composite detailComposite = generateRefactoringDetailUI(detailBar);
 				
 				//generate detail?
 				for(int i = 0; i < element.getOpportunity().getRefactoringDetails().size(); i++){
@@ -365,7 +156,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 				//System.out.println(detailItem.getHeight() + " : " + detailComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + " : " + detailComposite.computeSize(parent.getBounds().width - 65, SWT.DEFAULT).y);
 				detailItem.setControl(detailComposite);
 				
-				//Form for actions				
+				//Form for actions	
 				final FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 				Composite formComposite = toolkit.createComposite(elementComposite);
 				formComposite.setLayout(new TableWrapLayout());
@@ -373,69 +164,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 				final FormText formText = toolkit.createFormText(formComposite, true);
 				formText.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
 				
-				StringBuffer buffer = new StringBuffer();
-				buffer.append("<form>");
-				buffer.append("<li>");
-				buffer.append("<b>[</b>");
-				buffer.append(" <a href=\"Simulate\">Simulate</a> ");	
-				buffer.append("<a href=\"UndoSimulate\">Undo</a> ");
-				buffer.append("<b>]</b>");
-				buffer.append("</li>");	
-				buffer.append("<li>");
-				buffer.append("<b>[</b> <a href=\"Forbid\">Reject</a> ");
-				buffer.append("<a href=\"Allow\">Undo</a> ");
-				buffer.append("<b>]</b>");
-				buffer.append("</li>");	
-				buffer.append("<li>");
-				buffer.append("<b>[</b> <a href=\"Exec\">Apply</a> ");
-				buffer.append("<a href=\"Undo\">Undo</a> ");
-				buffer.append("<b>]</b>");
-				buffer.append("</li>");
-				buffer.append("</form>");
-				
-				formText.setText(buffer.toString(), true, false);
-				formText.setData(element.getOpportunity());
-				formText.addHyperlinkListener(new HyperlinkAdapter() {
-					public void linkActivated(HyperlinkEvent e) {
-						RefactoringOpportunity opportunity = (RefactoringOpportunity) formText.getData();
-						if(e.getHref().equals("Forbid")){
-							if(!Settings.forbiddenOpps.contains(opportunity)){
-								Settings.forbiddenOpps.add(opportunity);
-							}
-							
-							ViewUpdater updater = new ViewUpdater();
-							updater.updateView(ReflexactoringPerspective.FORBIDDEN_REFACTORING_OPP_VIEW, Settings.forbiddenOpps, true);
-													
-							FormText t = (FormText) e.getSource();
-							FormColors colors = toolkit.getColors();
-							colors.createColor("gray", new RGB(207,207,207));
-							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
-							t.setBackground(colors.getColor("gray"));
-							t.setForeground(colors.getColor("white"));
-						}else if(e.getHref().equals("Allow")){
-							
-							Iterator<RefactoringOpportunity> iterator = Settings.forbiddenOpps.iterator();
-							while(iterator.hasNext()){
-								RefactoringOpportunity opp = iterator.next();
-								if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
-										&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
-									iterator.remove();
-								}
-							}
-							
-							ViewUpdater updater = new ViewUpdater();
-							updater.updateView(ReflexactoringPerspective.FORBIDDEN_REFACTORING_OPP_VIEW, Settings.forbiddenOpps, true);
-													
-							FormText t = (FormText) e.getSource();
-							FormColors colors = toolkit.getColors();
-							colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
-							t.setForeground(colors.getColor("black"));
-							colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
-							t.setBackground(colors.getColor("white"));
-						}
-					}
-				});
-						
+				generateSuggestionActionUI(element, sequence, toolkit, formText);
 
 				//test disable
 				if((sequence.indexOf(element) + 1) >= 2){
@@ -450,7 +179,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 //					formText.setHyperlinkSettings(grayLink);
 					formText.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
 					elementComposite.setBackground(new Color(Display.getCurrent(), 240, 240, 240));
-					elementComposite.setEnabled(false);
+					//elementComposite.setEnabled(false);
 				}
 				elementComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 				//elementComposite.setEnabled(true);
@@ -469,6 +198,325 @@ public class RefactoringSuggestionsView extends ViewPart {
 		}
 		
 		parent.layout();
+	}
+
+	/**
+	 * @param detailBar
+	 * @return
+	 */
+	private Composite generateRefactoringDetailUI(final ExpandBar detailBar) {
+		final Composite detailComposite = new Composite (detailBar, SWT.NONE);
+		detailComposite.setLayout(gridLayout);
+		detailComposite.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
+		
+		detailBar.addExpandListener(new ExpandListener() {
+
+		    public void itemCollapsed(ExpandEvent e) {
+		    	if (e.item instanceof ExpandItem){
+		            ExpandItem item = (ExpandItem)e.item;
+		            detailBar.getParent().setSize(detailBar.getParent().getSize().x, detailBar.getParent().getSize().y - item.getHeight());
+
+		            GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+		            //gridData.widthHint = detailBar.getParent().getSize().x - detailBar.getSpacing();
+		            gridData.heightHint = detailBar.getParent().getSize().y - detailBar.getSpacing();
+		            detailBar.getParent().setLayoutData(gridData);
+		            detailBar.getParent().getParent().layout();
+
+		            detailBar.setSize(detailBar.getSize().x, detailBar.getSize().y - item.getHeight());	
+		            
+		            gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+		            gridData.heightHint = detailBar.getSize().y;
+		            detailBar.setLayoutData(gridData);
+		            detailBar.getParent().layout();
+		        }
+		    }
+
+		    public void itemExpanded(ExpandEvent e) {
+		    	if (e.item instanceof ExpandItem){
+		            ExpandItem item = (ExpandItem)e.item;
+		            //not able to get the actual height of detailComposite, only know the height difference between parent and the composite is about 65, use it to calculate the height...
+		            item.setHeight(detailComposite.computeSize(parent.getBounds().width - 65, SWT.DEFAULT).y);
+		            
+		            detailBar.getParent().setSize(detailBar.getParent().getSize().x, detailBar.getParent().getSize().y + item.getHeight());
+
+		            GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+		            //gridData.widthHint = detailBar.getParent().getSize().x - detailBar.getSpacing();
+		            gridData.heightHint = detailBar.getParent().getSize().y - detailBar.getSpacing();
+		            detailBar.getParent().setLayoutData(gridData);
+		            detailBar.getParent().getParent().layout();
+		            
+		            detailBar.setSize(detailBar.getSize().x, detailBar.getSize().y + item.getHeight());	
+		            
+		            gridData = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
+		            gridData.heightHint = detailBar.getSize().y;
+		            detailBar.setLayoutData(gridData);
+		            detailBar.getParent().layout();
+		        }
+		    }
+
+		});
+		return detailComposite;
+	}
+
+	/**
+	 * @param element
+	 * @param toolkit
+	 * @param formText
+	 * @param sequence 
+	 */
+	private void generateSuggestionActionUI(final RefactoringSequenceElement element, final RefactoringSequence sequence,
+			final FormToolkit toolkit, final FormText formText) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("<form>");
+		buffer.append("<li>");
+		buffer.append("<b>[</b>");
+		buffer.append(" <a href=\"Simulate\">Simulate</a> ");	
+		buffer.append("<a href=\"UndoSimulate\">Undo</a> ");
+		buffer.append("<b>]</b>");
+		buffer.append("</li>");	
+		buffer.append("<li>");
+		buffer.append("<b>[</b> <a href=\"Forbid\">Reject</a> ");
+		buffer.append("<a href=\"Allow\">Undo</a> ");
+		buffer.append("<b>]</b>");
+		buffer.append("</li>");	
+		buffer.append("<li>");
+		buffer.append("<b>[</b> <a href=\"Exec\">Apply</a> ");
+		buffer.append("<a href=\"Undo\">Undo</a> ");
+		buffer.append("<b>]</b>");
+		buffer.append("</li>");
+		buffer.append("</form>");
+		
+		formText.setText(buffer.toString(), true, false);
+		formText.setData(element.getOpportunity());
+		formText.addHyperlinkListener(new HyperlinkAdapter() {
+			public void linkActivated(HyperlinkEvent e) {
+				RefactoringOpportunity opportunity = (RefactoringOpportunity) formText.getData();
+				if(e.getHref().equals("Forbid")){
+					if(!Settings.forbiddenOpps.contains(opportunity)){
+						Settings.forbiddenOpps.add(opportunity);
+					}
+					
+					ViewUpdater updater = new ViewUpdater();
+					updater.updateView(ReflexactoringPerspective.FORBIDDEN_REFACTORING_OPP_VIEW, Settings.forbiddenOpps, true);
+											
+					FormText t = (FormText) e.getSource();
+					FormColors colors = toolkit.getColors();
+					colors.createColor("gray", new RGB(207,207,207));
+					colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+					t.setBackground(colors.getColor("gray"));
+					t.setForeground(colors.getColor("white"));
+				}else if(e.getHref().equals("Allow")){
+					
+					Iterator<RefactoringOpportunity> iterator = Settings.forbiddenOpps.iterator();
+					while(iterator.hasNext()){
+						RefactoringOpportunity opp = iterator.next();
+						if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
+								&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
+							iterator.remove();
+						}
+					}
+					
+					ViewUpdater updater = new ViewUpdater();
+					updater.updateView(ReflexactoringPerspective.FORBIDDEN_REFACTORING_OPP_VIEW, Settings.forbiddenOpps, true);
+											
+					FormText t = (FormText) e.getSource();
+					FormColors colors = toolkit.getColors();
+					colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+					t.setForeground(colors.getColor("black"));
+					colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+					t.setBackground(colors.getColor("white"));
+				}
+				else if(e.getHref().equals("Simulate")){
+					ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+					ProgramModel model = element.getConsequenceModel();
+					new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
+				}
+				else if(e.getHref().equals("UndoSimulate")){
+					ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+					ProgramModel model;
+					if(element.getPosition() == 0){
+						model = Settings.scope;
+					}
+					else{
+						model = sequence.get(element.getPosition()-1).getConsequenceModel();
+					}
+					
+					new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
+				}
+			}
+		});
+	}
+
+	/**
+	 * @param sequence
+	 * @param toolkitPre
+	 * @param formCompositePre
+	 */
+	private void generatePrerequisiteUI(RefactoringSequence sequence,
+			final FormToolkit toolkitPre, Composite formCompositePre) {
+		for(SuggestionMove prerequisite : sequence.getPrerequisite()){
+			final FormText formTextPre = toolkitPre.createFormText(formCompositePre, true);
+			formTextPre.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
+			StringBuffer bufferPre = new StringBuffer();
+			bufferPre.append("<form>");
+			bufferPre.append("<li>");
+			bufferPre.append(prerequisite.generateTagedText());
+			bufferPre.append("</li>");	
+			
+			bufferPre.append("<li bindent=\"20\">");
+			bufferPre.append("<b>[</b> ");
+			if(prerequisite.getAction() instanceof LinkAction){
+				if(prerequisite.getAction() instanceof DependencyAction){
+					bufferPre.append("<a href=\"StickDependency\">Reject</a> ");	
+					bufferPre.append("<a href=\"UnstickDependency\">Undo</a>");	
+				}else if(prerequisite.getAction() instanceof ExtendAction){
+					bufferPre.append("<a href=\"StickExtend\">Reject</a> ");	
+					bufferPre.append("<a href=\"UnstickExtend\">Undo</a>");	
+				}
+			}
+			bufferPre.append("<b>]</b>");
+			bufferPre.append("</li>");	
+			bufferPre.append("<li bindent=\"20\">");
+			bufferPre.append("<b>[</b> <a href=\"Exec\">Apply</a> ");
+			bufferPre.append("<a href=\"Undo\">Undo</a> ");
+			bufferPre.append("<b>]</b>");
+			bufferPre.append("</li>");
+			bufferPre.append("</form>");
+			
+			formTextPre.setText(bufferPre.toString(), true, false);
+			formTextPre.setData(prerequisite);
+			formTextPre.addHyperlinkListener(new HyperlinkAdapter() {
+				public void linkActivated(HyperlinkEvent e) {
+					SuggestionMove suggestion = (SuggestionMove) formTextPre.getData();
+					if(e.getHref().equals("Exec")){
+						RecordParameters.applyTime++;
+						
+						suggestion.apply();
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkitPre.getColors();
+						colors.createColor("green", new RGB(154,205,50));
+						t.setForeground(colors.getColor("green"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("Undo")){
+						suggestion.undoApply();
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkitPre.getColors();
+						colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+						t.setForeground(colors.getColor("black"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("StickDependency")){
+						RecordParameters.recordTime++;
+						
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
+							LinkAction depAction =(LinkAction)action;
+							for(ModuleDependencyConfidence confidence: Settings.dependencyConfidenceTable){
+								if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper calleeModule = confidence.getModuleList().get(i);
+										if(calleeModule.getName().equals(depAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] += 2;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, true);
+						}
+						
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkitPre.getColors();
+						colors.createColor("gray", new RGB(207,207,207));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("gray"));
+						t.setForeground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("UnstickDependency")){
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleLinkWrapper && action instanceof DependencyAction){
+							LinkAction depAction =(LinkAction)action;
+							for(ModuleDependencyConfidence confidence: Settings.dependencyConfidenceTable){
+								if(confidence.getModule().getName().equals(depAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper calleeModule = confidence.getModuleList().get(i);
+										if(calleeModule.getName().equals(depAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] = 0.5;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, true);
+						}
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkitPre.getColors();
+						colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+						t.setForeground(colors.getColor("black"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("StickExtend")){
+						RecordParameters.recordTime++;
+						
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleLinkWrapper && action instanceof ExtendAction){
+							LinkAction extAction =(LinkAction)action;
+							for(ModuleExtendConfidence confidence: Settings.extendConfidenceTable){
+								if(confidence.getModule().getName().equals(extAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper parentModule = confidence.getModuleList().get(i);
+										if(parentModule.getName().equals(extAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] += 2;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, true);
+						}
+						
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkitPre.getColors();
+						colors.createColor("gray", new RGB(207,207,207));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("gray"));
+						t.setForeground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("UnstickExtend")){
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleLinkWrapper && action instanceof ExtendAction){
+							LinkAction extAction =(LinkAction)action;
+							for(ModuleExtendConfidence confidence: Settings.extendConfidenceTable){
+								if(confidence.getModule().getName().equals(extAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper parentModule = confidence.getModuleList().get(i);
+										if(parentModule.getName().equals(extAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] = 0.5;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, true);
+						}
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkitPre.getColors();
+						colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+						t.setForeground(colors.getColor("black"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
+					}
+				}
+			});
+		}
 	}
 
 	@Override

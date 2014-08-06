@@ -18,7 +18,10 @@ public class RefactoringSequenceElement {
 	private ProgramModel consequenceModel;
 	private double fitnessValue;
 	private ArrayList<Violation> violationList;
-	
+	/**
+	 * used to record the position of this element in the whole refactoring sequence.
+	 */
+	private int position;
 
 	/**
 	 * @param opportunity
@@ -31,6 +34,7 @@ public class RefactoringSequenceElement {
 		this.consequenceModel = consequenceModel;
 		this.fitnessValue = fitnessValue;
 		this.violationList = violationList;
+		//this.position = position;
 	}
 	
 	@Override
@@ -89,5 +93,19 @@ public class RefactoringSequenceElement {
 	 */
 	public void setViolationList(ArrayList<Violation> violationList) {
 		this.violationList = violationList;
+	}
+
+	/**
+	 * @return the position
+	 */
+	public int getPosition() {
+		return position;
+	}
+
+	/**
+	 * @param position the position to set
+	 */
+	public void setPosition(int position) {
+		this.position = position;
 	}
 }

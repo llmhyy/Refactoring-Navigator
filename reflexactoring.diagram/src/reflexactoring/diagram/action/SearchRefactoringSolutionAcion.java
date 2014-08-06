@@ -53,6 +53,7 @@ public class SearchRefactoringSolutionAcion implements
 					
 					RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
 					if(sequence.isAnImprovement(element)){
+						element.setPosition(i);
 						sequence.addElement(element);
 						model = element.getConsequenceModel();
 						oppList = smellDetector.detect(model);
