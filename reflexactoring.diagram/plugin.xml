@@ -907,6 +907,25 @@
             name="Reflexactoring">
       </perspective>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+            annotationType="reflexactoring.diagram.specification.hint"
+            colorPreferenceKey="hint_annotation_color"
+            colorPreferenceValue="192,255,192"
+            contributesToHeader="false"
+            highlightPreferenceKey="hint_annotation_hightlight"
+            highlightPreferenceValue="true"
+            includeOnPreferencePage="true"
+            label="Hint"
+            overviewRulerPreferenceKey="hint_annotation_overview"
+            overviewRulerPreferenceValue="true"
+            textPreferenceKey="hint_annotation_text"
+            textPreferenceValue="true"
+            verticalRulerPreferenceKey="hint_annotation_vertical"
+            verticalRulerPreferenceValue="false">
+      </specification>
+   </extension>
 
    <!-- optionally, specify keybindings -->
 </plugin>

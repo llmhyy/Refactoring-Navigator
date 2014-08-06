@@ -1,17 +1,16 @@
 package reflexactoring.diagram.view;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -25,7 +24,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -33,17 +31,15 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import reflexactoring.diagram.action.popup.ReferenceDetailMap;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.util.JavaCodeUtil;
 import reflexactoring.diagram.util.RecordParameters;
+import reflexactoring.diagram.view.annotation.ReferenceAnnotation;
 
 public class ReferenceDetailView extends ViewPart {
 
 	private TreeViewer viewer;
-	//private ICompilationUnitWrapper callerCompilationUnit;
 	
 	public ReferenceDetailView() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	@Override
@@ -56,13 +52,11 @@ public class ReferenceDetailView extends ViewPart {
 			
 			@Override
 			public void mouseUp(MouseEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 			
 			@Override
 			public void mouseDown(MouseEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 			
@@ -78,7 +72,29 @@ public class ReferenceDetailView extends ViewPart {
 					parent = parent.getParent();
 				}
 				CompilationUnit cu = (CompilationUnit)parent;
-				int lineNumber = cu.getLineNumber(node.getStartPosition());
+				
+				ITextEditor sourceEditor;
+				try {
+					sourceEditor = (ITextEditor)JavaUI.openInEditor(cu.getJavaElement());
+					AnnotationModel annotationModel = (AnnotationModel)sourceEditor.getDocumentProvider().getAnnotationModel(sourceEditor.getEditorInput());
+					@SuppressWarnings("unchecked")
+					Iterator<Annotation> annotationIterator = annotationModel.getAnnotationIterator();
+					while(annotationIterator.hasNext()) {
+						Annotation currentAnnotation = annotationIterator.next();
+						annotationModel.removeAnnotation(currentAnnotation);
+					}
+					ReferenceAnnotation annotation = new ReferenceAnnotation(false, "You may need to change this part");
+					Position position = new Position(node.getStartPosition(), node.getLength());
+					
+					annotationModel.addAnnotation(annotation, position);
+					sourceEditor.setHighlightRange(node.getStartPosition(), node.getLength(), true);
+				} catch (PartInitException e) {
+					e.printStackTrace();
+				} catch (JavaModelException e) {
+					e.printStackTrace();
+				}
+				
+				/*int lineNumber = cu.getLineNumber(node.getStartPosition());
 				
 				ICompilationUnit unit = (ICompilationUnit) cu.getJavaElement();
 				IEditorPart javaEditor;
@@ -91,15 +107,14 @@ public class ReferenceDetailView extends ViewPart {
 					e.printStackTrace();
 				} catch (JavaModelException e) {
 					e.printStackTrace();
-				}
+				}*/
 			}
 		});
 	}
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	/**
@@ -126,13 +141,11 @@ public class ReferenceDetailView extends ViewPart {
 	public class DetailContentProvider implements ITreeContentProvider{
 		@Override
 		public void dispose() {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			// TODO Auto-generated method stub
 			
 		}
 
@@ -154,7 +167,6 @@ public class ReferenceDetailView extends ViewPart {
 
 		@Override
 		public Object getParent(Object element) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -179,40 +191,26 @@ public class ReferenceDetailView extends ViewPart {
 		
 		@Override
 		public void addListener(ILabelProviderListener listener) {
-			// TODO Auto-generated method stub
 			
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
-		 */
 		@Override
 		public void dispose() {
-			// TODO Auto-generated method stub
 			
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-		 */
+		
 		@Override
 		public boolean isLabelProperty(Object element, String property) {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
-		 */
+		
 		@Override
 		public void removeListener(ILabelProviderListener listener) {
-			// TODO Auto-generated method stub
 			
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
-		 */
 		@Override
 		public Image getImage(Object element) {
 			if(element instanceof ReferenceDetailMap){
@@ -225,25 +223,23 @@ public class ReferenceDetailView extends ViewPart {
 			return null;
 		}
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
-		 */
 		@Override
 		public String getText(Object element) {
 			if(element instanceof ReferenceDetailMap){
-				ReferenceDetailMap map = (ReferenceDetailMap)element;
-				return "The references to " + map.getCalleeUnit().getSimpleName();
+				//ReferenceDetailMap map = (ReferenceDetailMap)element;
+				return "The references:" /*+ map.getCallerUnit().getSimpleName()*/;
 			}
 			else if(element instanceof ASTNode){
 				ASTNode node = (ASTNode)element;
 				
-				ICompilationUnitWrapper callerUnitWrapper = this.map.getCallerUnit();
-				CompilationUnit unit = callerUnitWrapper.getJavaUnit();
-				
+				//ICompilationUnitWrapper callerUnitWrapper = this.map.getCallerUnit();
+				//CompilationUnit unit = callerUnitWrapper.getJavaUnit();
+				CompilationUnit unit = (CompilationUnit)node.getRoot();
+				ICompilationUnit iunit = (ICompilationUnit)unit.getJavaElement();
 				
 				String source;
 				try {
-					source = callerUnitWrapper.getCompilationUnit().getSource();
+					source = iunit.getSource();
 					int lineNumber = unit.getLineNumber(node.getStartPosition());
 					int startPosition = unit.getPosition(lineNumber, 0);
 					int endPosition = unit.getPosition(lineNumber+1, 0)-1;
@@ -255,7 +251,7 @@ public class ReferenceDetailView extends ViewPart {
 						content = content.substring(0, 50);
 					}
 					
-					return "In line " + lineNumber + " of " + callerUnitWrapper.getName() + ": " + content;
+					return "In line " + lineNumber + " of " + iunit.getElementName() + ": " + content;
 				} catch (JavaModelException e) {
 					e.printStackTrace();
 				}

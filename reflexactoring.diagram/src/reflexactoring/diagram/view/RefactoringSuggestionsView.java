@@ -33,6 +33,7 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.eclipse.ui.part.ViewPart;
 
 import reflexactoring.diagram.action.DiagramUpdater;
+import reflexactoring.diagram.action.popup.ReferenceDetailMap;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.recommend.action.DependencyAction;
 import reflexactoring.diagram.action.recommend.action.ExtendAction;
@@ -272,7 +273,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 		buffer.append("<b>[</b>");
 		buffer.append(" <a href=\"Simulate\">Simulate</a> ");	
 		buffer.append("<a href=\"UndoSimulate\">Undo</a> ");
-		buffer.append("<b>]</b>");
+		buffer.append("<b>]</b> You can also <a href=\"Hint\">Check Hint</a>");
 		buffer.append("</li>");	
 		buffer.append("<li>");
 		buffer.append("<b>[</b> <a href=\"Forbid\">Reject</a> ");
@@ -342,6 +343,12 @@ public class RefactoringSuggestionsView extends ViewPart {
 					}
 					
 					new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
+				}
+				else if(e.getHref().equals("Hint")){
+					//TODO Linyun
+					ReferenceDetailMap map = new ReferenceDetailMap(null, null, element.getOpportunity().getHints());
+					ViewUpdater updater = new ViewUpdater();
+					updater.updateView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW, map, true);
 				}
 			}
 		});
