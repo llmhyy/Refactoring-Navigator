@@ -6,6 +6,8 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
@@ -83,6 +85,16 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		this.targetUnit = tarUnit;
 		
 		return newModel;
+	}
+	
+	@Override
+	public ArrayList<ASTNode> getHints() {
+		ArrayList<ASTNode> hints = new ArrayList<>();
+		for(ProgramReference reference: objectMethod.getRefererPointList()){
+			ASTNode node = reference.getASTNode();
+			hints.add(node);
+		}
+		return hints;
 	}
 	
 	private ArrayList<String> extractParameters(ICompilationUnitWrapper originalUnit, MethodWrapper objMethod){

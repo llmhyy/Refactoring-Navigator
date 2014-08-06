@@ -5,6 +5,8 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
@@ -46,6 +48,18 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			buffer.append(member.toString()+",");
 		}
 		return buffer.toString();
+	}
+	
+	@Override
+	public ArrayList<ASTNode> getHints() {
+		ArrayList<ASTNode> hints = new ArrayList<>();
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			for(ProgramReference reference: member.getRefererPointList()){
+				ASTNode node = reference.getASTNode();
+				hints.add(node);
+			}
+		}
+		return hints;
 	}
 
 	/**

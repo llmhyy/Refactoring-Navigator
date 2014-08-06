@@ -5,6 +5,8 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
@@ -24,6 +26,7 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 
 	private CloneSet cloneSet;
 	private ICompilationUnitWrapper utilityClass;
+	private MethodWrapper utilityMethod;
 	
 	public ExtractUtilityClassOpportunity(CloneSet cloneSet, ArrayList<ModuleWrapper> moduleList){
 		this.cloneSet = cloneSet;
@@ -117,9 +120,20 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		ModuleWrapper bestMappingModule = calculateBestMappingModule(newModel, utilityClass);
 		utilityClass.setMappingModule(bestMappingModule);
 		
+		this.utilityMethod = utilityMethod;
 		this.utilityClass = utilityClass;
 		
 		return newModel;
+	}
+	
+	@Override
+	public ArrayList<ASTNode> getHints() {
+		ArrayList<ASTNode> hints = new ArrayList<>();
+		for(ProgramReference reference: utilityMethod.getRefererPointList()){
+			ASTNode node = reference.getASTNode();
+			hints.add(node);
+		}
+		return hints;
 	}
 
 	@Override
@@ -151,6 +165,20 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		
 		return refactoringDetails;
 	};
+
+	/**
+	 * @return the utilityMethod
+	 */
+	public MethodWrapper getUtilityMethod() {
+		return utilityMethod;
+	}
+
+	/**
+	 * @param utilityMethod the utilityMethod to set
+	 */
+	public void setUtilityMethod(MethodWrapper utilityMethod) {
+		this.utilityMethod = utilityMethod;
+	}
 
 	/**
 	 * @return the utilityClass

@@ -5,6 +5,8 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -39,6 +41,7 @@ public abstract class RefactoringOpportunity {
 	
 	public abstract ArrayList<String> getRefactoringDetails();
 	
+	public abstract ArrayList<ASTNode> getHints();
 	/**
 	 * this method is used to apply refactoring on real code
 	 */
