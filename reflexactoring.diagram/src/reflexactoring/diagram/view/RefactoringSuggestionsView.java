@@ -21,8 +21,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.FormColors;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
@@ -56,7 +58,9 @@ import reflexactoring.diagram.util.Settings;
 public class RefactoringSuggestionsView extends ViewPart {
 	private Composite parent;
 	
-	GridLayout gridLayout = new GridLayout();
+	private GridLayout gridLayout = new GridLayout();
+	private ArrayList<RefactoringSequence> suggestions = null;
+	private int currentHeight = 0;
 	
 	public RefactoringSuggestionsView() {
 		
@@ -68,7 +72,10 @@ public class RefactoringSuggestionsView extends ViewPart {
 		parent.setLayout(gridLayout);
 	}
 	
-	public void refreshSuggestionsOnUI(ArrayList<RefactoringSequence> suggestions){
+	public void refreshSuggestionsOnUI(ArrayList<RefactoringSequence> suggestions, RefactoringSequenceElement currentElement){
+		this.suggestions = suggestions;
+		this.currentHeight = 0;
+		
 		for(Control control: parent.getChildren()){
 			control.dispose();
 		}
@@ -111,9 +118,9 @@ public class RefactoringSuggestionsView extends ViewPart {
 			Composite formCompositePre = toolkitPre.createComposite(prerequisiteComposite);
 			formCompositePre.setLayout(new TableWrapLayout());
 			formCompositePre.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-			
+						
 			generatePrerequisiteUI(sequence, toolkitPre, formCompositePre);			
-			
+
 			//add suggestions
 			for(RefactoringSequenceElement element : sequence){
 			
@@ -167,26 +174,34 @@ public class RefactoringSuggestionsView extends ViewPart {
 				
 				generateSuggestionActionUI(element, sequence, toolkit, formText);
 
-				//test disable
-				if((sequence.indexOf(element) + 1) >= 2){
+				//disable the following suggestions
+				int currentElementIndex = 0;
+				if(currentElement != null && sequence.contains(currentElement)){
+					currentElementIndex = sequence.indexOf(currentElement) + 1;
+					if(currentHeight == 0){
+						currentHeight = prerequisiteComposite.computeSize(composite.getBounds().width - 5, SWT.DEFAULT).y + 5;
+					}
+					if(sequence.indexOf(element) < currentElementIndex){
+						currentHeight += elementComposite.computeSize(composite.getBounds().width - 5, SWT.DEFAULT).y + 5;
+					}
+				}
+				if(sequence.indexOf(element) < currentElementIndex){
+					//make the former composites a little bit different?
+				}else if(sequence.indexOf(element) > currentElementIndex){
 					detailBar.setBackground(new Color(Display.getCurrent(), 240, 240, 240));
 					formComposite.setBackground(new Color(Display.getCurrent(), 240, 240, 240));
 					formText.setBackground(new Color(Display.getCurrent(), 240, 240, 240));
-					//change hyper link color not work...
-//					HyperlinkSettings grayLink = new HyperlinkSettings(Display.getCurrent());
-//					grayLink.setHyperlinkUnderlineMode(HyperlinkSettings.UNDERLINE_NEVER);
-//					grayLink.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
-//					grayLink.setActiveForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
-//					formText.setHyperlinkSettings(grayLink);
 					formText.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
 					elementComposite.setBackground(new Color(Display.getCurrent(), 240, 240, 240));
 					//elementComposite.setEnabled(false);
 				}
 				elementComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-				//elementComposite.setEnabled(true);
 			}
 			
 			scrollComposite.setContent(composite);
+			System.out.println("currentHeight: " + currentHeight);
+			//scrollComposite.setOrigin(0, currentHeight);
+			//scrollComposite.setOrigin(0, 300);
 			scrollComposite.setExpandVertical(true);
 			scrollComposite.setExpandHorizontal(true);
 			scrollComposite.addControlListener(new ControlAdapter() {
@@ -349,6 +364,11 @@ public class RefactoringSuggestionsView extends ViewPart {
 					ReferenceDetailMap map = new ReferenceDetailMap(null, null, element.getOpportunity().getHints());
 					ViewUpdater updater = new ViewUpdater();
 					updater.updateView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW, map, true);
+				}
+				else if(e.getHref().equals("Exec")){
+					RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
+							getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
+					view.refreshSuggestionsOnUI(suggestions, element);
 				}
 			}
 		});
