@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.PlatformUI;
@@ -57,11 +56,47 @@ import reflexactoring.diagram.util.Settings;
 
 public class RefactoringSuggestionsView extends ViewPart {
 	private Composite parent;
-	
 	private GridLayout gridLayout = new GridLayout();
+		
+	private final Color DARK_BLUE = new Color(Display.getCurrent(), 38, 81, 128);
+	private final Color LIGHT_BLUE = new Color(Display.getCurrent(), 206, 237, 255);
+	private final Color LIGHT_GRAY = new Color(Display.getCurrent(), 240, 240, 240);
+	private final Color LIGHT_GREEN = new Color(Display.getCurrent(), 193, 255, 193);
+	private final Color DARK_GREEN = new Color(Display.getCurrent(), 155, 205, 155);	
+
 	private ArrayList<RefactoringSequence> suggestions = null;
+	private RefactoringSequenceElement currentElement = null;
+	private boolean isUndo = false;
 	private int currentHeight = 0;
 	
+	/**
+	 * @return the currentElement
+	 */
+	public RefactoringSequenceElement getCurrentElement() {
+		return currentElement;
+	}
+
+	/**
+	 * @param currentElement the currentElement to set
+	 */
+	public void setCurrentElement(RefactoringSequenceElement currentElement) {
+		this.currentElement = currentElement;
+	}
+
+	/**
+	 * @return the isUndo
+	 */
+	public boolean isUndo() {
+		return isUndo;
+	}
+
+	/**
+	 * @param isUndo the isUndo to set
+	 */
+	public void setUndo(boolean isUndo) {
+		this.isUndo = isUndo;
+	}
+
 	public RefactoringSuggestionsView() {
 		
 	}
@@ -72,7 +107,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 		parent.setLayout(gridLayout);
 	}
 	
-	public void refreshSuggestionsOnUI(ArrayList<RefactoringSequence> suggestions, RefactoringSequenceElement currentElement){
+	public void refreshSuggestionsOnUI(ArrayList<RefactoringSequence> suggestions){
 		this.suggestions = suggestions;
 		this.currentHeight = 0;
 		
@@ -84,7 +119,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 		Label text = new Label(parent, SWT.WRAP | SWT.TOP);
 		text.setText("Refactoring Suggestions");
 		text.setFont(new Font(Display.getCurrent(), "Arial", 14, SWT.BOLD));
-		text.setForeground(new Color(Display.getCurrent(), 38, 81, 128));
+		text.setForeground(DARK_BLUE);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		
 		TabFolder tabFolder = new TabFolder(parent, SWT.NONE);
@@ -105,14 +140,14 @@ public class RefactoringSuggestionsView extends ViewPart {
 			Composite prerequisiteComposite = new Composite(composite, SWT.BORDER);
 			prerequisiteComposite.setLayout(gridLayout);
 			prerequisiteComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-			prerequisiteComposite.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
+			prerequisiteComposite.setBackground(LIGHT_BLUE);
 			//Label for "Prerequisite"
 			Label prerequisiteTitle = new Label(prerequisiteComposite, SWT.WRAP | SWT.TOP);
 			prerequisiteTitle.setText("Prerequisite");
 			prerequisiteTitle.setFont(new Font(Display.getCurrent(), "Arial", 14, SWT.NORMAL));
 			prerequisiteTitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-			prerequisiteTitle.setForeground(new Color(Display.getCurrent(), 38, 81, 128));
-			prerequisiteTitle.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
+			prerequisiteTitle.setForeground(DARK_BLUE);
+			prerequisiteTitle.setBackground(LIGHT_BLUE);
 			//form for prerequisite actions
 			final FormToolkit toolkitPre = new FormToolkit(parent.getDisplay());
 			Composite formCompositePre = toolkitPre.createComposite(prerequisiteComposite);
@@ -143,7 +178,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 				//ExpandBar for detail
 				final ExpandBar detailBar = new ExpandBar (elementComposite, SWT.V_SCROLL);
 				//detailBar.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-				detailBar.setForeground(new Color(Display.getCurrent(), 38, 81, 128));
+				detailBar.setForeground(DARK_BLUE);
 				detailBar.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
 				//Composite for details
@@ -155,7 +190,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 					Label testDetail = new Label(detailComposite, SWT.WRAP | SWT.TOP);
 					testDetail.setText((i + 1) + ". " + detail +".");
 					testDetail.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-					testDetail.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
+					testDetail.setBackground(LIGHT_BLUE);
 				}				
 				ExpandItem detailItem = new ExpandItem (detailBar, SWT.NONE, 0);
 				detailItem.setText("View Detail");
@@ -177,23 +212,57 @@ public class RefactoringSuggestionsView extends ViewPart {
 				//disable the following suggestions
 				int currentElementIndex = 0;
 				if(currentElement != null && sequence.contains(currentElement)){
-					currentElementIndex = sequence.indexOf(currentElement) + 1;
-					if(currentHeight == 0){
-						currentHeight = prerequisiteComposite.computeSize(parent.getBounds().width, SWT.DEFAULT).y + 20;
-					}
-					if(sequence.indexOf(element) < currentElementIndex){
-						currentHeight += elementComposite.computeSize(parent.getBounds().width - 10, SWT.DEFAULT).y + 10;
+					if(!isUndo){
+						currentElementIndex = sequence.indexOf(currentElement) + 1;
+						if(currentHeight == 0){
+							currentHeight = prerequisiteComposite.computeSize(parent.getBounds().width, SWT.DEFAULT).y + 20;
+						}
+						if(sequence.indexOf(element) < currentElementIndex){
+							currentHeight += elementComposite.computeSize(parent.getBounds().width - 10, SWT.DEFAULT).y + 10;
+						}
+					}else{
+						currentElementIndex = sequence.indexOf(currentElement);
+						if(currentElementIndex == 0){
+							currentHeight = 0;
+						}else{
+							if(currentHeight == 0){
+								currentHeight = prerequisiteComposite.computeSize(parent.getBounds().width, SWT.DEFAULT).y + 20;
+							}
+							if(sequence.indexOf(element) < currentElementIndex){
+								currentHeight += elementComposite.computeSize(parent.getBounds().width - 10, SWT.DEFAULT).y + 10;
+							}
+						}
 					}
 				}
 				if(sequence.indexOf(element) < currentElementIndex){
-					//make the former composites a little bit different?
+					//make the former steps a little bit different					
+					//the nearest one is able & color lighter
+					if(sequence.indexOf(element) == currentElementIndex - 1){
+						title.setBackground(LIGHT_GREEN);
+						description.setBackground(LIGHT_GREEN);
+						
+						detailBar.setBackground(LIGHT_GREEN);
+						formComposite.setBackground(LIGHT_GREEN);
+						formText.setBackground(LIGHT_GREEN);
+						elementComposite.setBackground(LIGHT_GREEN);
+						elementComposite.setEnabled(true);
+					}else{
+						title.setBackground(DARK_GREEN);
+						description.setBackground(DARK_GREEN);
+						
+						detailBar.setBackground(DARK_GREEN);
+						formComposite.setBackground(DARK_GREEN);
+						formText.setBackground(DARK_GREEN);
+						elementComposite.setBackground(DARK_GREEN);
+						elementComposite.setEnabled(false);
+					}
 				}else if(sequence.indexOf(element) > currentElementIndex){
-					detailBar.setBackground(new Color(Display.getCurrent(), 240, 240, 240));
-					formComposite.setBackground(new Color(Display.getCurrent(), 240, 240, 240));
-					formText.setBackground(new Color(Display.getCurrent(), 240, 240, 240));
-					formText.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
-					elementComposite.setBackground(new Color(Display.getCurrent(), 240, 240, 240));
-					//elementComposite.setEnabled(false);
+					//disable the following steps
+					detailBar.setBackground(LIGHT_GRAY);
+					formComposite.setBackground(LIGHT_GRAY);
+					formText.setBackground(LIGHT_GRAY);
+					elementComposite.setBackground(LIGHT_GRAY);
+					elementComposite.setEnabled(false);
 				}
 				elementComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			}
@@ -221,7 +290,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 	private Composite generateRefactoringDetailUI(final ExpandBar detailBar) {
 		final Composite detailComposite = new Composite (detailBar, SWT.NONE);
 		detailComposite.setLayout(gridLayout);
-		detailComposite.setBackground(new Color(Display.getCurrent(), 206, 237, 255));
+		detailComposite.setBackground(LIGHT_BLUE);
 		
 		detailBar.addExpandListener(new ExpandListener() {
 
@@ -366,7 +435,20 @@ public class RefactoringSuggestionsView extends ViewPart {
 				else if(e.getHref().equals("Exec")){
 					RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
 							getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
-					view.refreshSuggestionsOnUI(suggestions, element);
+					view.setCurrentElement(element);
+					view.setUndo(false);
+					view.refreshSuggestionsOnUI(suggestions);
+					
+					//do execution
+				}
+				else if(e.getHref().equals("Undo")){
+					RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
+							getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
+					view.setCurrentElement(element);
+					view.setUndo(true);
+					view.refreshSuggestionsOnUI(suggestions);
+					
+					//do undo
 				}
 			}
 		});
