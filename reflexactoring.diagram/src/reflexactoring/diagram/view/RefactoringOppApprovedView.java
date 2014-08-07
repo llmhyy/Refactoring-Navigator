@@ -26,12 +26,12 @@ import org.eclipse.ui.part.ViewPart;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.util.Settings;
 
-public class RefactoringOppForbiddenView extends ViewPart {
+public class RefactoringOppApprovedView extends ViewPart {
 
 	private Text searchText;
 	private TableViewer tableViewer;
 	
-	public RefactoringOppForbiddenView() {
+	public RefactoringOppApprovedView() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -58,18 +58,18 @@ public class RefactoringOppForbiddenView extends ViewPart {
 		    	if (e.keyCode == 13) {  
 		    		String searchString = searchText.getText().toLowerCase();
 		    		if(searchString == null || searchString.trim().equals("")){
-		    			tableViewer.setInput(Settings.forbiddenOpps);
+		    			tableViewer.setInput(Settings.approvedOpps);
 						tableViewer.refresh();
 		    		}else{
-		    			ArrayList<RefactoringOpportunity> filteredForbiddenOppsList
+		    			ArrayList<RefactoringOpportunity> filteredApprovedOppsList
 		    			= new ArrayList<>();
-		    			for(RefactoringOpportunity opp: Settings.forbiddenOpps){
+		    			for(RefactoringOpportunity opp: Settings.approvedOpps){
 		    				if(opp.getRefactoringDescription().toLowerCase().indexOf(searchString) != -1 ||
 		    						opp.getRefactoringName().toLowerCase().indexOf(searchString) != -1){
-		    					filteredForbiddenOppsList.add(opp);		    					
+		    					filteredApprovedOppsList.add(opp);		    					
 		    				}
 		    			}
-		    			tableViewer.setInput(filteredForbiddenOppsList);
+		    			tableViewer.setInput(filteredApprovedOppsList);
 						tableViewer.refresh();
 		    		}
 		    	}  
@@ -90,7 +90,7 @@ public class RefactoringOppForbiddenView extends ViewPart {
 		table.setLinesVisible(true);
 
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		tableViewer.setInput(Settings.forbiddenOpps);
+		tableViewer.setInput(Settings.approvedOpps);
 
 		GridData gridData = new GridData();
 		gridData.verticalAlignment = GridData.FILL;
@@ -111,9 +111,9 @@ public class RefactoringOppForbiddenView extends ViewPart {
 					TableItem[] ti = tableViewer.getTable().getSelection();
 					if (ti != null && ti.length > 0) { 
 						for(int i = 0; i < ti.length; i++){
-							Settings.forbiddenOpps.remove((RefactoringOpportunity) ti[i].getData());	
+							Settings.approvedOpps.remove((RefactoringOpportunity) ti[i].getData());	
 						}						
-						tableViewer.setInput(Settings.forbiddenOpps);
+						tableViewer.setInput(Settings.approvedOpps);
 						tableViewer.refresh();
 					}else{
 						

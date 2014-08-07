@@ -443,7 +443,15 @@ public class RefactoringSuggestionsView extends ViewPart {
 					view.setUndo(false);
 					view.refreshSuggestionsOnUI(suggestions);
 					
-					//do execution
+					//TODO do execution
+					
+					//do approved now
+					if(!Settings.approvedOpps.contains(opportunity)){
+						Settings.approvedOpps.add(opportunity);
+					}
+					ViewUpdater updater = new ViewUpdater();
+					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
+											
 				}
 				else if(e.getHref().equals("Undo")){
 					RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
@@ -453,6 +461,20 @@ public class RefactoringSuggestionsView extends ViewPart {
 					view.refreshSuggestionsOnUI(suggestions);
 					
 					//do undo
+					
+					//undo approved now
+					Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();
+					while(iterator.hasNext()){
+						RefactoringOpportunity opp = iterator.next();
+						if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
+								&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
+							iterator.remove();
+						}
+					}
+					
+					ViewUpdater updater = new ViewUpdater();
+					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
+						
 				}
 			}
 		});

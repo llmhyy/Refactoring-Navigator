@@ -85,6 +85,12 @@ public class ViewUpdater {
 			view.getViewer().setInput(inputData);
 			view.getViewer().refresh();
 		}
+		else if(viewId.equals(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW)){
+			RefactoringOppApprovedView view = (RefactoringOppApprovedView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().findView(viewId);
+			view.getViewer().setInput(inputData);
+			view.getViewer().refresh();
+		}
 		if(isNeedReveal){
 			try {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(viewId);

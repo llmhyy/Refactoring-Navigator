@@ -897,6 +897,14 @@
             name="Forbidden Opportunity View"
             restorable="true">
       </view>
+      <view
+            category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.RefactoringOppApprovedView"
+            icon="icons/view/recommend.gif"
+            id="reflexactoring.diagram.view.refactoringOppApprovedView"
+            name="Approved Opportunity View"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
