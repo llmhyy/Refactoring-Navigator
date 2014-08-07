@@ -368,7 +368,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 		buffer.append("<b>]</b>");
 		buffer.append("</li>");	
 		buffer.append("<li>");
-		buffer.append("<b>[</b> <a href=\"Exec\">Apply</a> ");
+		buffer.append("<b>[</b> <a href=\"Exec\">Approve</a> ");
 		buffer.append("<a href=\"Undo\">Undo</a> ");
 		buffer.append("<b>]</b>");
 		buffer.append("</li>");
