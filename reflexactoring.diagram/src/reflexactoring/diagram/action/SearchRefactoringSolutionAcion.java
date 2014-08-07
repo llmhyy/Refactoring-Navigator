@@ -20,6 +20,8 @@ import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
@@ -44,12 +46,12 @@ public class SearchRefactoringSolutionAcion implements
 				ProgramModel model = Settings.scope;
 				BadSmellDetector smellDetector = new BadSmellDetector(moduleList);
 				
-				RefactoringSequence sequence = new RefactoringSequence();
+				RefactoringSequence sequence = new RefactoringSequence(model, moduleList);
 				ArrayList<RefactoringOpportunity> oppList = smellDetector.detect(model);
 				
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()); i++){
 					
-					long t1 = System.currentTimeMillis();
+					long t1 = System.currentTimeMillis();System.currentTimeMillis();
 					
 					RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
 					if(sequence.isAnImprovement(element)){
@@ -110,6 +112,10 @@ public class SearchRefactoringSolutionAcion implements
 		ArrayList<Violation> violationList = null;
 		
 		for(RefactoringOpportunity opp: oppList){
+			
+			if(opp instanceof MoveMethodOpportunity){
+				System.currentTimeMillis();
+			}
 			
 			if(Settings.forbiddenOpps.contains(opp)){
 				continue;
