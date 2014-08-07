@@ -33,10 +33,16 @@ public class Settings {
 	public static ProgramModel scope = new ProgramModel();
 	
 	/**
-	 * It is used for specifying user rejected refactoring suggestions, which will never be recommended again.
+	 * It is used for specifying user rejected refactoring suggestions, which could used as hints to add penalty
+	 * to similar refactoring suggestions.
 	 */
 	public static ArrayList<RefactoringOpportunity> forbiddenOpps = new ArrayList<>();
 	
+	/**
+	 * It is used for specifying user approved refactoring suggestions, which could be used as hints to add reward
+	 * to similar refactoring suggestions.
+	 */
+	public static ArrayList<RefactoringOpportunity> approvedOpps = new ArrayList<>();
 	/**
 	 * It is used for keeping user-specified module-type(unit) mapping relation.
 	 */
@@ -124,8 +130,10 @@ public class Settings {
 	
 	//==============================================================
 	/**
-	 * The following is the parameters for detecting counter methods
+	 * The following is the parameters for detecting bad smell
 	 */
 	public static final double counterMethodSimilarity = 0.6;
 	public static final double featureEnvyThreshold = 0.2;
+	
+	public static final double penaltyRate = 0.2;
 }

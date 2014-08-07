@@ -432,7 +432,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 					new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
 				}
 				else if(e.getHref().equals("Hint")){
-					//TODO Linyun
 					ReferenceDetailMap map = new ReferenceDetailMap(null, null, element.getOpportunity().getHints());
 					ViewUpdater updater = new ViewUpdater();
 					updater.updateView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW, map, true);
