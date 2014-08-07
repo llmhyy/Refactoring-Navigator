@@ -17,6 +17,7 @@ import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.ProgramReference;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun
@@ -124,6 +125,42 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		this.utilityClass = utilityClass;
 		
 		return newModel;
+	}
+	
+	@Override
+	public double computeSimilarityWith(RefactoringOpportunity opp){
+		if(opp instanceof ExtractUtilityClassOpportunity){
+			ExtractUtilityClassOpportunity thatOpp = (ExtractUtilityClassOpportunity)opp;
+			
+			double memberSim = ReflexactoringUtil.computeSetSimilarity(getExtractedMembers(), thatOpp.getExtractedMembers());
+			double unitSim = ReflexactoringUtil.computeSetSimilarity(getExtractedUnits(), thatOpp.getExtractedUnits());
+			
+			return (memberSim + unitSim)/2;
+			
+		}
+		
+		return 0;
+	}
+	
+	public ArrayList<UnitMemberWrapper> getExtractedMembers(){
+		ArrayList<UnitMemberWrapper> extractedMembers = new ArrayList<>();
+		for(CloneInstance instance: getCloneSet().getInstances()){
+			extractedMembers.add(instance.getMember());
+		}
+		
+		return extractedMembers;
+	}
+	
+	public ArrayList<ICompilationUnitWrapper> getExtractedUnits(){
+		ArrayList<ICompilationUnitWrapper> extractedUnits = new ArrayList<>();
+		for(CloneInstance instance: getCloneSet().getInstances()){
+			ICompilationUnitWrapper unit = instance.getMember().getUnitWrapper();
+			if(!extractedUnits.contains(unit)){
+				extractedUnits.add(unit);				
+			}
+		}
+		
+		return extractedUnits;
 	}
 	
 	@Override

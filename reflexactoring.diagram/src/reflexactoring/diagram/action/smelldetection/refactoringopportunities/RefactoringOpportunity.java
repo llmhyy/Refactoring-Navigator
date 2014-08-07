@@ -42,6 +42,8 @@ public abstract class RefactoringOpportunity {
 	public abstract ArrayList<String> getRefactoringDetails();
 	
 	public abstract ArrayList<ASTNode> getHints();
+	
+	public abstract double computeSimilarityWith(RefactoringOpportunity opp);
 	/**
 	 * this method is used to apply refactoring on real code
 	 */

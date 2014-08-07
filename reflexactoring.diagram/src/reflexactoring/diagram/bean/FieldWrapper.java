@@ -129,7 +129,7 @@ public class FieldWrapper extends UnitMemberWrapper{
 	}
 	
 	@Override
-	public double computeSimilarityWith(UnitMemberWrapper otherMember){
+	public double computeSimilarityForBeingPulledUp(UnitMemberWrapper otherMember){
 		if(otherMember instanceof FieldWrapper){
 			FieldWrapper thatField = (FieldWrapper)otherMember;
 			if(!isSameType(thatField)){
@@ -142,6 +142,22 @@ public class FieldWrapper extends UnitMemberWrapper{
 			double sim = 2d*commonWords.length/(words1.length+words2.length);
 
 			return sim;
+		}
+		
+		return 0;
+	}
+	
+	@Override
+	public double computeSimilarityWith(Object obj){
+		if(obj instanceof FieldWrapper){
+			FieldWrapper thatField = (FieldWrapper)obj;
+			
+			double typeSimilarity = ReflexactoringUtil.
+					compareStringSimilarity(getType(), thatField.getType());
+			double nameSimilarity = ReflexactoringUtil.
+					compareStringSimilarity(getName(), thatField.getName());
+			
+			return (typeSimilarity + nameSimilarity )/2;
 		}
 		
 		return 0;

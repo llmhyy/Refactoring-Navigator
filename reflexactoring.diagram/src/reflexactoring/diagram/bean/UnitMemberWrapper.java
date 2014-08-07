@@ -25,7 +25,7 @@ import reflexactoring.diagram.util.JavaCodeUtil;
  * @author linyun
  *
  */
-public abstract class UnitMemberWrapper extends Document implements LowLevelSuggestionObject, LowLevelGraphNode {
+public abstract class UnitMemberWrapper extends Document implements LowLevelSuggestionObject, LowLevelGraphNode, SimilarityComputable {
 	protected ICompilationUnitWrapper unitWrapper;
 	/**
 	 * stands for the unit members referring this unit member
@@ -256,5 +256,5 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 
 	public abstract boolean hasSameSignatureWith(UnitMemberWrapper member);
 
-	public abstract double computeSimilarityWith(UnitMemberWrapper otherMember);
+	public abstract double computeSimilarityForBeingPulledUp(UnitMemberWrapper otherMember);
 }

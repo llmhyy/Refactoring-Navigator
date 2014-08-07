@@ -119,7 +119,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 					return otherMember;
 				}
 				else{
-					double sim = member.computeSimilarityWith(otherMember);
+					double sim = member.computeSimilarityForBeingPulledUp(otherMember);
 					if(sim > matchingValue && sim >= Settings.counterMethodSimilarity){
 						matchingValue = sim;
 						matchingMember = otherMember;

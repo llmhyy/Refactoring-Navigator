@@ -218,7 +218,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 	}
 	
 	@Override
-	public double computeSimilarityWith(UnitMemberWrapper otherMember){
+	public double computeSimilarityForBeingPulledUp(UnitMemberWrapper otherMember){
 		if(otherMember instanceof MethodWrapper){
 			MethodWrapper thatMethod = (MethodWrapper)otherMember;
 			if(!this.isWithSameReturnType(thatMethod)){
@@ -227,13 +227,27 @@ public class MethodWrapper extends UnitMemberWrapper {
 			if(!this.isWithSameParameter(this.getParameters(), thatMethod.getParameters())){
 				return 0;
 			}
-			String[] words1 = ReflexactoringUtil.splitCamelString(this.getName());
-			String[] words2 = ReflexactoringUtil.splitCamelString(thatMethod.getName());
 			
-			Object[] commonWords = ReflexactoringUtil.generateCommonNodeList(words1, words2, new DefaultComparator());
-			double sim = 2d*commonWords.length/(words1.length+words2.length);
-
+			double sim = ReflexactoringUtil.compareStringSimilarity(this.getName(), thatMethod.getName());
+			
 			return sim;
+		}
+		
+		return 0;
+	}
+	
+	@Override
+	public double computeSimilarityWith(Object obj){
+		if(obj instanceof MethodWrapper){
+			MethodWrapper thatMethod = (MethodWrapper)obj;
+			
+			double returnTypeSimilarity = ReflexactoringUtil.
+					compareStringSimilarity(getReturnType(), thatMethod.getReturnType());
+			double nameSimilarity = ReflexactoringUtil.
+					compareStringSimilarity(getName(), thatMethod.getName());
+			double paramSimilarity = isWithSameParameter(getParameters(), thatMethod.getParameters())? 1 : 0;
+			
+			return (returnTypeSimilarity + nameSimilarity + paramSimilarity)/3;
 		}
 		
 		return 0;

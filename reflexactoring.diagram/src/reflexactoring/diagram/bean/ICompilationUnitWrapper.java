@@ -21,11 +21,13 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 
+import reflexactoring.diagram.util.ReflexactoringUtil;
+
 /**
  * @author linyun
  *
  */
-public class ICompilationUnitWrapper extends Document implements LowLevelSuggestionObject, LowLevelGraphNode{
+public class ICompilationUnitWrapper extends Document implements LowLevelSuggestionObject, LowLevelGraphNode, SimilarityComputable{
 	private ICompilationUnit compilationUnit; 
 	private ModuleWrapper mappingModule;
 	private CompilationUnit javaUnit;
@@ -457,6 +459,41 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 			nodeList.add(node);			
 		}
 		this.referingDetails.put(refereeCompilationUnit, nodeList);
+	}
+	
+	@Override
+	public double computeSimilarityWith(Object obj){
+		if(obj instanceof ICompilationUnitWrapper){
+			ICompilationUnitWrapper thatUnit = (ICompilationUnitWrapper)obj;
+			ArrayList<ICompilationUnitWrapper> thisAncestors = getAllAncestors();
+			ArrayList<ICompilationUnitWrapper> thatAncestors = thatUnit.getAllAncestors();
+			
+			double count = 0;
+			for(ICompilationUnitWrapper thisAncestor: thisAncestors){
+				for(ICompilationUnitWrapper thatAncestor: thatAncestors){
+					if(thisAncestor.equals(thatAncestor)){
+						count++;
+					}
+				}
+			}
+			
+			double totalSize = thisAncestors.size() + thatAncestors.size();
+			/**
+			 * Jaccard coefficient
+			 */
+			double ancestorSim = (totalSize == 0) ? 0 : count/(totalSize-count);
+			
+			double nameSim = ReflexactoringUtil.compareStringSimilarity(getName(), thatUnit.getName());
+			
+			ArrayList<UnitMemberWrapper> members1 = getMembers();
+			ArrayList<UnitMemberWrapper> members2 = thatUnit.getMembers();
+			
+			double memberSim = ReflexactoringUtil.computeSetSimilarity(members1, members2);
+			
+			return (ancestorSim + nameSim + memberSim)/3;
+		}
+		
+		return 0;
 	}
 	
 	public boolean isLegalTargetClassToMoveMethodIn(MethodWrapper method){

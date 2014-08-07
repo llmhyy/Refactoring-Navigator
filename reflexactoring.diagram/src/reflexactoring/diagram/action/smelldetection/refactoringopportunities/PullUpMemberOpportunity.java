@@ -15,6 +15,7 @@ import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.ProgramReference;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun
@@ -180,6 +181,28 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		
 		return newUnit;
 	}
+	
+	@Override
+	public double computeSimilarityWith(RefactoringOpportunity opp){
+		if(opp instanceof PullUpMemberOpportunity){
+			PullUpMemberOpportunity thatOpp = (PullUpMemberOpportunity)opp;
+			
+			double memberSim = ReflexactoringUtil.computeSetSimilarity(toBePulledMemberList, thatOpp.getToBePulledMemberList());
+			double unitSim = ReflexactoringUtil.computeSetSimilarity(getUnitsOfToBePulledMembers(), thatOpp.getUnitsOfToBePulledMembers());
+			
+			return (memberSim + unitSim)/2;
+		}
+		
+		return 0;
+	}
+	
+	public ArrayList<ICompilationUnitWrapper> getUnitsOfToBePulledMembers(){
+		ArrayList<ICompilationUnitWrapper> units = new ArrayList<>();
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			units.add(member.getUnitWrapper());
+		}
+		return units;
+	} 
 	
 	protected boolean isHavingSameMemberList(ArrayList<UnitMemberWrapper> memberList){
 		if(memberList.size() == toBePulledMemberList.size()){

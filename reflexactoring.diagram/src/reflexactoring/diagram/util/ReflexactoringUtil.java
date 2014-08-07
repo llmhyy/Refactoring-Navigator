@@ -4,6 +4,7 @@
 package reflexactoring.diagram.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,7 @@ import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarity;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.SimilarityComputable;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
 import reflexactoring.diagram.preferences.RecommendSettingPage;
 
@@ -630,5 +632,57 @@ public class ReflexactoringUtil {
 			}
 		
 		return commonLengthTable;
+	}
+	
+	public static double compareStringSimilarity(String str1, String str2){
+		
+		if(str1 == null || str2 == null){
+			return 0;
+		}
+		
+		String[] words1 = ReflexactoringUtil.splitCamelString(str1);
+		String[] words2 = ReflexactoringUtil.splitCamelString(str2);
+		
+		Object[] commonWords = ReflexactoringUtil.generateCommonNodeList(words1, words2, new DefaultComparator());
+		double sim = 2d*commonWords.length/(words1.length+words2.length);
+		
+		return sim;
+	}
+	
+	public static double computeSetSimilarity(ArrayList<? extends SimilarityComputable> set1, 
+			ArrayList<? extends SimilarityComputable> set2){
+		ArrayList<SimilarityComputable> markedSet = new ArrayList<>();
+		
+		double sum = 0;
+		
+		for(SimilarityComputable obj1: set1){
+			if(markedSet.contains(obj1))continue;
+			
+			double bestSim = 0;
+			SimilarityComputable bestMatcher = null;
+			
+			for(SimilarityComputable obj2: set2){
+				if(markedSet.contains(obj2))continue;
+				
+				double sim = obj1.computeSimilarityWith(obj2);
+				if(bestMatcher == null){
+					bestSim = sim;
+					bestMatcher = obj2;
+				}
+				else{
+					if(sim > bestSim){
+						bestSim = sim;
+						bestMatcher = obj2;
+					}
+				}
+			}
+			
+			sum += bestSim;
+			
+			markedSet.add(obj1);
+			markedSet.add(bestMatcher);
+		}
+		
+		return 2*sum/(set1.size()+set2.size());
 	}
 }

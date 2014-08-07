@@ -91,6 +91,20 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	}
 	
 	@Override
+	public double computeSimilarityWith(RefactoringOpportunity opp){
+		if(opp instanceof MoveMethodOpportunity){
+			MoveMethodOpportunity moveMethodOpp = (MoveMethodOpportunity)opp;
+			double targetUnitSim = getTargetUnit().computeSimilarityWith(moveMethodOpp.getSourceUnit());
+			double sourceUnitSim = getSourceUnit().computeSimilarityWith(moveMethodOpp.getSourceUnit());
+			double objMethodSim = getObjectMethod().computeSimilarityWith(moveMethodOpp.getObjectMethod());
+			
+			return (targetUnitSim + sourceUnitSim + objMethodSim)/3;
+		}
+		
+		return 0;
+	}
+	
+	@Override
 	public ArrayList<ASTNode> getHints() {
 		ArrayList<ASTNode> hints = new ArrayList<>();
 		for(ProgramReference reference: objectMethod.getRefererPointList()){
