@@ -275,7 +275,12 @@ public class RefactoringSuggestionsView extends ViewPart {
 				public void controlResized(ControlEvent e) {
 					Rectangle r = scrollComposite.getClientArea();
 					scrollComposite.setMinSize(composite.computeSize(r.width, SWT.DEFAULT));
-					scrollComposite.setOrigin(0, currentHeight);
+					
+					if(currentHeight == 0){
+						scrollComposite.setOrigin(scrollComposite.getOrigin());
+					}else{
+						scrollComposite.setOrigin(0, currentHeight);
+					}
 				}
 			});
 		}
