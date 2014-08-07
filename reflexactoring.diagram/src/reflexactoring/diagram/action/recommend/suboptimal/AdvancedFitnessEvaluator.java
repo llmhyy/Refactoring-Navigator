@@ -167,7 +167,8 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 						 * if node j is mapped to callee module, there is a violation.
 						 */
 						if(gene.getDNA()[j] == calleeModuleIndex){
-							num++;
+							num += lowLevelNodeMatrix[i][j];
+							//num++;
 						}
 					}
 				}
