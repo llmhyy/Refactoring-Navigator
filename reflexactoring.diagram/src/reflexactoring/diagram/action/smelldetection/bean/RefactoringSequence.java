@@ -6,6 +6,9 @@ package reflexactoring.diagram.action.smelldetection.bean;
 import java.util.ArrayList;
 
 import reflexactoring.diagram.action.recommend.SuggestionMove;
+import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
+import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.ProgramModel;
 
 /**
  * @author linyun
@@ -14,8 +17,16 @@ import reflexactoring.diagram.action.recommend.SuggestionMove;
 public class RefactoringSequence extends ArrayList<RefactoringSequenceElement>{
 
 	private Double currentFitnessValue;
-	
+	private ProgramModel originModel;
+
 	private ArrayList<SuggestionMove> prerequisite;
+	
+	
+	public RefactoringSequence(ProgramModel originModel, ArrayList<ModuleWrapper> moduleList){
+		AdvanceEvaluatorAdapter evaluator = new AdvanceEvaluatorAdapter();
+		this.originModel = originModel;
+		this.currentFitnessValue = evaluator.computeFitness(originModel, moduleList);
+	}
 	
 	/**
 	 * @return the prerequisite
