@@ -86,7 +86,7 @@ public class SearchRefactoringSolutionAcion implements
 					public void run() {
 						RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
 								getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
-						view.refreshSuggestionsOnUI(suggestionList, null);
+						view.refreshSuggestionsOnUI(suggestionList);
 						
 					}
 				});
