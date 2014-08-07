@@ -74,7 +74,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 							if(markedMemberList.contains(otherMember))continue;
 							
 							if(member.hasSameSignatureWith(otherMember)){
-								if(!otherMember.isOverrideSuperMember()){
+								if(!otherMember.isOverrideSuperMember() && 
+										!isWithCounterCallingRelation(counterMemberList, otherMember)){
 									counterMemberList.add(otherMember);
 									break;								
 								}
@@ -91,6 +92,23 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		}
 		
 		return refactoringPlaceList;
+	}
+	
+	/**
+	 * the members inside a counter member list should not call with each other.
+	 * @param counterMemberList
+	 * @param member
+	 * @return
+	 */
+	private boolean isWithCounterCallingRelation(ArrayList<UnitMemberWrapper> counterMemberList, UnitMemberWrapper member){
+		for(UnitMemberWrapper mem: counterMemberList){
+			if(mem.getCalleeList().keySet().contains(member)
+					|| member.getCalleeList().keySet().contains(mem)){
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
