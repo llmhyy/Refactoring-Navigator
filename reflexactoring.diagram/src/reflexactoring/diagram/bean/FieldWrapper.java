@@ -9,6 +9,8 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
+import reflexactoring.diagram.util.DefaultComparator;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun
@@ -119,17 +121,43 @@ public class FieldWrapper extends UnitMemberWrapper{
 		if(member instanceof FieldWrapper){
 			FieldWrapper fieldWrapper = (FieldWrapper)member;
 			
-			boolean isSameType = true;
-			FieldDeclaration thatField = fieldWrapper.getField();
-			if(thatField != null && this.field != null){
-				String thatTypeName = thatField.getType().toString();
-				String thisTypeName = this.field.getType().toString();
-				isSameType = thatTypeName.equals(thisTypeName);
-			}
+			boolean isSameType = isSameType(fieldWrapper);
 			
 			return isSameType && fieldWrapper.getName().equals(this.getName());
 		}
 		return false;
+	}
+	
+	@Override
+	public double computeSimilarityWith(UnitMemberWrapper otherMember){
+		if(otherMember instanceof FieldWrapper){
+			FieldWrapper thatField = (FieldWrapper)otherMember;
+			if(!isSameType(thatField)){
+				return 0;
+			}
+			String[] words1 = ReflexactoringUtil.splitCamelString(this.getName());
+			String[] words2 = ReflexactoringUtil.splitCamelString(thatField.getName());
+			
+			Object[] commonWords = ReflexactoringUtil.generateCommonNodeList(words1, words2, new DefaultComparator());
+			double sim = 2d*commonWords.length/(words1.length+words2.length);
+
+			return sim;
+		}
+		
+		return 0;
+	}
+	
+	private boolean isSameType(FieldWrapper thatFieldWrapper){
+		boolean isSameType = true;
+		
+		FieldDeclaration thatField = thatFieldWrapper.getField();
+		if(thatField != null && this.field != null){
+			String thatTypeName = thatField.getType().toString();
+			String thisTypeName = this.field.getType().toString();
+			isSameType = thatTypeName.equals(thisTypeName);
+		}
+		
+		return isSameType;
 	}
 
 	/**

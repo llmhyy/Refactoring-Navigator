@@ -51,7 +51,7 @@ public class SearchRefactoringSolutionAcion implements
 				
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()); i++){
 					
-					long t1 = System.currentTimeMillis();System.currentTimeMillis();
+					long t1 = System.currentTimeMillis();//System.currentTimeMillis();
 					
 					RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
 					if(sequence.isAnImprovement(element)){
@@ -61,6 +61,7 @@ public class SearchRefactoringSolutionAcion implements
 						oppList = smellDetector.detect(model);
 					}
 					else{
+						System.out.println("break in iteration " + i);
 						break;
 					}
 					
@@ -116,6 +117,10 @@ public class SearchRefactoringSolutionAcion implements
 			if(opp instanceof MoveMethodOpportunity){
 				System.currentTimeMillis();
 			}
+			
+			/*if(opp.toString().contains("savePromptQuestion")){
+				System.currentTimeMillis();
+			}*/
 			
 			if(Settings.forbiddenOpps.contains(opp)){
 				continue;

@@ -21,6 +21,7 @@ import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.ProgramReference;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
@@ -66,20 +67,23 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 				
 				ArrayList<UnitMemberWrapper> counterMemberList = new ArrayList<>();
 				if(!member.isOverrideSuperMember()){
+					/**
+					 * constructor is not considered counter here.
+					 */
+					if(member instanceof MethodWrapper){
+						if(((MethodWrapper)member).isConstructor()){
+							continue;
+						}
+					}
+					
 					counterMemberList.add(member);					
 					for(ICompilationUnitWrapper otherUnit: otherUnits){
 						if(otherUnit.isInterface())continue;
 						
-						for(UnitMemberWrapper otherMember: otherUnit.getMembers()){
-							if(markedMemberList.contains(otherMember))continue;
-							
-							if(member.hasSameSignatureWith(otherMember)){
-								if(!otherMember.isOverrideSuperMember() && 
-										!isWithCounterCallingRelation(counterMemberList, otherMember)){
-									counterMemberList.add(otherMember);
-									break;								
-								}
-							}
+						UnitMemberWrapper bestMatchingMember = findBestMatchingMember(member, 
+								otherUnit, markedMemberList, counterMemberList);
+						if(null != bestMatchingMember){
+							counterMemberList.add(bestMatchingMember);
 						}
 					}
 				}
@@ -94,6 +98,40 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		return refactoringPlaceList;
 	}
 	
+	/**
+	 * Find the most similar methods in other unit.
+	 * @param member
+	 * @param otherUnit
+	 * @param markedMemberList
+	 * @return
+	 */
+	private UnitMemberWrapper findBestMatchingMember(UnitMemberWrapper member, ICompilationUnitWrapper otherUnit,
+			ArrayList<UnitMemberWrapper> markedMemberList, ArrayList<UnitMemberWrapper> counterMemberList) {
+		UnitMemberWrapper matchingMember = null;
+		double matchingValue = 0d;
+		
+		for(UnitMemberWrapper otherMember: otherUnit.getMembers()){
+			if(markedMemberList.contains(otherMember))continue;
+			
+			if(!otherMember.isOverrideSuperMember() && 
+					!isWithCounterCallingRelation(counterMemberList, otherMember)){
+				if(member.hasSameSignatureWith(otherMember)){
+					return otherMember;
+				}
+				else{
+					double sim = member.computeSimilarityWith(otherMember);
+					if(sim > matchingValue && sim >= Settings.counterMethodSimilarity){
+						matchingValue = sim;
+						matchingMember = otherMember;
+					}
+				}
+				
+			}
+		}
+		
+		return matchingMember;
+	}
+
 	/**
 	 * the members inside a counter member list should not call with each other, including a method call the
 	 * other one's super member.

@@ -255,4 +255,6 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	}
 
 	public abstract boolean hasSameSignatureWith(UnitMemberWrapper member);
+
+	public abstract double computeSimilarityWith(UnitMemberWrapper otherMember);
 }

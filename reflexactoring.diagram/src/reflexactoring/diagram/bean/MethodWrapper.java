@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
+import reflexactoring.diagram.util.DefaultComparator;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
@@ -208,30 +209,58 @@ public class MethodWrapper extends UnitMemberWrapper {
 		if(member instanceof MethodWrapper){
 			MethodWrapper methodWrapper = (MethodWrapper)member;
 			
-			boolean isSameReturnType = true;
-			if(methodWrapper.getMethod() != null && this.getMethod() != null){
-				Type returnType1 = methodWrapper.getMethod().getReturnType2();
-				Type returnType2 = methodWrapper.getMethod().getReturnType2();
-				
-				if(returnType1 == null && returnType2 == null){
-					isSameReturnType = true;
-				}
-				else if(returnType1 != null && returnType2 != null){
-					String thatTypeName = returnType1.toString();
-					String thisTypeName = methodWrapper.getMethod().getReturnType2().toString();
-					
-					isSameReturnType = thatTypeName.equals(thisTypeName);					
-				}
-				else{
-					isSameReturnType = false;
-				}
-				
-			}
+			boolean isSameReturnType = isWithSameReturnType(methodWrapper);
 			
 			return isSameReturnType && methodWrapper.getName().equals(this.getName()) &&
 					isWithSameParameter(methodWrapper.getParameters(), this.getParameters());
 		}
 		return false;
+	}
+	
+	@Override
+	public double computeSimilarityWith(UnitMemberWrapper otherMember){
+		if(otherMember instanceof MethodWrapper){
+			MethodWrapper thatMethod = (MethodWrapper)otherMember;
+			if(!this.isWithSameReturnType(thatMethod)){
+				return 0;
+			}
+			if(!this.isWithSameParameter(this.getParameters(), thatMethod.getParameters())){
+				return 0;
+			}
+			String[] words1 = ReflexactoringUtil.splitCamelString(this.getName());
+			String[] words2 = ReflexactoringUtil.splitCamelString(thatMethod.getName());
+			
+			Object[] commonWords = ReflexactoringUtil.generateCommonNodeList(words1, words2, new DefaultComparator());
+			double sim = 2d*commonWords.length/(words1.length+words2.length);
+
+			return sim;
+		}
+		
+		return 0;
+	}
+	
+	private boolean isWithSameReturnType(MethodWrapper thatMethod){
+		boolean isSameReturnType = true;
+		if(thatMethod.getMethod() != null && this.getMethod() != null){
+			Type returnType1 = thatMethod.getMethod().getReturnType2();
+			Type returnType2 = this.getMethod().getReturnType2();
+			
+			if(returnType1 == null && returnType2 == null){
+				isSameReturnType = true;
+			}
+			else if(returnType1 != null && returnType2 != null){
+				String thatTypeName = returnType1.toString();
+				String thisTypeName = this.getMethod().getReturnType2().toString();
+				
+				isSameReturnType = thatTypeName.equals(thisTypeName);					
+			}
+			else{
+				isSameReturnType = false;
+			}
+			
+		}
+		
+		return isSameReturnType;
 	}
 	
 	private boolean isWithSameParameter(ArrayList<String> params1, ArrayList<String> params2){

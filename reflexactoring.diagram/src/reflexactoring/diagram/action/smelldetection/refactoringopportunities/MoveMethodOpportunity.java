@@ -16,6 +16,7 @@ import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.ProgramReference;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
@@ -263,7 +264,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			else{
 				double freq = map.get(unit);
 				double ratio = freq/totalFreq;
-				return ratio > 0.2;
+				return ratio > Settings.featureEnvyThreshold;
 			}
 		}
 		

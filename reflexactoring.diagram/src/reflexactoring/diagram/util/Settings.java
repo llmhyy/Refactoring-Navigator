@@ -25,6 +25,7 @@ import reflexactoring.diagram.bean.ProgramModel;
  *
  */
 public class Settings {
+
 	/**
 	 * Temporarily used for global variable of user-selected 
 	 * java classes/interfaces.
@@ -120,4 +121,11 @@ public class Settings {
 	 */
 	public static int kStep = 3;
 	public static int bucketSize = 10;
+	
+	//==============================================================
+	/**
+	 * The following is the parameters for detecting counter methods
+	 */
+	public static final double counterMethodSimilarity = 0.6;
+	public static final double featureEnvyThreshold = 0.2;
 }
