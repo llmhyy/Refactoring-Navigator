@@ -37,7 +37,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("Move method ");
 		buffer.append(this.objectMethod.getName() + " from ");
-		buffer.append(this.objectMethod.getUnitWrapper().getName());
+		if(this.sourceUnit != null){
+			buffer.append(this.sourceUnit.getName());			
+		}
 		buffer.append(" to " + this.targetUnit.getName());
 		return buffer.toString();
 	}
