@@ -261,7 +261,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			else{
 				double freq = map.get(unit);
 				double ratio = freq/totalFreq;
-				return ratio > 0.5;
+				return ratio > 0.2;
 			}
 		}
 		

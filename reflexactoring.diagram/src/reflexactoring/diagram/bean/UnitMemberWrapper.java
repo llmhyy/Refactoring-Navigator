@@ -199,14 +199,60 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	public boolean isOverrideSuperMember() {
 		for(GraphNode node: this.getUnitWrapper().getParentList()){
 			ICompilationUnitWrapper superUnit = (ICompilationUnitWrapper)node;
-			for(UnitMemberWrapper superMember: superUnit.getMembers()){
-				if(this.hasSameSignatureWith(superMember)){
-					return true;
-				}
+			if(isOverrideSuperMember(this, superUnit)){
+				return true;
 			}
 		}
 		return false;
 	}
 	
+	private boolean isOverrideSuperMember(UnitMemberWrapper member, ICompilationUnitWrapper superUnit){
+		for(UnitMemberWrapper superMember: superUnit.getMembers()){
+			if(this.hasSameSignatureWith(superMember)){
+				return true;
+			}
+		}
+		
+		for(GraphNode node: superUnit.getParentList()){
+			ICompilationUnitWrapper parentUnit = (ICompilationUnitWrapper)node;
+			return isOverrideSuperMember(member, parentUnit);		
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * if you ask why the code is cloned from the previous one, my answer is efficiency.
+	 * @return
+	 */
+	public ArrayList<UnitMemberWrapper> findOverridedSuperMember(){
+		ArrayList<UnitMemberWrapper> list = new ArrayList<>();
+		for(GraphNode node: this.getUnitWrapper().getParentList()){
+			ICompilationUnitWrapper superUnit = (ICompilationUnitWrapper)node;
+			findOverridedSuperMember(this, superUnit, list);
+		}
+		return list;
+	}
+	
+	/**
+	 * @param unitMemberWrapper
+	 * @param superUnit
+	 * @return
+	 */
+	private void findOverridedSuperMember(
+			UnitMemberWrapper unitMemberWrapper, ICompilationUnitWrapper superUnit,
+			ArrayList<UnitMemberWrapper> list) {
+		for(UnitMemberWrapper superMember: superUnit.getMembers()){
+			if(this.hasSameSignatureWith(superMember)){
+				list.add(superMember);
+			}
+		}
+		
+		for(GraphNode node: superUnit.getParentList()){
+			ICompilationUnitWrapper parentUnit = (ICompilationUnitWrapper)node;
+			findOverridedSuperMember(unitMemberWrapper, parentUnit, list);	
+		}
+	}
+
 	public abstract boolean hasSameSignatureWith(UnitMemberWrapper member);
 }
