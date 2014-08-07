@@ -19,6 +19,7 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 	public static String MEMBER_MAPPING_FIX_BY_CLASS_VIEW = "reflexactoring.diagram.mappingFix";
 	public static String MEMBER_MAPING_FIX_VIEW = "reflexactoring.diagram.view.memberFixingView";
 	public static String FORBIDDEN_REFACTORING_OPP_VIEW = "reflexactoring.diagram.view.refactoringOppForbiddenView";
+	public static String APPROVED_REFACTORING_OPP_VIEW = "reflexactoring.diagram.view.refactoringOppApprovedView";
 	
 	@Override
 	public void createInitialLayout(IPageLayout layout) {
@@ -36,6 +37,7 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 		bottom.addView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW);
 		bottom.addView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW);
 		bottom.addView(ReflexactoringPerspective.FORBIDDEN_REFACTORING_OPP_VIEW);
+		bottom.addView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW);
 		//bottom.addView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW);
 		//bottom.addView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW);
 		
