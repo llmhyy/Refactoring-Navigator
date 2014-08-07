@@ -228,7 +228,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 				
 			}
 			
-			return isSameReturnType && methodWrapper.getName().endsWith(this.getName()) &&
+			return isSameReturnType && methodWrapper.getName().equals(this.getName()) &&
 					isWithSameParameter(methodWrapper.getParameters(), this.getParameters());
 		}
 		return false;
