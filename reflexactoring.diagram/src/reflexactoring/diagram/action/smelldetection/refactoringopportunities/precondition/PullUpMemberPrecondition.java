@@ -95,7 +95,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	}
 	
 	/**
-	 * the members inside a counter member list should not call with each other.
+	 * the members inside a counter member list should not call with each other, including a method call the
+	 * other one's super member.
 	 * @param counterMemberList
 	 * @param member
 	 * @return
@@ -103,7 +104,9 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	private boolean isWithCounterCallingRelation(ArrayList<UnitMemberWrapper> counterMemberList, UnitMemberWrapper member){
 		for(UnitMemberWrapper mem: counterMemberList){
 			if(mem.getCalleeList().keySet().contains(member)
-					|| member.getCalleeList().keySet().contains(mem)){
+					|| member.getCalleeList().keySet().contains(mem)
+					|| mem.findOverridedSuperMember().contains(member)
+					|| member.findOverridedSuperMember().contains(mem)){
 				return true;
 			}
 		}
