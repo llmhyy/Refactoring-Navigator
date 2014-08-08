@@ -94,7 +94,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	public double computeSimilarityWith(RefactoringOpportunity opp){
 		if(opp instanceof MoveMethodOpportunity){
 			MoveMethodOpportunity moveMethodOpp = (MoveMethodOpportunity)opp;
-			double targetUnitSim = getTargetUnit().computeSimilarityWith(moveMethodOpp.getSourceUnit());
+			double targetUnitSim = getTargetUnit().computeSimilarityWith(moveMethodOpp.getTargetUnit());
 			double sourceUnitSim = getSourceUnit().computeSimilarityWith(moveMethodOpp.getSourceUnit());
 			double objMethodSim = getObjectMethod().computeSimilarityWith(moveMethodOpp.getObjectMethod());
 			
