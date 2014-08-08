@@ -67,13 +67,14 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		 */
 		String className = "UtilityClass" + NameGernationCounter.retrieveNumber();
 		String packageName = cloneSet.getInstances().get(0).getMember().getUnitWrapper().getPackageName();
-		ICompilationUnitWrapper utilityClass = new ICompilationUnitWrapper(null, false, className, packageName);
+		ICompilationUnitWrapper utilityClass = new ICompilationUnitWrapper(null, false, className, packageName, null, "utility");
 		newModel.getScopeCompilationUnitList().add(utilityClass);
 		/**
 		 * create a new utility method
 		 */
 		String methodName = "utilityMethod" + NameGernationCounter.retrieveNumber();
-		MethodWrapper utilityMethod = new MethodWrapper(methodName, "void", new ArrayList<String>(), false, utilityClass);
+		MethodWrapper utilityMethod = new MethodWrapper(methodName, "void", new ArrayList<String>(), false, 
+				utilityClass, null, "utility", null);
 		newModel.getScopeMemberList().add(utilityMethod);
 		/**
 		 * build declaring relation between utility class and utility method

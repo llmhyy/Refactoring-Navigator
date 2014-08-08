@@ -66,13 +66,15 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @param simpleName
 	 * @param packageName
 	 */
-	public ICompilationUnitWrapper(ModuleWrapper mappingModule,
-			boolean isInterface, String simpleName, String packageName) {
+	public ICompilationUnitWrapper(ModuleWrapper mappingModule, boolean isInterface, String simpleName, 
+			String packageName, HashMap<String, Integer> termFrequency, String description) {
 		super();
 		this.mappingModule = mappingModule;
 		this.isInterface = isInterface;
 		this.simpleName = simpleName;
 		this.packageName = packageName;
+		this.termFrequency = termFrequency;
+		this.description = description;
 	}
 
 	/**

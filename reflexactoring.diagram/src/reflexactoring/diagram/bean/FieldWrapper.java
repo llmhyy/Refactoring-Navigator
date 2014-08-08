@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.bean;
 
+import java.util.HashMap;
+
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -22,10 +24,14 @@ public class FieldWrapper extends UnitMemberWrapper{
 	private String name;
 	private String type;
 	
-	public FieldWrapper(String name, String type, ICompilationUnitWrapper unitWrapper){
+	public FieldWrapper(String name, String type, ICompilationUnitWrapper unitWrapper, 
+			HashMap<String, Integer> termFrequency, String description, FieldDeclaration field){
 		super(unitWrapper);
 		this.type = type;
 		this.name = name;
+		this.termFrequency = termFrequency;
+		this.description = description;
+		this.field = field;
 	}
 	
 	public FieldWrapper(FieldDeclaration field, ICompilationUnitWrapper unitWrapper){

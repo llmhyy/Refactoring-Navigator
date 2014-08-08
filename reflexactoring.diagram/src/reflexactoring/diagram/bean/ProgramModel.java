@@ -115,21 +115,45 @@ public class ProgramModel{
 	}
 	
 	public ProgramModel clone(){
+		long t1 = System.currentTimeMillis();
+		
 		ProgramModel clonedModel = new ProgramModel();
 		
-		ArrayList<ICompilationUnitWrapper> unitList = cloneUnits();		
+		ArrayList<ICompilationUnitWrapper> unitList = cloneUnits();
+		
+		long t2 = System.currentTimeMillis();
+		//System.out.println("Unit Cloned: " + (t2-t1));
+		
 		clonedModel.setScopeCompilationUnitList(unitList);
 		cloneUnitRelations(clonedModel, this);
 		
+		long t3 = System.currentTimeMillis();
+		//System.out.println("Unit Relation Cloned: " + (t3-t2));
+		
 		UnitMemberWrapperList memberList = cloneMembers(clonedModel, this);
+		
+		long t4 = System.currentTimeMillis();
+		//System.out.println("Member Cloned: " + (t4-t3));
+		
 		clonedModel.setScopeMemberList(memberList);
 		cloneMemberRelations(clonedModel, this);
 		
+		long t5 = System.currentTimeMillis();
+		//System.out.println("Member Relation Cloned: " + (t5-t4));
+		
 		ArrayList<ProgramReference> prList = cloneReference(clonedModel, this);
 		clonedModel.setReferenceList(prList);
-		//cloneReferenceRelations(clonedModel, this);
+		
+		long t6 = System.currentTimeMillis();
+		//System.out.println("Reference Cloned: " + (t5-t4));
+		
 		ArrayList<CloneSet> cloneSets = cloneCloneSets(clonedModel, this);
 		clonedModel.setCloneSets(cloneSets);
+		
+		long t7 = System.currentTimeMillis();
+		//System.out.println("Clone Sets Cloned: " + (t5-t4));
+		
+		//System.out.println("Total Cloned: " + (t2-t1));
 		
 		return clonedModel;
 	}
@@ -208,18 +232,19 @@ public class ProgramModel{
 	private ArrayList<ICompilationUnitWrapper> cloneUnits() {
 		ArrayList<ICompilationUnitWrapper> clonedUnits = new ArrayList<>();
 		for(ICompilationUnitWrapper unit: scopeCompilationUnitList){
-			ICompilationUnitWrapper clonedUnit;			
+			ICompilationUnitWrapper clonedUnit = new ICompilationUnitWrapper(unit.getMappingModule(), unit.isInterface(), 
+					unit.getSimpleName(), unit.getPackageName(), unit.getTermFrequency(), unit.getDescription());
 			if(unit.getCompilationUnit() != null){
-				clonedUnit = new ICompilationUnitWrapper(unit.getCompilationUnit());
-				clonedUnit.setMappingModule(unit.getMappingModule());
-				clonedUnit.setInterface(unit.isInterface());
+				/**
+				 * The following four statements is time-consuming
+				 */
+				//clonedUnit = new ICompilationUnitWrapper(unit.getCompilationUnit());
+				//clonedUnit.setMappingModule(unit.getMappingModule());
+				//clonedUnit.setInterface(unit.isInterface());
+				//clonedUnit.setJavaUnit(unit.getJavaUnit());
+				clonedUnit.setCompilationUnit(unit.getCompilationUnit());
 				clonedUnit.setJavaUnit(unit.getJavaUnit());
 			}
-			else{
-				clonedUnit = new ICompilationUnitWrapper(unit.getMappingModule(), 
-						unit.isInterface(), unit.getSimpleName(), unit.getPackageName());
-			}
-			
 			
 			clonedUnits.add(clonedUnit);
 		}
@@ -300,19 +325,28 @@ public class ProgramModel{
 	/**
 	 * In this step, clone the member list, including its field/method and its corresponding belonging ICompilationUnitWrapper
 	 */
-	private UnitMemberWrapperList cloneMembers(ProgramModel clonedModel, ProgramModel model){
+	private UnitMemberWrapperList cloneMembers(ProgramModel clonedModel, ProgramModel oldModel){
 		UnitMemberWrapperList clonedMembers = new UnitMemberWrapperList();
-		for(UnitMemberWrapper member: model.getScopeMemberList()){			
+		for(UnitMemberWrapper oldMember: oldModel.getScopeMemberList()){			
 			/**
 			 * As the constructor method of Member need its ICompilationUnitWrapper, 
 			 * we have to get the corresponding ICompilationUnitWrapper at the mean time.
 			 */
-			ICompilationUnitWrapper memberUnit = member.getUnitWrapper();
-			int index = model.getICompilationUnitIndex(memberUnit);
+			ICompilationUnitWrapper memberUnit = oldMember.getUnitWrapper();
+			int index = oldModel.getICompilationUnitIndex(memberUnit);
 			ICompilationUnitWrapper clonedMemberUnit = clonedModel.getScopeCompilationUnitList().get(index);						
 
-			UnitMemberWrapper clonedMember = null;			
-			if(member.getJavaElement() != null){
+			UnitMemberWrapper clonedMember = null;	
+			if(oldMember instanceof FieldWrapper){
+				clonedMember = new FieldWrapper(oldMember.getName(), ((FieldWrapper) oldMember).getType(), 
+						clonedMemberUnit, oldMember.getTermFrequency(), oldMember.getDescription(), ((FieldWrapper) oldMember).getField());
+			}else if(oldMember instanceof MethodWrapper){
+				MethodWrapper methodWrapper = (MethodWrapper)oldMember;
+				clonedMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), methodWrapper.getParameters(), 
+						methodWrapper.isConstructor(), clonedMemberUnit, methodWrapper.getTermFrequency(), methodWrapper.getDescription(),
+						methodWrapper.getMethod());
+			}	
+			/*if(member.getJavaElement() != null){
 				if(member instanceof FieldWrapper){
 					clonedMember = new FieldWrapper(((FieldWrapper) member).getField(), clonedMemberUnit);
 				}else if(member instanceof MethodWrapper){
@@ -320,14 +354,8 @@ public class ProgramModel{
 				}				
 			}
 			else{
-				if(member instanceof FieldWrapper){
-					clonedMember = new FieldWrapper(member.getName(), ((FieldWrapper) member).getType(), clonedMemberUnit);
-				}else if(member instanceof MethodWrapper){
-					MethodWrapper methodWrapper = (MethodWrapper)member;
-					clonedMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), methodWrapper.getParameters(), 
-							methodWrapper.isConstructor(), clonedMemberUnit);
-				}	
-			}
+				
+			}*/
 			clonedMembers.add(clonedMember);
 		}
 		return clonedMembers;		

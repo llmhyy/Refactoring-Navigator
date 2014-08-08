@@ -78,11 +78,12 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		if(oldMember instanceof MethodWrapper){
 			MethodWrapper methodWrapper = (MethodWrapper)oldMember;
 			newMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), methodWrapper.getParameters(), 
-					methodWrapper.isConstructor(), superUnit);			
+					methodWrapper.isConstructor(), superUnit, null, methodWrapper.getDescription(), null);			
 		}
 		else if(oldMember instanceof FieldWrapper){
 			FieldWrapper fieldWrapper = (FieldWrapper)oldMember;
-			newMember = new FieldWrapper(fieldWrapper.getName(), fieldWrapper.getType(), superUnit);
+			newMember = new FieldWrapper(fieldWrapper.getName(), fieldWrapper.getType(), superUnit,
+					null, fieldWrapper.getDescription(), null);
 		}
 		
 		if(newMember == null)return null;
@@ -161,7 +162,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		}
 		
 		ICompilationUnitWrapper newUnit = new ICompilationUnitWrapper(subClassUnit.getMappingModule(), 
-				isInterface, simpleName, subClassUnit.getPackageName());
+				isInterface, simpleName, subClassUnit.getPackageName(), null, "abstract");
 		
 		newModel.getScopeCompilationUnitList().add(newUnit);
 		

@@ -5,6 +5,7 @@ package reflexactoring.diagram.bean;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jdt.core.IMember;
@@ -32,12 +33,17 @@ public class MethodWrapper extends UnitMemberWrapper {
 	private boolean isConstructor;
 	private String returnType;
 	
-	public MethodWrapper(String name, String returnType, ArrayList<String> parameters, boolean isConstructor, ICompilationUnitWrapper unitWrapper){
+	public MethodWrapper(String name, String returnType, ArrayList<String> parameters, boolean isConstructor, 
+			ICompilationUnitWrapper unitWrapper, HashMap<String, Integer> termFrequency, String description, 
+			MethodDeclaration method){
 		super(unitWrapper);
 		this.name = name;
 		this.setReturnType(returnType);
 		this.parameters = parameters;
 		this.isConstructor = isConstructor;
+		this.termFrequency = termFrequency;
+		this.description = description;
+		this.method = method;
 	}
 	
 	public MethodWrapper(MethodDeclaration method, ICompilationUnitWrapper unitWrapper){
