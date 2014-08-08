@@ -125,7 +125,7 @@ public class SearchRefactoringSolutionAcion implements
 		
 		for(RefactoringOpportunity opp: oppList){
 			
-			if(opp.toString().contains("readEssayQuestion")){
+			if(opp.toString().contains("read")){
 				System.currentTimeMillis();
 			}
 			

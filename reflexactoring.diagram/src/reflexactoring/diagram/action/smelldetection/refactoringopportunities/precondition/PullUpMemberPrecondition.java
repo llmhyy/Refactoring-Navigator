@@ -119,6 +119,10 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 					return otherMember;
 				}
 				else{
+					/*if(member.getName().contains("read") && otherMember.getName().contains("read")){
+						System.currentTimeMillis();
+					}*/
+					
 					double sim = member.computeSimilarityForBeingPulledUp(otherMember);
 					if(sim > matchingValue && sim >= Settings.counterMethodSimilarity){
 						matchingValue = sim;

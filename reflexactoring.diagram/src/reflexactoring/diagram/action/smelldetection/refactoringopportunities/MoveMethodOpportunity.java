@@ -79,8 +79,8 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		/**
 		 * change the parameters of method
 		 */
-		ArrayList<String> newParameters = extractParameters(originalUnit, objMethod);
-		objMethod.getParameters().addAll(newParameters);
+		/*ArrayList<String> newParameters = extractParameters(originalUnit, objMethod);
+		objMethod.getParameters().addAll(newParameters);*/
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
