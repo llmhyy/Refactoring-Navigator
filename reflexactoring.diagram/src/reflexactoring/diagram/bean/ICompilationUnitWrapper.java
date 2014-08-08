@@ -21,7 +21,9 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 
+import reflexactoring.diagram.bean.efficiency.UnitPair;
 import reflexactoring.diagram.util.ReflexactoringUtil;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
@@ -465,8 +467,15 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	
 	@Override
 	public double computeSimilarityWith(Object obj){
-		if(obj instanceof ICompilationUnitWrapper){
+		if(obj instanceof ICompilationUnitWrapper){			
 			ICompilationUnitWrapper thatUnit = (ICompilationUnitWrapper)obj;
+			
+			UnitPair pair = new UnitPair(this, thatUnit);
+			Double v = Settings.unitPairSimilarityMap.get(pair);
+			if(v != null){
+				return v;
+			}
+			
 			ArrayList<ICompilationUnitWrapper> thisAncestors = getAllAncestors();
 			ArrayList<ICompilationUnitWrapper> thatAncestors = thatUnit.getAllAncestors();
 			
@@ -490,9 +499,16 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 			ArrayList<UnitMemberWrapper> members1 = getMembers();
 			ArrayList<UnitMemberWrapper> members2 = thatUnit.getMembers();
 			
+			//long t1 = System.currentTimeMillis();
 			double memberSim = ReflexactoringUtil.computeSetSimilarity(members1, members2);
+			//long t2 = System.currentTimeMillis();
+			//System.out.println("Time: " + (t2-t1));
 			
-			return (ancestorSim + nameSim + memberSim)/3;
+			double value = (ancestorSim + nameSim + memberSim)/3;
+			
+			Settings.unitPairSimilarityMap.put(pair, value);
+			
+			return value;
 		}
 		
 		return 0;

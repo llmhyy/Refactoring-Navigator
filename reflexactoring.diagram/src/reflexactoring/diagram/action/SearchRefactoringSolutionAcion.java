@@ -52,13 +52,16 @@ public class SearchRefactoringSolutionAcion implements
 				
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()) && oppList.size() != 0; i++){
 					
-					long t1 = System.currentTimeMillis();//System.currentTimeMillis();
 					
 					if(i==5){
 						System.currentTimeMillis();
 					}
 					
+					long t1 = System.currentTimeMillis();//System.currentTimeMillis();
 					RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
+					long t2 = System.currentTimeMillis();
+					System.out.println(t2-t1);
+					
 					if(sequence.isAnImprovement(element) ||
 							new PenaltyAndRewardCalulator().isConformToUserFeedback(element.getOpportunity())){
 						element.setPosition(i);
@@ -71,8 +74,7 @@ public class SearchRefactoringSolutionAcion implements
 						break;
 					}
 					
-					long t2 = System.currentTimeMillis();
-					System.out.println(t2-t1);
+					
 					
 				}
 				
@@ -122,6 +124,7 @@ public class SearchRefactoringSolutionAcion implements
 		//ArrayList<RefactoringSequenceElement> candidateList = new ArrayList<>();
 		
 		for(RefactoringOpportunity opp: oppList){
+			
 			if(opp.toString().contains("readEssayQuestion")){
 				System.currentTimeMillis();
 			}
@@ -129,15 +132,28 @@ public class SearchRefactoringSolutionAcion implements
 			if(Settings.forbiddenOpps.contains(opp)){
 				continue;
 			}
+			//long t1 = System.currentTimeMillis();
 			
 			ProgramModel testModel = opp.simulate(model);
+			
+			//long t2 = System.currentTimeMillis();
+			//System.out.println("Simluated Model Time: " + (t2-t1));
+			
 			double value = evaluator.computeFitness(testModel, moduleList);
 			
+			//long t3 = System.currentTimeMillis();
+			//System.out.println("Fitness Time: " + (t3-t2));
 			/**
 			 * Merging user's feedback.
 			 */
 			double feedbackValue0 = new PenaltyAndRewardCalulator().calculate(value, opp);
 			
+			//long t4 = System.currentTimeMillis();
+			//System.out.println("Penalty Caluation Used Time: " + (t4-t3));
+			/*if(t4-t3 > 20){
+				System.currentTimeMillis(); 
+				new PenaltyAndRewardCalulator().calculate(value, opp);
+			}*/
 			/*RefactoringSequenceElement element = new RefactoringSequenceElement(opp, testModel, value, evaluator.getViolationList());
 			candidateList.add(element);*/
 			

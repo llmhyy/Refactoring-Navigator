@@ -4,6 +4,7 @@
 package reflexactoring.diagram.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 
@@ -19,6 +20,7 @@ import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.efficiency.UnitPair;
 
 /**
  * @author linyun
@@ -109,6 +111,11 @@ public class Settings {
 		
 	public static String diagramPath = "/refactoring/default.reflexactoring";
 	public static double largeSimilarityValue = 1.0d;
+	
+	/**
+	 * This constants is used to improve the efficiency of computing similarity.
+	 */
+	public static HashMap<UnitPair, Double> unitPairSimilarityMap = new HashMap<>();
 	
 	//=============================================================
 	/**
