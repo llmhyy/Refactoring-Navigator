@@ -18,6 +18,7 @@ import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
+import reflexactoring.diagram.action.smelldetection.PenaltyAndRewardCalulator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
@@ -49,12 +50,17 @@ public class SearchRefactoringSolutionAcion implements
 				RefactoringSequence sequence = new RefactoringSequence(model, moduleList);
 				ArrayList<RefactoringOpportunity> oppList = smellDetector.detect(model);
 				
-				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()); i++){
+				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()) && oppList.size() != 0; i++){
 					
 					long t1 = System.currentTimeMillis();//System.currentTimeMillis();
 					
+					if(i==5){
+						System.currentTimeMillis();
+					}
+					
 					RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
-					if(sequence.isAnImprovement(element)){
+					if(sequence.isAnImprovement(element) ||
+							new PenaltyAndRewardCalulator().isConformToUserFeedback(element.getOpportunity())){
 						element.setPosition(i);
 						sequence.addElement(element);
 						model = element.getConsequenceModel();
@@ -108,19 +114,17 @@ public class SearchRefactoringSolutionAcion implements
 			ArrayList<RefactoringOpportunity> oppList, ProgramModel model, ArrayList<ModuleWrapper> moduleList) {
 		AdvanceEvaluatorAdapter evaluator = new AdvanceEvaluatorAdapter();
 		Double fitnessValue = null;
+		Double feedbackValue = null;
 		RefactoringOpportunity bestOpp = null;
 		ProgramModel consequenceModel = null;
 		ArrayList<Violation> violationList = null;
 		
+		//ArrayList<RefactoringSequenceElement> candidateList = new ArrayList<>();
+		
 		for(RefactoringOpportunity opp: oppList){
-			
-			if(opp instanceof MoveMethodOpportunity){
+			if(opp.toString().contains("readEssayQuestion")){
 				System.currentTimeMillis();
 			}
-			
-			/*if(opp.toString().contains("savePromptQuestion")){
-				System.currentTimeMillis();
-			}*/
 			
 			if(Settings.forbiddenOpps.contains(opp)){
 				continue;
@@ -129,14 +133,25 @@ public class SearchRefactoringSolutionAcion implements
 			ProgramModel testModel = opp.simulate(model);
 			double value = evaluator.computeFitness(testModel, moduleList);
 			
-			if(fitnessValue == null){
+			/**
+			 * Merging user's feedback.
+			 */
+			double feedbackValue0 = new PenaltyAndRewardCalulator().calculate(value, opp);
+			
+			/*RefactoringSequenceElement element = new RefactoringSequenceElement(opp, testModel, value, evaluator.getViolationList());
+			candidateList.add(element);*/
+			
+			if(feedbackValue == null){
+				feedbackValue = feedbackValue0;
 				fitnessValue = value;
 				bestOpp = opp;
 				consequenceModel = testModel;
 				violationList = evaluator.getViolationList();
+				
 			}
 			else{
-				if(value > fitnessValue){
+				if(feedbackValue0 > feedbackValue){
+					feedbackValue = feedbackValue0;
 					fitnessValue = value;
 					bestOpp = opp;
 					consequenceModel = testModel;
@@ -147,6 +162,22 @@ public class SearchRefactoringSolutionAcion implements
 		
 		return new RefactoringSequenceElement(bestOpp, consequenceModel, fitnessValue, violationList);
 	}
+	
+	/*private RefactoringSequenceElement breakTie(ArrayList<RefactoringSequenceElement> candidateList, double bestValue){
+		ArrayList<RefactoringSequenceElement> bestCandidateElements = new ArrayList<>();
+		for(RefactoringSequenceElement element: candidateList){
+			if(element.getFitnessValue() == bestValue){
+				bestCandidateElements.add(element);
+			}
+		}
+		
+		double bestNameSim = 0;
+		RefactoringSequenceElement bestElement = null;
+		
+		for(RefactoringSequenceElement element: bestCandidateElements){
+			element.getOpportunity().
+		}
+	}*/
 
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {

@@ -665,6 +665,7 @@ public class ReflexactoringUtil {
 				if(markedSet.contains(obj2))continue;
 				
 				double sim = obj1.computeSimilarityWith(obj2);
+				System.currentTimeMillis();
 				if(bestMatcher == null){
 					bestSim = sim;
 					bestMatcher = obj2;

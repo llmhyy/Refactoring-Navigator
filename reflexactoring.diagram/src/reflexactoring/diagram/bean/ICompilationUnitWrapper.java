@@ -481,7 +481,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 			/**
 			 * Jaccard coefficient
 			 */
-			double ancestorSim = (totalSize == 0) ? 0 : count/(totalSize-count);
+			double ancestorSim = (totalSize == 0) ? 1 : count/(totalSize-count);
 			
 			double nameSim = ReflexactoringUtil.compareStringSimilarity(getName(), thatUnit.getName());
 			

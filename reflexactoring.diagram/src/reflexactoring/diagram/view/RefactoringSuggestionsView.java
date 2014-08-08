@@ -254,7 +254,11 @@ public class RefactoringSuggestionsView extends ViewPart {
 						formComposite.setBackground(DARK_GREEN);
 						formText.setBackground(DARK_GREEN);
 						elementComposite.setBackground(DARK_GREEN);
-						elementComposite.setEnabled(false);
+						//elementComposite.setEnabled(false);
+						/**
+						 * Leaving it true for my debugging -- LinYun
+						 */
+						elementComposite.setEnabled(true);
 					}
 				}else if(sequence.indexOf(element) > currentElementIndex){
 					//disable the following steps
@@ -262,7 +266,11 @@ public class RefactoringSuggestionsView extends ViewPart {
 					formComposite.setBackground(LIGHT_GRAY);
 					formText.setBackground(LIGHT_GRAY);
 					elementComposite.setBackground(LIGHT_GRAY);
-					elementComposite.setEnabled(false);
+					//elementComposite.setEnabled(false);
+					/**
+					 * Leaving it true for my debugging -- LinYun
+					 */
+					elementComposite.setEnabled(true);
 				}
 				elementComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			}
