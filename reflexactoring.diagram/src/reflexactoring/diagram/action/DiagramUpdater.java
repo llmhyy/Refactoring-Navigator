@@ -434,8 +434,9 @@ public class DiagramUpdater {
 		 * 
 		 */
 		for(ModuleLinkWrapper conceivedConnection: conceivedConnectionList){
-			ModuleLinkFigure connectionFigure = GEFDiagramUtil.findCorrespondingDepedencyEditPart(diagramRoot, 
-					conceivedConnection).getPrimaryShape();
+			ModuleLinkEditPart linkPart = GEFDiagramUtil.findCorrespondingDepedencyEditPart(diagramRoot, conceivedConnection);
+			ModuleLinkFigure connectionFigure = linkPart.getPrimaryShape();
+			
 			connectionFigure.setAbsenceStyle();
 			setDependencyType(diagramRoot, conceivedConnection, ModuleLinkWrapper.ABSENCE);
 		}

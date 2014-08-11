@@ -6,24 +6,18 @@ import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.ITreeBranchEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
-import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.swt.graphics.Color;
 
-import reflexactoring.ModuleDependency;
 import reflexactoring.ModuleExtend;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
-import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart.ModuleDependencyFigure;
 import reflexactoring.diagram.edit.policies.ModuleExtendItemSemanticEditPolicy;
 
 /**
- * @generated
+ * @not generated
  */
-public class ModuleExtendEditPart extends ConnectionNodeEditPart implements
-		ITreeBranchEditPart {
+public class ModuleExtendEditPart extends ModuleLinkEditPart{
 
 	/**
 	 * @generated
@@ -62,9 +56,11 @@ public class ModuleExtendEditPart extends ConnectionNodeEditPart implements
 			ModuleExtend extend = (ModuleExtend) eObject;
 			if (extend.getName().equals(ModuleLinkWrapper.ABSENCE)) {
 				figure.setAbsenceStyle();
-			} else if (extend.getName().equals(ModuleLinkWrapper.DIVERGENCE)) {
+			} else if (extend.getName()
+					.equals(ModuleLinkWrapper.DIVERGENCE)) {
 				figure.setDivergneceStyle();
-			} else if (extend.getName().equals(ModuleLinkWrapper.CONFORMANCE)) {
+			} else if (extend.getName().equals(
+					ModuleLinkWrapper.CONFORMANCE)) {
 				figure.setConformanceStyle();
 			}
 		}

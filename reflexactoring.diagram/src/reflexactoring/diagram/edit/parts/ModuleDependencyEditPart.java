@@ -4,25 +4,17 @@ import org.eclipse.draw2d.Connection;
 import org.eclipse.draw2d.PolylineDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.ITreeBranchEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
-import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
-import org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 
 import reflexactoring.ModuleDependency;
-import reflexactoring.diagram.action.DiagramUpdater;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.edit.policies.ModuleDependencyItemSemanticEditPolicy;
 
 /**
- * @generated
+ * @not generated
  */
-public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
-		ITreeBranchEditPart {
+public class ModuleDependencyEditPart extends ModuleLinkEditPart{
 
 	/**
 	 * @generated
@@ -103,9 +95,5 @@ public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
 		}
 	}
 
-	/**
-	 * @generated
-	 */
-	static final Color THIS_FORE = new Color(null, 0, 0, 0);
-
+	
 }
