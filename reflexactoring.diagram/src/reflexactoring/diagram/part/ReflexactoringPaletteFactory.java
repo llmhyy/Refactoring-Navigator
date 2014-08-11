@@ -44,6 +44,7 @@ public class ReflexactoringPaletteFactory {
 		paletteContainer.add(createInterfaceExtend7CreationTool());
 		paletteContainer.add(createModuleExtend8CreationTool());
 		paletteContainer.add(createModuleDependency9CreationTool());
+		paletteContainer.add(createModuleCreation10CreationTool());
 		return paletteContainer;
 	}
 
@@ -187,6 +188,22 @@ public class ReflexactoringPaletteFactory {
 				Collections
 						.singletonList(ReflexactoringElementTypes.ModuleDependency_4001));
 		entry.setId("createModuleDependency9CreationTool"); //$NON-NLS-1$
+		entry.setSmallIcon(ReflexactoringDiagramEditorPlugin
+				.findImageDescriptor("icons/tool/module.gif")); //$NON-NLS-1$
+		entry.setLargeIcon(entry.getSmallIcon());
+		return entry;
+	}
+
+	/**
+	 * @generated
+	 */
+	private ToolEntry createModuleCreation10CreationTool() {
+		LinkToolEntry entry = new LinkToolEntry(
+				Messages.ModuleCreation10CreationTool_title,
+				Messages.ModuleCreation10CreationTool_desc,
+				Collections
+						.singletonList(ReflexactoringElementTypes.ModuleCreation_4007));
+		entry.setId("createModuleCreation10CreationTool"); //$NON-NLS-1$
 		entry.setSmallIcon(ReflexactoringDiagramEditorPlugin
 				.findImageDescriptor("icons/tool/module.gif")); //$NON-NLS-1$
 		entry.setLargeIcon(entry.getSmallIcon());

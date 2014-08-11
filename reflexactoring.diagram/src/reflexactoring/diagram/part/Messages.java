@@ -338,6 +338,16 @@ public class Messages extends NLS {
 	/**
 	 * @generated
 	 */
+	public static String ModuleCreation10CreationTool_title;
+
+	/**
+	 * @generated
+	 */
+	public static String ModuleCreation10CreationTool_desc;
+
+	/**
+	 * @generated
+	 */
 	public static String ModuleTypeContainerCompartmentEditPart_title;
 
 	/**
@@ -364,6 +374,16 @@ public class Messages extends NLS {
 	 * @generated
 	 */
 	public static String NavigatorGroupName_Class_3001_outgoinglinks;
+
+	/**
+	 * @generated
+	 */
+	public static String NavigatorGroupName_ModuleCreation_4007_target;
+
+	/**
+	 * @generated
+	 */
+	public static String NavigatorGroupName_ModuleCreation_4007_source;
 
 	/**
 	 * @generated

@@ -38,6 +38,30 @@
           y="-2"/>
       <template/>
     </figures>
+    <figures
+        xsi:type="gmfgraph:PolygonDecoration"
+        name="ModuleCreationPolygon"
+        lineWidth="2">
+      <foregroundColor
+          xsi:type="gmfgraph:RGBColor"/>
+      <backgroundColor
+          xsi:type="gmfgraph:ConstantColor"/>
+      <template
+          x="-2"
+          y="2"/>
+      <template
+          x="-4"
+          y="2"/>
+      <template
+          x="-2"/>
+      <template
+          x="-4"
+          y="-2"/>
+      <template
+          x="-2"
+          y="-2"/>
+      <template/>
+    </figures>
     <descriptors
         name="ModuleFigure">
       <actualFigure
@@ -191,6 +215,17 @@
             xsi:type="gmfgraph:RGBColor"/>
       </actualFigure>
     </descriptors>
+    <descriptors
+        name="ModuleCreationFigure">
+      <actualFigure
+          xsi:type="gmfgraph:PolylineConnection"
+          name="ModuleCreationFigure"
+          lineWidth="2"
+          targetDecoration="//@figures.0/@figures.2">
+        <foregroundColor
+            xsi:type="gmfgraph:RGBColor"/>
+      </actualFigure>
+    </descriptors>
   </figures>
   <nodes
       name="Module"
@@ -219,6 +254,9 @@
   <connections
       name="ModuleExtend"
       figure="ModuleExtendFigure"/>
+  <connections
+      name="ModuleCreation"
+      figure="ModuleCreationFigure"/>
   <compartments
       name="TypeContainerCompartment"
       figure="ModuleFigure"

@@ -81,6 +81,14 @@
             xsi:type="gmftool:BundleImage"
             path="icons/tool/module.gif"/>
       </tools>
+      <tools
+          xsi:type="gmftool:CreationTool"
+          title="ModuleCreation"
+          description="Create new ModuleCreation">
+        <smallIcon
+            xsi:type="gmftool:BundleImage"
+            path="icons/tool/module.gif"/>
+      </tools>
     </tools>
   </palette>
 </gmftool:ToolRegistry>

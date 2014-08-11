@@ -76,6 +76,9 @@ public class ReflexactoringEditPartFactory implements EditPartFactory {
 			case ImplementEditPart.VISUAL_ID:
 				return new ImplementEditPart(view);
 
+			case ModuleCreationEditPart.VISUAL_ID:
+				return new ModuleCreationEditPart(view);
+
 			}
 		}
 		return createUnrecognizedEditPart(context, model);

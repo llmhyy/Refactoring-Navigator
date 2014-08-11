@@ -187,6 +187,29 @@ public class ReflexactoringItemProviderAdapterFactory extends ReflexactoringAdap
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all {@link reflexactoring.ModuleCreation} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected ModuleCreationItemProvider moduleCreationItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link reflexactoring.ModuleCreation}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createModuleCreationAdapter() {
+		if (moduleCreationItemProvider == null) {
+			moduleCreationItemProvider = new ModuleCreationItemProvider(this);
+		}
+
+		return moduleCreationItemProvider;
+	}
+
+	/**
 	 * This keeps track of the one adapter used for all {@link reflexactoring.TypeDependency} instances.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -410,6 +433,7 @@ public class ReflexactoringItemProviderAdapterFactory extends ReflexactoringAdap
 		if (interfaceExtendItemProvider != null) interfaceExtendItemProvider.dispose();
 		if (moduleExtendItemProvider != null) moduleExtendItemProvider.dispose();
 		if (moduleDependencyItemProvider != null) moduleDependencyItemProvider.dispose();
+		if (moduleCreationItemProvider != null) moduleCreationItemProvider.dispose();
 	}
 
 }

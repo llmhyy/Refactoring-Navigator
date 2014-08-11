@@ -20,6 +20,7 @@ import reflexactoring.diagram.edit.parts.InterfaceEditPart;
 import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
 import reflexactoring.diagram.edit.parts.InterfaceName2EditPart;
 import reflexactoring.diagram.edit.parts.InterfaceNameEditPart;
+import reflexactoring.diagram.edit.parts.ModuleCreationEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
@@ -265,6 +266,10 @@ public class ReflexactoringVisualIDRegistry {
 		if (ReflexactoringPackage.eINSTANCE.getImplement().isSuperTypeOf(
 				domainElement.eClass())) {
 			return ImplementEditPart.VISUAL_ID;
+		}
+		if (ReflexactoringPackage.eINSTANCE.getModuleCreation().isSuperTypeOf(
+				domainElement.eClass())) {
+			return ModuleCreationEditPart.VISUAL_ID;
 		}
 		return -1;
 	}

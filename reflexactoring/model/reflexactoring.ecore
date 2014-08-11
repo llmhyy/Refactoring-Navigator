@@ -71,4 +71,5 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ModuleExtend" eSuperTypes="#//ModuleLink"/>
   <eClassifiers xsi:type="ecore:EClass" name="ModuleDependency" eSuperTypes="#//ModuleLink"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ModuleCreation" eSuperTypes="#//ModuleLink"/>
 </ecore:EPackage>

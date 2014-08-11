@@ -24,6 +24,7 @@ import reflexactoring.diagram.edit.parts.ImplementEditPart;
 import reflexactoring.diagram.edit.parts.Interface2EditPart;
 import reflexactoring.diagram.edit.parts.InterfaceEditPart;
 import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
+import reflexactoring.diagram.edit.parts.ModuleCreationEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
@@ -106,6 +107,11 @@ public class ReflexactoringElementTypes {
 	 * @generated
 	 */
 	public static final IElementType Implement_4005 = getElementType("reflexactoring.diagram.Implement_4005"); //$NON-NLS-1$
+
+	/**
+	 * @generated
+	 */
+	public static final IElementType ModuleCreation_4007 = getElementType("reflexactoring.diagram.ModuleCreation_4007"); //$NON-NLS-1$
 
 	/**
 	 * @generated
@@ -253,6 +259,9 @@ public class ReflexactoringElementTypes {
 
 			elements.put(Implement_4005,
 					ReflexactoringPackage.eINSTANCE.getImplement());
+
+			elements.put(ModuleCreation_4007,
+					ReflexactoringPackage.eINSTANCE.getModuleCreation());
 		}
 		return (ENamedElement) elements.get(type);
 	}
@@ -282,6 +291,7 @@ public class ReflexactoringElementTypes {
 			KNOWN_ELEMENT_TYPES.add(TypeDependency_4003);
 			KNOWN_ELEMENT_TYPES.add(InterfaceExtend_4004);
 			KNOWN_ELEMENT_TYPES.add(Implement_4005);
+			KNOWN_ELEMENT_TYPES.add(ModuleCreation_4007);
 		}
 		return KNOWN_ELEMENT_TYPES.contains(elementType);
 	}
@@ -315,6 +325,8 @@ public class ReflexactoringElementTypes {
 			return InterfaceExtend_4004;
 		case ImplementEditPart.VISUAL_ID:
 			return Implement_4005;
+		case ModuleCreationEditPart.VISUAL_ID:
+			return ModuleCreation_4007;
 		}
 		return null;
 	}

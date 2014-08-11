@@ -54,5 +54,6 @@
     </genClasses>
     <genClasses ecoreClass="reflexactoring.ecore#//ModuleExtend"/>
     <genClasses ecoreClass="reflexactoring.ecore#//ModuleDependency"/>
+    <genClasses ecoreClass="reflexactoring.ecore#//ModuleCreation"/>
   </genPackages>
 </genmodel:GenModel>

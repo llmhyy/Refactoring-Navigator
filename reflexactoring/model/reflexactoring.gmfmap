@@ -219,6 +219,23 @@
         xsi:type="ecore:EReference"
         href="reflexactoring.ecore#//Implement/interface"/>
   </links>
+  <links>
+    <domainMetaElement
+        href="reflexactoring.ecore#//ModuleCreation"/>
+    <containmentFeature
+        href="reflexactoring.ecore#//Reflexactoring/moduleDenpencies"/>
+    <tool
+        xsi:type="gmftool:CreationTool"
+        href="reflexactoring.gmftool#//@palette/@tools.0/@tools.9"/>
+    <diagramLink
+        href="reflexactoring.gmfgraph#ModuleCreation"/>
+    <sourceMetaFeature
+        xsi:type="ecore:EReference"
+        href="reflexactoring.ecore#//ModuleLink/origin"/>
+    <linkMetaFeature
+        xsi:type="ecore:EReference"
+        href="reflexactoring.ecore#//ModuleLink/destination"/>
+  </links>
   <diagram>
     <diagramCanvas
         href="reflexactoring.gmfgraph#reflexactoring"/>

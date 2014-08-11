@@ -21,7 +21,8 @@ import reflexactoring.diagram.edit.policies.ModuleDependencyItemSemanticEditPoli
 /**
  * @generated
  */
-public class ModuleDependencyEditPart extends ModuleLinkEditPart{
+public class ModuleDependencyEditPart extends ConnectionNodeEditPart implements
+		ITreeBranchEditPart {
 
 	/**
 	 * @generated
@@ -102,5 +103,9 @@ public class ModuleDependencyEditPart extends ModuleLinkEditPart{
 		}
 	}
 
-	
+	/**
+	 * @generated
+	 */
+	static final Color THIS_FORE = new Color(null, 0, 0, 0);
+
 }

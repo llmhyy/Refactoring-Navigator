@@ -14,6 +14,7 @@ import reflexactoring.Implement;
 import reflexactoring.Interface;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
+import reflexactoring.ModuleCreation;
 import reflexactoring.ModuleDependency;
 import reflexactoring.ModuleExtend;
 import reflexactoring.ModuleLink;
@@ -125,6 +126,10 @@ public class ReflexactoringAdapterFactory extends AdapterFactoryImpl {
 			@Override
 			public Adapter caseModuleDependency(ModuleDependency object) {
 				return createModuleDependencyAdapter();
+			}
+			@Override
+			public Adapter caseModuleCreation(ModuleCreation object) {
+				return createModuleCreationAdapter();
 			}
 			@Override
 			public Adapter defaultCase(EObject object) {
@@ -241,6 +246,20 @@ public class ReflexactoringAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createModuleDependencyAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link reflexactoring.ModuleCreation <em>Module Creation</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see reflexactoring.ModuleCreation
+	 * @generated
+	 */
+	public Adapter createModuleCreationAdapter() {
 		return null;
 	}
 

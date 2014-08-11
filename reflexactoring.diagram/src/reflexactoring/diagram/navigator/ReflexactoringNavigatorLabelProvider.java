@@ -19,6 +19,7 @@ import org.eclipse.ui.navigator.ICommonLabelProvider;
 import reflexactoring.ClassExtend;
 import reflexactoring.Implement;
 import reflexactoring.InterfaceExtend;
+import reflexactoring.ModuleCreation;
 import reflexactoring.ModuleDependency;
 import reflexactoring.ModuleExtend;
 import reflexactoring.TypeDependency;
@@ -33,6 +34,7 @@ import reflexactoring.diagram.edit.parts.InterfaceEditPart;
 import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
 import reflexactoring.diagram.edit.parts.InterfaceName2EditPart;
 import reflexactoring.diagram.edit.parts.InterfaceNameEditPart;
+import reflexactoring.diagram.edit.parts.ModuleCreationEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
@@ -103,42 +105,45 @@ public class ReflexactoringNavigatorLabelProvider extends LabelProvider
 	 */
 	public Image getImage(View view) {
 		switch (ReflexactoringVisualIDRegistry.getVisualID(view)) {
-		case ClassEditPart.VISUAL_ID:
-			return getImage(
-					"Navigator?TopLevelNode?http://reflexactoring.com?Class", ReflexactoringElementTypes.Class_2001); //$NON-NLS-1$
-		case ReflexactoringEditPart.VISUAL_ID:
-			return getImage(
-					"Navigator?Diagram?http://reflexactoring.com?Reflexactoring", ReflexactoringElementTypes.Reflexactoring_1000); //$NON-NLS-1$
-		case ModuleEditPart.VISUAL_ID:
-			return getImage(
-					"Navigator?TopLevelNode?http://reflexactoring.com?Module", ReflexactoringElementTypes.Module_2003); //$NON-NLS-1$
-		case ImplementEditPart.VISUAL_ID:
-			return getImage(
-					"Navigator?Link?http://reflexactoring.com?Implement", ReflexactoringElementTypes.Implement_4005); //$NON-NLS-1$
-		case Interface2EditPart.VISUAL_ID:
-			return getImage(
-					"Navigator?Node?http://reflexactoring.com?Interface", ReflexactoringElementTypes.Interface_3002); //$NON-NLS-1$
-		case Class2EditPart.VISUAL_ID:
-			return getImage(
-					"Navigator?Node?http://reflexactoring.com?Class", ReflexactoringElementTypes.Class_3001); //$NON-NLS-1$
-		case ModuleExtendEditPart.VISUAL_ID:
-			return getImage(
-					"Navigator?Link?http://reflexactoring.com?ModuleExtend", ReflexactoringElementTypes.ModuleExtend_4006); //$NON-NLS-1$
-		case ClassExtendEditPart.VISUAL_ID:
-			return getImage(
-					"Navigator?Link?http://reflexactoring.com?ClassExtend", ReflexactoringElementTypes.ClassExtend_4002); //$NON-NLS-1$
 		case TypeDependencyEditPart.VISUAL_ID:
 			return getImage(
 					"Navigator?Link?http://reflexactoring.com?TypeDependency", ReflexactoringElementTypes.TypeDependency_4003); //$NON-NLS-1$
-		case InterfaceEditPart.VISUAL_ID:
+		case ReflexactoringEditPart.VISUAL_ID:
 			return getImage(
-					"Navigator?TopLevelNode?http://reflexactoring.com?Interface", ReflexactoringElementTypes.Interface_2002); //$NON-NLS-1$
+					"Navigator?Diagram?http://reflexactoring.com?Reflexactoring", ReflexactoringElementTypes.Reflexactoring_1000); //$NON-NLS-1$
+		case ClassEditPart.VISUAL_ID:
+			return getImage(
+					"Navigator?TopLevelNode?http://reflexactoring.com?Class", ReflexactoringElementTypes.Class_2001); //$NON-NLS-1$
+		case ImplementEditPart.VISUAL_ID:
+			return getImage(
+					"Navigator?Link?http://reflexactoring.com?Implement", ReflexactoringElementTypes.Implement_4005); //$NON-NLS-1$
 		case ModuleDependencyEditPart.VISUAL_ID:
 			return getImage(
 					"Navigator?Link?http://reflexactoring.com?ModuleDependency", ReflexactoringElementTypes.ModuleDependency_4001); //$NON-NLS-1$
 		case InterfaceExtendEditPart.VISUAL_ID:
 			return getImage(
 					"Navigator?Link?http://reflexactoring.com?InterfaceExtend", ReflexactoringElementTypes.InterfaceExtend_4004); //$NON-NLS-1$
+		case ModuleCreationEditPart.VISUAL_ID:
+			return getImage(
+					"Navigator?Link?http://reflexactoring.com?ModuleCreation", ReflexactoringElementTypes.ModuleCreation_4007); //$NON-NLS-1$
+		case ClassExtendEditPart.VISUAL_ID:
+			return getImage(
+					"Navigator?Link?http://reflexactoring.com?ClassExtend", ReflexactoringElementTypes.ClassExtend_4002); //$NON-NLS-1$
+		case InterfaceEditPart.VISUAL_ID:
+			return getImage(
+					"Navigator?TopLevelNode?http://reflexactoring.com?Interface", ReflexactoringElementTypes.Interface_2002); //$NON-NLS-1$
+		case ModuleEditPart.VISUAL_ID:
+			return getImage(
+					"Navigator?TopLevelNode?http://reflexactoring.com?Module", ReflexactoringElementTypes.Module_2003); //$NON-NLS-1$
+		case ModuleExtendEditPart.VISUAL_ID:
+			return getImage(
+					"Navigator?Link?http://reflexactoring.com?ModuleExtend", ReflexactoringElementTypes.ModuleExtend_4006); //$NON-NLS-1$
+		case Class2EditPart.VISUAL_ID:
+			return getImage(
+					"Navigator?Node?http://reflexactoring.com?Class", ReflexactoringElementTypes.Class_3001); //$NON-NLS-1$
+		case Interface2EditPart.VISUAL_ID:
+			return getImage(
+					"Navigator?Node?http://reflexactoring.com?Interface", ReflexactoringElementTypes.Interface_3002); //$NON-NLS-1$
 		}
 		return getImage("Navigator?UnknownElement", null); //$NON-NLS-1$
 	}
@@ -191,30 +196,32 @@ public class ReflexactoringNavigatorLabelProvider extends LabelProvider
 			return getUnresolvedDomainElementProxyText(view);
 		}
 		switch (ReflexactoringVisualIDRegistry.getVisualID(view)) {
-		case ClassEditPart.VISUAL_ID:
-			return getClass_2001Text(view);
-		case ReflexactoringEditPart.VISUAL_ID:
-			return getReflexactoring_1000Text(view);
-		case ModuleEditPart.VISUAL_ID:
-			return getModule_2003Text(view);
-		case ImplementEditPart.VISUAL_ID:
-			return getImplement_4005Text(view);
-		case Interface2EditPart.VISUAL_ID:
-			return getInterface_3002Text(view);
-		case Class2EditPart.VISUAL_ID:
-			return getClass_3001Text(view);
-		case ModuleExtendEditPart.VISUAL_ID:
-			return getModuleExtend_4006Text(view);
-		case ClassExtendEditPart.VISUAL_ID:
-			return getClassExtend_4002Text(view);
 		case TypeDependencyEditPart.VISUAL_ID:
 			return getTypeDependency_4003Text(view);
-		case InterfaceEditPart.VISUAL_ID:
-			return getInterface_2002Text(view);
+		case ReflexactoringEditPart.VISUAL_ID:
+			return getReflexactoring_1000Text(view);
+		case ClassEditPart.VISUAL_ID:
+			return getClass_2001Text(view);
+		case ImplementEditPart.VISUAL_ID:
+			return getImplement_4005Text(view);
 		case ModuleDependencyEditPart.VISUAL_ID:
 			return getModuleDependency_4001Text(view);
 		case InterfaceExtendEditPart.VISUAL_ID:
 			return getInterfaceExtend_4004Text(view);
+		case ModuleCreationEditPart.VISUAL_ID:
+			return getModuleCreation_4007Text(view);
+		case ClassExtendEditPart.VISUAL_ID:
+			return getClassExtend_4002Text(view);
+		case InterfaceEditPart.VISUAL_ID:
+			return getInterface_2002Text(view);
+		case ModuleEditPart.VISUAL_ID:
+			return getModule_2003Text(view);
+		case ModuleExtendEditPart.VISUAL_ID:
+			return getModuleExtend_4006Text(view);
+		case Class2EditPart.VISUAL_ID:
+			return getClass_3001Text(view);
+		case Interface2EditPart.VISUAL_ID:
+			return getInterface_3002Text(view);
 		}
 		return getUnknownElementText(view);
 	}
@@ -249,6 +256,20 @@ public class ReflexactoringNavigatorLabelProvider extends LabelProvider
 		} else {
 			ReflexactoringDiagramEditorPlugin.getInstance().logError(
 					"Parser was not found for label " + 5003); //$NON-NLS-1$
+			return ""; //$NON-NLS-1$
+		}
+	}
+
+	/**
+	 * @generated
+	 */
+	private String getModuleCreation_4007Text(View view) {
+		ModuleCreation domainModelElement = (ModuleCreation) view.getElement();
+		if (domainModelElement != null) {
+			return domainModelElement.getName();
+		} else {
+			ReflexactoringDiagramEditorPlugin.getInstance().logError(
+					"No domain element for view with visualID = " + 4007); //$NON-NLS-1$
 			return ""; //$NON-NLS-1$
 		}
 	}

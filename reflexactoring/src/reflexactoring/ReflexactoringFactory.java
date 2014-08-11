@@ -67,6 +67,15 @@ public interface ReflexactoringFactory extends EFactory {
 	ModuleDependency createModuleDependency();
 
 	/**
+	 * Returns a new object of class '<em>Module Creation</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Module Creation</em>'.
+	 * @generated
+	 */
+	ModuleCreation createModuleCreation();
+
+	/**
 	 * Returns a new object of class '<em>Type Dependency</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -41,7 +41,7 @@ public class ReflexactoringEditPart extends DiagramEditPart {
 	}
 
 	/**
-	 * @generated
+	 * @not generated
 	 */
 	protected void createDefaultEditPolicies() {
 		super.createDefaultEditPolicies();

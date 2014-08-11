@@ -9,6 +9,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeCompartmentEditPart;
+import org.eclipse.gmf.runtime.diagram.ui.editpolicies.DragDropEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.ResizableCompartmentEditPolicy;
 import org.eclipse.gmf.runtime.diagram.ui.figures.CanonicalShapeCompartmentLayout;
@@ -66,48 +67,48 @@ public class ModuleTypeContainerCompartmentEditPart extends
 	 */
 	public static class CustomLayout extends FreeFormLayoutEx {
 		public static Map<IFigure, Rectangle> map = new HashMap<IFigure, Rectangle>();
-		
+
 		@Override
 		public void layout(IFigure parent) {
 			Iterator<IFigure> fIterator = parent.getChildren().iterator();
 			Point offset = getOrigin(parent);
-			
+
 			int count = 1;
 			int x = 10;
 			int y = 10;
 			while (fIterator.hasNext()) {
 				IFigure figure = fIterator.next();
 				Rectangle bounds = (Rectangle) getConstraint(figure);
-	            if (bounds == null) continue;
-	            bounds = bounds.getCopy();
-				
-	            bounds.height = figure.getPreferredSize().height;
-	            bounds.width = figure.getPreferredSize().width;
-	            
-	            if(map.size() == 0){
-	            	bounds.x = x;
+				if (bounds == null)
+					continue;
+				bounds = bounds.getCopy();
+
+				bounds.height = figure.getPreferredSize().height;
+				bounds.width = figure.getPreferredSize().width;
+
+				if (map.size() == 0) {
+					bounds.x = x;
 					bounds.y = y;
-	            }
-	            else{
-	            	Rectangle rec = map.get(figure);
-	            	if(rec == null){
-	            		bounds.x = x;
+				} else {
+					Rectangle rec = map.get(figure);
+					if (rec == null) {
+						bounds.x = x;
 						bounds.y = y;
-	            	}
-	            }
-	            /*bounds.x = x;
+					}
+				}
+				/*bounds.x = x;
 				bounds.y = y;
-	            counter = 0;
-	            moduleNumber = 1;
+				counter = 0;
+				moduleNumber = 1;
 				if(counter > moduleNumber){
 					
 				}*/
 				Rectangle translatedBounds = bounds.translate(offset);
 				figure.setBounds(translatedBounds);
 				map.put(figure, translatedBounds);
-				
+
 				this.constraints.put(figure, bounds.translate(offset));
-				
+
 				if (count % 3 == 0) {
 					x = 10;
 					y = y + bounds.height + 20;

@@ -19,6 +19,7 @@ import reflexactoring.Implement;
 import reflexactoring.Interface;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
+import reflexactoring.ModuleCreation;
 import reflexactoring.ModuleDependency;
 import reflexactoring.ModuleExtend;
 import reflexactoring.Reflexactoring;
@@ -32,6 +33,7 @@ import reflexactoring.diagram.edit.parts.ImplementEditPart;
 import reflexactoring.diagram.edit.parts.Interface2EditPart;
 import reflexactoring.diagram.edit.parts.InterfaceEditPart;
 import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
+import reflexactoring.diagram.edit.parts.ModuleCreationEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
@@ -160,6 +162,8 @@ public class ReflexactoringDiagramUpdater {
 			return getInterfaceExtend_4004ContainedLinks(view);
 		case ImplementEditPart.VISUAL_ID:
 			return getImplement_4005ContainedLinks(view);
+		case ModuleCreationEditPart.VISUAL_ID:
+			return getModuleCreation_4007ContainedLinks(view);
 		}
 		return Collections.emptyList();
 	}
@@ -191,6 +195,8 @@ public class ReflexactoringDiagramUpdater {
 			return getInterfaceExtend_4004IncomingLinks(view);
 		case ImplementEditPart.VISUAL_ID:
 			return getImplement_4005IncomingLinks(view);
+		case ModuleCreationEditPart.VISUAL_ID:
+			return getModuleCreation_4007IncomingLinks(view);
 		}
 		return Collections.emptyList();
 	}
@@ -222,6 +228,8 @@ public class ReflexactoringDiagramUpdater {
 			return getInterfaceExtend_4004OutgoingLinks(view);
 		case ImplementEditPart.VISUAL_ID:
 			return getImplement_4005OutgoingLinks(view);
+		case ModuleCreationEditPart.VISUAL_ID:
+			return getModuleCreation_4007OutgoingLinks(view);
 		}
 		return Collections.emptyList();
 	}
@@ -239,6 +247,7 @@ public class ReflexactoringDiagramUpdater {
 		result.addAll(getContainedTypeModelFacetLinks_TypeDependency_4003(modelElement));
 		result.addAll(getContainedTypeModelFacetLinks_InterfaceExtend_4004(modelElement));
 		result.addAll(getContainedTypeModelFacetLinks_Implement_4005(modelElement));
+		result.addAll(getContainedTypeModelFacetLinks_ModuleCreation_4007(modelElement));
 		return result;
 	}
 
@@ -333,6 +342,14 @@ public class ReflexactoringDiagramUpdater {
 	/**
 	 * @generated
 	 */
+	public static List<ReflexactoringLinkDescriptor> getModuleCreation_4007ContainedLinks(
+			View view) {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * @generated
+	 */
 	public static List<ReflexactoringLinkDescriptor> getClass_2001IncomingLinks(
 			View view) {
 		Class modelElement = (Class) view.getElement();
@@ -376,6 +393,8 @@ public class ReflexactoringDiagramUpdater {
 		result.addAll(getIncomingTypeModelFacetLinks_ModuleDependency_4001(
 				modelElement, crossReferences));
 		result.addAll(getIncomingTypeModelFacetLinks_ModuleExtend_4006(
+				modelElement, crossReferences));
+		result.addAll(getIncomingTypeModelFacetLinks_ModuleCreation_4007(
 				modelElement, crossReferences));
 		return result;
 	}
@@ -465,6 +484,14 @@ public class ReflexactoringDiagramUpdater {
 	/**
 	 * @generated
 	 */
+	public static List<ReflexactoringLinkDescriptor> getModuleCreation_4007IncomingLinks(
+			View view) {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * @generated
+	 */
 	public static List<ReflexactoringLinkDescriptor> getClass_2001OutgoingLinks(
 			View view) {
 		Class modelElement = (Class) view.getElement();
@@ -496,6 +523,7 @@ public class ReflexactoringDiagramUpdater {
 		LinkedList<ReflexactoringLinkDescriptor> result = new LinkedList<ReflexactoringLinkDescriptor>();
 		result.addAll(getOutgoingTypeModelFacetLinks_ModuleDependency_4001(modelElement));
 		result.addAll(getOutgoingTypeModelFacetLinks_ModuleExtend_4006(modelElement));
+		result.addAll(getOutgoingTypeModelFacetLinks_ModuleCreation_4007(modelElement));
 		return result;
 	}
 
@@ -568,6 +596,14 @@ public class ReflexactoringDiagramUpdater {
 	 * @generated
 	 */
 	public static List<ReflexactoringLinkDescriptor> getImplement_4005OutgoingLinks(
+			View view) {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * @generated
+	 */
+	public static List<ReflexactoringLinkDescriptor> getModuleCreation_4007OutgoingLinks(
 			View view) {
 		return Collections.emptyList();
 	}
@@ -724,6 +760,32 @@ public class ReflexactoringDiagramUpdater {
 			result.add(new ReflexactoringLinkDescriptor(src, dst, link,
 					ReflexactoringElementTypes.Implement_4005,
 					ImplementEditPart.VISUAL_ID));
+		}
+		return result;
+	}
+
+	/**
+	 * @generated
+	 */
+	private static Collection<ReflexactoringLinkDescriptor> getContainedTypeModelFacetLinks_ModuleCreation_4007(
+			Reflexactoring container) {
+		LinkedList<ReflexactoringLinkDescriptor> result = new LinkedList<ReflexactoringLinkDescriptor>();
+		for (Iterator<?> links = container.getModuleDenpencies().iterator(); links
+				.hasNext();) {
+			EObject linkObject = (EObject) links.next();
+			if (false == linkObject instanceof ModuleCreation) {
+				continue;
+			}
+			ModuleCreation link = (ModuleCreation) linkObject;
+			if (ModuleCreationEditPart.VISUAL_ID != ReflexactoringVisualIDRegistry
+					.getLinkWithClassVisualID(link)) {
+				continue;
+			}
+			Module dst = link.getDestination();
+			Module src = link.getOrigin();
+			result.add(new ReflexactoringLinkDescriptor(src, dst, link,
+					ReflexactoringElementTypes.ModuleCreation_4007,
+					ModuleCreationEditPart.VISUAL_ID));
 		}
 		return result;
 	}
@@ -892,6 +954,34 @@ public class ReflexactoringDiagramUpdater {
 			result.add(new ReflexactoringLinkDescriptor(src, target, link,
 					ReflexactoringElementTypes.Implement_4005,
 					ImplementEditPart.VISUAL_ID));
+		}
+		return result;
+	}
+
+	/**
+	 * @generated
+	 */
+	private static Collection<ReflexactoringLinkDescriptor> getIncomingTypeModelFacetLinks_ModuleCreation_4007(
+			Module target,
+			Map<EObject, Collection<EStructuralFeature.Setting>> crossReferences) {
+		LinkedList<ReflexactoringLinkDescriptor> result = new LinkedList<ReflexactoringLinkDescriptor>();
+		Collection<EStructuralFeature.Setting> settings = crossReferences
+				.get(target);
+		for (EStructuralFeature.Setting setting : settings) {
+			if (setting.getEStructuralFeature() != ReflexactoringPackage.eINSTANCE
+					.getModuleLink_Destination()
+					|| false == setting.getEObject() instanceof ModuleCreation) {
+				continue;
+			}
+			ModuleCreation link = (ModuleCreation) setting.getEObject();
+			if (ModuleCreationEditPart.VISUAL_ID != ReflexactoringVisualIDRegistry
+					.getLinkWithClassVisualID(link)) {
+				continue;
+			}
+			Module src = link.getOrigin();
+			result.add(new ReflexactoringLinkDescriptor(src, target, link,
+					ReflexactoringElementTypes.ModuleCreation_4007,
+					ModuleCreationEditPart.VISUAL_ID));
 		}
 		return result;
 	}
@@ -1144,6 +1234,48 @@ public class ReflexactoringDiagramUpdater {
 			result.add(new ReflexactoringLinkDescriptor(src, dst, link,
 					ReflexactoringElementTypes.Implement_4005,
 					ImplementEditPart.VISUAL_ID));
+		}
+		return result;
+	}
+
+	/**
+	 * @generated
+	 */
+	private static Collection<ReflexactoringLinkDescriptor> getOutgoingTypeModelFacetLinks_ModuleCreation_4007(
+			Module source) {
+		Reflexactoring container = null;
+		// Find container element for the link.
+		// Climb up by containment hierarchy starting from the source
+		// and return the first element that is instance of the container class.
+		for (EObject element = source; element != null && container == null; element = element
+				.eContainer()) {
+			if (element instanceof Reflexactoring) {
+				container = (Reflexactoring) element;
+			}
+		}
+		if (container == null) {
+			return Collections.emptyList();
+		}
+		LinkedList<ReflexactoringLinkDescriptor> result = new LinkedList<ReflexactoringLinkDescriptor>();
+		for (Iterator<?> links = container.getModuleDenpencies().iterator(); links
+				.hasNext();) {
+			EObject linkObject = (EObject) links.next();
+			if (false == linkObject instanceof ModuleCreation) {
+				continue;
+			}
+			ModuleCreation link = (ModuleCreation) linkObject;
+			if (ModuleCreationEditPart.VISUAL_ID != ReflexactoringVisualIDRegistry
+					.getLinkWithClassVisualID(link)) {
+				continue;
+			}
+			Module dst = link.getDestination();
+			Module src = link.getOrigin();
+			if (src != source) {
+				continue;
+			}
+			result.add(new ReflexactoringLinkDescriptor(src, dst, link,
+					ReflexactoringElementTypes.ModuleCreation_4007,
+					ModuleCreationEditPart.VISUAL_ID));
 		}
 		return result;
 	}

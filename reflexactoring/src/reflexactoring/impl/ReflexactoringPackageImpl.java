@@ -14,6 +14,7 @@ import reflexactoring.Implement;
 import reflexactoring.Interface;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
+import reflexactoring.ModuleCreation;
 import reflexactoring.ModuleDependency;
 import reflexactoring.ModuleExtend;
 import reflexactoring.ModuleLink;
@@ -78,6 +79,13 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 	 * @generated
 	 */
 	private EClass moduleDependencyEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass moduleCreationEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -387,6 +395,15 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getModuleCreation() {
+		return moduleCreationEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getTypeDependency() {
 		return typeDependencyEClass;
 	}
@@ -614,6 +631,8 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 		moduleExtendEClass = createEClass(MODULE_EXTEND);
 
 		moduleDependencyEClass = createEClass(MODULE_DEPENDENCY);
+
+		moduleCreationEClass = createEClass(MODULE_CREATION);
 	}
 
 	/**
@@ -648,6 +667,7 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 		interfaceEClass.getESuperTypes().add(this.getType());
 		moduleExtendEClass.getESuperTypes().add(this.getModuleLink());
 		moduleDependencyEClass.getESuperTypes().add(this.getModuleLink());
+		moduleCreationEClass.getESuperTypes().add(this.getModuleLink());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(reflexactoringEClass, Reflexactoring.class, "Reflexactoring", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -701,6 +721,8 @@ public class ReflexactoringPackageImpl extends EPackageImpl implements Reflexact
 		initEClass(moduleExtendEClass, ModuleExtend.class, "ModuleExtend", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(moduleDependencyEClass, ModuleDependency.class, "ModuleDependency", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(moduleCreationEClass, ModuleCreation.class, "ModuleCreation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

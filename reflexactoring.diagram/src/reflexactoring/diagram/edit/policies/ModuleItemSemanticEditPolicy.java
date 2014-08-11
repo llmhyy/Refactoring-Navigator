@@ -15,6 +15,8 @@ import org.eclipse.gmf.runtime.notation.Edge;
 import org.eclipse.gmf.runtime.notation.Node;
 import org.eclipse.gmf.runtime.notation.View;
 
+import reflexactoring.diagram.edit.commands.ModuleCreationCreateCommand;
+import reflexactoring.diagram.edit.commands.ModuleCreationReorientCommand;
 import reflexactoring.diagram.edit.commands.ModuleDependencyCreateCommand;
 import reflexactoring.diagram.edit.commands.ModuleDependencyReorientCommand;
 import reflexactoring.diagram.edit.commands.ModuleExtendCreateCommand;
@@ -24,6 +26,7 @@ import reflexactoring.diagram.edit.parts.ClassExtendEditPart;
 import reflexactoring.diagram.edit.parts.ImplementEditPart;
 import reflexactoring.diagram.edit.parts.Interface2EditPart;
 import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
+import reflexactoring.diagram.edit.parts.ModuleCreationEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
 import reflexactoring.diagram.edit.parts.ModuleTypeContainerCompartmentEditPart;
@@ -68,6 +71,13 @@ public class ModuleItemSemanticEditPolicy extends
 				cmd.add(new DeleteCommand(getEditingDomain(), incomingLink));
 				continue;
 			}
+			if (ReflexactoringVisualIDRegistry.getVisualID(incomingLink) == ModuleCreationEditPart.VISUAL_ID) {
+				DestroyElementRequest r = new DestroyElementRequest(
+						incomingLink.getElement(), false);
+				cmd.add(new DestroyElementCommand(r));
+				cmd.add(new DeleteCommand(getEditingDomain(), incomingLink));
+				continue;
+			}
 		}
 		for (Iterator<?> it = view.getSourceEdges().iterator(); it.hasNext();) {
 			Edge outgoingLink = (Edge) it.next();
@@ -79,6 +89,13 @@ public class ModuleItemSemanticEditPolicy extends
 				continue;
 			}
 			if (ReflexactoringVisualIDRegistry.getVisualID(outgoingLink) == ModuleExtendEditPart.VISUAL_ID) {
+				DestroyElementRequest r = new DestroyElementRequest(
+						outgoingLink.getElement(), false);
+				cmd.add(new DestroyElementCommand(r));
+				cmd.add(new DeleteCommand(getEditingDomain(), outgoingLink));
+				continue;
+			}
+			if (ReflexactoringVisualIDRegistry.getVisualID(outgoingLink) == ModuleCreationEditPart.VISUAL_ID) {
 				DestroyElementRequest r = new DestroyElementRequest(
 						outgoingLink.getElement(), false);
 				cmd.add(new DestroyElementCommand(r));
@@ -264,6 +281,11 @@ public class ModuleItemSemanticEditPolicy extends
 			return getGEFWrapper(new ModuleExtendCreateCommand(req,
 					req.getSource(), req.getTarget()));
 		}
+		if (ReflexactoringElementTypes.ModuleCreation_4007 == req
+				.getElementType()) {
+			return getGEFWrapper(new ModuleCreationCreateCommand(req,
+					req.getSource(), req.getTarget()));
+		}
 		return null;
 	}
 
@@ -282,6 +304,11 @@ public class ModuleItemSemanticEditPolicy extends
 			return getGEFWrapper(new ModuleExtendCreateCommand(req,
 					req.getSource(), req.getTarget()));
 		}
+		if (ReflexactoringElementTypes.ModuleCreation_4007 == req
+				.getElementType()) {
+			return getGEFWrapper(new ModuleCreationCreateCommand(req,
+					req.getSource(), req.getTarget()));
+		}
 		return null;
 	}
 
@@ -298,6 +325,8 @@ public class ModuleItemSemanticEditPolicy extends
 			return getGEFWrapper(new ModuleDependencyReorientCommand(req));
 		case ModuleExtendEditPart.VISUAL_ID:
 			return getGEFWrapper(new ModuleExtendReorientCommand(req));
+		case ModuleCreationEditPart.VISUAL_ID:
+			return getGEFWrapper(new ModuleCreationReorientCommand(req));
 		}
 		return super.getReorientRelationshipCommand(req);
 	}

@@ -2,38 +2,34 @@ package reflexactoring.diagram.edit.parts;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Connection;
+import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
 import org.eclipse.draw2d.geometry.PointList;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ITreeBranchEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.swt.graphics.Color;
 
-import reflexactoring.ModuleDependency;
-import reflexactoring.ModuleExtend;
-import reflexactoring.diagram.bean.ModuleLinkWrapper;
-import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart.ModuleDependencyFigure;
-import reflexactoring.diagram.edit.policies.ModuleExtendItemSemanticEditPolicy;
+import org.eclipse.swt.graphics.Color;
+import reflexactoring.diagram.edit.policies.ModuleCreationItemSemanticEditPolicy;
 
 /**
  * @generated
  */
-public class ModuleExtendEditPart extends ConnectionNodeEditPart implements
+public class ModuleCreationEditPart extends ConnectionNodeEditPart implements
 		ITreeBranchEditPart {
 
 	/**
 	 * @generated
 	 */
-	public static final int VISUAL_ID = 4006;
+	public static final int VISUAL_ID = 4007;
 
 	/**
 	 * @generated
 	 */
-	public ModuleExtendEditPart(View view) {
+	public ModuleCreationEditPart(View view) {
 		super(view);
 	}
 
@@ -43,7 +39,7 @@ public class ModuleExtendEditPart extends ConnectionNodeEditPart implements
 	protected void createDefaultEditPolicies() {
 		super.createDefaultEditPolicies();
 		installEditPolicy(EditPolicyRoles.SEMANTIC_ROLE,
-				new ModuleExtendItemSemanticEditPolicy());
+				new ModuleCreationItemSemanticEditPolicy());
 	}
 
 	/**
@@ -52,41 +48,28 @@ public class ModuleExtendEditPart extends ConnectionNodeEditPart implements
 	 * Body of this method does not depend on settings in generation model
 	 * so you may safely remove <i>generated</i> tag and modify it.
 	 * 
-	 * @not generated
+	 * @generated
 	 */
-
 	protected Connection createConnectionFigure() {
-		ModuleExtendFigure figure = new ModuleExtendFigure();
-		EObject eObject = this.resolveSemanticElement();
-		if (eObject instanceof ModuleExtend) {
-			ModuleExtend extend = (ModuleExtend) eObject;
-			if (extend.getName().equals(ModuleLinkWrapper.ABSENCE)) {
-				figure.setAbsenceStyle();
-			} else if (extend.getName().equals(ModuleLinkWrapper.DIVERGENCE)) {
-				figure.setDivergneceStyle();
-			} else if (extend.getName().equals(ModuleLinkWrapper.CONFORMANCE)) {
-				figure.setConformanceStyle();
-			}
-		}
-		return figure;
+		return new ModuleCreationFigure();
 	}
 
 	/**
 	 * @generated
 	 */
-	public ModuleExtendFigure getPrimaryShape() {
-		return (ModuleExtendFigure) getFigure();
+	public ModuleCreationFigure getPrimaryShape() {
+		return (ModuleCreationFigure) getFigure();
 	}
 
 	/**
-	 * @not generated
+	 * @generated
 	 */
-	public class ModuleExtendFigure extends ModuleLinkFigure {
+	public class ModuleCreationFigure extends PolylineConnectionEx {
 
 		/**
 		 * @generated
 		 */
-		public ModuleExtendFigure() {
+		public ModuleCreationFigure() {
 			this.setLineWidth(2);
 			this.setForegroundColor(THIS_FORE);
 
@@ -94,7 +77,7 @@ public class ModuleExtendEditPart extends ConnectionNodeEditPart implements
 		}
 
 		/**
-		 * @generated
+		 * @not generated
 		 */
 		private RotatableDecoration createTargetDecoration() {
 			PolygonDecoration df = new PolygonDecoration();
@@ -104,10 +87,13 @@ public class ModuleExtendEditPart extends ConnectionNodeEditPart implements
 			df.setBackgroundColor(ColorConstants.white);
 			PointList pl = new PointList();
 			pl.addPoint(getMapMode().DPtoLP(-2), getMapMode().DPtoLP(2));
+			pl.addPoint(getMapMode().DPtoLP(-4), getMapMode().DPtoLP(2));
+			pl.addPoint(getMapMode().DPtoLP(-2), getMapMode().DPtoLP(0));
+			pl.addPoint(getMapMode().DPtoLP(-4), getMapMode().DPtoLP(-2));
 			pl.addPoint(getMapMode().DPtoLP(-2), getMapMode().DPtoLP(-2));
 			pl.addPoint(getMapMode().DPtoLP(0), getMapMode().DPtoLP(0));
 			df.setTemplate(pl);
-			df.setScale(getMapMode().DPtoLP(7), getMapMode().DPtoLP(3));
+			df.setScale(getMapMode().DPtoLP(5), getMapMode().DPtoLP(3));
 			return df;
 		}
 
@@ -117,7 +103,6 @@ public class ModuleExtendEditPart extends ConnectionNodeEditPart implements
 	 * @generated
 	 */
 	static final Color THIS_FORE = new Color(null, 0, 0, 0);
-
 	/**
 	 * @generated
 	 */
