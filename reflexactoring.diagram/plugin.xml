@@ -117,36 +117,48 @@
    </extension>
 
    <extension point="org.eclipse.ui.preferencePages" id="prefpages">
-      <?gmfgen generated="true"?>
       <page
+            class="reflexactoring.diagram.preferences.DiagramGeneralPreferencePage"
             id="reflexactoring.diagram.general"
-            name="%prefpage.reflexactoring.diagram.general"
-            class="reflexactoring.diagram.preferences.DiagramGeneralPreferencePage">
+            name="Refleactoring">
       </page>
       <page
+            category="reflexactoring.diagram.general"
+            class="reflexactoring.diagram.preferences.DiagramAppearancePreferencePage"
             id="reflexactoring.diagram.appearance"
-            name="%prefpage.reflexactoring.diagram.appearance"
-            category="reflexactoring.diagram.general"
-            class="reflexactoring.diagram.preferences.DiagramAppearancePreferencePage">
+            name="%prefpage.reflexactoring.diagram.appearance">
       </page>
       <page
+            category="reflexactoring.diagram.general"
+            class="reflexactoring.diagram.preferences.DiagramConnectionsPreferencePage"
             id="reflexactoring.diagram.connections"
-            name="%prefpage.reflexactoring.diagram.connections"
-            category="reflexactoring.diagram.general"
-            class="reflexactoring.diagram.preferences.DiagramConnectionsPreferencePage">
+            name="%prefpage.reflexactoring.diagram.connections">
       </page>
       <page
+            category="reflexactoring.diagram.general"
+            class="reflexactoring.diagram.preferences.DiagramPrintingPreferencePage"
             id="reflexactoring.diagram.printing"
-            name="%prefpage.reflexactoring.diagram.printing"
-            category="reflexactoring.diagram.general"
-            class="reflexactoring.diagram.preferences.DiagramPrintingPreferencePage">
+            name="%prefpage.reflexactoring.diagram.printing">
       </page>
       <page
-            id="reflexactoring.diagram.rulersAndGrid"
-            name="%prefpage.reflexactoring.diagram.rulersAndGrid"
             category="reflexactoring.diagram.general"
-            class="reflexactoring.diagram.preferences.DiagramRulersAndGridPreferencePage">
+            class="reflexactoring.diagram.preferences.DiagramRulersAndGridPreferencePage"
+            id="reflexactoring.diagram.rulersAndGrid"
+            name="%prefpage.reflexactoring.diagram.rulersAndGrid">
       </page>
+      <page
+            category="reflexactoring.diagram.general"
+            class="reflexactoring.diagram.preferences.ProjectInfoPage"
+            id="reflexactoring.diagram.projectInfo"
+            name="Project Information">
+      </page>
+      <page
+            category="reflexactoring.diagram.general"
+            class="reflexactoring.diagram.preferences.RecommendSettingPage"
+            id="reflexactoring.diagram.recommend"
+            name="Recommend Settings">
+      </page>
+      <?gmfgen generated="true"?>
    </extension>
 
    <extension point="org.eclipse.ui.views.properties.tabbed.propertyContributor" id="prop-contrib">

@@ -15,7 +15,7 @@ import reflexactoring.diagram.bean.GraphRelationType;
 public class RecommendUtil {
 	
 	
-	public static double[][] extractGraph(ArrayList<? extends GraphNode> nodes, int graphType){
+	public static double[][] extractGraph(ArrayList<? extends GraphNode> nodes, int graphType, int type){
 		
 		int dimension = nodes.size();
 		double[][] graphMatrix = new double[dimension][dimension];
@@ -27,8 +27,8 @@ public class RecommendUtil {
 					GraphNode nodeJ = nodes.get(j);
 					
 					if(graphType == GraphRelationType.GRAPH_DEPENDENCY){
-						if(nodeI.getCalleeList().keySet().contains(nodeJ)){
-							graphMatrix[i][j] = nodeI.getCalleeList().get(nodeJ);
+						if(nodeI.getCalleeList(type).keySet().contains(nodeJ)){
+							graphMatrix[i][j] = nodeI.getCalleeList(type).get(nodeJ).getReferencingTimes();
 						}
 					}else if(graphType == GraphRelationType.GRAPH_INHERITANCE){
 						if(nodeI.getParentList().contains(nodeJ)){

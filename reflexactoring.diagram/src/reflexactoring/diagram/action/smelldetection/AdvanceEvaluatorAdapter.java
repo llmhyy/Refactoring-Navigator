@@ -12,6 +12,7 @@ import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.bean.GraphRelationType;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.ReferencingDetail;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
@@ -23,10 +24,14 @@ public class AdvanceEvaluatorAdapter {
 	private ArrayList<Violation> violationList = new ArrayList<>();
 	
 	public double computeFitness(ProgramModel model, ArrayList<ModuleWrapper> moduleList){
-		double[][] highLevelDependencyMatrix = RecommendUtil.extractGraph(moduleList, GraphRelationType.GRAPH_DEPENDENCY);
-		double[][] highLevelInheritanceMatrix = RecommendUtil.extractGraph(moduleList, GraphRelationType.GRAPH_INHERITANCE);
-		double[][] lowLevelDependencyMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), GraphRelationType.GRAPH_DEPENDENCY);
-		double[][] lowLevelInheritanceMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), GraphRelationType.GRAPH_INHERITANCE);
+		double[][] highLevelDependencyMatrix = RecommendUtil.extractGraph(moduleList, 
+				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.ALL);
+		double[][] highLevelInheritanceMatrix = RecommendUtil.extractGraph(moduleList, 
+				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
+		double[][] lowLevelDependencyMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
+				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
+		double[][] lowLevelInheritanceMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
+				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.REFER);
 		double[][] similarityTable = new double[moduleList.size()][model.getScopeCompilationUnitList().size()];
 		AdvancedFitnessEvaluator evaluator = new AdvancedFitnessEvaluator(similarityTable, highLevelDependencyMatrix, lowLevelDependencyMatrix, 
 				highLevelInheritanceMatrix, lowLevelInheritanceMatrix);

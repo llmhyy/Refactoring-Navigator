@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ReferencingDetail;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -128,8 +129,8 @@ public class ClassStructureBuilder_bak {
 					}*/
 					
 					if(!refererCompilationUnit.hasSuperCompilationUnit(refereeCompilationUnit)){
-						refererCompilationUnit.addCallee(refereeCompilationUnit);
-						refereeCompilationUnit.addCaller(refererCompilationUnit);
+						refererCompilationUnit.addCallee(refereeCompilationUnit, ReferencingDetail.ALL);
+						refereeCompilationUnit.addCaller(refererCompilationUnit, ReferencingDetail.ALL);
 						
 						refererCompilationUnit.putReferringDetail(refereeCompilationUnit, node);
 					}

@@ -16,6 +16,7 @@ import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.ReferencingDetail;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -253,7 +254,7 @@ public abstract class Suboptimizer {
 					GraphNode nodeI = nodes.get(i);
 					GraphNode nodeJ = nodes.get(j);
 					
-					if(nodeI.getCalleeList().keySet().contains(nodeJ)){
+					if(nodeI.getCalleeList(ReferencingDetail.ALL).keySet().contains(nodeJ)){
 						graphMatrix.set(i, j, 1);
 					}
 				}

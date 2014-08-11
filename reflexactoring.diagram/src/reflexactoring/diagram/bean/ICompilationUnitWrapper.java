@@ -44,8 +44,8 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	private ArrayList<ICompilationUnitWrapper> parentList = new ArrayList<>();
 	private ArrayList<ICompilationUnitWrapper> childList = new ArrayList<>();
 	
-	private HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList = new HashMap<>();
-	private HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList = new HashMap<>();
+	private HashMap<ICompilationUnitWrapper, ReferencingDetail> calleeCompilationUnitList = new HashMap<>();
+	private HashMap<ICompilationUnitWrapper, ReferencingDetail> callerCompilationUnitList = new HashMap<>();
 	
 	private HashMap<ICompilationUnitWrapper, ArrayList<ASTNode>> referingDetails
 		= new HashMap<>();
@@ -284,7 +284,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	/**
 	 * @return the calleeCompilationUnitList
 	 */
-	public HashMap<ICompilationUnitWrapper, Integer> getCalleeCompilationUnitList() {
+	public HashMap<ICompilationUnitWrapper, ReferencingDetail> getCalleeCompilationUnitList() {
 		return calleeCompilationUnitList;
 	}
 
@@ -292,14 +292,14 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @param calleeCompilationUnitList the calleeCompilationUnitList to set
 	 */
 	public void setCalleeCompilationUnitList(
-			HashMap<ICompilationUnitWrapper, Integer> calleeCompilationUnitList) {
+			HashMap<ICompilationUnitWrapper, ReferencingDetail> calleeCompilationUnitList) {
 		this.calleeCompilationUnitList = calleeCompilationUnitList;
 	}
 
 	/**
 	 * @return the callerCompilationUnitList
 	 */
-	public HashMap<ICompilationUnitWrapper, Integer> getCallerCompilationUnitList() {
+	public HashMap<ICompilationUnitWrapper, ReferencingDetail> getCallerCompilationUnitList() {
 		return callerCompilationUnitList;
 	}
 
@@ -307,7 +307,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @param callerCompilationUnitList the callerCompilationUnitList to set
 	 */
 	public void setCallerCompilationUnitList(
-			HashMap<ICompilationUnitWrapper, Integer> callerCompilationUnitList) {
+			HashMap<ICompilationUnitWrapper, ReferencingDetail> callerCompilationUnitList) {
 		this.callerCompilationUnitList = callerCompilationUnitList;
 	}
 	
@@ -323,25 +323,25 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		}
 	}
 	
-	public void addCaller(ICompilationUnitWrapper unit){
+	public void addCaller(ICompilationUnitWrapper unit, int referenceType){
 		if(!this.callerCompilationUnitList.keySet().contains(unit)){
-			this.callerCompilationUnitList.put(unit, 1);
+			this.callerCompilationUnitList.put(unit, new ReferencingDetail(1, referenceType));
 		}
 		else{
-			int value = this.callerCompilationUnitList.get(unit);
-			value++;
-			this.callerCompilationUnitList.put(unit, value);
+			ReferencingDetail detail = this.callerCompilationUnitList.get(unit);
+			detail.setReferencingTimes(detail.getReferencingTimes() + 1);
+			this.callerCompilationUnitList.put(unit, detail);
 		}
 	}
 	
-	public void addCallee(ICompilationUnitWrapper unit){
+	public void addCallee(ICompilationUnitWrapper unit, int referenceType){
 		if(!this.calleeCompilationUnitList.keySet().contains(unit)){
-			this.calleeCompilationUnitList.put(unit, 1);
+			this.calleeCompilationUnitList.put(unit, new ReferencingDetail(1, referenceType));
 		}
 		else{
-			int value = this.calleeCompilationUnitList.get(unit);
-			value++;
-			this.calleeCompilationUnitList.put(unit, value);
+			ReferencingDetail detail = this.calleeCompilationUnitList.get(unit);
+			detail.setReferencingTimes(detail.getReferencingTimes() + 1);
+			this.calleeCompilationUnitList.put(unit, detail);
 		}
 	}
 	
@@ -364,11 +364,14 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @see reflexactoring.diagram.bean.GraphNode#getCallerList()
 	 */
 	@Override
-	public HashMap<GraphNode, Integer> getCallerList() {
+	public HashMap<GraphNode, ReferencingDetail> getCallerList(int type) {
 		//return convertToList(callerCompilationUnitList);
-		HashMap<GraphNode, Integer> map = new HashMap<>();
+		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ICompilationUnitWrapper unit: this.callerCompilationUnitList.keySet()){
-			map.put(unit, this.callerCompilationUnitList.get(unit));
+			ReferencingDetail detail = this.callerCompilationUnitList.get(unit);
+			if(detail.getReferencingType() == type){
+				map.put(unit, detail);				
+			}
 		}
 		return map;
 	}
@@ -377,11 +380,14 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @see reflexactoring.diagram.bean.GraphNode#getCalleeList()
 	 */
 	@Override
-	public HashMap<GraphNode, Integer> getCalleeList() {
+	public HashMap<GraphNode, ReferencingDetail> getCalleeList(int type) {
 		//return convertToList(calleeCompilationUnitList);
-		HashMap<GraphNode, Integer> map = new HashMap<>();
+		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ICompilationUnitWrapper unit: this.calleeCompilationUnitList.keySet()){
-			map.put(unit, this.calleeCompilationUnitList.get(unit));
+			ReferencingDetail detail = this.calleeCompilationUnitList.get(unit);
+			if(detail.getReferencingType() == type){
+				map.put(unit, detail);				
+			}
 		}
 		return map;
 	}

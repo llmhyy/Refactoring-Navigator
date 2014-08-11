@@ -20,6 +20,7 @@ import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.ProgramReference;
+import reflexactoring.diagram.bean.ReferencingDetail;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.util.Settings;
 
@@ -145,8 +146,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	 */
 	private boolean isWithCounterCallingRelation(ArrayList<UnitMemberWrapper> counterMemberList, UnitMemberWrapper member){
 		for(UnitMemberWrapper mem: counterMemberList){
-			if(mem.getCalleeList().keySet().contains(member)
-					|| member.getCalleeList().keySet().contains(mem)
+			if(mem.getCalleeList(ReferencingDetail.ALL).keySet().contains(member)
+					|| member.getCalleeList(ReferencingDetail.ALL).keySet().contains(mem)
 					|| mem.findOverridedSuperMember().contains(member)
 					|| member.findOverridedSuperMember().contains(mem)){
 				return true;

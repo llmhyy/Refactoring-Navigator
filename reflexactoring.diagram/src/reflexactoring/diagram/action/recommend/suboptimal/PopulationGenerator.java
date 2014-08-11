@@ -11,6 +11,7 @@ import reflexactoring.diagram.action.recommend.RecommendUtil;
 import reflexactoring.diagram.bean.GraphRelationType;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.ReferencingDetail;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -123,18 +124,26 @@ public class PopulationGenerator {
 		
 		Population population = new Population();
 		
-		double[][] highLevelNodeDependencyMatrix = RecommendUtil.extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath), GraphRelationType.GRAPH_DEPENDENCY);
-		double[][] highLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(ReflexactoringUtil.getModuleList(Settings.diagramPath), GraphRelationType.GRAPH_INHERITANCE);
+		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+		
+		double[][] highLevelNodeDependencyMatrix = RecommendUtil.extractGraph(moduleList, 
+				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.ALL);
+		double[][] highLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(moduleList, 
+				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
 		double[][] lowLevelNodeDependencyMatrix;
 		double[][] lowLevelNodeInheritanceMatrix;
 		
 		if(isForTypePopulation){
-			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), GraphRelationType.GRAPH_DEPENDENCY);
-			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), GraphRelationType.GRAPH_INHERITANCE);
+			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
+					GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
+			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
+					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.REFER);
 		}
 		else{
-			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), GraphRelationType.GRAPH_DEPENDENCY);
-			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), GraphRelationType.GRAPH_INHERITANCE);
+			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
+					GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
+			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
+					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.REFER);
 		}
 		
 		

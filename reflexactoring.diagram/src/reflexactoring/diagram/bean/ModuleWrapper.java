@@ -184,10 +184,10 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	 * @see reflexactoring.diagram.bean.GraphNode#getCallerList()
 	 */
 	@Override
-	public HashMap<GraphNode, Integer> getCallerList() {
-		HashMap<GraphNode, Integer> map = new HashMap<>();
+	public HashMap<GraphNode, ReferencingDetail> getCallerList(int type) {
+		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ModuleWrapper module: this.callerModuleList){
-			map.put(module, new Integer(1));
+			map.put(module, new ReferencingDetail(1, ReferencingDetail.UNKNOWN));
 		}
 		return map;
 	}
@@ -196,10 +196,10 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	 * @see reflexactoring.diagram.bean.GraphNode#getCalleeList()
 	 */
 	@Override
-	public HashMap<GraphNode, Integer> getCalleeList() {
-		HashMap<GraphNode, Integer> map = new HashMap<>();
+	public HashMap<GraphNode, ReferencingDetail> getCalleeList(int type) {
+		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ModuleWrapper module: this.calleeModuleList){
-			map.put(module, new Integer(1));
+			map.put(module, new ReferencingDetail(1, ReferencingDetail.UNKNOWN));
 		}
 		return map;
 	}

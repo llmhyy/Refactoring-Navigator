@@ -11,8 +11,8 @@ import java.util.List;
  *
  */
 public interface GraphNode {
-	public HashMap<GraphNode, Integer> getCallerList();
-	public HashMap<GraphNode, Integer> getCalleeList();
+	public HashMap<GraphNode, ReferencingDetail> getCallerList(int type);
+	public HashMap<GraphNode, ReferencingDetail> getCalleeList(int type);
 	public List<? extends GraphNode> getParentList();
 	public List<? extends GraphNode> getChildList();
 }

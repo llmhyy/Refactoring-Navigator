@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.lang.model.type.ReferenceType;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -300,24 +302,24 @@ public class ProgramModel{
 			/**
 			 * clone caller list
 			 */
-			HashMap<ICompilationUnitWrapper, Integer> oldCallerList = oldUnit.getCallerCompilationUnitList();
+			HashMap<ICompilationUnitWrapper, ReferencingDetail> oldCallerList = oldUnit.getCallerCompilationUnitList();
 			for(ICompilationUnitWrapper oldCaller: oldCallerList.keySet()){
 				int index = oldModel.getICompilationUnitIndex(oldCaller);
-				int value = oldCallerList.get(oldCaller);
+				ReferencingDetail detail = oldCallerList.get(oldCaller).clone();
 				ICompilationUnitWrapper clonedCaller = clonedModel.getScopeCompilationUnitList().get(index);
 				//clonedUnit.addCaller(clonedCaller);
-				clonedUnit.getCallerCompilationUnitList().put(clonedCaller, value);
+				clonedUnit.getCallerCompilationUnitList().put(clonedCaller, detail);
 			}
 			/**
 			 * clone callee list
 			 */
-			HashMap<ICompilationUnitWrapper, Integer> oldCalleeList = oldUnit.getCalleeCompilationUnitList();
+			HashMap<ICompilationUnitWrapper, ReferencingDetail> oldCalleeList = oldUnit.getCalleeCompilationUnitList();
 			for(ICompilationUnitWrapper oldCallee: oldCalleeList.keySet()){
 				int index = oldModel.getICompilationUnitIndex(oldCallee);
-				int value = oldCalleeList.get(oldCallee);
+				ReferencingDetail detail = oldCalleeList.get(oldCallee).clone();
 				ICompilationUnitWrapper clonedCallee = clonedModel.getScopeCompilationUnitList().get(index);
 				//clonedUnit.addCallee(clonedCallee);
-				clonedUnit.getCalleeCompilationUnitList().put(clonedCallee, value);
+				clonedUnit.getCalleeCompilationUnitList().put(clonedCallee, detail);
 			}
 		}
 	}
@@ -522,8 +524,8 @@ public class ProgramModel{
 		 * clear original call relations between compilation unit.
 		 */
 		for(ICompilationUnitWrapper unitWrapper: this.scopeCompilationUnitList){
-			unitWrapper.setCalleeCompilationUnitList(new HashMap<ICompilationUnitWrapper, Integer>());
-			unitWrapper.setCallerCompilationUnitList(new HashMap<ICompilationUnitWrapper, Integer>());
+			unitWrapper.setCalleeCompilationUnitList(new HashMap<ICompilationUnitWrapper, ReferencingDetail>());
+			unitWrapper.setCallerCompilationUnitList(new HashMap<ICompilationUnitWrapper, ReferencingDetail>());
 		}
 		
 		for(ProgramReference reference: this.getReferenceList()){
@@ -532,9 +534,16 @@ public class ProgramModel{
 			
 			ICompilationUnitWrapper refereeUnit = null;
 			LowLevelGraphNode refereeNode = reference.getReferee();
+			
+			int referencingType = ReferencingDetail.REFER;
 			if(refereeNode instanceof UnitMemberWrapper){
 				UnitMemberWrapper refereeMember = (UnitMemberWrapper)refereeNode;
-				refereeUnit = refereeMember.getUnitWrapper();				
+				refereeUnit = refereeMember.getUnitWrapper();			
+				
+				if(refereeMember instanceof MethodWrapper){
+					referencingType = ((MethodWrapper)refereeMember).isConstructor()? 
+							ReferencingDetail.NEW : ReferencingDetail.REFER;
+				}
 			}
 			else if(refereeNode instanceof ICompilationUnitWrapper){
 				refereeUnit = (ICompilationUnitWrapper)refereeNode;
@@ -546,8 +555,8 @@ public class ProgramModel{
 			 * relation has already indicated the dependency relation. 
 			 */
 			if(!refererUnit.equals(refereeUnit) && !refererUnit.getAllAncestors().contains(refereeUnit)){
-				refererUnit.addCallee(refereeUnit);
-				refereeUnit.addCaller(refererUnit);
+				refererUnit.addCallee(refereeUnit, referencingType);
+				refereeUnit.addCaller(refererUnit, referencingType);
 				
 				refererUnit.putReferringDetail(refereeUnit, reference.getASTNode());
 			}
@@ -660,8 +669,8 @@ public class ProgramModel{
 		
 		for(UnitMemberWrapper member: this.scopeMemberList){
 			for(UnitMemberWrapper toBeRemovedMember: toBeRemovedOnes){
-				member.getCalleeList().remove(toBeRemovedMember);
-				member.getCallerList().remove(toBeRemovedMember);
+				member.getCalleeList(ReferencingDetail.ALL).remove(toBeRemovedMember);
+				member.getCallerList(ReferencingDetail.ALL).remove(toBeRemovedMember);
 			}
 		}
 	}

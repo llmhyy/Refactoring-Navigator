@@ -84,10 +84,10 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	}
 
 	@Override
-	public HashMap<GraphNode, Integer> getCallerList() {
-		HashMap<GraphNode, Integer> map = new HashMap<>();
+	public HashMap<GraphNode, ReferencingDetail> getCallerList(int type) {
+		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ProgramReference reference: this.refererPointList){
-			map.put(reference.getReferer(), 1);
+			map.put(reference.getReferer(), new ReferencingDetail(1, ReferencingDetail.UNKNOWN));
 		}
 		
 		return map;
@@ -95,11 +95,11 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 
 	
 	@Override
-	public HashMap<GraphNode, Integer> getCalleeList() {
-		HashMap<GraphNode, Integer> map = new HashMap<>();
+	public HashMap<GraphNode, ReferencingDetail> getCalleeList(int type) {
+		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ProgramReference reference: this.refereePointList){
 			if(reference.getReferee() instanceof UnitMemberWrapper){
-				map.put((UnitMemberWrapper)reference.getReferee(), 1);				
+				map.put((UnitMemberWrapper)reference.getReferee(), new ReferencingDetail(1, ReferencingDetail.UNKNOWN));				
 			}
 		}
 		
