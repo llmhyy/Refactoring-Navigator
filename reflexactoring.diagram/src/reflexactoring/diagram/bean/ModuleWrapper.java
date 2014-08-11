@@ -187,7 +187,9 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	public HashMap<GraphNode, ReferencingDetail> getCallerList(int type) {
 		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ModuleWrapper module: this.callerModuleList){
-			map.put(module, new ReferencingDetail(1, ReferencingDetail.UNKNOWN));
+			ReferencingDetail detail = new ReferencingDetail();
+			detail.addOneReference(ReferencingDetail.ALL);
+			map.put(module, detail);
 		}
 		return map;
 	}
@@ -199,7 +201,9 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	public HashMap<GraphNode, ReferencingDetail> getCalleeList(int type) {
 		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ModuleWrapper module: this.calleeModuleList){
-			map.put(module, new ReferencingDetail(1, ReferencingDetail.UNKNOWN));
+			ReferencingDetail detail = new ReferencingDetail();
+			detail.addOneReference(ReferencingDetail.ALL);
+			map.put(module, detail);
 		}
 		return map;
 	}

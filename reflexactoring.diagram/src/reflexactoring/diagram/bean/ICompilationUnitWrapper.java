@@ -195,7 +195,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	public boolean hasCalleeCompilationUnit(ICompilationUnitWrapper unit, int type){
 		for(ICompilationUnitWrapper calleeUnit: this.calleeCompilationUnitList.keySet()){
 			ReferencingDetail detail = this.calleeCompilationUnitList.get(calleeUnit);
-			if(calleeUnit.equals(unit) && detail.getReferencingType() == type){
+			if(calleeUnit.equals(unit) && detail.getMap().containsKey(type)){
 				return true;
 			}
 		}
@@ -326,22 +326,26 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	
 	public void addCaller(ICompilationUnitWrapper unit, int referenceType){
 		if(!this.callerCompilationUnitList.keySet().contains(unit)){
-			this.callerCompilationUnitList.put(unit, new ReferencingDetail(1, referenceType));
+			ReferencingDetail detail = new ReferencingDetail();
+			detail.addOneReference(referenceType);
+			this.callerCompilationUnitList.put(unit, detail);
 		}
 		else{
 			ReferencingDetail detail = this.callerCompilationUnitList.get(unit);
-			detail.setReferencingTimes(detail.getReferencingTimes() + 1);
+			detail.addOneReference(referenceType);
 			this.callerCompilationUnitList.put(unit, detail);
 		}
 	}
 	
 	public void addCallee(ICompilationUnitWrapper unit, int referenceType){
 		if(!this.calleeCompilationUnitList.keySet().contains(unit)){
-			this.calleeCompilationUnitList.put(unit, new ReferencingDetail(1, referenceType));
+			ReferencingDetail detail = new ReferencingDetail();
+			detail.addOneReference(referenceType);
+			this.calleeCompilationUnitList.put(unit, detail);
 		}
 		else{
 			ReferencingDetail detail = this.calleeCompilationUnitList.get(unit);
-			detail.setReferencingTimes(detail.getReferencingTimes() + 1);
+			detail.addOneReference(referenceType);
 			this.calleeCompilationUnitList.put(unit, detail);
 		}
 	}
@@ -370,7 +374,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ICompilationUnitWrapper unit: this.callerCompilationUnitList.keySet()){
 			ReferencingDetail detail = this.callerCompilationUnitList.get(unit);
-			if(detail.getReferencingType() == type){
+			if(detail.getMap().containsKey(type)){
 				map.put(unit, detail);				
 			}
 		}
@@ -386,7 +390,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ICompilationUnitWrapper unit: this.calleeCompilationUnitList.keySet()){
 			ReferencingDetail detail = this.calleeCompilationUnitList.get(unit);
-			if(detail.getReferencingType() == type){
+			if(detail.getMap().containsKey(type)){
 				map.put(unit, detail);				
 			}
 		}

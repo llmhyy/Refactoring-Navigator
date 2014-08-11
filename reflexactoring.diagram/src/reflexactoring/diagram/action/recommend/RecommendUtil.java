@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 import reflexactoring.diagram.bean.GraphNode;
 import reflexactoring.diagram.bean.GraphRelationType;
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ReferencingDetail;
 
 /**
  * @author linyun
@@ -28,7 +30,8 @@ public class RecommendUtil {
 					
 					if(graphType == GraphRelationType.GRAPH_DEPENDENCY){
 						if(nodeI.getCalleeList(type).keySet().contains(nodeJ)){
-							graphMatrix[i][j] = nodeI.getCalleeList(type).get(nodeJ).getReferencingTimes();
+							ReferencingDetail detail = nodeI.getCalleeList(type).get(nodeJ);
+							graphMatrix[i][j] = detail.getMap().get(type);	
 						}
 					}else if(graphType == GraphRelationType.GRAPH_INHERITANCE){
 						if(nodeI.getParentList().contains(nodeJ)){

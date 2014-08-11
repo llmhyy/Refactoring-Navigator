@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.bean;
 
+import java.util.HashMap;
+
 /**
  * @author linyun
  *
@@ -14,47 +16,45 @@ public class ReferencingDetail {
 	public static int REFER = 2;
 	public static int UNKNOWN = 3;
 	
-	private int referencingTimes;
-	private int referencingType;
-	
 	/**
-	 * @param referencingTimes
-	 * @param referencingType
+	 * Indicating which type has been referenced by how many times.
 	 */
-	public ReferencingDetail(int referencingTimes, int referencingType) {
-		super();
-		this.referencingTimes = referencingTimes;
-		this.referencingType = referencingType;
+	HashMap<Integer, Integer> map = new HashMap<>();
+	
+	public ReferencingDetail() {
+		
+	}
+	
+	public void addOneReference(int type){
+		if(this.map.keySet().contains(type)){
+			int value = this.map.get(type);
+			value++;
+			this.map.put(type, value);
+		}
+		else{
+			this.map.put(type, 1);
+		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected ReferencingDetail clone() {
-		ReferencingDetail detail = new ReferencingDetail(this.referencingTimes, this.referencingType);
+		ReferencingDetail detail = new ReferencingDetail();
+		detail.setMap((HashMap<Integer, Integer>) this.getMap().clone());
 		return detail;
 	}
 
 	/**
-	 * @return the referencingTimes
+	 * @return the map
 	 */
-	public int getReferencingTimes() {
-		return referencingTimes;
+	public HashMap<Integer, Integer> getMap() {
+		return map;
 	}
+
 	/**
-	 * @param referencingTimes the referencingTimes to set
+	 * @param map the map to set
 	 */
-	public void setReferencingTimes(int referencingTimes) {
-		this.referencingTimes = referencingTimes;
-	}
-	/**
-	 * @return the referencingType
-	 */
-	public int getReferencingType() {
-		return referencingType;
-	}
-	/**
-	 * @param referencingType the referencingType to set
-	 */
-	public void setReferencingType(int referencingType) {
-		this.referencingType = referencingType;
+	public void setMap(HashMap<Integer, Integer> map) {
+		this.map = map;
 	}
 	
 	
