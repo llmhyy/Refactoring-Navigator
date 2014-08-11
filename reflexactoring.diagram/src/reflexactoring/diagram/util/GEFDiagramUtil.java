@@ -47,6 +47,7 @@ import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.edit.parts.ClassExtendEditPart;
 import reflexactoring.diagram.edit.parts.ImplementEditPart;
 import reflexactoring.diagram.edit.parts.InterfaceExtendEditPart;
+import reflexactoring.diagram.edit.parts.ModuleCreationEditPart;
 import reflexactoring.diagram.edit.parts.ModuleDependencyEditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.edit.parts.ModuleExtendEditPart;
@@ -591,6 +592,12 @@ public class GEFDiagramUtil {
 						}
 						else if(connectionPart instanceof ModuleExtendEditPart){
 							ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);
+							if(connectionWrapper.equals(connection)){
+								return (ModuleLinkEditPart)connectionPart;
+							}
+						}
+						else if(connectionPart instanceof ModuleCreationEditPart){
+							ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_CREATION);
 							if(connectionWrapper.equals(connection)){
 								return (ModuleLinkEditPart)connectionPart;
 							}

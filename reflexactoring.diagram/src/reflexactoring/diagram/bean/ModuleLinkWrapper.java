@@ -19,6 +19,7 @@ public class ModuleLinkWrapper implements SuggestionObject{
 	
 	public static final int MODULE_EXTEND = 1;
 	public static final int MODULE_DEPENDENCY = 2;
+	public static final int MODULE_CREATION = 3;
 	
 	private ModuleWrapper sourceModule;
 	private ModuleWrapper targetModule;

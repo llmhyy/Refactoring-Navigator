@@ -6,20 +6,23 @@ import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
 import org.eclipse.draw2d.geometry.PointList;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ITreeBranchEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.notation.View;
-
 import org.eclipse.swt.graphics.Color;
+
+import reflexactoring.ModuleExtend;
+import reflexactoring.diagram.bean.ModuleLinkWrapper;
+import reflexactoring.diagram.edit.parts.ModuleExtendEditPart.ModuleExtendFigure;
 import reflexactoring.diagram.edit.policies.ModuleCreationItemSemanticEditPolicy;
 
 /**
  * @generated
  */
-public class ModuleCreationEditPart extends ConnectionNodeEditPart implements
-		ITreeBranchEditPart {
+public class ModuleCreationEditPart extends ModuleLinkEditPart {
 
 	/**
 	 * @generated
@@ -51,7 +54,22 @@ public class ModuleCreationEditPart extends ConnectionNodeEditPart implements
 	 * @generated
 	 */
 	protected Connection createConnectionFigure() {
-		return new ModuleCreationFigure();
+		ModuleCreationFigure figure = new ModuleCreationFigure();
+		EObject eObject = this.resolveSemanticElement();
+		if (eObject instanceof ModuleExtend) {
+			ModuleExtend extend = (ModuleExtend) eObject;
+			if (extend.getName().equals(ModuleLinkWrapper.ABSENCE)) {
+				figure.setAbsenceStyle();
+			} else if (extend.getName()
+					.equals(ModuleLinkWrapper.DIVERGENCE)) {
+				figure.setDivergneceStyle();
+			} else if (extend.getName().equals(
+					ModuleLinkWrapper.CONFORMANCE)) {
+				figure.setConformanceStyle();
+			}
+		}
+		return figure;
+		//return new ModuleCreationFigure();
 	}
 
 	/**
@@ -64,7 +82,7 @@ public class ModuleCreationEditPart extends ConnectionNodeEditPart implements
 	/**
 	 * @generated
 	 */
-	public class ModuleCreationFigure extends PolylineConnectionEx {
+	public class ModuleCreationFigure extends ModuleLinkFigure {
 
 		/**
 		 * @generated

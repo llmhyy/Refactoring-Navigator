@@ -47,6 +47,7 @@ import reflexactoring.ClassExtend;
 import reflexactoring.Implement;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
+import reflexactoring.ModuleCreation;
 import reflexactoring.ModuleDependency;
 import reflexactoring.ModuleExtend;
 import reflexactoring.ModuleLink;
@@ -57,6 +58,7 @@ import reflexactoring.TypeDependency;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.ReferencingDetail;
 import reflexactoring.diagram.edit.commands.Class2CreateCommand;
 import reflexactoring.diagram.edit.commands.ClassCreateCommand;
 import reflexactoring.diagram.edit.commands.Interface2CreateCommand;
@@ -393,15 +395,22 @@ public class DiagramUpdater {
 			ModuleWrapper sourceModule = new ModuleWrapper(connection.getOrigin());
 			ModuleWrapper targetModule = new ModuleWrapper(connection.getDestination());
 			
+			ModuleLinkWrapper connectionWrapper = null;
 			if(connection instanceof ModuleExtend){
-				ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);
-				conceivedConnectionList.add(connectionWrapper);
+				connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);
 			}
 			else if(connection instanceof ModuleDependency){
-				ModuleLinkWrapper connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_DEPENDENCY);
-				conceivedConnectionList.add(connectionWrapper);
+				connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_DEPENDENCY);
+			}
+			else if(connection instanceof ModuleCreation){
+				connectionWrapper = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_CREATION);
 			}
 			
+			if(null == connectionWrapper){
+				System.err.println("unkown type of connection");
+			}
+			
+			conceivedConnectionList.add(connectionWrapper);
 		}
 		
 		HashSet<ModuleLinkWrapper> realisticConnectionList = recoverRealisticConnectionList(compilationUnitWrapperList);
@@ -463,6 +472,9 @@ public class DiagramUpdater {
 		else if(connection.getLinkType() == ModuleLinkWrapper.MODULE_EXTEND){
 			connectionType = ReflexactoringElementTypes.ModuleExtend_4006;
 		}
+		else if(connection.getLinkType() == ModuleLinkWrapper.MODULE_CREATION){
+			connectionType = ReflexactoringElementTypes.ModuleCreation_4007;
+		}
 		
 		CreateRelationshipRequest req = new CreateRelationshipRequest(sourceModule, targetModule, connectionType);
 		
@@ -506,9 +518,17 @@ public class DiagramUpdater {
 					ModuleWrapper callerModule = callerUnit.getMappingModule();
 					ModuleWrapper calleeModule = calleeUnit.getMappingModule();
 					
+					if(callerUnit.toString().contains("WeatherData")){
+						System.currentTimeMillis();
+					}
+					
 					if(callerModule != null && calleeModule != null && !callerModule.equals(calleeModule)){	
-						if(callerUnit.hasCalleeCompilationUnit(calleeUnit)){
+						if(callerUnit.hasCalleeCompilationUnit(calleeUnit, ReferencingDetail.REFER)){
 							ModuleLinkWrapper connection = new ModuleLinkWrapper(callerModule, calleeModule, ModuleLinkWrapper.MODULE_DEPENDENCY);
+							realisticConnectionList.add(connection);
+						}
+						if(callerUnit.hasCalleeCompilationUnit(calleeUnit, ReferencingDetail.NEW)){
+							ModuleLinkWrapper connection = new ModuleLinkWrapper(callerModule, calleeModule, ModuleLinkWrapper.MODULE_CREATION);
 							realisticConnectionList.add(connection);
 						}
 						if(callerUnit.hasSuperCompilationUnit(calleeUnit)){

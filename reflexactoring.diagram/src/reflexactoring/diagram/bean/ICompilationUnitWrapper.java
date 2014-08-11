@@ -192,9 +192,10 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		return false;
 	}
 	
-	public boolean hasCalleeCompilationUnit(ICompilationUnitWrapper unit){
+	public boolean hasCalleeCompilationUnit(ICompilationUnitWrapper unit, int type){
 		for(ICompilationUnitWrapper calleeUnit: this.calleeCompilationUnitList.keySet()){
-			if(calleeUnit.equals(unit)){
+			ReferencingDetail detail = this.calleeCompilationUnitList.get(calleeUnit);
+			if(calleeUnit.equals(unit) && detail.getReferencingType() == type){
 				return true;
 			}
 		}
