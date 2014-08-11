@@ -98,18 +98,26 @@ public class ClassStructureBuilder {
 		public boolean visit(ClassInstanceCreation creation) {
 
 			IMethodBinding methodBinding = creation.resolveConstructorBinding();
-			methodBinding.getDeclaringClass();
 			String key = methodBinding.getKey();
 
+			boolean isContainedInList = false;
 			for (UnitMemberWrapper calleeMember : members) {
 				if (calleeMember instanceof MethodWrapper) {
 					MethodWrapper methodWrapper = (MethodWrapper) calleeMember;
-					String methodKey = methodWrapper.getMethod()
-							.resolveBinding().getKey();
+					String methodKey = methodWrapper.getMethod().resolveBinding().getKey();
 
 					if (key.equals(methodKey)) {
+						isContainedInList = true;
 						buildRelation(callerMember, methodWrapper, creation, ProgramReference.METHOD_INVOCATION);
 					}
+				}
+			}
+			
+			if(!isContainedInList){
+				String qualifiedName = methodBinding.getDeclaringClass().getQualifiedName();
+				ICompilationUnitWrapper correspondingUnit = Settings.scope.findUnit(qualifiedName);
+				if(null != correspondingUnit){
+					buildRelation(callerMember, correspondingUnit, creation, ProgramReference.NEW_DEFAULT_CONSTRUCTOR);
 				}
 			}
 

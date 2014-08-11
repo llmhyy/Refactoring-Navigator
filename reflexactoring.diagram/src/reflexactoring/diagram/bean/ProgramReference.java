@@ -20,6 +20,7 @@ public class ProgramReference {
 	 */
 	public static final int TYPE_DECLARATION = 3;
 	public static final int PARAMETER_ACCESS = 4;
+	public static final int NEW_DEFAULT_CONSTRUCTOR = 5;
 	
 	private int referenceType;
 	private ASTNode originalASTNode;

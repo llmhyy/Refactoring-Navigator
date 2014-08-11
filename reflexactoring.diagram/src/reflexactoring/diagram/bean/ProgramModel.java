@@ -547,6 +547,8 @@ public class ProgramModel{
 			}
 			else if(refereeNode instanceof ICompilationUnitWrapper){
 				refereeUnit = (ICompilationUnitWrapper)refereeNode;
+				referencingType = reference.getReferenceType() == ProgramReference.NEW_DEFAULT_CONSTRUCTOR? 
+						ReferencingDetail.NEW : ReferencingDetail.REFER;
 			}
 			
 			/**
