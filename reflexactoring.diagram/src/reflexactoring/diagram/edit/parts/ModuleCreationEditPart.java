@@ -14,6 +14,7 @@ import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.swt.graphics.Color;
 
+import reflexactoring.ModuleCreation;
 import reflexactoring.ModuleExtend;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.edit.parts.ModuleExtendEditPart.ModuleExtendFigure;
@@ -56,14 +57,14 @@ public class ModuleCreationEditPart extends ModuleLinkEditPart {
 	protected Connection createConnectionFigure() {
 		ModuleCreationFigure figure = new ModuleCreationFigure();
 		EObject eObject = this.resolveSemanticElement();
-		if (eObject instanceof ModuleExtend) {
-			ModuleExtend extend = (ModuleExtend) eObject;
-			if (extend.getName().equals(ModuleLinkWrapper.ABSENCE)) {
+		if (eObject instanceof ModuleCreation) {
+			ModuleCreation creation = (ModuleCreation) eObject;
+			if (creation.getName().equals(ModuleLinkWrapper.ABSENCE)) {
 				figure.setAbsenceStyle();
-			} else if (extend.getName()
+			} else if (creation.getName()
 					.equals(ModuleLinkWrapper.DIVERGENCE)) {
 				figure.setDivergneceStyle();
-			} else if (extend.getName().equals(
+			} else if (creation.getName().equals(
 					ModuleLinkWrapper.CONFORMANCE)) {
 				figure.setConformanceStyle();
 			}
