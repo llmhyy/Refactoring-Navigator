@@ -26,6 +26,15 @@ public class Violation {
 	 */
 	public final static int INHERITANCE_DIVERGENCE = 4;
 	
+	/**
+	 * a creation exist in high level model but not in low level model.
+	 */
+	public final static int CREATION_ABSENCE = 5;
+	/**
+	 * a creation exist in low level model but not in high level model.
+	 */
+	public final static int CREATION_DIVERGENCE = 6;
+	
 	private int sourceModuleIndex;
 	private int destModuleIndex;
 	private int type;

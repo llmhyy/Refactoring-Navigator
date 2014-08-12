@@ -25,16 +25,25 @@ public class AdvanceEvaluatorAdapter {
 	
 	public double computeFitness(ProgramModel model, ArrayList<ModuleWrapper> moduleList){
 		double[][] highLevelDependencyMatrix = RecommendUtil.extractGraph(moduleList, 
-				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.ALL);
+				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
 		double[][] highLevelInheritanceMatrix = RecommendUtil.extractGraph(moduleList, 
 				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
+		double[][] highLevelCreationMatrix = RecommendUtil.extractGraph(moduleList, 
+				GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
+		
+		
 		double[][] lowLevelDependencyMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
 				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
 		double[][] lowLevelInheritanceMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
-				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.REFER);
+				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
+		double[][] lowLevelCreationMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
+				GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
+		
+		System.currentTimeMillis();
+		
 		double[][] similarityTable = new double[moduleList.size()][model.getScopeCompilationUnitList().size()];
 		AdvancedFitnessEvaluator evaluator = new AdvancedFitnessEvaluator(similarityTable, highLevelDependencyMatrix, lowLevelDependencyMatrix, 
-				highLevelInheritanceMatrix, lowLevelInheritanceMatrix);
+				highLevelInheritanceMatrix, lowLevelInheritanceMatrix, highLevelCreationMatrix, lowLevelCreationMatrix);
 		
 		int[] DNA = constructDNA(model, moduleList);
 		

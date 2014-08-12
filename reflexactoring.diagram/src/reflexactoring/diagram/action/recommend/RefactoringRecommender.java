@@ -209,6 +209,20 @@ public class RefactoringRecommender {
 				action.setDestination(targetModule);	
 				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);
 			}
+			else if(violation.getType() == Violation.CREATION_ABSENCE){
+				//TODO for Adi
+				/*action = new DeleteExtendAction();
+				action.setOrigin(sourceModule);
+				action.setDestination(targetModule);
+				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);*/
+			}
+			else if(violation.getType() == Violation.CREATION_DIVERGENCE){
+				//TODO for Adi
+				/*action = new AddExtendAction();
+				action.setOrigin(sourceModule);
+				action.setDestination(targetModule);	
+				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);*/
+			}
 			
 			SuggestionMove suggestion = new SuggestionMove(link, action);
 			suggestions.add(suggestion);

@@ -23,6 +23,7 @@ import org.eclipse.ui.PartInitException;
 
 import reflexactoring.Activator;
 import reflexactoring.Module;
+import reflexactoring.ModuleCreation;
 import reflexactoring.ModuleDependency;
 import reflexactoring.ModuleExtend;
 import reflexactoring.ModuleLink;
@@ -39,6 +40,7 @@ import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarity;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.ReferencingDetail;
 import reflexactoring.diagram.bean.SimilarityComputable;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
 import reflexactoring.diagram.preferences.RecommendSettingPage;
@@ -342,11 +344,14 @@ public class ReflexactoringUtil {
 						
 						if(originWrapper != null && destinationWrapper != null){
 							if(moduleLink instanceof ModuleDependency){
-								originWrapper.addCalleeModule(destinationWrapper);
-								destinationWrapper.addCallerModule(originWrapper);								
+								originWrapper.addCalleeModule(destinationWrapper, ReferencingDetail.REFER);
+								destinationWrapper.addCallerModule(originWrapper, ReferencingDetail.REFER);								
 							}else if(moduleLink instanceof ModuleExtend){
 								originWrapper.addParentModule(destinationWrapper);
 								destinationWrapper.addChildModule(originWrapper);	
+							}else if(moduleLink instanceof ModuleCreation){
+								originWrapper.addCalleeModule(destinationWrapper, ReferencingDetail.NEW);
+								destinationWrapper.addCallerModule(originWrapper, ReferencingDetail.NEW);
 							}
 						}
 					}

@@ -16,8 +16,8 @@ import reflexactoring.Module;
 public class ModuleWrapper extends Document implements SuggestionObject, GraphNode{
 	
 	private Module module;
-	private ArrayList<ModuleWrapper> calleeModuleList = new ArrayList<>();
-	private ArrayList<ModuleWrapper> callerModuleList = new ArrayList<>();
+	private HashMap<ModuleWrapper, ReferencingDetail> calleeModuleList = new HashMap<>();
+	private HashMap<ModuleWrapper, ReferencingDetail> callerModuleList = new HashMap<>();
 	private ArrayList<ModuleWrapper> parentModuleList = new ArrayList<>();
 	private ArrayList<ModuleWrapper> childModuleList = new ArrayList<>();
 	//private ArrayList<ICompilationUnitWrapper> mappingList = new ArrayList<>();
@@ -83,49 +83,49 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	/**
 	 * @return the calleeModuleList
 	 */
-	public ArrayList<ModuleWrapper> getCalleeModuleList() {
+	public HashMap<ModuleWrapper, ReferencingDetail> getCalleeModuleList() {
 		return calleeModuleList;
 	}
 	
-	public void addCalleeModule(ModuleWrapper calleeWrapper){
-		for(ModuleWrapper module: this.calleeModuleList){
-			if(module.getName().equals(calleeWrapper.getName())){
-				return;
-			}
-		}
-		
-		this.calleeModuleList.add(calleeWrapper);
-	}
 
 	/**
 	 * @param calleeModuleList the calleeModuleList to set
 	 */
-	public void setCalleeModuleList(ArrayList<ModuleWrapper> calleeModuleList) {
+	public void setCalleeModuleList(HashMap<ModuleWrapper, ReferencingDetail> calleeModuleList) {
 		this.calleeModuleList = calleeModuleList;
 	}
 
 	/**
 	 * @return the callerModuleList
 	 */
-	public ArrayList<ModuleWrapper> getCallerModuleList() {
+	public HashMap<ModuleWrapper, ReferencingDetail> getCallerModuleList() {
 		return callerModuleList;
 	}
 
-	public void addCallerModule(ModuleWrapper callerWrapper){
-		for(ModuleWrapper module: this.callerModuleList){
-			if(module.getName().equals(callerWrapper.getName())
-					&& module.getDescription().equals(callerWrapper.getDescription())){
-				return;
-			}
+	public void addCalleeModule(ModuleWrapper calleeWrapper, int type){
+		ReferencingDetail detail = this.calleeModuleList.get(calleeWrapper);
+		if(detail == null){
+			detail = new ReferencingDetail();
 		}
 		
-		this.callerModuleList.add(callerWrapper);
+		detail.addOneReference(type);
+		this.calleeModuleList.put(calleeWrapper, detail);
+	}
+	
+	public void addCallerModule(ModuleWrapper callerWrapper, int type){
+		ReferencingDetail detail = this.callerModuleList.get(callerWrapper);
+		if(detail == null){
+			detail = new ReferencingDetail();
+		}
+		
+		detail.addOneReference(type);
+		this.callerModuleList.put(callerWrapper, detail);
 	}
 	
 	/**
 	 * @param callerModuleList the callerModuleList to set
 	 */
-	public void setCallerModuleList(ArrayList<ModuleWrapper> callerModuleList) {
+	public void setCallerModuleList(HashMap<ModuleWrapper, ReferencingDetail> callerModuleList) {
 		this.callerModuleList = callerModuleList;
 	}
 
@@ -186,10 +186,10 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	@Override
 	public HashMap<GraphNode, ReferencingDetail> getCallerList(int type) {
 		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
-		for(ModuleWrapper module: this.callerModuleList){
-			ReferencingDetail detail = new ReferencingDetail();
-			detail.addOneReference(ReferencingDetail.ALL);
-			map.put(module, detail);
+		for(ModuleWrapper module: this.callerModuleList.keySet()){
+			//ReferencingDetail detail = new ReferencingDetail();
+			//detail.addOneReference(ReferencingDetail.ALL);
+			map.put(module, this.callerModuleList.get(module));
 		}
 		return map;
 	}
@@ -200,10 +200,10 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	@Override
 	public HashMap<GraphNode, ReferencingDetail> getCalleeList(int type) {
 		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
-		for(ModuleWrapper module: this.calleeModuleList){
-			ReferencingDetail detail = new ReferencingDetail();
-			detail.addOneReference(ReferencingDetail.ALL);
-			map.put(module, detail);
+		for(ModuleWrapper module: this.calleeModuleList.keySet()){
+			//ReferencingDetail detail = new ReferencingDetail();
+			//detail.addOneReference(ReferencingDetail.ALL);
+			map.put(module, this.calleeModuleList.get(module));
 		}
 		return map;
 	}

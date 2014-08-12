@@ -130,20 +130,28 @@ public class PopulationGenerator {
 				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.ALL);
 		double[][] highLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(moduleList, 
 				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
+		double[][] highLevelNodeCreationMatrix = RecommendUtil.extractGraph(moduleList, 
+				GraphRelationType.GRAPH_CREATION, ReferencingDetail.ALL);
+		
 		double[][] lowLevelNodeDependencyMatrix;
 		double[][] lowLevelNodeInheritanceMatrix;
+		double[][] lowLevelNodeCreationMatrix;
 		
 		if(isForTypePopulation){
 			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
 					GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
 			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
-					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.REFER);
+					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
+			lowLevelNodeCreationMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
+					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.NEW);
 		}
 		else{
 			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
 					GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
 			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
 					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.REFER);
+			lowLevelNodeCreationMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
+					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.NEW);
 		}
 		
 		
@@ -201,7 +209,8 @@ public class PopulationGenerator {
 					new DefaultFitnessEvaluator(similarityTable, highLevelNodeMatrix, lowLevelNodeMatrix));*/
 			Genotype gene = new Genotype(DNA, seedDNA, 
 					new AdvancedFitnessEvaluator(similarityTable, highLevelNodeDependencyMatrix, lowLevelNodeDependencyMatrix, 
-							highLevelNodeInheritanceMatrix, lowLevelNodeInheritanceMatrix));
+							highLevelNodeInheritanceMatrix, lowLevelNodeInheritanceMatrix, highLevelNodeCreationMatrix, 
+							lowLevelNodeCreationMatrix));
 			population.add(gene);
 		}
 		

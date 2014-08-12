@@ -16,24 +16,49 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 	
 	private double[][] highLevelNodeDependencyMatrix;
 	private double[][] lowLevelNodeDependencyMatrix;
+	
+	private double[][] highLevelNodeCreationMatrix;
+	private double[][] lowLevelNodeCreationMatrix;
+	
 	private double[][] highLevelNodeInheritanceMatrix;
 	private double[][] lowLevelNodeInheritanceMatrix;
+
 	
-	public AdvancedFitnessEvaluator(double[][] similarityTable, double[][] highLevelNodeDependencyMatrix, double[][] lowLevelNodeDependencyMatrix, 
-			double[][] highLevelNodeInheritanceMatrix, double[][] lowLevelNodeInheritanceMatrix){
-		this.setSimilarityTable(similarityTable);
-		this.setHighLevelNodeDependencyMatrix(highLevelNodeDependencyMatrix);
-		this.setLowLevelNodeDependencyMatrix(lowLevelNodeDependencyMatrix);
-		this.setHighLevelNodeInheritanceMatrix(highLevelNodeInheritanceMatrix);
-		this.setLowLevelNodeInheritanceMatrix(lowLevelNodeInheritanceMatrix);
+	
+	/**
+	 * @param similarityTable
+	 * @param highLevelNodeDependencyMatrix
+	 * @param lowLevelNodeDependencyMatrix
+	 * @param highLevelNodeCreationMatrix
+	 * @param lowLevelNodeCreationMatrix
+	 * @param highLevelNodeInheritanceMatrix
+	 * @param lowLevelNodeInheritanceMatrix
+	 */
+	public AdvancedFitnessEvaluator(double[][] similarityTable,
+			double[][] highLevelNodeDependencyMatrix,
+			double[][] lowLevelNodeDependencyMatrix,
+			double[][] highLevelNodeInheritanceMatrix,
+			double[][] lowLevelNodeInheritanceMatrix,
+			double[][] highLevelNodeCreationMatrix,
+			double[][] lowLevelNodeCreationMatrix) {
+		super();
+		this.similarityTable = similarityTable;
+		this.highLevelNodeDependencyMatrix = highLevelNodeDependencyMatrix;
+		this.lowLevelNodeDependencyMatrix = lowLevelNodeDependencyMatrix;
+		this.highLevelNodeCreationMatrix = highLevelNodeCreationMatrix;
+		this.lowLevelNodeCreationMatrix = lowLevelNodeCreationMatrix;
+		this.highLevelNodeInheritanceMatrix = highLevelNodeInheritanceMatrix;
+		this.lowLevelNodeInheritanceMatrix = lowLevelNodeInheritanceMatrix;
 	}
-	
+
 	public double computeFitness(Genotype gene){
 		double structureDependencyViolation = computeStructureDependencyViolation(gene);
 		double structureInheritanceViolation = computeStructureInheritanceViolation(gene);
+		double structureCreationViolation = computeStructureCreationViolation(gene);
+		
 		double lexicalSimilarity = computeLexicalSimilarity(gene);
 		return Double.valueOf(ReflexactoringUtil.getAlpha())*lexicalSimilarity
-				- structureDependencyViolation - structureInheritanceViolation;
+				- structureDependencyViolation - structureInheritanceViolation - structureCreationViolation;
 	}
 	
 	private double computeStructureDependencyViolation(Genotype gene){
@@ -102,6 +127,44 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 							violationList.add(violation);
 						}
 						result += confidenceTable[i][j] * violationNum;
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	private double computeStructureCreationViolation(Genotype gene){
+		double result = 0;
+		
+		//TODO for Adi
+		//double[][] confidenceTable = Settings.extendConfidenceTable.convertToRawTable();
+		
+		for(int i=0; i<highLevelNodeCreationMatrix.length; i++){
+			for(int j=0; j<highLevelNodeCreationMatrix.length; j++){
+				if(i != j){
+					/**
+					 * Detect divergence violation
+					 */
+					if(highLevelNodeCreationMatrix[i][j] == 0){
+						int violationNum = countDivergenceViolation(gene, i, j, lowLevelNodeCreationMatrix);
+						if(violationNum != 0){
+							Violation violation = new Violation(i, j, Violation.CREATION_DIVERGENCE);
+							violationList.add(violation);
+						}
+						result += /*confidenceTable[i][j] **/ violationNum;
+					}
+					/**
+					 * Detect absence violation
+					 */
+					else{
+						int violationNum = countAbsenceViolation(gene, i, j, lowLevelNodeCreationMatrix);
+						if(violationNum != 0){
+							Violation violation = new Violation(i, j, Violation.CREATION_ABSENCE);
+							violationList.add(violation);
+						}
+						result += /*confidenceTable[i][j] **/ violationNum;
 					}
 				}
 			}
@@ -281,6 +344,33 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 		this.lowLevelNodeInheritanceMatrix = lowLevelNodeInheritanceMatrix;
 	}
 
-		
+	/**
+	 * @return the highLevelNodeCreationMatrix
+	 */
+	public double[][] getHighLevelNodeCreationMatrix() {
+		return highLevelNodeCreationMatrix;
+	}
+
+	/**
+	 * @param highLevelNodeCreationMatrix the highLevelNodeCreationMatrix to set
+	 */
+	public void setHighLevelNodeCreationMatrix(
+			double[][] highLevelNodeCreationMatrix) {
+		this.highLevelNodeCreationMatrix = highLevelNodeCreationMatrix;
+	}
+
+	/**
+	 * @return the lowLevelNodeCreationMatrix
+	 */
+	public double[][] getLowLevelNodeCreationMatrix() {
+		return lowLevelNodeCreationMatrix;
+	}
+
+	/**
+	 * @param lowLevelNodeCreationMatrix the lowLevelNodeCreationMatrix to set
+	 */
+	public void setLowLevelNodeCreationMatrix(double[][] lowLevelNodeCreationMatrix) {
+		this.lowLevelNodeCreationMatrix = lowLevelNodeCreationMatrix;
+	}
 
 }

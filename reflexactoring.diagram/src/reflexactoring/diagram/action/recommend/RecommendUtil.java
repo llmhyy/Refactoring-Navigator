@@ -28,14 +28,18 @@ public class RecommendUtil {
 					GraphNode nodeI = nodes.get(i);
 					GraphNode nodeJ = nodes.get(j);
 					
-					if(graphType == GraphRelationType.GRAPH_DEPENDENCY){
-						if(nodeI.getCalleeList(type).keySet().contains(nodeJ)){
-							ReferencingDetail detail = nodeI.getCalleeList(type).get(nodeJ);
-							graphMatrix[i][j] = detail.getMap().get(type);	
-						}
-					}else if(graphType == GraphRelationType.GRAPH_INHERITANCE){
+					if(graphType == GraphRelationType.GRAPH_INHERITANCE){
 						if(nodeI.getParentList().contains(nodeJ)){
 							graphMatrix[i][j] = 1;
+						}
+					}
+					else{
+						if(nodeI.getCalleeList(type).keySet().contains(nodeJ)){
+							ReferencingDetail detail = nodeI.getCalleeList(type).get(nodeJ);
+							Integer value = detail.getMap().get(type);
+							if(value != null){
+								graphMatrix[i][j] = value;									
+							}
 						}
 					}
 				}
