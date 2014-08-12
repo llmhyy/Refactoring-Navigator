@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
@@ -90,6 +91,10 @@ public class MethodWrapper extends UnitMemberWrapper {
 				Type type = svd.getType();
 				if(type instanceof SimpleType){
 					String typeName = ((SimpleType)type).getName().getFullyQualifiedName();
+					parameterTypes.add(typeName);
+				}
+				else if(type instanceof PrimitiveType){
+					String typeName = ((PrimitiveType)type).toString();
 					parameterTypes.add(typeName);
 				}
 			}
