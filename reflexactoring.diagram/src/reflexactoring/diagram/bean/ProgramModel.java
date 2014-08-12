@@ -344,8 +344,9 @@ public class ProgramModel{
 						clonedMemberUnit, oldMember.getTermFrequency(), oldMember.getDescription(), ((FieldWrapper) oldMember).getField());
 			}else if(oldMember instanceof MethodWrapper){
 				MethodWrapper methodWrapper = (MethodWrapper)oldMember;
-				clonedMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), methodWrapper.getParameters(), 
-						methodWrapper.isConstructor(), clonedMemberUnit, methodWrapper.getTermFrequency(), methodWrapper.getDescription(),
+				clonedMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), 
+						methodWrapper.cloneParameters(), methodWrapper.isConstructor(), 
+						clonedMemberUnit, methodWrapper.getTermFrequency(), methodWrapper.getDescription(),
 						methodWrapper.getMethod());
 			}	
 			/*if(member.getJavaElement() != null){

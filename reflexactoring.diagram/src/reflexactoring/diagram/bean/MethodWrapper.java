@@ -6,6 +6,7 @@ package reflexactoring.diagram.bean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jdt.core.IMember;
@@ -95,6 +96,17 @@ public class MethodWrapper extends UnitMemberWrapper {
 		}
 		
 		return parameterTypes;
+	}
+	
+	public void removeParameter(ICompilationUnitWrapper targetUnit){
+		Iterator<String> strIter = this.parameters.iterator();
+		while(strIter.hasNext()){
+			String paramType = strIter.next();
+			if(paramType.equals(targetUnit.getName())){
+				strIter.remove();
+				break;
+			}
+		}
 	}
 	
 	private boolean hasSameParameters(MethodWrapper methodWrapper){
@@ -199,6 +211,15 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public ArrayList<String> getParameters() {
 		return parameters;
 	}
+	
+	public ArrayList<String> cloneParameters(){
+		ArrayList<String> params = new ArrayList<>();
+		for(String param: this.parameters){
+			params.add(param);
+		}
+		
+		return params;
+	}
 
 	/**
 	 * @param parameters the parameters to set
@@ -227,14 +248,17 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public double computeSimilarityForBeingPulledUp(UnitMemberWrapper otherMember){
 		if(otherMember instanceof MethodWrapper){
 			MethodWrapper thatMethod = (MethodWrapper)otherMember;
-			if(!this.isWithSameReturnType(thatMethod)){
-				return 0;
-			}
+			
 			if(!this.isWithSameParameter(this.getParameters(), thatMethod.getParameters())){
 				return 0;
 			}
 			
-			double sim = ReflexactoringUtil.compareStringSimilarity(this.getName(), thatMethod.getName());
+			double returnTypeSimilarity = ReflexactoringUtil.
+					compareStringSimilarity(getReturnType(), thatMethod.getReturnType());
+			
+			double nameSimilarity = ReflexactoringUtil.compareStringSimilarity(this.getName(), thatMethod.getName());
+			
+			double sim = (returnTypeSimilarity + nameSimilarity)/2;
 			
 			return sim;
 		}

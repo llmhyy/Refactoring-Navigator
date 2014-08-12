@@ -5,6 +5,7 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -79,6 +80,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		/**
 		 * change the parameters of method
 		 */
+		objMethod.removeParameter(tarUnit);
 		/*ArrayList<String> newParameters = extractParameters(originalUnit, objMethod);
 		objMethod.getParameters().addAll(newParameters);*/
 		
