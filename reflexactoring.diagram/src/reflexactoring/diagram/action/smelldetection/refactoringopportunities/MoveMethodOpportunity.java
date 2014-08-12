@@ -81,8 +81,8 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		 * change the parameters of method
 		 */
 		objMethod.removeParameter(tarUnit);
-		/*ArrayList<String> newParameters = extractParameters(originalUnit, objMethod);
-		objMethod.getParameters().addAll(newParameters);*/
+		ArrayList<String> newParameters = extractParameters(originalUnit, objMethod);
+		objMethod.getParameters().addAll(newParameters);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
@@ -138,18 +138,18 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		}
 		
 		ArrayList<String> parameters = new ArrayList<>();
-		for(FieldWrapper calleeMember: calleeMemberList){
-			String parameter = calleeMember.getUnitWrapper().getName();
-			if(!parameters.contains(parameter)){
-				parameters.add(parameter);				
-			}
-		}
 		if(isMethodInvolved){
 			String parameter = originalUnit.getName();
-			if(!parameters.contains(parameter)){
-				parameters.add(parameter);				
-			}
+			parameters.add(parameter);
+			return parameters;
 		}
+		else{
+			for(FieldWrapper calleeMember: calleeMemberList){
+				String parameter = calleeMember.getType();
+				parameters.add(parameter);	
+			}			
+		}
+		
 		
 		return parameters;
 	}
