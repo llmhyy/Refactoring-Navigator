@@ -15,6 +15,7 @@ import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
 import reflexactoring.diagram.bean.HeuristicModuleUnitStopMapList;
+import reflexactoring.diagram.bean.ModuleCreationConfidenceTable;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
@@ -94,10 +95,17 @@ public class Settings {
 	
 	/**
 	 * It is used to record module-module extend confidence. If the confidence is low, e.g., 0.1,
-	 * it means user is not quite confident in such a dependency constraint, which will lead 
+	 * it means user is not quite confident in such a extend constraint, which will lead 
 	 * my algorithm considering tolerating some violation.
 	 */
 	public static ModuleExtendConfidenceTable extendConfidenceTable = new ModuleExtendConfidenceTable();
+	
+	/**
+	 * It is used to record module-module creation confidence. If the confidence is low, e.g., 0.1,
+	 * it means user is not quite confident in such a creation constraint, which will lead 
+	 * my algorithm considering tolerating some violation.
+	 */
+	public static ModuleCreationConfidenceTable creationConfidenceTable = new ModuleCreationConfidenceTable();
 	
 	/**
 	 * If a module is frozen on diagram, no member will be recommended to move into it, nor will any member

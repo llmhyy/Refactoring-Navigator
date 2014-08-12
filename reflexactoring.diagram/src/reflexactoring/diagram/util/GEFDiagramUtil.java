@@ -35,6 +35,7 @@ import reflexactoring.ClassExtend;
 import reflexactoring.Implement;
 import reflexactoring.InterfaceExtend;
 import reflexactoring.Module;
+import reflexactoring.ModuleCreation;
 import reflexactoring.ModuleDependency;
 import reflexactoring.ModuleExtend;
 import reflexactoring.ModuleLink;
@@ -290,6 +291,9 @@ public class GEFDiagramUtil {
 		else if(linkType == ModuleLinkWrapper.MODULE_EXTEND){
 			relationType = ReflexactoringElementTypes.ModuleExtend_4006;
 		}
+		else if(linkType == ModuleLinkWrapper.MODULE_CREATION){
+			relationType = ReflexactoringElementTypes.ModuleCreation_4007;
+		}
 		
 		ModuleLinkWrapper connection = new ModuleLinkWrapper(sourceModuleWrapper, targetModuleWrapper, linkType);
 		ModuleLinkEditPart editPart = findCorrespondingDepedencyEditPart(diagramRoot, connection);
@@ -335,7 +339,8 @@ public class GEFDiagramUtil {
 					&& link.getDestination().getName().equals(targetModuleWrapper.getName())){
 				
 				if((linkType == ModuleLinkWrapper.MODULE_DEPENDENCY && (link instanceof ModuleDependency))
-						|| (linkType == ModuleLinkWrapper.MODULE_EXTEND && (link instanceof ModuleExtend))){
+						|| (linkType == ModuleLinkWrapper.MODULE_EXTEND && (link instanceof ModuleExtend))
+						|| (linkType == ModuleLinkWrapper.MODULE_CREATION && (link instanceof ModuleCreation))){
 					Edge edge = (Edge)GEFDiagramUtil.findViewOfSpecificModuleDependency(diagramRoot, link);
 					
 					DestroyElementRequest destroyRequest = new DestroyElementRequest(link, false);

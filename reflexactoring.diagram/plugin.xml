@@ -886,6 +886,14 @@
       </view>
       <view
             category="reflexactoring.diagram.view.category"
+            class="reflexactoring.diagram.view.CreationConstraintConfidenceView"
+            icon="icons/view/constraint_confidence.gif"
+            id="reflexactoring.diagram.view.creationConstraintConfidence"
+            name="Creation Constraint Confidence"
+            restorable="true">
+      </view>
+      <view
+            category="reflexactoring.diagram.view.category"
             class="reflexactoring.diagram.view.AllMemberInClassMappingFixView"
             icon="icons/view/fix.gif"
             id="reflexactoring.diagram.mappingFix"

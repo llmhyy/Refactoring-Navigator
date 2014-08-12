@@ -13,6 +13,8 @@ import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ModuleCreationConfidence;
+import reflexactoring.diagram.bean.ModuleCreationConfidenceTable;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.bean.ModuleExtendConfidence;
@@ -189,6 +191,34 @@ public class UserInputMerger {
 		}
 	}
 	
+	public void mergeCreationConfidenceTable(){
+		if(Settings.creationConfidenceTable.size() > 0){
+			ModuleCreationConfidenceTable table = new ModuleCreationConfidenceTable();
+			
+			ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+			
+			for(ModuleWrapper moduleWrapper: moduleList){
+				double[] confidenceList = new double[moduleList.size()];
+				for(int i=0; i<confidenceList.length; i++){
+					Double conf = findCorrespondingCreationConfidence(moduleWrapper, moduleList.get(i));
+					if(conf == null){
+						confidenceList[i] = 0.5;							
+					}
+					else{
+						confidenceList[i] = conf;
+					}
+				}
+				
+				ModuleCreationConfidence confidence = 
+						new ModuleCreationConfidence(moduleWrapper, moduleList, confidenceList);
+				table.add(confidence);
+			}
+			
+			Settings.creationConfidenceTable = table;
+			
+		}
+	}
+	
 	private Double findCorrespondingDependencyConfidence(ModuleWrapper sourceModule, ModuleWrapper targetModule){
 		for(ModuleDependencyConfidence confidence: Settings.dependencyConfidenceTable){
 			if(confidence.getModule().getName().equals(sourceModule.getName())){
@@ -207,6 +237,22 @@ public class UserInputMerger {
 	
 	private Double findCorrespondingExtendConfidence(ModuleWrapper sourceModule, ModuleWrapper targetModule){
 		for(ModuleExtendConfidence confidence: Settings.extendConfidenceTable){
+			if(confidence.getModule().getName().equals(sourceModule.getName())){
+				
+				for(int i=0; i<confidence.getModuleList().size(); i++){
+					ModuleWrapper module = confidence.getModuleList().get(i);
+					if(module.getName().equals(targetModule.getName())){
+						return confidence.getConfidenceList()[i];
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	private Double findCorrespondingCreationConfidence(ModuleWrapper sourceModule, ModuleWrapper targetModule){
+		for(ModuleCreationConfidence confidence: Settings.creationConfidenceTable){
 			if(confidence.getModule().getName().equals(sourceModule.getName())){
 				
 				for(int i=0; i<confidence.getModuleList().size(); i++){

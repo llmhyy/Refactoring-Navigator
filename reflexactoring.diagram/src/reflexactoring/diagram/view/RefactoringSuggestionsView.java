@@ -36,6 +36,7 @@ import org.eclipse.ui.part.ViewPart;
 import reflexactoring.diagram.action.DiagramUpdater;
 import reflexactoring.diagram.action.popup.ReferenceDetailMap;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
+import reflexactoring.diagram.action.recommend.action.CreationAction;
 import reflexactoring.diagram.action.recommend.action.DependencyAction;
 import reflexactoring.diagram.action.recommend.action.ExtendAction;
 import reflexactoring.diagram.action.recommend.action.LinkAction;
@@ -43,6 +44,7 @@ import reflexactoring.diagram.action.recommend.action.RefactoringAction;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
+import reflexactoring.diagram.bean.ModuleCreationConfidence;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.ModuleExtendConfidence;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
@@ -513,6 +515,9 @@ public class RefactoringSuggestionsView extends ViewPart {
 				}else if(prerequisite.getAction() instanceof ExtendAction){
 					bufferPre.append("<a href=\"StickExtend\">Reject</a> ");	
 					bufferPre.append("<a href=\"UnstickExtend\">Undo</a>");	
+				}else if(prerequisite.getAction() instanceof CreationAction){
+					bufferPre.append("<a href=\"StickCreation\">Reject</a> ");	
+					bufferPre.append("<a href=\"UnstickCreation\">Undo</a>");	
 				}
 			}
 			bufferPre.append("<b>]</b>");
@@ -647,6 +652,59 @@ public class RefactoringSuggestionsView extends ViewPart {
 							}
 							ViewUpdater updater = new ViewUpdater();
 							updater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, true);
+						}
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkitPre.getColors();
+						colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+						t.setForeground(colors.getColor("black"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("StickCreation")){
+						RecordParameters.recordTime++;
+						
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleLinkWrapper && action instanceof CreationAction){
+							LinkAction crtAction =(LinkAction)action;
+							for(ModuleCreationConfidence confidence: Settings.creationConfidenceTable){
+								if(confidence.getModule().getName().equals(crtAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper parentModule = confidence.getModuleList().get(i);
+										if(parentModule.getName().equals(crtAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] += 2;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.CREATION_CONSTRAINT_CONFIDENCE_VIEW, Settings.creationConfidenceTable, true);
+						}
+						
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkitPre.getColors();
+						colors.createColor("gray", new RGB(207,207,207));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("gray"));
+						t.setForeground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("UnstickCreation")){
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleLinkWrapper && action instanceof CreationAction){
+							LinkAction crtAction =(LinkAction)action;
+							for(ModuleCreationConfidence confidence: Settings.creationConfidenceTable){
+								if(confidence.getModule().getName().equals(crtAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper parentModule = confidence.getModuleList().get(i);
+										if(parentModule.getName().equals(crtAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] = 0.5;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.CREATION_CONSTRAINT_CONFIDENCE_VIEW, Settings.creationConfidenceTable, true);
 						}
 						FormText t = (FormText) e.getSource();
 						FormColors colors = toolkitPre.getColors();

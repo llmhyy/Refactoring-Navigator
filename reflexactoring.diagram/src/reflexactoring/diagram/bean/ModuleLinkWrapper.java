@@ -39,6 +39,9 @@ public class ModuleLinkWrapper implements SuggestionObject{
 		else if(getLinkType() == ModuleLinkWrapper.MODULE_EXTEND){
 			relation = " extends ";
 		}
+		else if(getLinkType() == ModuleLinkWrapper.MODULE_CREATION){
+			relation = " creates ";
+		}
 		
 		return sourceModule.getName() + relation + targetModule.getName();
 	}
@@ -101,8 +104,11 @@ public class ModuleLinkWrapper implements SuggestionObject{
 		if(this.linkType == ModuleLinkWrapper.MODULE_EXTEND){
 			return "inheritance";
 		}
-		else{
+		else if(this.linkType == ModuleLinkWrapper.MODULE_DEPENDENCY){
 			return "dependency";			
+		}
+		else{
+			return "creation";			
 		}
 	}
 

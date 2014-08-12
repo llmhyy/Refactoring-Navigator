@@ -11,9 +11,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.diagram.action.recommend.action.AddCreationAction;
 import reflexactoring.diagram.action.recommend.action.AddDependencyAction;
 import reflexactoring.diagram.action.recommend.action.AddExtendAction;
 import reflexactoring.diagram.action.recommend.action.AddModuleAction;
+import reflexactoring.diagram.action.recommend.action.DeleteCreationAction;
 import reflexactoring.diagram.action.recommend.action.DeleteDependencyAction;
 import reflexactoring.diagram.action.recommend.action.DeleteExtendAction;
 import reflexactoring.diagram.action.recommend.action.LinkAction;
@@ -210,18 +212,16 @@ public class RefactoringRecommender {
 				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);
 			}
 			else if(violation.getType() == Violation.CREATION_ABSENCE){
-				//TODO for Adi
-				/*action = new DeleteExtendAction();
+				action = new DeleteCreationAction();
 				action.setOrigin(sourceModule);
 				action.setDestination(targetModule);
-				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);*/
+				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_CREATION);
 			}
 			else if(violation.getType() == Violation.CREATION_DIVERGENCE){
-				//TODO for Adi
-				/*action = new AddExtendAction();
+				action = new AddCreationAction();
 				action.setOrigin(sourceModule);
 				action.setDestination(targetModule);	
-				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_EXTEND);*/
+				link = new ModuleLinkWrapper(sourceModule, targetModule, ModuleLinkWrapper.MODULE_CREATION);
 			}
 			
 			SuggestionMove suggestion = new SuggestionMove(link, action);

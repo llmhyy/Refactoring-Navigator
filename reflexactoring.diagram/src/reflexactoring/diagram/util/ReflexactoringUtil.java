@@ -32,6 +32,8 @@ import reflexactoring.diagram.action.UserInputMerger;
 import reflexactoring.diagram.action.recommend.suboptimal.Rules;
 import reflexactoring.diagram.action.semantic.WordNetDict;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.ModuleCreationConfidence;
+import reflexactoring.diagram.bean.ModuleCreationConfidenceTable;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.bean.ModuleExtendConfidence;
@@ -436,6 +438,32 @@ public class ReflexactoringUtil {
 		else{
 			UserInputMerger merger = new UserInputMerger();
 			merger.mergeExtendConfidenceTable();
+		}
+	}
+	
+	public static void getModuleCreationConfidenceTable(){
+		
+		if(Settings.creationConfidenceTable.size() == 0){
+			ModuleCreationConfidenceTable table = new ModuleCreationConfidenceTable();
+			
+			ArrayList<ModuleWrapper> moduleList = getModuleList(Settings.diagramPath);
+			
+			for(ModuleWrapper moduleWrapper: moduleList){
+				double[] confidenceList = new double[moduleList.size()];
+				for(int i=0; i<confidenceList.length; i++){
+					confidenceList[i] = /*0.5*/1;
+				}
+				
+				ModuleCreationConfidence confidence = 
+						new ModuleCreationConfidence(moduleWrapper, moduleList, confidenceList);
+				table.add(confidence);
+			}
+			
+			Settings.creationConfidenceTable = table;
+		}
+		else{
+			UserInputMerger merger = new UserInputMerger();
+			merger.mergeCreationConfidenceTable();
 		}
 	}
 	

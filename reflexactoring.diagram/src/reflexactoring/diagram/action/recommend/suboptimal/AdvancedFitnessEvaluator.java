@@ -138,8 +138,7 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 	private double computeStructureCreationViolation(Genotype gene){
 		double result = 0;
 		
-		//TODO for Adi
-		//double[][] confidenceTable = Settings.extendConfidenceTable.convertToRawTable();
+		double[][] confidenceTable = Settings.extendConfidenceTable.convertToRawTable();
 		
 		for(int i=0; i<highLevelNodeCreationMatrix.length; i++){
 			for(int j=0; j<highLevelNodeCreationMatrix.length; j++){
@@ -153,7 +152,7 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 							Violation violation = new Violation(i, j, Violation.CREATION_DIVERGENCE);
 							violationList.add(violation);
 						}
-						result += /*confidenceTable[i][j] **/ violationNum;
+						result += confidenceTable[i][j] * violationNum;
 					}
 					/**
 					 * Detect absence violation
@@ -164,7 +163,7 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 							Violation violation = new Violation(i, j, Violation.CREATION_ABSENCE);
 							violationList.add(violation);
 						}
-						result += /*confidenceTable[i][j] **/ violationNum;
+						result += confidenceTable[i][j] * violationNum;
 					}
 				}
 			}

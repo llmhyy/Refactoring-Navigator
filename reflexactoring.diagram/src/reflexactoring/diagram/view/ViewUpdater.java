@@ -11,6 +11,7 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.diagram.action.popup.ReferenceDetailMap;
 import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
+import reflexactoring.diagram.bean.ModuleCreationConfidenceTable;
 import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
 import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
@@ -31,6 +32,11 @@ public class ViewUpdater {
 			ExtendConstraintConfidenceView view = (ExtendConstraintConfidenceView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
 					getActivePage().findView(viewId);
 			view.refreshUI((ModuleExtendConfidenceTable) inputData);
+		}
+		else if(viewId.equals(ReflexactoringPerspective.CREATION_CONSTRAINT_CONFIDENCE_VIEW)){
+			CreationConstraintConfidenceView view = (CreationConstraintConfidenceView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().
+					getActivePage().findView(viewId);
+			view.refreshUI((ModuleCreationConfidenceTable) inputData);
 		}
 		else if(viewId.equals(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW)){
 			ModuleMemberForbiddenView view = (ModuleMemberForbiddenView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().

@@ -26,6 +26,7 @@ import reflexactoring.diagram.refactoring.test.PullUpMethodSuperclassOperatorTes
 import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
+import reflexactoring.diagram.view.CreationConstraintConfidenceView;
 import reflexactoring.diagram.view.DependencyConstraintConfidenceView;
 import reflexactoring.diagram.view.ExtendConstraintConfidenceView;
 import reflexactoring.diagram.view.ModuleUnitsSimilarityView;
@@ -74,6 +75,11 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW);
 		ReflexactoringUtil.getModuleExtendConfidenceTable();
 		extendConfidenceView.refreshUI(Settings.extendConfidenceTable);
+		
+		CreationConstraintConfidenceView creationConfidenceView = (CreationConstraintConfidenceView) PlatformUI.getWorkbench().
+				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.CREATION_CONSTRAINT_CONFIDENCE_VIEW);
+		ReflexactoringUtil.getModuleCreationConfidenceTable();
+		creationConfidenceView.refreshUI(Settings.creationConfidenceTable);
 		
 		//view.getViewer().setContentProvider(new ArrayContentProvider());
 		//view.getViewer().setInput(Settings.similarityTable);
