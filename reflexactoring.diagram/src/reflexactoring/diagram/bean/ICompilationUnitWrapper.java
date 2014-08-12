@@ -52,6 +52,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	
 	private ArrayList<UnitMemberWrapper> members = new ArrayList<>();
 	private ArrayList<ICompilationUnitWrapper> ancestors;
+	private ArrayList<ICompilationUnitWrapper> descendants;
 	
 	/**
 	 * stands for the unit members referring this unit member
@@ -141,7 +142,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public ArrayList<ICompilationUnitWrapper> getAllAncestors(){
-		if(ancestors == null){
+		if(this.ancestors == null){
 			ArrayList<ICompilationUnitWrapper> ancestors = new ArrayList<>();
 			
 			if(this.superClass != null){
@@ -162,6 +163,27 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		}
 		
 		return ancestors;
+	}
+	
+	public ArrayList<ICompilationUnitWrapper> getAllDescedants(){
+		if(this.descendants == null){
+			ArrayList<ICompilationUnitWrapper> descendants = new ArrayList<>();
+			
+			for(ICompilationUnitWrapper child: this.childList){
+				descendants.add(child);
+			}
+			
+			ArrayList<ICompilationUnitWrapper> descendants0 = (ArrayList<ICompilationUnitWrapper>) descendants.clone();
+			
+			for(ICompilationUnitWrapper unit: descendants0){
+				ArrayList<ICompilationUnitWrapper> ancesList = unit.getAllDescedants();
+				descendants.addAll(ancesList);
+			}
+			
+			this.descendants = descendants;
+		}
+		
+		return descendants;
 	}
 	
 	public void openInEditor(){

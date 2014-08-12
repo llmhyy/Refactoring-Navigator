@@ -235,10 +235,10 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 				if(member instanceof MethodWrapper){
 					MethodWrapper method = (MethodWrapper)member;
 					if(method.isLegalMethodToBeMoved()){
-						for(ICompilationUnitWrapper unit: model.getScopeCompilationUnitList()){
-							if(unit.isLegalTargetClassToMoveMethodIn(method)){
-								if(isFeatureEnvy(unit, method)){
-									MoveMethodOpportunity opp = new MoveMethodOpportunity(method, unit);
+						for(ICompilationUnitWrapper targetUnit: model.getScopeCompilationUnitList()){
+							if(targetUnit.isLegalTargetClassToMoveMethodIn(method)){
+								if(isFeatureEnvy(targetUnit, method)){
+									MoveMethodOpportunity opp = new MoveMethodOpportunity(method, targetUnit);
 									oppList.add(opp);									
 								}
 							}
@@ -249,8 +249,20 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			
 			return oppList;
 		}
+		
+		private void updateMap(HashMap<ICompilationUnitWrapper, Double> map, ICompilationUnitWrapper calleeUnit){
+			if(map.get(calleeUnit) == null){
+				map.put(calleeUnit, 1.0);
+				
+			}
+			else{
+				Double freq = map.get(calleeUnit);
+				freq++;
+				map.put(calleeUnit, freq);
+			}
+		}
 
-		private boolean isFeatureEnvy(ICompilationUnitWrapper unit, MethodWrapper method){
+		private boolean isFeatureEnvy(ICompilationUnitWrapper targetUnit, MethodWrapper method){
 			HashMap<ICompilationUnitWrapper, Double> map = new HashMap<>();
 			
 			double totalFreq = 0;
@@ -260,23 +272,20 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 					MethodWrapper calleeMember = (MethodWrapper)calleeNode;
 					ICompilationUnitWrapper calleeUnit = calleeMember.getUnitWrapper();
 					
-					if(map.get(calleeUnit) == null){
-						map.put(calleeUnit, 1.0);
-					}
-					else{
-						Double freq = map.get(calleeUnit);
-						freq++;
-						map.put(calleeUnit, freq);
-					}
+					updateMap(map, calleeUnit);
+					/*for(ICompilationUnitWrapper descedantUnit: calleeUnit.getAllDescedants()){
+						updateMap(map, descedantUnit);
+					}*/
+					
 					totalFreq++;					
 				}
 			}
 			
-			if(totalFreq == 0 || map.get(unit) == null){
+			if(totalFreq == 0 || map.get(targetUnit) == null){
 				return false;
 			}
 			else{
-				double freq = map.get(unit);
+				double freq = map.get(targetUnit);
 				double ratio = freq/totalFreq;
 				return ratio > Settings.featureEnvyThreshold;
 			}
