@@ -53,7 +53,7 @@ public class SearchRefactoringSolutionAcion implements
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()) && oppList.size() != 0; i++){
 					
 					
-					if(i==5){
+					if(i==3){
 						System.currentTimeMillis();
 					}
 					
@@ -125,7 +125,7 @@ public class SearchRefactoringSolutionAcion implements
 		
 		for(RefactoringOpportunity opp: oppList){
 			
-			if(opp.toString().contains("read")){
+			if(opp.toString().contains("display")){
 				System.currentTimeMillis();
 			}
 			

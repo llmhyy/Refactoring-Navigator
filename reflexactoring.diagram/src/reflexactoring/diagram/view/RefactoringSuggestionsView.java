@@ -156,7 +156,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 			formCompositePre.setLayout(new TableWrapLayout());
 			formCompositePre.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 						
-			generatePrerequisiteUI(sequence, toolkitPre, formCompositePre);			
+			//generatePrerequisiteUI(sequence, toolkitPre, formCompositePre);			
 
 			//add suggestions
 			for(RefactoringSequenceElement element : sequence){
