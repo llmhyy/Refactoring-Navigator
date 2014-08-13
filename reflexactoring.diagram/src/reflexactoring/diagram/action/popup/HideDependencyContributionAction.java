@@ -19,9 +19,9 @@ import reflexactoring.diagram.edit.parts.TypeDependencyEditPart.TypeDependencyFi
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
-public class HideContributionAction extends ContributionAction{
+public class HideDependencyContributionAction extends ContributionAction{
 
-	public HideContributionAction() {
+	public HideDependencyContributionAction() {
 		
 	}
 
@@ -54,8 +54,8 @@ public class HideContributionAction extends ContributionAction{
 					depFigure.getPolylineDecoration().setLineWidth(1);;
 				}
 				
-				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
-				new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
+				//ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+				//new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
 			}
 		}
 		

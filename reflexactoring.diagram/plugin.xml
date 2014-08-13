@@ -160,12 +160,12 @@
             id="reflexactoring.diagram.moduleDependency"
             objectClass="reflexactoring.diagram.edit.parts.ModuleDependencyEditPart">
          <action
-               class="reflexactoring.diagram.action.popup.HideContributionAction"
+               class="reflexactoring.diagram.action.popup.HideDependencyContributionAction"
                id="reflexactoring.diagram.action.hideContribution"
                label="Hide Contribution">
          </action>
          <action
-               class="reflexactoring.diagram.action.popup.HighlightContributionAction"
+               class="reflexactoring.diagram.action.popup.HighlightDependencyContributionAction"
                id="reflexactoring.diagram.action.highlightContribution"
                label="Highlight Contribution">
          </action>
@@ -193,6 +193,21 @@
                class="reflexactoring.diagram.action.popup.ShowAllTypeDependencies"
                id="reflexactoring.diagram.action.showAllTypeDependencies"
                label="Show All Type Dependencies">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.moduleCreation"
+            objectClass="reflexactoring.diagram.edit.parts.ModuleCreationEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.HideCreationContribution"
+               id="reflexactoring.diagram.action.hideCreationContribution"
+               label="Hide Contribution">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.HighlightCreationContribution"
+               id="reflexactoring.diagram.action.highlightCreationContribution"
+               label="Highlight Contribution">
          </action>
       </objectContribution>
    </extension>

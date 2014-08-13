@@ -19,9 +19,9 @@ import reflexactoring.diagram.edit.parts.TypeDependencyEditPart.TypeDependencyFi
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
-public class HighlightContributionAction extends ContributionAction{
+public class HighlightDependencyContributionAction extends ContributionAction{
 
-	public HighlightContributionAction() {
+	public HighlightDependencyContributionAction() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -51,8 +51,8 @@ public class HighlightContributionAction extends ContributionAction{
 					}
 				}
 				
-				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
-				new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());	
+				//ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
+				//new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());	
 				
 				ArrayList<TypeDependencyEditPart> correspondingTypeDependencyParts0 = 
 						findCorrespondingTypeDependencyParts(sourceModulePart, targetModulePart);
