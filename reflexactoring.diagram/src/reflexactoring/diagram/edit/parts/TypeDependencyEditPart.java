@@ -1,6 +1,7 @@
 package reflexactoring.diagram.edit.parts;
 
 import org.eclipse.draw2d.Connection;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolylineDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
 import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
@@ -11,6 +12,7 @@ import org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel;
 import org.eclipse.gmf.runtime.notation.View;
 
 import reflexactoring.diagram.edit.policies.TypeDependencyItemSemanticEditPolicy;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * @generated
@@ -70,8 +72,12 @@ public class TypeDependencyEditPart extends ConnectionNodeEditPart implements
 		 */
 		public TypeDependencyFigure() {
 			this.setLineWidth(1);
-
+			
 			setTargetDecoration(createTargetDecoration());
+		}
+		
+		public void setVisible(boolean visible) {
+			super.setVisible(Settings.enableVisibility);	
 		}
 
 		/**
@@ -85,6 +91,8 @@ public class TypeDependencyEditPart extends ConnectionNodeEditPart implements
 
 			return df;
 		}
+		
+		
 
 		/**
 		 * @return the polylineDecoration

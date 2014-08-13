@@ -70,6 +70,7 @@ import reflexactoring.diagram.edit.parts.ModuleLinkEditPart;
 import reflexactoring.diagram.edit.parts.ModuleLinkFigure;
 import reflexactoring.diagram.edit.parts.ModuleTypeContainerCompartmentEditPart;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
+import reflexactoring.diagram.edit.parts.TypeDependencyEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditorPlugin;
 import reflexactoring.diagram.providers.ReflexactoringElementTypes;
@@ -335,6 +336,11 @@ public class DiagramUpdater {
 				}
 			}
 		}
+		
+		/**
+		 * try making every dependency invisible at first
+		 */
+		//makeAllLowLevelConnectionInvisible(diagramRoot);
 		
 	}
 

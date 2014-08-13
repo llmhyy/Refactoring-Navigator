@@ -154,4 +154,10 @@ public class Settings {
 	public static final double rewardRate = 0.2;
 	
 	public static final double refactoringOppSimilarity = 0.6;
+	
+	//===============================================================
+	/**
+	 * The following is used to indicate the visibility of lines on graph
+	 */
+	public static boolean enableVisibility = false;
 }

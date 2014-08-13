@@ -211,6 +211,54 @@ public class GEFDiagramUtil {
 		
 		return null;
 	}
+	
+	/**
+	 * @param diagramRoot
+	 * @param typeDependency
+	 * @return
+	 */
+	public static TypeDependencyEditPart findCorrespondingTypeDependencyEditPart(
+			DiagramRootEditPart diagramRoot, TypeDependency typeDependency) {
+		for(Object obj: diagramRoot.getChildren()){
+			if(obj instanceof ReflexactoringEditPart){
+				ReflexactoringEditPart rootEditPart = (ReflexactoringEditPart)obj;
+				List<?> connectionList = rootEditPart.getConnections();
+				for(Object connObj: connectionList){
+					if(connObj instanceof TypeDependencyEditPart){
+						TypeDependencyEditPart typeDependencyConnection = (TypeDependencyEditPart)connObj;
+						EObject eObj = typeDependencyConnection.resolveSemanticElement();
+						if(eObj instanceof TypeDependency){
+							TypeDependency d = (TypeDependency)eObj;
+							if(/*d.getName().equals(typeDependency.getName()) &&*/
+									d.getDestination().getName().equals(typeDependency.getDestination().getName()) &&
+									d.getOrigin().getName().equals(typeDependency.getOrigin().getName())){
+								return typeDependencyConnection;
+							}
+						}
+						
+					}
+					
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	public static void makeAllLowLevelConnectionInvisible(DiagramRootEditPart diagramRoot) {
+		Reflexactoring reflexactoring = GEFDiagramUtil.findReflexactoring(diagramRoot);
+		/*reflexactoring.getClassExtends();
+		reflexactoring.getImplements();
+		reflexactoring.getInterfaceExtends();*/
+		for(TypeDependency dependency: reflexactoring.getTypeDependencies()){
+			TypeDependencyEditPart editPart = GEFDiagramUtil.
+					findCorrespondingTypeDependencyEditPart(diagramRoot, dependency);
+			editPart.getFigure().setVisible(false);
+		}
+	}
 
 	public static Module findModule(DiagramRootEditPart diagramRoot, Module module){
 		for(Object obj: diagramRoot.getChildren()){

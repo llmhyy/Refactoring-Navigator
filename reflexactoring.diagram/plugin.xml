@@ -180,6 +180,21 @@
                label="Show Reference Detail">
          </action>
       </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="reflexactoring.diagram.reflexactoring"
+            objectClass="reflexactoring.diagram.edit.parts.ReflexactoringEditPart">
+         <action
+               class="reflexactoring.diagram.action.popup.HideAllTypeDependencies"
+               id="reflexactoring.diagram.action.hideAllTypeDependencies"
+               label="Hide All Type Dependencies">
+         </action>
+         <action
+               class="reflexactoring.diagram.action.popup.ShowAllTypeDependencies"
+               id="reflexactoring.diagram.action.showAllTypeDependencies"
+               label="Show All Type Dependencies">
+         </action>
+      </objectContribution>
    </extension>
 	
    <extension point="org.eclipse.gmf.runtime.common.ui.services.action.globalActionHandlerProviders" id="global-actions">
