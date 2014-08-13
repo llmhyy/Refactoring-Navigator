@@ -9,6 +9,7 @@ import java.util.HashMap;
 import org.eclipse.jdt.core.ICompilationUnit;
 
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
+import reflexactoring.diagram.bean.DependencyWrapper;
 import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMapList;
 import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMapList;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
@@ -160,4 +161,6 @@ public class Settings {
 	 * The following is used to indicate the visibility of lines on graph
 	 */
 	public static boolean enableVisibility = false;
+	
+	public static ArrayList<DependencyWrapper> highlightLinks = new ArrayList<>();
 }

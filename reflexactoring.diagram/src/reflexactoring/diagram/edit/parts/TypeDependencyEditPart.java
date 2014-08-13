@@ -11,6 +11,8 @@ import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.WrappingLabel;
 import org.eclipse.gmf.runtime.notation.View;
 
+import reflexactoring.TypeDependency;
+import reflexactoring.diagram.bean.DependencyWrapper;
 import reflexactoring.diagram.edit.policies.TypeDependencyItemSemanticEditPolicy;
 import reflexactoring.diagram.util.Settings;
 
@@ -77,7 +79,16 @@ public class TypeDependencyEditPart extends ConnectionNodeEditPart implements
 		}
 		
 		public void setVisible(boolean visible) {
-			super.setVisible(Settings.enableVisibility);	
+			TypeDependency dep = (TypeDependency)TypeDependencyEditPart.this.resolveSemanticElement();
+			if(dep.getOrigin() != null && dep.getDestination() != null){
+				DependencyWrapper depWrapper = new DependencyWrapper(dep.getOrigin(), dep.getDestination());
+				if(Settings.highlightLinks.contains(depWrapper)){
+					super.setVisible(visible);
+					return;
+				}
+			}
+			
+			super.setVisible(Settings.enableVisibility);
 		}
 
 		/**
