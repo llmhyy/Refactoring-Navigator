@@ -39,7 +39,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	@Override
 	public ArrayList<RefactoringOpportunity> detectOpportunities(ProgramModel model) {
 		ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList = detectCounterMembers(model);
-		
+		System.currentTimeMillis();
 		ArrayList<RefactoringOpportunity> opportunities = 
 				detectPullingUpOpportunities(model, refactoringPlaceList, getModuleList());
 		
@@ -120,7 +120,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 					return otherMember;
 				}
 				else{
-					/*if(member.getName().contains("read") && otherMember.getName().contains("read")){
+					/*if(member.getName().contains("save") && otherMember.getName().contains("save")){
 						System.currentTimeMillis();
 					}*/
 					

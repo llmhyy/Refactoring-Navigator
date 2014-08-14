@@ -57,7 +57,7 @@ public class SearchRefactoringSolutionAcion implements
 						System.currentTimeMillis();
 					}
 					
-					long t1 = System.currentTimeMillis();//System.currentTimeMillis();
+					long t1 = System.currentTimeMillis();
 					RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
 					long t2 = System.currentTimeMillis();
 					System.out.println(t2-t1);
@@ -125,7 +125,7 @@ public class SearchRefactoringSolutionAcion implements
 		
 		for(RefactoringOpportunity opp: oppList){
 			
-			if(opp.toString().contains("display")){
+			if(opp.toString().contains("save")){
 				System.currentTimeMillis();
 			}
 			
