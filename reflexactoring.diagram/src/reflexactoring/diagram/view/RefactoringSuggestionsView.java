@@ -1,8 +1,42 @@
 package reflexactoring.diagram.view;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import gr.uom.java.jdeodorant.refactoring.manipulators.MoveMethodRefactoring;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jdt.core.IBuffer;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.ITypeHierarchy;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.internal.corext.refactoring.RefactoringAvailabilityTester;
+import org.eclipse.jdt.internal.corext.refactoring.RefactoringExecutionStarter;
+import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
+import org.eclipse.jdt.internal.ui.actions.ActionUtil;
+import org.eclipse.jdt.internal.ui.refactoring.RefactoringMessages;
+import org.eclipse.jdt.internal.ui.util.ExceptionHandler;
+import org.eclipse.ltk.core.refactoring.CreateChangeOperation;
+import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
@@ -31,6 +65,7 @@ import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
+import org.eclipse.ui.operations.IWorkbenchOperationSupport;
 import org.eclipse.ui.part.ViewPart;
 
 import reflexactoring.diagram.action.DiagramUpdater;
@@ -41,9 +76,15 @@ import reflexactoring.diagram.action.recommend.action.DependencyAction;
 import reflexactoring.diagram.action.recommend.action.ExtendAction;
 import reflexactoring.diagram.action.recommend.action.LinkAction;
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
+import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.CreateSuperclassAndPullUpMemberOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
+import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleCreationConfidence;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.ModuleExtendConfidence;
@@ -51,6 +92,7 @@ import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.SuggestionObject;
+import reflexactoring.diagram.bean.UnitMemberWrapper;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -70,6 +112,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 	private RefactoringSequenceElement currentElement = null;
 	private boolean isUndo = false;
 	private int currentHeight = 0;
+	private PerformChangeOperation performOperation;
 	
 	/**
 	 * @return the currentElement
@@ -387,6 +430,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 		formText.setText(buffer.toString(), true, false);
 		formText.setData(element.getOpportunity());
 		formText.addHyperlinkListener(new HyperlinkAdapter() {
+			@SuppressWarnings("restriction")
 			public void linkActivated(HyperlinkEvent e) {
 				RefactoringOpportunity opportunity = (RefactoringOpportunity) formText.getData();
 				if(e.getHref().equals("Forbid")){
@@ -454,6 +498,129 @@ public class RefactoringSuggestionsView extends ViewPart {
 					view.refreshSuggestionsOnUI(suggestions);
 					
 					//TODO do execution
+					if(opportunity instanceof MoveMethodOpportunity){						
+						MoveMethodOpportunity moveMethodOpportunity = (MoveMethodOpportunity) opportunity;
+						
+						MethodDeclaration methodDeclaration = (MethodDeclaration) moveMethodOpportunity.getObjectMethod().getJavaElement();												
+						CompilationUnit sourceCompilationUnit = moveMethodOpportunity.getSourceUnit().getJavaUnit();
+						CompilationUnit targetCompilationUnit = moveMethodOpportunity.getTargetUnit().getJavaUnit();
+						TypeDeclaration sTypeDeclaration = (TypeDeclaration) sourceCompilationUnit.types().get(0);
+						TypeDeclaration tTypeDeclaration = (TypeDeclaration) targetCompilationUnit.types().get(0);
+						
+						Map<MethodInvocation, MethodDeclaration> additionalMethodsToBeMoved = new HashMap<MethodInvocation, MethodDeclaration>();
+//						for(ProgramReference reference : moveMethodOpportunity.getObjectMethod().getRefererPointList()){
+//							additionalMethodsToBeMoved.put((MethodInvocation)reference.getASTNode(), (MethodDeclaration)((UnitMemberWrapper) reference.getReferee()).getJavaElement());
+//							if(!additionalMethodsToBeMoved.containsKey((MethodInvocation)reference.getASTNode())){
+//								additionalMethodsToBeMoved.put((MethodInvocation)reference.getASTNode(), methodDeclaration);
+//							}
+//						}
+						
+						MoveMethodRefactoring refactoring = new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit,
+								sTypeDeclaration, tTypeDeclaration, methodDeclaration,
+								additionalMethodsToBeMoved, false, moveMethodOpportunity.getObjectMethod().getName());
+						
+						try {
+							NullProgressMonitor monitor = new NullProgressMonitor();
+							RefactoringStatus status = refactoring.checkAllConditions(monitor);
+							CreateChangeOperation operation = new CreateChangeOperation(refactoring);			
+							performOperation = new PerformChangeOperation(operation);
+							performOperation.run(monitor);
+						} catch (OperationCanceledException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (CoreException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
+//						MyRefactoringWizard wizard = new MyRefactoringWizard(refactoring, new TestAction());
+//						RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard); 
+//						try { 
+//							String titleForFailedChecks = ""; //$NON-NLS-1$ 
+//							op.run(getSite().getShell(), titleForFailedChecks); 
+//						} catch(InterruptedException e1) {
+//							e1.printStackTrace();
+//						}
+					}else if(opportunity instanceof PullUpMemberOpportunity){
+						if(opportunity instanceof CreateSuperclassAndPullUpMemberOpportunity){
+							JavaClassCreator javaCreator = new JavaClassCreator();
+							ICompilationUnitWrapper parentClass = javaCreator.createClass();		
+							//TODO make every child class extends the parent class
+							ICompilationUnit unit = parentClass.getCompilationUnit();
+							try {
+								ITypeHierarchy hierarchy = unit.getAllTypes()[0].newSupertypeHierarchy(null);
+								
+								System.currentTimeMillis();
+							} catch (JavaModelException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							
+							CompilationUnit parentUnit = parse(parentClass.getCompilationUnit());
+							
+						}else if(opportunity instanceof PullUpMemberToInterfaceOpportunity){
+							JavaClassCreator javaCreator = new JavaClassCreator();
+							ICompilationUnitWrapper parentInterface = javaCreator.createInterface();		
+							//TODO make every child class implements the interface	
+							ICompilationUnit unit = parentInterface.getCompilationUnit();
+							try {
+								ITypeHierarchy hierarchy = unit.getAllTypes()[0].newSupertypeHierarchy(null);
+								
+								System.currentTimeMillis();
+							} catch (JavaModelException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							
+							
+							
+							try {
+								unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+								IBuffer buffer = unit.getBuffer();
+								
+								
+								CompilationUnit parentUnit = parse(parentInterface.getCompilationUnit());
+								TypeDeclaration td = (TypeDeclaration)parentUnit.types().get(0);
+								Name n = td.getAST().newSimpleName("Record");
+								Type t = td.getAST().newSimpleType(n);
+								td.setSuperclassType(t);
+								
+								buffer.setContents(parentUnit.toString());
+								
+								
+								JavaModelUtil.reconcile(unit);
+								unit.commitWorkingCopy(true, new NullProgressMonitor());
+								
+//								if(unit != null){
+//									unit.discardWorkingCopy();
+//								}
+								
+								
+								//unit.reconcile(ICompilationUnit.NO_AST, false, null, null);
+							} catch (JavaModelException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							
+							System.currentTimeMillis();
+						}
+						
+						ArrayList<UnitMemberWrapper> memberList = ((PullUpMemberOpportunity) opportunity).getToBePulledMemberList();
+						IMember[] members = new IMember[memberList.size()];
+						for(UnitMemberWrapper memberWrapper : memberList){
+							members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();							
+						}
+						
+						try {
+							System.out.println(RefactoringAvailabilityTester.isPullUpAvailable(members));
+							System.out.println(ActionUtil.isEditable(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), members[0]));
+							if (RefactoringAvailabilityTester.isPullUpAvailable(members) && ActionUtil.isEditable(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), members[0]))
+								RefactoringExecutionStarter.startPullUpRefactoring(members, PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+						} catch (JavaModelException jme) {
+							ExceptionHandler.handle(jme, RefactoringMessages.OpenRefactoringWizardAction_refactoring, RefactoringMessages.OpenRefactoringWizardAction_exception);
+						}						
+						
+					}
 					
 					//do approved now
 					if(!Settings.approvedOpps.contains(opportunity)){
@@ -470,7 +637,31 @@ public class RefactoringSuggestionsView extends ViewPart {
 					view.setUndo(true);
 					view.refreshSuggestionsOnUI(suggestions);
 					
-					//do undo
+					//TODO do undo
+					if(opportunity instanceof MoveMethodOpportunity){	
+						if(performOperation != null){
+							try {
+								NullProgressMonitor monitor = new NullProgressMonitor();		
+								PerformChangeOperation performUndoOperation = new PerformChangeOperation(performOperation.getUndoChange());
+								performUndoOperation.run(monitor);
+							} catch (OperationCanceledException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (CoreException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+					}else{
+						try {
+							IWorkbenchOperationSupport operationSupport = PlatformUI.getWorkbench().getOperationSupport();
+							IUndoContext context = operationSupport.getUndoContext();
+							IOperationHistory operationHistory = operationSupport.getOperationHistory();  
+							IStatus status = operationHistory.undo(context, null, null);
+						} catch (ExecutionException ee) {
+							ee.printStackTrace();
+						}
+					}
 					
 					//undo approved now
 					Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();
@@ -722,5 +913,12 @@ public class RefactoringSuggestionsView extends ViewPart {
 	public void setFocus() {
 
 	}
-
+	
+	protected CompilationUnit parse(ICompilationUnit unit) {
+		ASTParser parser = ASTParser.newParser(AST.JLS4); 
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource(unit); // set source
+		parser.setResolveBindings(true); // we need bindings later on
+		return (CompilationUnit) parser.createAST(null /* IProgressMonitor */); // parse
+	}
 }
