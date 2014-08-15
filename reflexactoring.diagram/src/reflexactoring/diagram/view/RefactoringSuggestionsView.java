@@ -10,22 +10,27 @@ import java.util.Map;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
-import org.eclipse.jdt.core.ITypeHierarchy;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.corext.refactoring.RefactoringAvailabilityTester;
@@ -34,6 +39,7 @@ import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.internal.ui.actions.ActionUtil;
 import org.eclipse.jdt.internal.ui.refactoring.RefactoringMessages;
 import org.eclipse.jdt.internal.ui.util.ExceptionHandler;
+import org.eclipse.jface.window.Window;
 import org.eclipse.ltk.core.refactoring.CreateChangeOperation;
 import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -70,6 +76,7 @@ import org.eclipse.ui.part.ViewPart;
 
 import reflexactoring.diagram.action.DiagramUpdater;
 import reflexactoring.diagram.action.popup.ReferenceDetailMap;
+import reflexactoring.diagram.action.popup.RenameMethodsDialog;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.recommend.action.CreationAction;
 import reflexactoring.diagram.action.recommend.action.DependencyAction;
@@ -491,11 +498,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 					updater.updateView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW, map, true);
 				}
 				else if(e.getHref().equals("Exec")){
-					RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
-							getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
-					view.setCurrentElement(element);
-					view.setUndo(false);
-					view.refreshSuggestionsOnUI(suggestions);
 					
 					//TODO do execution
 					if(opportunity instanceof MoveMethodOpportunity){						
@@ -526,11 +528,11 @@ public class RefactoringSuggestionsView extends ViewPart {
 							performOperation = new PerformChangeOperation(operation);
 							performOperation.run(monitor);
 						} catch (OperationCanceledException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
+							return;
 						} catch (CoreException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
+							return;
 						}
 						
 //						MyRefactoringWizard wizard = new MyRefactoringWizard(refactoring, new TestAction());
@@ -544,71 +546,151 @@ public class RefactoringSuggestionsView extends ViewPart {
 					}else if(opportunity instanceof PullUpMemberOpportunity){
 						if(opportunity instanceof CreateSuperclassAndPullUpMemberOpportunity){
 							JavaClassCreator javaCreator = new JavaClassCreator();
-							ICompilationUnitWrapper parentClass = javaCreator.createClass();		
-							//TODO make every child class extends the parent class
-							ICompilationUnit unit = parentClass.getCompilationUnit();
-							try {
-								ITypeHierarchy hierarchy = unit.getAllTypes()[0].newSupertypeHierarchy(null);
-								
-								System.currentTimeMillis();
-							} catch (JavaModelException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
+							ICompilationUnitWrapper parentClass = javaCreator.createClass();
+							if(parentClass == null){
+								return;
 							}
-							
-							CompilationUnit parentUnit = parse(parentClass.getCompilationUnit());
+							// make every child class extends the parent class
+							for(UnitMemberWrapper member : ((PullUpMemberOpportunity) opportunity).getToBePulledMemberList()){
+								ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
+								try {
+									unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+									IBuffer buffer = unit.getBuffer();									
+									
+									CompilationUnit compilationUnit = parse(unit);
+									TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);									
+									
+									Name name = td.getAST().newSimpleName(parentClass.getName());
+									Type type = td.getAST().newSimpleType(name);
+									td.setSuperclassType(type);
+									
+									Name qualifiedName = createQualifiedName(td.getAST(), parentClass.getFullQualifiedName());
+									ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
+									importDeclaration.setName(qualifiedName);
+									importDeclaration.setOnDemand(false);
+									compilationUnit.imports().add(importDeclaration);
+									
+									buffer.setContents(compilationUnit.toString());								
+									
+									JavaModelUtil.reconcile(unit);
+									unit.commitWorkingCopy(true, new NullProgressMonitor());
+									unit.discardWorkingCopy();
+									
+								} catch (JavaModelException e1) {
+									e1.printStackTrace();
+									return;
+								}
+							}				
 							
 						}else if(opportunity instanceof PullUpMemberToInterfaceOpportunity){
 							JavaClassCreator javaCreator = new JavaClassCreator();
-							ICompilationUnitWrapper parentInterface = javaCreator.createInterface();		
-							//TODO make every child class implements the interface	
-							ICompilationUnit unit = parentInterface.getCompilationUnit();
-							try {
-								ITypeHierarchy hierarchy = unit.getAllTypes()[0].newSupertypeHierarchy(null);
-								
-								System.currentTimeMillis();
-							} catch (JavaModelException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
+							ICompilationUnitWrapper parentInterface = javaCreator.createInterface();	
+							if(parentInterface == null){
+								return;
 							}
-							
-							
-							
-							try {
-								unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-								IBuffer buffer = unit.getBuffer();
-								
-								
-								CompilationUnit parentUnit = parse(parentInterface.getCompilationUnit());
-								TypeDeclaration td = (TypeDeclaration)parentUnit.types().get(0);
-								Name n = td.getAST().newSimpleName("Record");
-								Type t = td.getAST().newSimpleType(n);
-								td.setSuperclassType(t);
-								
-								buffer.setContents(parentUnit.toString());
-								
-								
-								JavaModelUtil.reconcile(unit);
-								unit.commitWorkingCopy(true, new NullProgressMonitor());
-								
-//								if(unit != null){
-//									unit.discardWorkingCopy();
-//								}
-								
-								
-								//unit.reconcile(ICompilationUnit.NO_AST, false, null, null);
-							} catch (JavaModelException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-							
-							System.currentTimeMillis();
+							//make every child class implements the interface	
+							for(UnitMemberWrapper member : ((PullUpMemberOpportunity) opportunity).getToBePulledMemberList()){
+								ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
+								try {
+									unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+									IBuffer buffer = unit.getBuffer();									
+									
+									CompilationUnit compilationUnit = parse(unit);
+									TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);									
+									
+									Name name = td.getAST().newSimpleName(parentInterface.getName());
+									Type type = td.getAST().newSimpleType(name);
+									td.superInterfaceTypes().add(type);
+									
+									Name qualifiedName = createQualifiedName(td.getAST(), parentInterface.getFullQualifiedName());
+									ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
+									importDeclaration.setName(qualifiedName);
+									importDeclaration.setOnDemand(false);
+									compilationUnit.imports().add(importDeclaration);
+									
+									buffer.setContents(compilationUnit.toString());								
+									
+									JavaModelUtil.reconcile(unit);
+									unit.commitWorkingCopy(true, new NullProgressMonitor());
+									unit.discardWorkingCopy();
+									
+								} catch (JavaModelException e1) {
+									e1.printStackTrace();
+									return;
+								}
+							}	
 						}
 						
+						//get all members to be pulled
 						ArrayList<UnitMemberWrapper> memberList = ((PullUpMemberOpportunity) opportunity).getToBePulledMemberList();
 						IMember[] members = new IMember[memberList.size()];
+						String[] methodNames = new String[memberList.size()];
 						for(UnitMemberWrapper memberWrapper : memberList){
-							members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();							
+							members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();	
+							methodNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
+						}
+						//IMember[] members = new IMember[]{memberList.get(0).getJavaMember()};
+						
+						//show a wizard to rename all the funcions into one name
+						RenameMethodsDialog dialog = new RenameMethodsDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
+						dialog.create();
+						if(dialog.open() == Window.OK){
+							//rename each method
+							String newMethodName = dialog.getNewMethodName();
+							for(UnitMemberWrapper memberWrapper : memberList){								
+								ICompilationUnit unit0 = memberWrapper.getUnitWrapper().getCompilationUnit();
+								
+								IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace(); 
+								IJavaProject javaProject = JavaCore.create(project);
+								
+								
+								ICompilationUnit unit = null;
+								IPath path = unit0.getPath();
+								
+								try {
+									
+									unit = (ICompilationUnit) javaProject.findElement(path.makeRelativeTo(project.getFolder("src").getFullPath()));
+								} catch (JavaModelException e3) {
+									e3.printStackTrace();
+								}
+								
+								System.currentTimeMillis();
+								
+								try {
+									unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+									IBuffer buffer = unit.getBuffer();									
+									
+									CompilationUnit compilationUnit = parse(unit);
+									TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
+									
+
+//									MethodDeclaration methodDeclaration = (MethodDeclaration) memberWrapper.getJavaElement();
+//									methodDeclaration.setName(methodDeclaration.getAST().newSimpleName(newMethodName));	
+									
+									for(MethodDeclaration md : td.getMethods()){
+										if(md.toString().equals(memberWrapper.getJavaElement().toString())){
+											md.setName(td.getAST().newSimpleName(newMethodName));
+											memberWrapper.setJavaElement(md);
+											memberWrapper.getUnitWrapper().setJavaUnit(parse(unit));
+											memberWrapper.getUnitWrapper().setCompilationUnit(unit);											
+											break;
+										}
+									}																										
+									
+									buffer.setContents(compilationUnit.toString());								
+									
+									JavaModelUtil.reconcile(unit);
+									unit.commitWorkingCopy(true, new NullProgressMonitor());
+									unit.discardWorkingCopy();
+									
+								} catch (JavaModelException e1) {
+									e1.printStackTrace();
+									return;
+								}								
+							}
+							
+						}else{
+							return;
 						}
 						
 						try {
@@ -621,6 +703,13 @@ public class RefactoringSuggestionsView extends ViewPart {
 						}						
 						
 					}
+					
+					//refresh the suggestions view
+					RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
+							getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
+					view.setCurrentElement(element);
+					view.setUndo(false);
+					view.refreshSuggestionsOnUI(suggestions);
 					
 					//do approved now
 					if(!Settings.approvedOpps.contains(opportunity)){
@@ -914,11 +1003,27 @@ public class RefactoringSuggestionsView extends ViewPart {
 
 	}
 	
-	protected CompilationUnit parse(ICompilationUnit unit) {
+	private CompilationUnit parse(ICompilationUnit unit) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4); 
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(unit); // set source
 		parser.setResolveBindings(true); // we need bindings later on
 		return (CompilationUnit) parser.createAST(null /* IProgressMonitor */); // parse
+	}
+	
+	private Name createQualifiedName(AST ast, String classToImport) {
+		String[] parts = classToImport.split("\\."); //$NON-NLS-1$
+
+		Name name = null;
+
+		for (int i = 0; i < parts.length; i++) {
+			SimpleName simpleName = ast.newSimpleName(parts[i]);
+			if (i == 0) {
+				name = simpleName;
+			} else {
+				name = ast.newQualifiedName(name, simpleName);
+			}
+		}
+		return name;
 	}
 }

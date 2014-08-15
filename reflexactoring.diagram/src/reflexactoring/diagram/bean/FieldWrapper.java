@@ -196,6 +196,11 @@ public class FieldWrapper extends UnitMemberWrapper{
 		this.type = type;
 	}
 
+	@Override
+	public void setJavaElement(ASTNode node) {
+		this.field = (FieldDeclaration) node;		
+	}
+
 	
 
 	

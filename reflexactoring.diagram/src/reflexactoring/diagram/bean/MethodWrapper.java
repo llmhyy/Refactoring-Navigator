@@ -440,4 +440,10 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public void setReturnType(String returnType) {
 		this.returnType = returnType;
 	}
+
+	@Override
+	public void setJavaElement(ASTNode node) {
+		this.method = (MethodDeclaration) node;
+		
+	}
 }

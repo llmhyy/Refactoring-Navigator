@@ -44,6 +44,7 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	}
 	
 	public abstract ASTNode getJavaElement();
+	public abstract void setJavaElement(ASTNode node);
 	
 	public void openInEditor(){
 		IEditorPart javaEditor;
