@@ -46,6 +46,8 @@ public class GeneticOptimizer {
 			 * select the best ones of both generations.
 			 */
 			pop = this.selector.selectPopulation(pop, newPop);
+			
+			System.currentTimeMillis();
 		}
 		
 		return pop;

@@ -56,7 +56,9 @@ public class AdvancedFitnessEvaluator implements FitnessEvaluator {
 		double structureInheritanceViolation = computeStructureInheritanceViolation(gene);
 		double structureCreationViolation = computeStructureCreationViolation(gene);
 		
-		double lexicalSimilarity = computeLexicalSimilarity(gene);
+		System.currentTimeMillis();
+		
+		double lexicalSimilarity = 0 /*computeLexicalSimilarity(gene)*/;
 		return Double.valueOf(ReflexactoringUtil.getAlpha())*lexicalSimilarity
 				- structureDependencyViolation - structureInheritanceViolation - structureCreationViolation;
 	}

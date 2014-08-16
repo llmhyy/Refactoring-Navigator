@@ -1,86 +1,52 @@
 package reflexactoring.diagram.view;
 
-import java.net.URL;
 import java.util.ArrayList;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.gef.EditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.DiagramRootEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.parts.DiagramGraphicalViewer;
-import org.eclipse.gmf.runtime.notation.View;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
-import org.eclipse.jdt.internal.ui.wizards.NewClassCreationWizard;
-import org.eclipse.jdt.ui.wizards.NewClassWizardPage;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.FormColors;
-import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.eclipse.ui.internal.util.BundleUtility;
 import org.eclipse.ui.part.ViewPart;
-import org.osgi.framework.Bundle;
 
-import reflexactoring.Activator;
-import reflexactoring.Module;
 import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
+import reflexactoring.diagram.action.recommend.action.CreationAction;
 import reflexactoring.diagram.action.recommend.action.DependencyAction;
+import reflexactoring.diagram.action.recommend.action.DirectOrientedAction;
 import reflexactoring.diagram.action.recommend.action.ExtendAction;
 import reflexactoring.diagram.action.recommend.action.LinkAction;
-import reflexactoring.diagram.action.recommend.action.DirectOrientedAction;
-import reflexactoring.diagram.action.recommend.action.MoveAction;
 import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
 import reflexactoring.diagram.action.recommend.action.MoveTypeAction;
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
-import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.bean.FieldWrapper;
 import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
 import reflexactoring.diagram.bean.HeuristicModuleUnitStopMap;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
+import reflexactoring.diagram.bean.ModuleCreationConfidence;
 import reflexactoring.diagram.bean.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.ModuleExtendConfidence;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.UnitMemberWrapper;
-import reflexactoring.diagram.edit.parts.ModuleEditPart;
-import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
-import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.GEFDiagramUtil;
 import reflexactoring.diagram.util.RecordParameters;
-import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 public class RefactoringSuggestionView extends ViewPart {
@@ -196,6 +162,9 @@ public class RefactoringSuggestionView extends ViewPart {
 				}else if(move.getAction() instanceof ExtendAction){
 					buffer.append("<a href=\"StickExtend\">Reject</a> ");	
 					buffer.append("<a href=\"UnstickExtend\">Undo</a>");	
+				}else if(move.getAction() instanceof CreationAction){
+					buffer.append("<a href=\"StickCreation\">Reject</a> ");	
+					buffer.append("<a href=\"UnstickCreation\">Undo</a>");
 				}
 			}
 			buffer.append("<b>]</b>");
@@ -449,6 +418,59 @@ public class RefactoringSuggestionView extends ViewPart {
 							}
 							ViewUpdater updater = new ViewUpdater();
 							updater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, true);
+						}
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("black", colors.getSystemColor(SWT.COLOR_BLACK));
+						t.setForeground(colors.getColor("black"));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("StickCreation")){
+						RecordParameters.recordTime++;
+						
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleLinkWrapper && action instanceof CreationAction){
+							LinkAction creationAction =(LinkAction)action;
+							for(ModuleCreationConfidence confidence: Settings.creationConfidenceTable){
+								if(confidence.getModule().getName().equals(creationAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper parentModule = confidence.getModuleList().get(i);
+										if(parentModule.getName().equals(creationAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] += 2;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.CREATION_CONSTRAINT_CONFIDENCE_VIEW, Settings.creationConfidenceTable, true);
+						}
+						
+						FormText t = (FormText) e.getSource();
+						FormColors colors = toolkit.getColors();
+						colors.createColor("gray", new RGB(207,207,207));
+						colors.createColor("white", colors.getSystemColor(SWT.COLOR_WHITE));
+						t.setBackground(colors.getColor("gray"));
+						t.setForeground(colors.getColor("white"));
+					}
+					else if(e.getHref().equals("UnstickCreation")){
+						SuggestionObject obj = suggestion.getSuggeestionObject();
+						RefactoringAction action = suggestion.getAction();
+						if(obj instanceof ModuleLinkWrapper && action instanceof CreationAction){
+							LinkAction creationAction =(LinkAction)action;
+							for(ModuleCreationConfidence confidence: Settings.creationConfidenceTable){
+								if(confidence.getModule().getName().equals(creationAction.getOrigin().getName())){
+									for(int i=0; i<confidence.getModuleList().size(); i++){
+										ModuleWrapper parentModule = confidence.getModuleList().get(i);
+										if(parentModule.getName().equals(creationAction.getDestination().getName())){
+											confidence.getConfidenceList()[i] = 0.5;
+										}
+									}
+								}
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.CREATION_CONSTRAINT_CONFIDENCE_VIEW, Settings.creationConfidenceTable, true);
 						}
 						FormText t = (FormText) e.getSource();
 						FormColors colors = toolkit.getColors();

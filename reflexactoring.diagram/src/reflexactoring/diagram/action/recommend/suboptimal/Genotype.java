@@ -3,7 +3,6 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
-import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * 
@@ -25,6 +24,16 @@ public class Genotype {
 		this.DNA = DNA;
 		this.setOriginalDNA(originalDNA);
 		this.setEvaluator(evaluator);
+	}
+	
+	public String toString(){
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[");
+		for(int i=0; i<DNA.length; i++){
+			buffer.append(DNA[i] + " ");
+		}
+		buffer.append("]");
+		return buffer.toString();
 	}
 
 	/**

@@ -127,11 +127,11 @@ public class PopulationGenerator {
 		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		
 		double[][] highLevelNodeDependencyMatrix = RecommendUtil.extractGraph(moduleList, 
-				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.ALL);
+				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
 		double[][] highLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(moduleList, 
 				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
 		double[][] highLevelNodeCreationMatrix = RecommendUtil.extractGraph(moduleList, 
-				GraphRelationType.GRAPH_CREATION, ReferencingDetail.ALL);
+				GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
 		
 		double[][] lowLevelNodeDependencyMatrix;
 		double[][] lowLevelNodeInheritanceMatrix;
@@ -143,7 +143,9 @@ public class PopulationGenerator {
 			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
 					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
 			lowLevelNodeCreationMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
-					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.NEW);
+					GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
+			
+			System.currentTimeMillis();
 		}
 		else{
 			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
@@ -151,7 +153,7 @@ public class PopulationGenerator {
 			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
 					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.REFER);
 			lowLevelNodeCreationMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
-					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.NEW);
+					GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
 		}
 		
 		
