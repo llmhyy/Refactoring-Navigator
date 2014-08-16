@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
@@ -35,14 +36,20 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.corext.refactoring.RefactoringAvailabilityTester;
 import org.eclipse.jdt.internal.corext.refactoring.RefactoringExecutionStarter;
+import org.eclipse.jdt.internal.corext.refactoring.rename.RenameMethodProcessor;
+import org.eclipse.jdt.internal.corext.refactoring.rename.RenameVirtualMethodProcessor;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.internal.ui.actions.ActionUtil;
 import org.eclipse.jdt.internal.ui.refactoring.RefactoringMessages;
 import org.eclipse.jdt.internal.ui.util.ExceptionHandler;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
 import org.eclipse.jface.window.Window;
+import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CreateChangeOperation;
 import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.core.refactoring.participants.RenameRefactoring;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
@@ -63,6 +70,8 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.FormColors;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
@@ -119,7 +128,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 	private RefactoringSequenceElement currentElement = null;
 	private boolean isUndo = false;
 	private int currentHeight = 0;
-	private PerformChangeOperation performOperation;
 	
 	/**
 	 * @return the currentElement
@@ -501,51 +509,10 @@ public class RefactoringSuggestionsView extends ViewPart {
 					
 					//TODO do execution
 					if(opportunity instanceof MoveMethodOpportunity){						
-						MoveMethodOpportunity moveMethodOpportunity = (MoveMethodOpportunity) opportunity;
-						
-						MethodDeclaration methodDeclaration = (MethodDeclaration) moveMethodOpportunity.getObjectMethod().getJavaElement();												
-						CompilationUnit sourceCompilationUnit = moveMethodOpportunity.getSourceUnit().getJavaUnit();
-						CompilationUnit targetCompilationUnit = moveMethodOpportunity.getTargetUnit().getJavaUnit();
-						TypeDeclaration sTypeDeclaration = (TypeDeclaration) sourceCompilationUnit.types().get(0);
-						TypeDeclaration tTypeDeclaration = (TypeDeclaration) targetCompilationUnit.types().get(0);
-						
-						Map<MethodInvocation, MethodDeclaration> additionalMethodsToBeMoved = new HashMap<MethodInvocation, MethodDeclaration>();
-//						for(ProgramReference reference : moveMethodOpportunity.getObjectMethod().getRefererPointList()){
-//							additionalMethodsToBeMoved.put((MethodInvocation)reference.getASTNode(), (MethodDeclaration)((UnitMemberWrapper) reference.getReferee()).getJavaElement());
-//							if(!additionalMethodsToBeMoved.containsKey((MethodInvocation)reference.getASTNode())){
-//								additionalMethodsToBeMoved.put((MethodInvocation)reference.getASTNode(), methodDeclaration);
-//							}
-//						}
-						
-						MoveMethodRefactoring refactoring = new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit,
-								sTypeDeclaration, tTypeDeclaration, methodDeclaration,
-								additionalMethodsToBeMoved, false, moveMethodOpportunity.getObjectMethod().getName());
-						
-						try {
-							NullProgressMonitor monitor = new NullProgressMonitor();
-							RefactoringStatus status = refactoring.checkAllConditions(monitor);
-							CreateChangeOperation operation = new CreateChangeOperation(refactoring);			
-							performOperation = new PerformChangeOperation(operation);
-							performOperation.run(monitor);
-						} catch (OperationCanceledException e1) {
-							e1.printStackTrace();
-							return;
-						} catch (CoreException e1) {
-							e1.printStackTrace();
-							return;
-						}
-						
-//						MyRefactoringWizard wizard = new MyRefactoringWizard(refactoring, new TestAction());
-//						RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard); 
-//						try { 
-//							String titleForFailedChecks = ""; //$NON-NLS-1$ 
-//							op.run(getSite().getShell(), titleForFailedChecks); 
-//						} catch(InterruptedException e1) {
-//							e1.printStackTrace();
-//						}
+						opportunity.apply();
 					}else if(opportunity instanceof PullUpMemberOpportunity){
 						if(opportunity instanceof CreateSuperclassAndPullUpMemberOpportunity){
-							JavaClassCreator javaCreator = new JavaClassCreator();
+							/*JavaClassCreator javaCreator = new JavaClassCreator();
 							ICompilationUnitWrapper parentClass = javaCreator.createClass();
 							if(parentClass == null){
 								return;
@@ -580,7 +547,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 									e1.printStackTrace();
 									return;
 								}
-							}				
+							}*/				
 							
 						}else if(opportunity instanceof PullUpMemberToInterfaceOpportunity){
 							JavaClassCreator javaCreator = new JavaClassCreator();
@@ -596,8 +563,9 @@ public class RefactoringSuggestionsView extends ViewPart {
 									IBuffer buffer = unit.getBuffer();									
 									
 									CompilationUnit compilationUnit = parse(unit);
-									TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);									
+									compilationUnit.recordModifications();
 									
+									TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
 									Name name = td.getAST().newSimpleName(parentInterface.getName());
 									Type type = td.getAST().newSimpleType(name);
 									td.superInterfaceTypes().add(type);
@@ -608,13 +576,23 @@ public class RefactoringSuggestionsView extends ViewPart {
 									importDeclaration.setOnDemand(false);
 									compilationUnit.imports().add(importDeclaration);
 									
-									buffer.setContents(compilationUnit.toString());								
+									Document document = new Document(unit.getSource());
+									TextEdit textEdit = compilationUnit.rewrite(document, null);
+									textEdit.apply(document);
+									
+									buffer.setContents(document.get());	
 									
 									JavaModelUtil.reconcile(unit);
 									unit.commitWorkingCopy(true, new NullProgressMonitor());
 									unit.discardWorkingCopy();
 									
 								} catch (JavaModelException e1) {
+									e1.printStackTrace();
+									return;
+								} catch (MalformedTreeException e1) {
+									e1.printStackTrace();
+									return;
+								} catch (BadLocationException e1) {
 									e1.printStackTrace();
 									return;
 								}
@@ -632,12 +610,28 @@ public class RefactoringSuggestionsView extends ViewPart {
 						//IMember[] members = new IMember[]{memberList.get(0).getJavaMember()};
 						
 						//show a wizard to rename all the funcions into one name
-						RenameMethodsDialog dialog = new RenameMethodsDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
+						/*RenameMethodsDialog dialog = new RenameMethodsDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
 						dialog.create();
 						if(dialog.open() == Window.OK){
 							//rename each method
 							String newMethodName = dialog.getNewMethodName();
-							for(UnitMemberWrapper memberWrapper : memberList){								
+							for(UnitMemberWrapper memberWrapper : memberList){	
+								try {
+									IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
+									RenameMethodProcessor processor = new RenameVirtualMethodProcessor(methodToRename);
+									processor.setUpdateReferences(true);
+									processor.setNewElementName(newMethodName);
+
+									RenameRefactoring fRefactoring = new RenameRefactoring(processor);
+									Change fChange = fRefactoring.createChange(new NullProgressMonitor());
+									fChange.initializeValidationData(new NullProgressMonitor());
+									fChange.perform(new NullProgressMonitor());
+								} catch (CoreException e1) {
+									e1.printStackTrace();
+								}								
+								
+								
+								
 								ICompilationUnit unit0 = memberWrapper.getUnitWrapper().getCompilationUnit();
 								
 								IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace(); 
@@ -691,7 +685,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 							
 						}else{
 							return;
-						}
+						}*/
 						
 						try {
 							System.out.println(RefactoringAvailabilityTester.isPullUpAvailable(members));
@@ -720,37 +714,15 @@ public class RefactoringSuggestionsView extends ViewPart {
 											
 				}
 				else if(e.getHref().equals("Undo")){
+					
+					opportunity.undoApply();
+
+					//refresh the suggestions view
 					RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
 							getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
 					view.setCurrentElement(element);
 					view.setUndo(true);
 					view.refreshSuggestionsOnUI(suggestions);
-					
-					//TODO do undo
-					if(opportunity instanceof MoveMethodOpportunity){	
-						if(performOperation != null){
-							try {
-								NullProgressMonitor monitor = new NullProgressMonitor();		
-								PerformChangeOperation performUndoOperation = new PerformChangeOperation(performOperation.getUndoChange());
-								performUndoOperation.run(monitor);
-							} catch (OperationCanceledException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (CoreException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						}
-					}else{
-						try {
-							IWorkbenchOperationSupport operationSupport = PlatformUI.getWorkbench().getOperationSupport();
-							IUndoContext context = operationSupport.getUndoContext();
-							IOperationHistory operationHistory = operationSupport.getOperationHistory();  
-							IStatus status = operationHistory.undo(context, null, null);
-						} catch (ExecutionException ee) {
-							ee.printStackTrace();
-						}
-					}
 					
 					//undo approved now
 					Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();

@@ -5,7 +5,13 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.operations.IWorkbenchOperationSupport;
 
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
@@ -48,6 +54,22 @@ public abstract class RefactoringOpportunity {
 	 * this method is used to apply refactoring on real code
 	 */
 	public abstract void apply();
+	
+	/**
+	 * this method is used to undo apply refactoring on real code, simulate user press ctrl+Z in default
+	 */
+	public void undoApply(){
+		try {
+			IWorkbenchOperationSupport operationSupport = PlatformUI.getWorkbench().getOperationSupport();
+			IUndoContext context = operationSupport.getUndoContext();
+			IOperationHistory operationHistory = operationSupport.getOperationHistory();  
+			IStatus status = operationHistory.undo(context, null, null);
+		} catch (ExecutionException ee) {
+			ee.printStackTrace();
+		}
+	}
+	
+	
 	/**
 	 * this method is used to check whether a refactoring opportunity still hold true, on the process of checking
 	 * validity, some opportunity might be updated and then get validated.
