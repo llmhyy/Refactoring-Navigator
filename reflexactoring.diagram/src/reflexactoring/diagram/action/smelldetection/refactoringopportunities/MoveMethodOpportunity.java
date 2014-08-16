@@ -3,11 +3,24 @@
  */
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
+import gr.uom.java.jdeodorant.refactoring.manipulators.MoveMethodRefactoring;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.ltk.core.refactoring.CreateChangeOperation;
+import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.FieldWrapper;
@@ -28,6 +41,8 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	private UnitMemberWrapper objectMethod;
 	private ICompilationUnitWrapper targetUnit;
 	private ICompilationUnitWrapper sourceUnit;
+
+	private PerformChangeOperation performOperation;
 	
 	public MoveMethodOpportunity(UnitMemberWrapper objectMethod, ICompilationUnitWrapper targetUnit){
 		this.objectMethod = objectMethod;
@@ -157,8 +172,65 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 
 	@Override
 	public void apply() {
-		// TODO Auto-generated method stub
-
+		MoveMethodOpportunity moveMethodOpportunity = this;
+		
+		MethodDeclaration methodDeclaration = (MethodDeclaration) moveMethodOpportunity.getObjectMethod().getJavaElement();												
+		CompilationUnit sourceCompilationUnit = moveMethodOpportunity.getSourceUnit().getJavaUnit();
+		CompilationUnit targetCompilationUnit = moveMethodOpportunity.getTargetUnit().getJavaUnit();
+		TypeDeclaration sTypeDeclaration = (TypeDeclaration) sourceCompilationUnit.types().get(0);
+		TypeDeclaration tTypeDeclaration = (TypeDeclaration) targetCompilationUnit.types().get(0);
+		
+		Map<MethodInvocation, MethodDeclaration> additionalMethodsToBeMoved = new HashMap<MethodInvocation, MethodDeclaration>();
+//		for(ProgramReference reference : moveMethodOpportunity.getObjectMethod().getRefererPointList()){
+//			additionalMethodsToBeMoved.put((MethodInvocation)reference.getASTNode(), (MethodDeclaration)((UnitMemberWrapper) reference.getReferee()).getJavaElement());
+//			if(!additionalMethodsToBeMoved.containsKey((MethodInvocation)reference.getASTNode())){
+//				additionalMethodsToBeMoved.put((MethodInvocation)reference.getASTNode(), methodDeclaration);
+//			}
+//		}
+		
+		MoveMethodRefactoring refactoring = new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit,
+				sTypeDeclaration, tTypeDeclaration, methodDeclaration,
+				additionalMethodsToBeMoved, false, moveMethodOpportunity.getObjectMethod().getName());
+		
+		try {
+			NullProgressMonitor monitor = new NullProgressMonitor();
+			RefactoringStatus status = refactoring.checkAllConditions(monitor);
+			CreateChangeOperation operation = new CreateChangeOperation(refactoring);			
+			performOperation = new PerformChangeOperation(operation);
+			performOperation.run(monitor);
+		} catch (OperationCanceledException e1) {
+			e1.printStackTrace();
+			return;
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+			return;
+		}
+		
+//		MyRefactoringWizard wizard = new MyRefactoringWizard(refactoring, new TestAction());
+//		RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard); 
+//		try { 
+//			String titleForFailedChecks = ""; //$NON-NLS-1$ 
+//			op.run(getSite().getShell(), titleForFailedChecks); 
+//		} catch(InterruptedException e1) {
+//			e1.printStackTrace();
+//		}
+	}
+	
+	@Override
+	public void undoApply(){
+		if(performOperation != null){
+			try {
+				NullProgressMonitor monitor = new NullProgressMonitor();		
+				PerformChangeOperation performUndoOperation = new PerformChangeOperation(performOperation.getUndoChange());
+				performUndoOperation.run(monitor);
+			} catch (OperationCanceledException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (CoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	@Override
