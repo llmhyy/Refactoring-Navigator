@@ -147,7 +147,7 @@ public class ModelMapper {
 	private double[][] initializeOverallSimilarityTable(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitList){
 		double[][] semanticSimilarityTable = generateSemanticSimilarityTableWithBags(moduleList, compilationUnitList);
-		double[][] structuralSimilarityTable = generateStructuralSimilarityTable(semanticSimilarityTable, moduleList, compilationUnitList);
+		double[][] structuralSimilarityTable /*= generateStructuralSimilarityTable(semanticSimilarityTable, moduleList, compilationUnitList)*/;
 		
 		/**
 		 * after the above calculation, the dimensions of both semantic similarity table and
@@ -158,7 +158,7 @@ public class ModelMapper {
 		double[][] overallSimilarity = new double[m][n];
 		for(int i=0; i<m; i++){
 			for(int j=0; j<n; j++){
-				overallSimilarity[i][j] = 0.8*semanticSimilarityTable[i][j] + 0.2*structuralSimilarityTable[i][j];
+				overallSimilarity[i][j] = /*0.8**/semanticSimilarityTable[i][j] /*+ 0.2*structuralSimilarityTable[i][j]*/;
 				
 				DecimalFormat df = new DecimalFormat("#.###");
 				overallSimilarity[i][j] = Double.parseDouble(df.format(overallSimilarity[i][j]));
@@ -174,9 +174,10 @@ public class ModelMapper {
 		
 		for(int i=0; i<moduleList.size(); i++){
 			ModuleWrapper module = moduleList.get(i);
-			module.extractTermFrequency(ReflexactoringUtil.removeDelimit(module.getDescription()));
+			module.extractTermFrequency(ReflexactoringUtil.removeDelimit(module.getDescription()).toLowerCase());
 			for(int j=0; j<compilationUnitList.size(); j++){
 				ICompilationUnitWrapper unit = compilationUnitList.get(j);
+				
 				double similarity = unit.computeSimilarity(module);
 				similarityTable[i][j] = similarity;
 			}
