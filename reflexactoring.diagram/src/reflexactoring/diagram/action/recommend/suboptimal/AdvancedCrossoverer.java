@@ -52,19 +52,8 @@ public class AdvancedCrossoverer implements Crossoverer{
 				System.currentTimeMillis();
 			}*/
 			
-			double[][] similarityTable = ((AdvancedFitnessEvaluator)gene1.getEvaluator()).getSimilarityTable();
-			double[][] highLevelNodeDependencyMatrix = ((AdvancedFitnessEvaluator)gene1.getEvaluator()).getHighLevelNodeDependencyMatrix();
-			double[][] lowLevelNodeDependencyMatrix = ((AdvancedFitnessEvaluator)gene1.getEvaluator()).getLowLevelNodeDependencyMatrix();
-			double[][] highLevelNodeInheritanceMatrix = ((AdvancedFitnessEvaluator)gene1.getEvaluator()).getHighLevelNodeInheritanceMatrix();
-			double[][] lowLevelNodeInheritanceMatrix = ((AdvancedFitnessEvaluator)gene1.getEvaluator()).getLowLevelNodeInheritanceMatrix();
-			double[][] highLevelNodeCreationMatrix = ((AdvancedFitnessEvaluator)gene1.getEvaluator()).getHighLevelNodeCreationMatrix();
-			double[][] lowLevelNodeCreationMatrix = ((AdvancedFitnessEvaluator)gene1.getEvaluator()).getLowLevelNodeCreationMatrix();
-			
-			
-			newGeneration.add(new Genotype(DNA1, originalDNA, new AdvancedFitnessEvaluator(similarityTable, highLevelNodeDependencyMatrix, 
-					lowLevelNodeDependencyMatrix, highLevelNodeInheritanceMatrix, lowLevelNodeInheritanceMatrix, highLevelNodeCreationMatrix, lowLevelNodeCreationMatrix)));
-			newGeneration.add(new Genotype(DNA2, originalDNA, new AdvancedFitnessEvaluator(similarityTable, highLevelNodeDependencyMatrix, 
-					lowLevelNodeDependencyMatrix, highLevelNodeInheritanceMatrix, lowLevelNodeInheritanceMatrix, highLevelNodeCreationMatrix, lowLevelNodeCreationMatrix)));
+			newGeneration.add(new Genotype(DNA1, originalDNA, gene1.getEvaluator()));
+			newGeneration.add(new Genotype(DNA2, originalDNA, gene2.getEvaluator()));
 		}
 		
 		return newGeneration;

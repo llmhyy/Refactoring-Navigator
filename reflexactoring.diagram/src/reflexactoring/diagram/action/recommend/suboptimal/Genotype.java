@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
+import java.util.ArrayList;
+
 
 /**
  * 
@@ -14,6 +16,7 @@ public class Genotype {
 	private int[] DNA;
 	private int[] originalDNA;
 	private double fitness;
+	private ArrayList<Violation> violationList;
 	
 	private FitnessEvaluator evaluator;
 	/**
@@ -58,6 +61,7 @@ public class Genotype {
 		
 		if(fitness == 0){
 			fitness = evaluator.computeFitness(this);
+			this.violationList = evaluator.getViolationList();
 		}
 		
 		return fitness;
@@ -101,5 +105,19 @@ public class Genotype {
 	 */
 	public void setEvaluator(FitnessEvaluator evaluator) {
 		this.evaluator = evaluator;
+	}
+
+	/**
+	 * @return the violationList
+	 */
+	public ArrayList<Violation> getViolationList() {
+		return violationList;
+	}
+
+	/**
+	 * @param violationList the violationList to set
+	 */
+	public void setViolationList(ArrayList<Violation> violationList) {
+		this.violationList = violationList;
 	}
 }

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.recommend.action.AddCreationAction;
@@ -21,22 +20,19 @@ import reflexactoring.diagram.action.recommend.action.DeleteExtendAction;
 import reflexactoring.diagram.action.recommend.action.LinkAction;
 import reflexactoring.diagram.action.recommend.suboptimal.AdvancedCrossoverer;
 import reflexactoring.diagram.action.recommend.suboptimal.AdvancedFitnessEvaluator;
-import reflexactoring.diagram.action.recommend.suboptimal.DefaultCrossoverer;
-import reflexactoring.diagram.action.recommend.suboptimal.DefaultFitnessEvaluator;
 import reflexactoring.diagram.action.recommend.suboptimal.DefaultMutator;
 import reflexactoring.diagram.action.recommend.suboptimal.DefaultSelector;
+import reflexactoring.diagram.action.recommend.suboptimal.FitnessEvaluator;
+import reflexactoring.diagram.action.recommend.suboptimal.FitnessEvaluatorFactory;
 import reflexactoring.diagram.action.recommend.suboptimal.GeneticOptimizer;
 import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
 import reflexactoring.diagram.action.recommend.suboptimal.Population;
 import reflexactoring.diagram.action.recommend.suboptimal.PopulationGenerator;
-
-
 import reflexactoring.diagram.action.recommend.suboptimal.Rules;
 import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.UnitMemberWrapperList;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -105,7 +101,11 @@ public class RefactoringRecommender {
 		 */
 		Rules rules = new Rules();
 		
-		PopulationGenerator popGenerator = new PopulationGenerator(Integer.valueOf(ReflexactoringUtil.getPopulationSize()));
+		//FitnessEvaluator evalutor = FitnessEvaluatorFactory.createFitnessEvaluator(FitnessEvaluator.ADVANCED_EVALUATOR);
+		FitnessEvaluator evalutor = FitnessEvaluatorFactory.createFitnessEvaluator(FitnessEvaluator.BALANCED_EVALUATOR);
+		
+		PopulationGenerator popGenerator = new PopulationGenerator(
+				Integer.valueOf(ReflexactoringUtil.getPopulationSize()), evalutor);
 		Population population = popGenerator.createPopulation(Settings.scope.getScopeCompilationUnitList(), moduleList);
 		/*GeneticOptimizer optimizer = new GeneticOptimizer(population, new DefaultSelector(), 
 				new DefaultCrossoverer(), new DefaultMutator(rules.getUnitModuleFixList(), rules.getUnitModuleStopList(), moduleList.size()));*/
@@ -124,31 +124,6 @@ public class RefactoringRecommender {
 		return suggestions;
 	}
 	
-	public ArrayList<Suggestion> recommendStartByMember(IProgressMonitor monitor){
-		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
-		
-		Rules rules = new Rules();
-		
-		PopulationGenerator popGenerator = new PopulationGenerator(Integer.valueOf(ReflexactoringUtil.getPopulationSize()));
-		Population population = popGenerator.createPopulation(Settings.scope.getScopeMemberList(), moduleList);
-		/*GeneticOptimizer optimizer = new GeneticOptimizer(population, new DefaultSelector(), 
-				new DefaultCrossoverer(), new DefaultMutator(rules.getMemberModuleFixList(), rules.getMemberModuleStopList(), moduleList.size()));*/
-		GeneticOptimizer optimizer = new GeneticOptimizer(population, new DefaultSelector(), 
-				new AdvancedCrossoverer(), new DefaultMutator(rules.getUnitModuleFixList(), rules.getUnitModuleStopList(), moduleList.size()));
-		
-		Population pop = optimizer.optimize();
-		
-		/**
-		 * The first genotype in population should be the best genotype
-		 */
-		Genotype bestGene = pop.getList().get(0);
-		Suggestion suggestion = generateMemberLevelSuggestion(bestGene, moduleList);				
-		
-		ArrayList<Suggestion> suggestions = generateSuggestions(bestGene, suggestion, moduleList);
-		return suggestions;
-	}
-	
-	
 	
 	/**
 	 * Given a best gene and its current suggestion, generate suggestions w.r.t its feasibility.
@@ -166,7 +141,7 @@ public class RefactoringRecommender {
 			suggestion.setFeasible(false);
 			
 			ArrayList<SuggestionMove> highLevelSuggestion = findHighLevelModificationSuggestion(
-					((AdvancedFitnessEvaluator)bestGene.getEvaluator()).getViolationList(), moduleList);
+					bestGene.getViolationList(), moduleList);
 			for(SuggestionMove move: highLevelSuggestion){
 				suggestion.add(0, move);
 			}

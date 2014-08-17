@@ -1,54 +1,73 @@
-/**
- * 
- */
 package reflexactoring.diagram.action.recommend.suboptimal;
 
 import java.util.ArrayList;
 
-import reflexactoring.diagram.action.recommend.suboptimal.Violation;
-import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
  *
  */
-public class DefaultFitnessEvaluator implements FitnessEvaluator {
+public abstract class DefaultFitnessEvaluator implements FitnessEvaluator {
+	/**
+	 * this violation list is a temporary variable, after evaluator computing the fitness value for
+	 * certain genotype, the genotype should also read this variable to retrieve the violations it
+	 * generates.
+	 */
+	protected ArrayList<Violation> violationList = new ArrayList<>();
 	
-	private ArrayList<Violation> violationList = new ArrayList<>();
-	private double[][] similarityTable;
+	protected double[][] similarityTable;
 	
-	private double[][] highLevelNodeMatrix;
-	private double[][] lowLevelNodeMatrix;
+	protected double[][] highLevelNodeDependencyMatrix;
+	protected double[][] lowLevelNodeDependencyMatrix;
 	
-	public DefaultFitnessEvaluator(double[][] similarityTable, double[][] highLevelNodeMatrix, double[][] lowLevelNodeMatrix){
-		this.setSimilarityTable(similarityTable);
-		this.setHighLevelNodeMatrix(highLevelNodeMatrix);
-		this.setLowLevelNodeMatrix(lowLevelNodeMatrix);
+	protected double[][] highLevelNodeCreationMatrix;
+	protected double[][] lowLevelNodeCreationMatrix;
+	
+	protected double[][] highLevelNodeInheritanceMatrix;
+	protected double[][] lowLevelNodeInheritanceMatrix;
+
+	/**
+	 * @param similarityTable
+	 * @param highLevelNodeDependencyMatrix
+	 * @param lowLevelNodeDependencyMatrix
+	 * @param highLevelNodeCreationMatrix
+	 * @param lowLevelNodeCreationMatrix
+	 * @param highLevelNodeInheritanceMatrix
+	 * @param lowLevelNodeInheritanceMatrix
+	 */
+	public DefaultFitnessEvaluator(double[][] similarityTable,
+			double[][] highLevelNodeDependencyMatrix,
+			double[][] lowLevelNodeDependencyMatrix,
+			double[][] highLevelNodeInheritanceMatrix,
+			double[][] lowLevelNodeInheritanceMatrix,
+			double[][] highLevelNodeCreationMatrix,
+			double[][] lowLevelNodeCreationMatrix) {
+		super();
+		this.similarityTable = similarityTable;
+		this.highLevelNodeDependencyMatrix = highLevelNodeDependencyMatrix;
+		this.lowLevelNodeDependencyMatrix = lowLevelNodeDependencyMatrix;
+		this.highLevelNodeCreationMatrix = highLevelNodeCreationMatrix;
+		this.lowLevelNodeCreationMatrix = lowLevelNodeCreationMatrix;
+		this.highLevelNodeInheritanceMatrix = highLevelNodeInheritanceMatrix;
+		this.lowLevelNodeInheritanceMatrix = lowLevelNodeInheritanceMatrix;
 	}
+
+	public abstract double computeFitness(Genotype gene);
 	
-	public double computeFitness(Genotype gene){
-		double structureViolation = computeStructureViolation(gene);
-		double lexicalSimilarity = computeLexicalSimilarity(gene);
-		double refactoringEffort = computeRefactoringEffort(gene);
-		return Double.valueOf(ReflexactoringUtil.getAlpha())*lexicalSimilarity
-				+ Double.valueOf(ReflexactoringUtil.getBeta())*refactoringEffort
-				- structureViolation;
-	}
-	
-	private double computeStructureViolation(Genotype gene){
+	protected double computeStructureDependencyViolation(Genotype gene){
 		double result = 0;
 		
 		double[][] confidenceTable = Settings.dependencyConfidenceTable.convertToRawTable();
 		
-		for(int i=0; i<highLevelNodeMatrix.length; i++){
-			for(int j=0; j<highLevelNodeMatrix.length; j++){
+		for(int i=0; i<highLevelNodeDependencyMatrix.length; i++){
+			for(int j=0; j<highLevelNodeDependencyMatrix.length; j++){
 				if(i != j){
 					/**
 					 * Detect divergence violation
 					 */
-					if(highLevelNodeMatrix[i][j] == 0){
-						int violationNum = countDivergenceViolation(gene, i, j);
+					if(highLevelNodeDependencyMatrix[i][j] == 0){
+						int violationNum = countDivergenceViolation(gene, i, j, lowLevelNodeDependencyMatrix);
 						if(violationNum != 0){
 							Violation violation = new Violation(i, j, Violation.DEPENDENCY_DIVERGENCE);
 							violationList.add(violation);
@@ -59,9 +78,83 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 					 * Detect absence violation
 					 */
 					else{
-						int violationNum = countAbsenceViolation(gene, i, j);
+						int violationNum = countAbsenceViolation(gene, i, j, lowLevelNodeDependencyMatrix);
 						if(violationNum != 0){
 							Violation violation = new Violation(i, j, Violation.DEPENDENCY_ABSENCE);
+							violationList.add(violation);
+						}
+						result += confidenceTable[i][j] * violationNum;
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	protected double computeStructureInheritanceViolation(Genotype gene){
+		double result = 0;
+		
+		double[][] confidenceTable = Settings.extendConfidenceTable.convertToRawTable();
+		
+		for(int i=0; i<highLevelNodeInheritanceMatrix.length; i++){
+			for(int j=0; j<highLevelNodeInheritanceMatrix.length; j++){
+				if(i != j){
+					/**
+					 * Detect divergence violation
+					 */
+					if(highLevelNodeInheritanceMatrix[i][j] == 0){
+						int violationNum = countDivergenceViolation(gene, i, j, lowLevelNodeInheritanceMatrix);
+						if(violationNum != 0){
+							Violation violation = new Violation(i, j, Violation.INHERITANCE_DIVERGENCE);
+							violationList.add(violation);
+						}
+						result += confidenceTable[i][j] * violationNum;
+					}
+					/**
+					 * Detect absence violation
+					 */
+					else{
+						int violationNum = countAbsenceViolation(gene, i, j, lowLevelNodeInheritanceMatrix);
+						if(violationNum != 0){
+							Violation violation = new Violation(i, j, Violation.INHERITANCE_ABSENCE);
+							violationList.add(violation);
+						}
+						result += confidenceTable[i][j] * violationNum;
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	protected double computeStructureCreationViolation(Genotype gene){
+		double result = 0;
+		
+		double[][] confidenceTable = Settings.extendConfidenceTable.convertToRawTable();
+		
+		for(int i=0; i<highLevelNodeCreationMatrix.length; i++){
+			for(int j=0; j<highLevelNodeCreationMatrix.length; j++){
+				if(i != j){
+					/**
+					 * Detect divergence violation
+					 */
+					if(highLevelNodeCreationMatrix[i][j] == 0){
+						int violationNum = countDivergenceViolation(gene, i, j, lowLevelNodeCreationMatrix);
+						if(violationNum != 0){
+							Violation violation = new Violation(i, j, Violation.CREATION_DIVERGENCE);
+							violationList.add(violation);
+						}
+						result += confidenceTable[i][j] * violationNum;
+					}
+					/**
+					 * Detect absence violation
+					 */
+					else{
+						int violationNum = countAbsenceViolation(gene, i, j, lowLevelNodeCreationMatrix);
+						if(violationNum != 0){
+							Violation violation = new Violation(i, j, Violation.CREATION_ABSENCE);
 							violationList.add(violation);
 						}
 						result += confidenceTable[i][j] * violationNum;
@@ -81,7 +174,7 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 	 * @param j
 	 * @return
 	 */
-	private int countAbsenceViolation(Genotype gene, int callerModuleIndex, int calleeModuleIndex) {
+	private int countAbsenceViolation(Genotype gene, int callerModuleIndex, int calleeModuleIndex, double[][] lowLevelNodeMatrix) {
 		for(int i=0; i<gene.getLength(); i++){
 			/**
 			 * find any low level node i, which is mapped to caller module.
@@ -113,7 +206,8 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 	 * @param gene 
 	 * @return
 	 */
-	private int countDivergenceViolation(Genotype gene, int callerModuleIndex, int calleeModuleIndex) {
+	private int countDivergenceViolation(Genotype gene, int callerModuleIndex, 
+			int calleeModuleIndex, double[][] lowLevelNodeMatrix) {
 		int num = 0;
 		for(int i=0; i<gene.getLength(); i++){
 			/**
@@ -129,7 +223,8 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 						 * if node j is mapped to callee module, there is a violation.
 						 */
 						if(gene.getDNA()[j] == calleeModuleIndex){
-							num++;
+							num += lowLevelNodeMatrix[i][j];
+							//num++;
 						}
 					}
 				}
@@ -138,7 +233,7 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 		return num;
 	}
 
-	private double computeLexicalSimilarity(Genotype gene){
+	protected double computeLexicalSimilarity(Genotype gene){
 		double result = 0;
 		
 		for(int lowLevelNodeIndex=0; lowLevelNodeIndex<gene.getLength(); lowLevelNodeIndex++){
@@ -146,16 +241,6 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 			result += similarityTable[highLevelNodeIndex][lowLevelNodeIndex];
 		}
 		
-		return result/gene.getLength();
-	}
-	
-	private double computeRefactoringEffort(Genotype gene){
-		double result = 0;
-		for(int i=0; i<gene.getLength(); i++){
-			if(gene.getDNA()[i] == gene.getOriginalDNA()[i]){
-				result++;
-			}
-		}
 		return result/gene.getLength();
 	}
 
@@ -169,13 +254,6 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 	 */
 	public ArrayList<Violation> getViolationList() {
 		return violationList;
-	}
-
-	/**
-	 * @param violationList the violationList to set
-	 */
-	public void setViolationList(ArrayList<Violation> violationList) {
-		this.violationList = violationList;
 	}
 
 	/**
@@ -193,33 +271,92 @@ public class DefaultFitnessEvaluator implements FitnessEvaluator {
 	}
 
 	/**
-	 * @param highLevelNodeMatrix the highLevelNodeMatrix to set
+	 * @return the highLevelNodeDependencyMatrix
 	 */
-	public void setHighLevelNodeMatrix(double[][] highLevelNodeMatrix) {
-		this.highLevelNodeMatrix = highLevelNodeMatrix;
+	public double[][] getHighLevelNodeDependencyMatrix() {
+		return highLevelNodeDependencyMatrix;
 	}
 
 	/**
-	 * @param lowLevelNodeMatrix the lowLevelNodeMatrix to set
+	 * @param highLevelNodeDependencyMatrix the highLevelNodeDependencyMatrix to set
 	 */
-	public void setLowLevelNodeMatrix(double[][] lowLevelNodeMatrix) {
-		this.lowLevelNodeMatrix = lowLevelNodeMatrix;
+	public void setHighLevelNodeDependencyMatrix(
+			double[][] highLevelNodeDependencyMatrix) {
+		this.highLevelNodeDependencyMatrix = highLevelNodeDependencyMatrix;
 	}
 
 	/**
-	 * @return the highLevelNodeMatrix
+	 * @return the lowLevelNodeDependencyMatrix
 	 */
-	public double[][] getHighLevelNodeMatrix() {
-		return highLevelNodeMatrix;
+	public double[][] getLowLevelNodeDependencyMatrix() {
+		return lowLevelNodeDependencyMatrix;
 	}
 
 	/**
-	 * @return the lowLevelNodeMatrix
+	 * @param lowLevelNodeDependencyMatrix the lowLevelNodeDependencyMatrix to set
 	 */
-	public double[][] getLowLevelNodeMatrix() {
-		return lowLevelNodeMatrix;
+	public void setLowLevelNodeDependencyMatrix(
+			double[][] lowLevelNodeDependencyMatrix) {
+		this.lowLevelNodeDependencyMatrix = lowLevelNodeDependencyMatrix;
 	}
-	
-	
+
+	/**
+	 * @return the highLevelNodeInheritanceMatrix
+	 */
+	public double[][] getHighLevelNodeInheritanceMatrix() {
+		return highLevelNodeInheritanceMatrix;
+	}
+
+	/**
+	 * @param highLevelNodeInheritanceMatrix the highLevelNodeInheritanceMatrix to set
+	 */
+	public void setHighLevelNodeInheritanceMatrix(
+			double[][] highLevelNodeInheritanceMatrix) {
+		this.highLevelNodeInheritanceMatrix = highLevelNodeInheritanceMatrix;
+	}
+
+	/**
+	 * @return the lowLevelNodeInheritanceMatrix
+	 */
+	public double[][] getLowLevelNodeInheritanceMatrix() {
+		return lowLevelNodeInheritanceMatrix;
+	}
+
+	/**
+	 * @param lowLevelNodeInheritanceMatrix the lowLevelNodeInheritanceMatrix to set
+	 */
+	public void setLowLevelNodeInheritanceMatrix(
+			double[][] lowLevelNodeInheritanceMatrix) {
+		this.lowLevelNodeInheritanceMatrix = lowLevelNodeInheritanceMatrix;
+	}
+
+	/**
+	 * @return the highLevelNodeCreationMatrix
+	 */
+	public double[][] getHighLevelNodeCreationMatrix() {
+		return highLevelNodeCreationMatrix;
+	}
+
+	/**
+	 * @param highLevelNodeCreationMatrix the highLevelNodeCreationMatrix to set
+	 */
+	public void setHighLevelNodeCreationMatrix(
+			double[][] highLevelNodeCreationMatrix) {
+		this.highLevelNodeCreationMatrix = highLevelNodeCreationMatrix;
+	}
+
+	/**
+	 * @return the lowLevelNodeCreationMatrix
+	 */
+	public double[][] getLowLevelNodeCreationMatrix() {
+		return lowLevelNodeCreationMatrix;
+	}
+
+	/**
+	 * @param lowLevelNodeCreationMatrix the lowLevelNodeCreationMatrix to set
+	 */
+	public void setLowLevelNodeCreationMatrix(double[][] lowLevelNodeCreationMatrix) {
+		this.lowLevelNodeCreationMatrix = lowLevelNodeCreationMatrix;
+	}
 
 }

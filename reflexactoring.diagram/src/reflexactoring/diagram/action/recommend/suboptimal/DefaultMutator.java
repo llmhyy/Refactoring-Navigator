@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import reflexactoring.diagram.util.ReflexactoringUtil;
-import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun

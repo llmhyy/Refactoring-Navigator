@@ -788,15 +788,6 @@
                tooltip="Decide the scope of refactoring">
          </action>
          <action
-               class="reflexactoring.diagram.action.recommend.MemberRecommendAction"
-               icon="icons/menu/recommend_member.gif"
-               id="reflexactoring.diagram.action.MemberRecommend"
-               label="Start by Member Level (Recommend)"
-               style="push"
-               tooltip="Split Direct on Fields and Methods">
-            >
-         </action>
-         <action
                class="reflexactoring.diagram.action.SearchRefactoringSolutionAcion"
                icon="icons/menu/search.jpg"
                id="reflexactoring.diagram.action.searchSolution"

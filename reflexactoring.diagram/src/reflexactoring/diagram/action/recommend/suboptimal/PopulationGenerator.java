@@ -26,9 +26,11 @@ import reflexactoring.diagram.util.Settings;
 public class PopulationGenerator {
 	
 	private int populationSize;
+	private FitnessEvaluator evaluator;
 	
-	public PopulationGenerator(int popSize){
+	public PopulationGenerator(int popSize, FitnessEvaluator evaluator){
 		this.populationSize = popSize;
+		this.evaluator = evaluator;
 	}
 	
 	public Population createPopulation(ArrayList<ICompilationUnitWrapper> unitList, ArrayList<ModuleWrapper> moduleList){
@@ -45,31 +47,11 @@ public class PopulationGenerator {
 		}
 		
 		/**
-		 * Based on fix and stop rules, I generate the population with randomly changed some mapping.
+		 * Based on fix and stop rules, I generate the population by randomly changing some mapping.
 		 */
 		Rules rules = new Rules();
 		Population population = generateRandomPopualtion(rules.getUnitModuleFixList(), rules.getUnitModuleStopList(), 
-				seedDNA, moduleList.size(), populationSize, Settings.similarityTable.convertModuleUnitsSimilarityTableToRawTable(), true);
-		
-		return population;
-	}
-	
-	public Population createPopulation(UnitMemberWrapperList memberList, ArrayList<ModuleWrapper> moduleList){
-		
-		int[] seedDNA = new int[memberList.size()];
-		for(int i=0; i<memberList.size(); i++){
-			UnitMemberWrapper member = memberList.get(i);
-			ModuleWrapper module = member.getMappingModule();
-			
-			int index = ReflexactoringUtil.getModuleIndex(moduleList, module);
-			
-			seedDNA[i] = index;
-		}
-		
-		Rules rules = new Rules();
-		double[][] similarityTable = computeMemberSimilarity();
-		Population population = generateRandomPopualtion(rules.getMemberModuleFixList(), rules.getMemberModuleStopList(), 
-				seedDNA, moduleList.size(), populationSize, similarityTable, false);
+				seedDNA, moduleList.size(), populationSize, true);
 		
 		return population;
 	}
@@ -119,43 +101,10 @@ public class PopulationGenerator {
 	private Population generateRandomPopualtion(
 			HashMap<Integer, Integer> fixList,
 			HashMap<Integer, ArrayList<Integer>> stopList, int[] seedDNA, int moduleNum,
-			int popSize, double[][] similarityTable, boolean isForTypePopulation) {
+			int popSize, boolean isForTypePopulation) {
 		//Rules rules = new Rules();
 		
 		Population population = new Population();
-		
-		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
-		
-		double[][] highLevelNodeDependencyMatrix = RecommendUtil.extractGraph(moduleList, 
-				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
-		double[][] highLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(moduleList, 
-				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
-		double[][] highLevelNodeCreationMatrix = RecommendUtil.extractGraph(moduleList, 
-				GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
-		
-		double[][] lowLevelNodeDependencyMatrix;
-		double[][] lowLevelNodeInheritanceMatrix;
-		double[][] lowLevelNodeCreationMatrix;
-		
-		if(isForTypePopulation){
-			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
-					GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
-			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
-					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
-			lowLevelNodeCreationMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
-					GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
-			
-			System.currentTimeMillis();
-		}
-		else{
-			lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
-					GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
-			lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
-					GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.REFER);
-			lowLevelNodeCreationMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeMemberList(), 
-					GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
-		}
-		
 		
 		//int moduleNum = ReflexactoringUtil.getModuleList(Settings.diagramPath).size();
 		for(int i=0; i<popSize; i++){
@@ -203,16 +152,7 @@ public class PopulationGenerator {
 				}					
 			}
 			
-			/*if(!ReflexactoringUtil.checkCorrectMapping(DNA, rules)){
-				System.currentTimeMillis();
-			}*/
-			
-			/*Genotype gene = new Genotype(DNA, seedDNA, 
-					new DefaultFitnessEvaluator(similarityTable, highLevelNodeMatrix, lowLevelNodeMatrix));*/
-			Genotype gene = new Genotype(DNA, seedDNA, 
-					new AdvancedFitnessEvaluator(similarityTable, highLevelNodeDependencyMatrix, lowLevelNodeDependencyMatrix, 
-							highLevelNodeInheritanceMatrix, lowLevelNodeInheritanceMatrix, highLevelNodeCreationMatrix, 
-							lowLevelNodeCreationMatrix));
+			Genotype gene = new Genotype(DNA, seedDNA, evaluator);
 			population.add(gene);
 		}
 		
