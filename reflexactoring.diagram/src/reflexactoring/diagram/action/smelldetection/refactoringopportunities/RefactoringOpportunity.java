@@ -9,7 +9,13 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.operations.IWorkbenchOperationSupport;
 
@@ -53,20 +59,22 @@ public abstract class RefactoringOpportunity {
 	/**
 	 * this method is used to apply refactoring on real code
 	 */
-	public abstract void apply();
+	public abstract boolean apply();
 	
 	/**
-	 * this method is used to undo apply refactoring on real code, simulate user press ctrl+Z in default
+	 * this method is used to undo apply refactoring on real code, simulate user presses ctrl+Z in default
 	 */
-	public void undoApply(){
+	public boolean undoApply(){
 		try {
 			IWorkbenchOperationSupport operationSupport = PlatformUI.getWorkbench().getOperationSupport();
 			IUndoContext context = operationSupport.getUndoContext();
 			IOperationHistory operationHistory = operationSupport.getOperationHistory();  
 			IStatus status = operationHistory.undo(context, null, null);
-		} catch (ExecutionException ee) {
-			ee.printStackTrace();
+		} catch (ExecutionException e1) {
+			e1.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 	
 	
@@ -116,5 +124,30 @@ public abstract class RefactoringOpportunity {
 		}
 		
 		return module;
+	}
+	
+
+	protected CompilationUnit parse(ICompilationUnit unit) {
+		ASTParser parser = ASTParser.newParser(AST.JLS4); 
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource(unit); // set source
+		parser.setResolveBindings(true); // we need bindings later on
+		return (CompilationUnit) parser.createAST(null /* IProgressMonitor */); // parse
+	}
+	
+	protected Name createQualifiedName(AST ast, String classToImport) {
+		String[] parts = classToImport.split("\\."); //$NON-NLS-1$
+
+		Name name = null;
+
+		for (int i = 0; i < parts.length; i++) {
+			SimpleName simpleName = ast.newSimpleName(parts[i]);
+			if (i == 0) {
+				name = simpleName;
+			} else {
+				name = ast.newQualifiedName(name, simpleName);
+			}
+		}
+		return name;
 	}
 }

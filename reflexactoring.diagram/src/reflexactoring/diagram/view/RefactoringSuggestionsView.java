@@ -513,241 +513,45 @@ public class RefactoringSuggestionsView extends ViewPart {
 					ViewUpdater updater = new ViewUpdater();
 					updater.updateView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW, map, true);
 				}
-				else if(e.getHref().equals("Exec")){
-					
-					//TODO do execution
-					if(opportunity instanceof MoveMethodOpportunity){						
-						opportunity.apply();
-					}else if(opportunity instanceof PullUpMemberOpportunity){
-						if(opportunity instanceof CreateSuperclassAndPullUpMemberOpportunity){
-							JavaClassCreator javaCreator = new JavaClassCreator();
-							ICompilationUnitWrapper parentClass = javaCreator.createClass();
-							if(parentClass == null){
-								return;
-							}
-							//TODO
-
-							// make every child class extends the parent class
-							for(UnitMemberWrapper member : ((PullUpMemberOpportunity) opportunity).getToBePulledMemberList()){
-								ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
-								try {
-									unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-									IBuffer buffer = unit.getBuffer();									
-									
-									CompilationUnit compilationUnit = parse(unit);
-									compilationUnit.recordModifications();
-									
-									TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
-									Name name = td.getAST().newSimpleName(parentClass.getName());
-									Type type = td.getAST().newSimpleType(name);
-									td.setSuperclassType(type);
-									
-									Name qualifiedName = createQualifiedName(td.getAST(), parentClass.getFullQualifiedName());
-									ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
-									importDeclaration.setName(qualifiedName);
-									importDeclaration.setOnDemand(false);
-									compilationUnit.imports().add(importDeclaration);
-									
-									Document document = new Document(unit.getSource());
-									TextEdit textEdit = compilationUnit.rewrite(document, null);
-									textEdit.apply(document);
-									
-									buffer.setContents(document.get());	
-									
-									JavaModelUtil.reconcile(unit);
-									unit.commitWorkingCopy(true, new NullProgressMonitor());
-									unit.discardWorkingCopy();
-									
-								} catch (JavaModelException e1) {
-									e1.printStackTrace();
-									return;
-								} catch (MalformedTreeException e1) {
-									e1.printStackTrace();
-									return;
-								} catch (BadLocationException e1) {
-									e1.printStackTrace();
-									return;
-								}
-							}				
-							
-						}else if(opportunity instanceof PullUpMemberToInterfaceOpportunity){
-							JavaClassCreator javaCreator = new JavaClassCreator();
-							ICompilationUnitWrapper parentInterface = javaCreator.createInterface();	
-							if(parentInterface == null){
-								return;
-							}
-
-							//get all members to be pulled
-							ArrayList<UnitMemberWrapper> memberList = ((PullUpMemberOpportunity) opportunity).getToBePulledMemberList();
-							IMember[] members = new IMember[memberList.size()];
-							String[] methodNames = new String[memberList.size()];
-							for(UnitMemberWrapper memberWrapper : memberList){
-								members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();	
-								methodNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
-							}
-							
-							//show a wizard to rename all the funcions into one name
-							String newMethodName = "";
-							RenameMethodsDialog dialog = new RenameMethodsDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
-							dialog.create();
-							if(dialog.open() == Window.OK){
-								newMethodName = dialog.getNewMethodName();								
-							}else{
-								return;
-							}
-							
-							//Create an method in parentInterface
-							ICompilationUnit interfaceUnit = parentInterface.getCompilationUnit();
-							try{
-								interfaceUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-								IBuffer interfaceBuffer = interfaceUnit.getBuffer();		
-								
-								CompilationUnit interfaceCompilationUnit = parse(interfaceUnit);
-								interfaceCompilationUnit.recordModifications();
-								
-								MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
-								MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(interfaceCompilationUnit.getAST(), mdOfMemberToPull);
-								
-								((TypeDeclaration) interfaceCompilationUnit.types().get(0)).bodyDeclarations().add(md);
-								md.setName(interfaceCompilationUnit.getAST().newSimpleName(newMethodName));
-								md.modifiers().add(interfaceCompilationUnit.getAST().newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD));
-								md.setBody(null);
-								
-								Document interfaceDocument = new Document(interfaceUnit.getSource());
-								TextEdit interfaceTextEdit = interfaceCompilationUnit.rewrite(interfaceDocument, null);
-								interfaceTextEdit.apply(interfaceDocument);
-								
-								interfaceBuffer.setContents(interfaceDocument.get());	
-								
-								JavaModelUtil.reconcile(interfaceUnit);
-								interfaceUnit.commitWorkingCopy(true, new NullProgressMonitor());
-								interfaceUnit.discardWorkingCopy();
-							} catch (JavaModelException e1) {
-								e1.printStackTrace();
-								return;
-							} catch (MalformedTreeException e1) {
-								e1.printStackTrace();
-								return;
-							} catch (BadLocationException e1) {
-								e1.printStackTrace();
-								return;
-							}							
-							
-							//make every child class implements the interface	
-							for(UnitMemberWrapper member : ((PullUpMemberOpportunity) opportunity).getToBePulledMemberList()){
-								ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
-								try {
-									unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-									IBuffer buffer = unit.getBuffer();									
-									
-									CompilationUnit compilationUnit = parse(unit);
-									compilationUnit.recordModifications();
-									
-									TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
-									Name name = td.getAST().newSimpleName(parentInterface.getName());
-									Type type = td.getAST().newSimpleType(name);
-									td.superInterfaceTypes().add(type);
-									
-									Name qualifiedName = createQualifiedName(td.getAST(), parentInterface.getFullQualifiedName());
-									ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
-									importDeclaration.setName(qualifiedName);
-									importDeclaration.setOnDemand(false);
-									compilationUnit.imports().add(importDeclaration);
-									
-									Document document = new Document(unit.getSource());
-									TextEdit textEdit = compilationUnit.rewrite(document, null);
-									textEdit.apply(document);
-									
-									buffer.setContents(document.get());	
-									
-									JavaModelUtil.reconcile(unit);
-									unit.commitWorkingCopy(true, new NullProgressMonitor());
-									unit.discardWorkingCopy();
-									
-								} catch (JavaModelException e1) {
-									e1.printStackTrace();
-									return;
-								} catch (MalformedTreeException e1) {
-									e1.printStackTrace();
-									return;
-								} catch (BadLocationException e1) {
-									e1.printStackTrace();
-									return;
-								}
-							}	
-														
-							//rename each method
-							for(UnitMemberWrapper memberWrapper : memberList){	
-								try {									
-									IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
-									
-									RenameSupport support = RenameSupport.create(methodToRename, newMethodName, RenameSupport.UPDATE_REFERENCES);
-									support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
-									
-								} catch (CoreException e1) {
-									e1.printStackTrace();
-								} catch (InvocationTargetException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								} catch (InterruptedException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}								
-													
-							}
+				else if(e.getHref().equals("Exec")){					
+					if(opportunity.apply()){						
+						//refresh the suggestions view
+						RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
+								getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
+						view.setCurrentElement(element);
+						view.setUndo(false);
+						view.refreshSuggestionsOnUI(suggestions);
+						
+						//do approved now
+						if(!Settings.approvedOpps.contains(opportunity)){
+							Settings.approvedOpps.add(opportunity);
 						}
-						
-						//call Eclipse API to pull up
-//						try {
-//							System.out.println(RefactoringAvailabilityTester.isPullUpAvailable(membersToPull));
-//							System.out.println(ActionUtil.isEditable(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), membersToPull[0]));
-//							if (RefactoringAvailabilityTester.isPullUpAvailable(membersToPull) && ActionUtil.isEditable(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), membersToPull[0]))
-//								RefactoringExecutionStarter.startPullUpRefactoring(membersToPull, PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
-//						} catch (JavaModelException jme) {
-//							ExceptionHandler.handle(jme, RefactoringMessages.OpenRefactoringWizardAction_refactoring, RefactoringMessages.OpenRefactoringWizardAction_exception);
-//						}						
-						
-					}
-					
-					//refresh the suggestions view
-					RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
-							getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
-					view.setCurrentElement(element);
-					view.setUndo(false);
-					view.refreshSuggestionsOnUI(suggestions);
-					
-					//do approved now
-					if(!Settings.approvedOpps.contains(opportunity)){
-						Settings.approvedOpps.add(opportunity);
-					}
-					ViewUpdater updater = new ViewUpdater();
-					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
-											
+						ViewUpdater updater = new ViewUpdater();
+						updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
+					}											
 				}
 				else if(e.getHref().equals("Undo")){
-					
-					opportunity.undoApply();
-
-					//refresh the suggestions view
-					RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
-							getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
-					view.setCurrentElement(element);
-					view.setUndo(true);
-					view.refreshSuggestionsOnUI(suggestions);
-					
-					//undo approved now
-					Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();
-					while(iterator.hasNext()){
-						RefactoringOpportunity opp = iterator.next();
-						if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
-								&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
-							iterator.remove();
-						}
-					}
-					
-					ViewUpdater updater = new ViewUpdater();
-					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
+					if(opportunity.undoApply()){
+						//refresh the suggestions view
+						RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
+								getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
+						view.setCurrentElement(element);
+						view.setUndo(true);
+						view.refreshSuggestionsOnUI(suggestions);
 						
+						//undo approved now
+						Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();
+						while(iterator.hasNext()){
+							RefactoringOpportunity opp = iterator.next();
+							if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
+									&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
+								iterator.remove();
+							}
+						}
+						
+						ViewUpdater updater = new ViewUpdater();
+						updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
+					}						
 				}
 			}
 		});
@@ -986,27 +790,4 @@ public class RefactoringSuggestionsView extends ViewPart {
 
 	}
 	
-	private CompilationUnit parse(ICompilationUnit unit) {
-		ASTParser parser = ASTParser.newParser(AST.JLS4); 
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setSource(unit); // set source
-		parser.setResolveBindings(true); // we need bindings later on
-		return (CompilationUnit) parser.createAST(null /* IProgressMonitor */); // parse
-	}
-	
-	private Name createQualifiedName(AST ast, String classToImport) {
-		String[] parts = classToImport.split("\\."); //$NON-NLS-1$
-
-		Name name = null;
-
-		for (int i = 0; i < parts.length; i++) {
-			SimpleName simpleName = ast.newSimpleName(parts[i]);
-			if (i == 0) {
-				name = simpleName;
-			} else {
-				name = ast.newQualifiedName(name, simpleName);
-			}
-		}
-		return name;
-	}
 }

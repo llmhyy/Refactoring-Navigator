@@ -175,9 +175,9 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 	}
 
 	@Override
-	public void apply() {
+	public boolean apply() {
 		// TODO Auto-generated method stub
-		
+		return false;
 	}
 	
 	@Override

@@ -3,10 +3,36 @@
  */
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jdt.core.IBuffer;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
+import org.eclipse.jdt.ui.refactoring.RenameSupport;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.window.Window;
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
+import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.diagram.action.popup.RenameMethodsDialog;
+import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
 import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.MethodWrapper;
@@ -80,8 +106,144 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 	}
 
 	@Override
-	public void apply() {
-		// TODO Auto-generated method stub
+	public boolean apply() {
+		JavaClassCreator javaCreator = new JavaClassCreator();
+		ICompilationUnitWrapper parentInterface = javaCreator.createInterface();	
+		if(parentInterface == null){
+			return false;
+		}
+
+		//get all members to be pulled
+		ArrayList<UnitMemberWrapper> memberList = this.getToBePulledMemberList();
+		IMember[] members = new IMember[memberList.size()];
+		String[] methodNames = new String[memberList.size()];
+		for(UnitMemberWrapper memberWrapper : memberList){
+			members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();	
+			methodNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
+		}
+		
+		//show a wizard to rename all the funcions into one name
+		String newMethodName = "";
+		RenameMethodsDialog dialog = new RenameMethodsDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
+		dialog.create();
+		if(dialog.open() == Window.OK){
+			newMethodName = dialog.getNewMethodName();								
+		}else{
+			return false;
+		}
+		
+		//Create an method in parentInterface
+		ICompilationUnit interfaceUnit = parentInterface.getCompilationUnit();
+		try{
+			interfaceUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+			IBuffer interfaceBuffer = interfaceUnit.getBuffer();		
+			
+			CompilationUnit interfaceCompilationUnit = parse(interfaceUnit);
+			interfaceCompilationUnit.recordModifications();
+			
+			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
+			MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(interfaceCompilationUnit.getAST(), mdOfMemberToPull);
+			
+			((TypeDeclaration) interfaceCompilationUnit.types().get(0)).bodyDeclarations().add(md);
+			md.setName(interfaceCompilationUnit.getAST().newSimpleName(newMethodName));
+			md.modifiers().add(interfaceCompilationUnit.getAST().newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD));
+			md.setBody(null);
+			
+			Document interfaceDocument = new Document(interfaceUnit.getSource());
+			TextEdit interfaceTextEdit = interfaceCompilationUnit.rewrite(interfaceDocument, null);
+			interfaceTextEdit.apply(interfaceDocument);
+			
+			interfaceBuffer.setContents(interfaceDocument.get());	
+			
+			JavaModelUtil.reconcile(interfaceUnit);
+			interfaceUnit.commitWorkingCopy(true, new NullProgressMonitor());
+			interfaceUnit.discardWorkingCopy();
+		} catch (JavaModelException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (MalformedTreeException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (BadLocationException e1) {
+			e1.printStackTrace();
+			return false;
+		}							
+		
+		//make every child class implements the interface	
+		for(UnitMemberWrapper member : this.getToBePulledMemberList()){
+			ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
+			try {
+				unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+				IBuffer buffer = unit.getBuffer();									
+				
+				CompilationUnit compilationUnit = parse(unit);
+				compilationUnit.recordModifications();
+				
+				TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
+				Name name = td.getAST().newSimpleName(parentInterface.getName());
+				Type type = td.getAST().newSimpleType(name);
+				td.superInterfaceTypes().add(type);
+				
+				Name qualifiedName = createQualifiedName(td.getAST(), parentInterface.getFullQualifiedName());
+				ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
+				importDeclaration.setName(qualifiedName);
+				importDeclaration.setOnDemand(false);
+				compilationUnit.imports().add(importDeclaration);
+				
+				Document document = new Document(unit.getSource());
+				TextEdit textEdit = compilationUnit.rewrite(document, null);
+				textEdit.apply(document);
+				
+				buffer.setContents(document.get());	
+				
+				JavaModelUtil.reconcile(unit);
+				unit.commitWorkingCopy(true, new NullProgressMonitor());
+				unit.discardWorkingCopy();
+				
+			} catch (JavaModelException e1) {
+				e1.printStackTrace();
+				return false;
+			} catch (MalformedTreeException e1) {
+				e1.printStackTrace();
+				return false;
+			} catch (BadLocationException e1) {
+				e1.printStackTrace();
+				return false;
+			}
+		}	
+									
+		//rename each method
+		for(UnitMemberWrapper memberWrapper : memberList){	
+			try {									
+				IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
+				
+				RenameSupport support = RenameSupport.create(methodToRename, newMethodName, RenameSupport.UPDATE_REFERENCES);
+				support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+				
+			} catch (CoreException e1) {
+				e1.printStackTrace();
+				return false;
+			} catch (InvocationTargetException e1) {
+				e1.printStackTrace();
+				return false;
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+				return false;
+			}								
+								
+		}
+		
+		//call Eclipse API to pull up
+//		try {
+//			System.out.println(RefactoringAvailabilityTester.isPullUpAvailable(membersToPull));
+//			System.out.println(ActionUtil.isEditable(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), membersToPull[0]));
+//			if (RefactoringAvailabilityTester.isPullUpAvailable(membersToPull) && ActionUtil.isEditable(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), membersToPull[0]))
+//				RefactoringExecutionStarter.startPullUpRefactoring(membersToPull, PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+//		} catch (JavaModelException jme) {
+//			ExceptionHandler.handle(jme, RefactoringMessages.OpenRefactoringWizardAction_refactoring, RefactoringMessages.OpenRefactoringWizardAction_exception);
+//		}	
+		
+		return true;
 	}
 
 	@Override

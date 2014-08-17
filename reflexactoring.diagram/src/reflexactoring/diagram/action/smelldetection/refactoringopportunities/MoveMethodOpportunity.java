@@ -171,7 +171,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	
 
 	@Override
-	public void apply() {
+	public boolean apply() {
 		MoveMethodOpportunity moveMethodOpportunity = this;
 		
 		MethodDeclaration methodDeclaration = (MethodDeclaration) moveMethodOpportunity.getObjectMethod().getJavaElement();												
@@ -200,10 +200,10 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			performOperation.run(monitor);
 		} catch (OperationCanceledException e1) {
 			e1.printStackTrace();
-			return;
+			return false;
 		} catch (CoreException e1) {
 			e1.printStackTrace();
-			return;
+			return false;
 		}
 		
 //		MyRefactoringWizard wizard = new MyRefactoringWizard(refactoring, new TestAction());
@@ -214,23 +214,28 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 //		} catch(InterruptedException e1) {
 //			e1.printStackTrace();
 //		}
+		
+		return true;
 	}
 	
 	@Override
-	public void undoApply(){
+	public boolean undoApply(){
 		if(performOperation != null){
 			try {
 				NullProgressMonitor monitor = new NullProgressMonitor();		
 				PerformChangeOperation performUndoOperation = new PerformChangeOperation(performOperation.getUndoChange());
 				performUndoOperation.run(monitor);
 			} catch (OperationCanceledException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
+				return false;
 			} catch (CoreException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
+				return false;
 			}
+		}else{
+			return false;
 		}
+		return true;
 	}
 
 	@Override
