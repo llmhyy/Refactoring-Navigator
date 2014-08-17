@@ -47,7 +47,7 @@ public class ModuleLinkWrapper implements SuggestionObject{
 	}
 	
 	public int hashCode(){
-		return (sourceModule.getDescription() + targetModule.getDescription()).hashCode() + getLinkType();
+		return (sourceModule.getName() + targetModule.getName()).hashCode() + getLinkType();
 	}
 	
 	public boolean equals(Object obj){

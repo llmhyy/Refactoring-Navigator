@@ -370,8 +370,7 @@ public class ReflexactoringUtil {
 	
 	public static ModuleWrapper findModule(ArrayList<ModuleWrapper> list, Module module){
 		for(ModuleWrapper wrapper: list){
-			if(wrapper.getName().equals(module.getName())
-					&& wrapper.getDescription().equals(module.getDescription())){
+			if(wrapper.equals(module)){
 				return wrapper;
 			}
 		}

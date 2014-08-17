@@ -35,13 +35,13 @@ public class ModelMapper {
 			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
 		
 		double[][] overallSimilarityTable; 
-		//overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
-		if(ReflexactoringUtil.isReflexionModelChanged()){
+		overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
+		/*if(ReflexactoringUtil.isReflexionModelChanged()){
 			overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);
 		}
 		else{
 			overallSimilarityTable = Settings.similarityTable.convertModuleUnitsSimilarityTableToRawTable();
-		}
+		}*/
 		
 		clearMappingRelation(moduleList, compilationUnitList);
 		

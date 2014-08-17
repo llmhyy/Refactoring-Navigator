@@ -138,8 +138,7 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 
 	public void addParentModule(ModuleWrapper callerWrapper){
 		for(ModuleWrapper module: this.parentModuleList){
-			if(module.getName().equals(callerWrapper.getName())
-					&& module.getDescription().equals(callerWrapper.getDescription())){
+			if(module.equals(callerWrapper)){
 				return;
 			}
 		}
@@ -163,8 +162,7 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 
 	public void addChildModule(ModuleWrapper callerWrapper){
 		for(ModuleWrapper module: this.childModuleList){
-			if(module.getName().equals(callerWrapper.getName())
-					&& module.getDescription().equals(callerWrapper.getDescription())){
+			if(module.equals(callerWrapper)){
 				return;
 			}
 		}
