@@ -22,6 +22,7 @@ import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.ReferencingDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -67,7 +68,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 				if(markedMemberList.contains(member))continue;
 				
 				ArrayList<UnitMemberWrapper> counterMemberList = new ArrayList<>();
-				if(!member.isOverrideSuperMember()){
+				
+				if(!member.isOverrideSuperMember() && isNotCausingCompilationError(member)){
 					/**
 					 * constructor is not considered counter here.
 					 */
@@ -111,18 +113,35 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	 * @return
 	 */
 	private boolean isNotCausingCompilationError(UnitMemberWrapper member){
-		//TODO for Lin Yun
+		ICompilationUnitWrapper sourceUnit = member.getUnitWrapper();
 		
 		for(ProgramReference reference: member.getRefererPointList()){
-			LowLevelGraphNode node = reference.getReferer();
-			if(node instanceof UnitMemberWrapper){
-				UnitMemberWrapper callerMember = (UnitMemberWrapper)node;
+			
+			if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS ||
+					reference.getReferenceType() == ProgramReference.METHOD_INVOCATION){
+				
+				VariableDeclarationWrapper declaration = reference.getVariableDeclaration();
+				if(declaration != null){
+					for(ProgramReference ref: declaration.getReferenceList()){
+						if(ref.getReferenceType() == ProgramReference.FIELD_ACCESS || 
+								ref.getReferenceType() == ProgramReference.METHOD_INVOCATION){
+							LowLevelGraphNode node = ref.getReferee();
+							if(node instanceof UnitMemberWrapper){
+								UnitMemberWrapper mem = (UnitMemberWrapper)node;
+								if(!(member.equals(mem))){
+									if(mem.getUnitWrapper().equals(sourceUnit)){
+										return false;
+									}
+								}
+							}
+						}
+					}
+				}
 				
 				
 			}
 		}
-		
-		return false;
+		return true;
 	}
 	
 	/**
@@ -140,16 +159,19 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		for(UnitMemberWrapper otherMember: otherUnit.getMembers()){
 			if(markedMemberList.contains(otherMember))continue;
 			
+			/*if(member.getName().contains("Message") && otherMember.getName().contains("Message")){
+				System.currentTimeMillis();
+			}*/
+			
 			if(!otherMember.isOverrideSuperMember() && 
-					!isWithCounterCallingRelation(counterMemberList, otherMember)){
+					!isWithCounterCallingRelation(counterMemberList, otherMember) &&
+					isNotCausingCompilationError(otherMember)){
+				
+				
 				if(member.hasSameSignatureWith(otherMember)){
 					return otherMember;
 				}
 				else{
-					/*if(member.getName().contains("save") && otherMember.getName().contains("save")){
-						System.currentTimeMillis();
-					}*/
-					
 					double sim = member.computeSimilarityForBeingPulledUp(otherMember);
 					if(sim > matchingValue && sim >= Settings.counterMethodSimilarity){
 						matchingValue = sim;

@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -19,10 +20,14 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eposoft.jccd.parser.java.antlr3.Antlr3JavaParser.variableDeclaratorId_return;
 
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
@@ -31,6 +36,7 @@ import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapperList;
+import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -40,6 +46,7 @@ import reflexactoring.diagram.util.Settings;
 public class ClassStructureBuilder {
 	
 	private ArrayList<ProgramReference> referenceList = new ArrayList<>();
+	private ArrayList<VariableDeclarationWrapper> declarationList = new ArrayList<>();
 
 	public class MemberRelationVisitor extends ASTVisitor {
 		
@@ -59,8 +66,9 @@ public class ClassStructureBuilder {
 			this.members = members;
 		}
 		
-		
-		
+		/**
+		 * access field
+		 */
 		public boolean visit(SimpleName name){
 			IBinding binding = name.resolveBinding();
 			IJavaElement element = binding.getJavaElement();
@@ -69,7 +77,16 @@ public class ClassStructureBuilder {
 					if (calleeMember instanceof FieldWrapper) {
 						FieldWrapper fieldWrapper = (FieldWrapper) calleeMember;
 						if (element.equals(fieldWrapper.getJavaMember()) && !callerMember.equals(fieldWrapper)) {
-							buildRelation(callerMember, fieldWrapper, name, ProgramReference.FIELD_ACCESS);
+							VariableDeclarationWrapper declaration = null;
+							
+							VariableDeclarationFragment fragment = (VariableDeclarationFragment) fieldWrapper.getField().fragments().get(0);
+							String fullQualifiedName = fragment.getName().resolveTypeBinding().getQualifiedName();
+							ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(fullQualifiedName);
+							if(unitWrapper != null){
+								declaration = new VariableDeclarationWrapper(unitWrapper, fieldWrapper.getName(), fragment); 
+							}
+							
+							buildRelation(callerMember, fieldWrapper, name, ProgramReference.FIELD_ACCESS, declaration);
 						}
 					}
 				}							
@@ -78,6 +95,9 @@ public class ClassStructureBuilder {
 			return false;
 		}
 
+		/**
+		 * invoke method
+		 */
 		public boolean visit(MethodInvocation invocation) {
 
 			IMethodBinding methodBinding = invocation.resolveMethodBinding();
@@ -87,7 +107,14 @@ public class ClassStructureBuilder {
 				if (calleeMember instanceof MethodWrapper) {
 					MethodWrapper methodWrapper = (MethodWrapper) calleeMember;
 					if (element.equals(methodWrapper.getJavaMember())) {
-						buildRelation(callerMember, methodWrapper, invocation, ProgramReference.METHOD_INVOCATION);
+						VariableDeclarationWrapper declaration = null;
+						Expression expression = invocation.getExpression();
+						if(expression instanceof Name){
+							Name name = (Name)expression;
+							declaration = extractVariableDeclarationWrpper(name);
+						}
+						
+						buildRelation(callerMember, methodWrapper, invocation, ProgramReference.METHOD_INVOCATION, declaration);
 					}
 				}
 			}
@@ -95,6 +122,33 @@ public class ClassStructureBuilder {
 			return true;
 		}
 
+		/**
+		 * @param invocation
+		 * @return
+		 */
+		private VariableDeclarationWrapper extractVariableDeclarationWrpper(
+				Name name) {
+			VariableDeclarationWrapper declaration = null;
+			
+			IBinding binding = name.resolveBinding();
+			ASTNode node = callerMember.getUnitWrapper().getJavaUnit().findDeclaringNode(binding);
+			VariableDeclaration vd = (VariableDeclaration)node;
+			
+			ITypeBinding typeBinding = name.resolveTypeBinding();
+			if(typeBinding != null){
+				String fullQualifiedName = typeBinding.getQualifiedName();
+				ICompilationUnitWrapper declaringWrapper = Settings.scope.findUnit(fullQualifiedName);
+				if(declaringWrapper != null){
+					declaration = new VariableDeclarationWrapper(declaringWrapper, name.getFullyQualifiedName(), vd);
+				}
+			}
+			
+			return declaration;
+		}
+
+		/**
+		 * invoke constructor
+		 */
 		public boolean visit(ClassInstanceCreation creation) {
 
 			IMethodBinding methodBinding = creation.resolveConstructorBinding();
@@ -105,10 +159,20 @@ public class ClassStructureBuilder {
 				if (calleeMember instanceof MethodWrapper) {
 					MethodWrapper methodWrapper = (MethodWrapper) calleeMember;
 					String methodKey = methodWrapper.getMethod().resolveBinding().getKey();
+					
+					
 
 					if (key.equals(methodKey)) {
 						isContainedInList = true;
-						buildRelation(callerMember, methodWrapper, creation, ProgramReference.METHOD_INVOCATION);
+						
+						VariableDeclarationFragment fragment = (VariableDeclarationFragment) creation.getParent();
+						ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(
+								creation.getType().resolveBinding().getQualifiedName());
+						
+						VariableDeclarationWrapper declaration = 
+								new VariableDeclarationWrapper(unitWrapper, fragment.getName().getIdentifier(), fragment);
+						
+						buildRelation(callerMember, methodWrapper, creation, ProgramReference.METHOD_INVOCATION, declaration);
 					}
 				}
 			}
@@ -117,7 +181,7 @@ public class ClassStructureBuilder {
 				String qualifiedName = methodBinding.getDeclaringClass().getQualifiedName();
 				ICompilationUnitWrapper correspondingUnit = Settings.scope.findUnit(qualifiedName);
 				if(null != correspondingUnit){
-					buildRelation(callerMember, correspondingUnit, creation, ProgramReference.NEW_DEFAULT_CONSTRUCTOR);
+					buildRelation(callerMember, correspondingUnit, creation, ProgramReference.NEW_DEFAULT_CONSTRUCTOR, null);
 				}
 			}
 
@@ -125,12 +189,29 @@ public class ClassStructureBuilder {
 		}
 	}
 	
-	private void buildRelation(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode node, int referenceType){
-		ProgramReference reference = new ProgramReference(referer, referee, node, referenceType);
+	private void buildRelation(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode node, 
+			int referenceType, VariableDeclarationWrapper declaration){
+		ProgramReference reference = new ProgramReference(referer, referee, node, referenceType, declaration);
 		referer.addProgramReferee(reference);
 		referee.addProgramReferer(reference);
 		
 		referenceList.add(reference);
+		
+		if(declaration != null){
+			VariableDeclarationWrapper vdw = declaration;
+			for(VariableDeclarationWrapper dec: declarationList){
+				if(dec.equals(declaration)){
+					vdw = dec;
+				}
+			}
+			
+			if(!declarationList.contains(vdw)){
+				declarationList.add(vdw);
+			}
+			
+			vdw.getReferenceList().add(reference);	
+			reference.setVariableDeclaration(vdw);
+		}
 	}
 
 	/**
@@ -155,6 +236,7 @@ public class ClassStructureBuilder {
 		
 		Settings.scope.setScopeMemberList(memberlist);
 		Settings.scope.setReferenceList(referenceList);
+		Settings.scope.setDeclarationList(declarationList);
 		
 		/**
 		 * build caller/callee relation for compilation unit list
@@ -203,9 +285,12 @@ public class ClassStructureBuilder {
 					 * build relation for type declaration based program reference
 					 */
 					String typeName = fd.getType().resolveBinding().getQualifiedName();
-					for(ICompilationUnitWrapper searchingUnitWrapper: compilationUnitList){
-						if(searchingUnitWrapper.getFullQualifiedName().equals(typeName)){
-							buildRelation(fieldWrapper, searchingUnitWrapper, fd, ProgramReference.TYPE_DECLARATION);
+					for(ICompilationUnitWrapper declaringUnitWrapper: compilationUnitList){
+						if(declaringUnitWrapper.getFullQualifiedName().equals(typeName)){
+							VariableDeclarationFragment fragment = (VariableDeclarationFragment) fd.fragments().get(0);
+							VariableDeclarationWrapper declaration = new VariableDeclarationWrapper(declaringUnitWrapper, 
+									fragment.getName().getIdentifier(), fragment);
+							buildRelation(fieldWrapper, declaringUnitWrapper, fd, ProgramReference.TYPE_DECLARATION, declaration);
 						}
 					}
 
@@ -226,7 +311,7 @@ public class ClassStructureBuilder {
 						String typeName = returnType.resolveBinding().getQualifiedName();
 						for(ICompilationUnitWrapper searchingUnitWrapper: compilationUnitList){
 							if(searchingUnitWrapper.getFullQualifiedName().equals(typeName)){
-								buildRelation(methodWrapper, searchingUnitWrapper, md, ProgramReference.TYPE_DECLARATION);
+								buildRelation(methodWrapper, searchingUnitWrapper, md, ProgramReference.TYPE_DECLARATION, null);
 							}
 						}
 					}
@@ -235,15 +320,18 @@ public class ClassStructureBuilder {
 					List<SingleVariableDeclaration> parameters = md.parameters();
 					for(SingleVariableDeclaration svd: parameters){
 						String typeName = svd.getType().resolveBinding().getQualifiedName();
-						for(ICompilationUnitWrapper searchingUnitWrapper: compilationUnitList){
-							if(searchingUnitWrapper.getFullQualifiedName().equals(typeName)){
-								buildRelation(methodWrapper, searchingUnitWrapper, md, ProgramReference.PARAMETER_ACCESS);
+						for(ICompilationUnitWrapper declaringUnitWrapper: compilationUnitList){
+							if(declaringUnitWrapper.getFullQualifiedName().equals(typeName)){
+								VariableDeclarationWrapper declaration = 
+										new VariableDeclarationWrapper(declaringUnitWrapper, svd.getName().getIdentifier(), svd);
+								buildRelation(methodWrapper, declaringUnitWrapper, md, ProgramReference.PARAMETER_ACCESS, declaration);
 							}
 						}
 					}
 					
 					return false;
 				}
+				
 			});
 
 		}

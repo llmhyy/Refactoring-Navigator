@@ -23,18 +23,23 @@ public class ProgramReference {
 	public static final int TYPE_DECLARATION = 3;
 	public static final int PARAMETER_ACCESS = 4;
 	public static final int NEW_DEFAULT_CONSTRUCTOR = 5;
+	public static final int INNER_VARIABLE_DECLARATION = 6;
 	
-	private int referenceType;
 	private ASTNode originalASTNode;
 	
 	private UnitMemberWrapper referer;
 	private LowLevelGraphNode referee;
+	private int referenceType;
 	
-	public ProgramReference(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode originalASTNode, int referenceType){
+	private VariableDeclarationWrapper variableDeclaration;
+	
+	public ProgramReference(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode originalASTNode, 
+			int referenceType, VariableDeclarationWrapper variableDeclaration){
 		this.referer = referer;
 		this.referee = referee;
 		this.originalASTNode = originalASTNode;
 		this.referenceType = referenceType;
+		this.setVariableDeclaration(variableDeclaration);
 		
 		if(referee instanceof MethodWrapper){
 			this.referenceType = ProgramReference.METHOD_INVOCATION;
@@ -156,6 +161,20 @@ public class ProgramReference {
 	 */
 	public void setReferee(LowLevelGraphNode referee) {
 		this.referee = referee;
+	}
+
+	/**
+	 * @return the variableDeclaration
+	 */
+	public VariableDeclarationWrapper getVariableDeclaration() {
+		return variableDeclaration;
+	}
+
+	/**
+	 * @param variableDeclaration the variableDeclaration to set
+	 */
+	public void setVariableDeclaration(VariableDeclarationWrapper variableDeclaration) {
+		this.variableDeclaration = variableDeclaration;
 	}
 	
 	

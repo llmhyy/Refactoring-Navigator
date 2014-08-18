@@ -13,6 +13,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eposoft.jccd.data.ASourceUnit;
 import org.eposoft.jccd.data.JCCDFile;
 import org.eposoft.jccd.data.SimilarityGroup;
@@ -48,6 +49,7 @@ public class ProgramModel{
 	private UnitMemberWrapperList scopeMemberList = new UnitMemberWrapperList();
 	private ArrayList<ProgramReference> referenceList = new ArrayList<>();
 	private ArrayList<CloneSet> cloneSets;
+	private ArrayList<VariableDeclarationWrapper> declarationList = new ArrayList<>();
 	
 	/**
 	 * calculate the CBO (coupling between objects)
@@ -150,17 +152,74 @@ public class ProgramModel{
 		//long t6 = System.currentTimeMillis();
 		//System.out.println("Reference Cloned: " + (t5-t4));
 		
+		ArrayList<VariableDeclarationWrapper> decList = cloneVariableDeclarationList(clonedModel, this);
+		clonedModel.setDeclarationList(decList);
+		
+		cloneTheRelationBetweenDeclarationListAndReferenceList(clonedModel, this);
+		
 		ArrayList<CloneSet> cloneSets = cloneCloneSets(clonedModel, this);
 		clonedModel.setCloneSets(cloneSets);
 		
 		//long t7 = System.currentTimeMillis();
 		//System.out.println("Clone Sets Cloned: " + (t5-t4));
 		
+		
+		
 		//System.out.println("Total Cloned: " + (t2-t1));
 		
 		return clonedModel;
 	}
 	
+	/**
+	 * @param clonedModel
+	 * @param programModel
+	 */
+	private void cloneTheRelationBetweenDeclarationListAndReferenceList(
+			ProgramModel clonedModel, ProgramModel oldModel) {
+		for(int i=0; i<oldModel.getReferenceList().size(); i++){
+			int referenceIndex = i;
+			ProgramReference oldReference = oldModel.getReferenceList().get(i);
+			VariableDeclarationWrapper oldDec = oldReference.getVariableDeclaration();
+			
+			if(oldDec != null){
+				ProgramReference newReference = clonedModel.getReferenceList().get(referenceIndex);
+				
+				int decIndex = oldModel.findVariableDeclarationIndex(oldDec);
+				VariableDeclarationWrapper newDec = clonedModel.getDeclarationList().get(decIndex);
+				
+				newDec.getReferenceList().add(newReference);
+				newReference.setVariableDeclaration(newDec);				
+			}
+			
+		}
+	}
+
+	/**
+	 * @param clonedModel
+	 * @param programModel
+	 * @return
+	 */
+	private ArrayList<VariableDeclarationWrapper> cloneVariableDeclarationList(
+			ProgramModel clonedModel, ProgramModel oldModel) {
+		
+		ArrayList<VariableDeclarationWrapper> decList = new ArrayList<>();
+		for(VariableDeclarationWrapper oldDec: oldModel.getDeclarationList()){
+			ICompilationUnitWrapper oldUnit = oldDec.getUnitWrapper();
+			String oldVariableName = oldDec.getVariableName();
+			String oldKey = oldDec.getKey();
+			VariableDeclaration oldASTNode = oldDec.getAstNode();
+			
+			int unitIndex = oldModel.getICompilationUnitIndex(oldUnit);
+			ICompilationUnitWrapper newUnit = clonedModel.getScopeCompilationUnitList().get(unitIndex);
+			
+			VariableDeclarationWrapper clonedDec = new VariableDeclarationWrapper(newUnit, oldVariableName, oldASTNode, oldKey);
+			
+			decList.add(clonedDec);
+		}
+		
+		return decList;
+	}
+
 	/**
 	 * This method must be invoked after other clone methods.
 	 * 
@@ -391,37 +450,36 @@ public class ProgramModel{
 	/**
 	 * In this step, clone the reference list, including its type, ASTnode and its corresponding referer/referee member
 	 */
-	private ArrayList<ProgramReference> cloneReference(ProgramModel clonedModel, ProgramModel model){
+	private ArrayList<ProgramReference> cloneReference(ProgramModel clonedModel, ProgramModel oldModel){
 		ArrayList<ProgramReference> clonedReferences = new ArrayList<ProgramReference>();
-		for(ProgramReference reference: model.getReferenceList()){
+		for(ProgramReference oldReference: oldModel.getReferenceList()){
 			/**
 			 * As the constructor method of ProgramReference need its referer and referee member, 
 			 * we have to get the corresponding UnitMemberWrappers at the mean time.
 			 */
-			UnitMemberWrapper referer = reference.getReferer();
-			int refererIndex = model.getUnitMemberIndex(referer);
+			UnitMemberWrapper referer = oldReference.getReferer();
+			int refererIndex = oldModel.getUnitMemberIndex(referer);
 			if(refererIndex == -1){
-				System.out.println(reference);
+				System.out.println(oldReference);
 			}
 			UnitMemberWrapper clonedReferer = clonedModel.scopeMemberList.get(refererIndex);			
 			
-			LowLevelGraphNode refereeNode = reference.getReferee();
+			LowLevelGraphNode refereeNode = oldReference.getReferee();
 			LowLevelGraphNode clonedReferee = null;
 			if(refereeNode instanceof UnitMemberWrapper){
 				UnitMemberWrapper referee = (UnitMemberWrapper)refereeNode;
-				int refereeIndex = model.getUnitMemberIndex(referee);
+				int refereeIndex = oldModel.getUnitMemberIndex(referee);
 				clonedReferee = clonedModel.scopeMemberList.get(refereeIndex);
 			}
 			else if(refereeNode instanceof ICompilationUnitWrapper){
 				ICompilationUnitWrapper referee = (ICompilationUnitWrapper)refereeNode;
-				int refereeIndex = model.getICompilationUnitIndex(referee);
+				int refereeIndex = oldModel.getICompilationUnitIndex(referee);
 				clonedReferee = clonedModel.scopeCompilationUnitList.get(refereeIndex);
 			}
 			
-			
 			ProgramReference clonedReference = new ProgramReference(clonedReferer, clonedReferee, 
-					reference.getASTNode(), reference.getReferenceType());
-			clonedReference.setReferenceType(reference.getReferenceType());
+					oldReference.getASTNode(), oldReference.getReferenceType(), null);
+			clonedReference.setReferenceType(oldReference.getReferenceType());
 			
 			clonedReferences.add(clonedReference);
 			clonedReferer.addProgramReferee(clonedReference);
@@ -473,6 +531,16 @@ public class ProgramModel{
 		}
 		
 		return null;
+	}
+	
+	public int findVariableDeclarationIndex(VariableDeclarationWrapper dec){
+		for(int i=0; i<this.declarationList.size(); i++){
+			VariableDeclarationWrapper declaration = this.declarationList.get(i);
+			if(declaration.equals(dec)){
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 	public CloneInstance findCloneInstance(CloneInstance instance){
@@ -877,5 +945,19 @@ public class ProgramModel{
 		
 		
 		return null;
+	}
+
+	/**
+	 * @return the declarationList
+	 */
+	public ArrayList<VariableDeclarationWrapper> getDeclarationList() {
+		return declarationList;
+	}
+
+	/**
+	 * @param declarationList the declarationList to set
+	 */
+	public void setDeclarationList(ArrayList<VariableDeclarationWrapper> declarationList) {
+		this.declarationList = declarationList;
 	}
 }

@@ -6,6 +6,9 @@ package reflexactoring.diagram.bean.programmodel;
 import java.util.HashMap;
 
 /**
+ * This class is used to indicate how one node (unit, module) reference other node. Contrary to ProgramReference, it
+ * is used in a higher level of model, much more away from source code details.
+ * 
  * @author linyun
  *
  */

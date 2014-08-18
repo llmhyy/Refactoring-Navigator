@@ -99,7 +99,7 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 			}
 			
 			ProgramReference newReference = new ProgramReference(member, utilityMethod, 
-					member.getJavaElement(), ProgramReference.METHOD_INVOCATION);
+					member.getJavaElement(), ProgramReference.METHOD_INVOCATION, null);
 			newModel.getReferenceList().add(newReference);
 			member.addProgramReferee(newReference);
 			utilityMethod.addProgramReferer(newReference);
