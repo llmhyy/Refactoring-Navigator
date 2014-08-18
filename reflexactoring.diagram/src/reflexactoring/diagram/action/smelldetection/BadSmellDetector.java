@@ -26,7 +26,7 @@ public class BadSmellDetector {
 	public BadSmellDetector(ArrayList<ModuleWrapper> moduleList){
 		//preconditionList.add(new PullUpMemberToInterfaceOpportunity(null,null).new Precondition(moduleList));
 		preconditionList.add(new PullUpMemberPrecondition(moduleList));	
-		preconditionList.add(new ExtractUtilityClassOpportunity(null,null).new Precondition(moduleList));
+		//preconditionList.add(new ExtractUtilityClassOpportunity(null,null).new Precondition(moduleList));
 		preconditionList.add(new MoveMethodOpportunity(null, null).new Precodition());
 	}
 	

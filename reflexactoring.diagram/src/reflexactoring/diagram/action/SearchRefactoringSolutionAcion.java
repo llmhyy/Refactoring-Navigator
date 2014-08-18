@@ -21,6 +21,7 @@ import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
 import reflexactoring.diagram.action.smelldetection.PenaltyAndRewardCalulator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractUtilityClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
@@ -125,7 +126,7 @@ public class SearchRefactoringSolutionAcion implements
 		
 		for(RefactoringOpportunity opp: oppList){
 			
-			if(opp.toString().contains("save")){
+			if(opp instanceof ExtractUtilityClassOpportunity){
 				System.currentTimeMillis();
 			}
 			
