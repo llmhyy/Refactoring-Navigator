@@ -7,7 +7,6 @@ import gr.uom.java.jdeodorant.refactoring.manipulators.MoveMethodRefactoring;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -315,6 +314,11 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 					MethodWrapper method = (MethodWrapper)member;
 					if(method.isLegalMethodToBeMoved()){
 						for(ICompilationUnitWrapper targetUnit: model.getScopeCompilationUnitList()){
+							
+							if(method.toString().contains("updateMap") && targetUnit.toString().contains("Map")){
+								System.currentTimeMillis();
+							}
+							
 							if(targetUnit.isLegalTargetClassToMoveMethodIn(method)){
 								if(isFeatureEnvy(targetUnit, method)){
 									MoveMethodOpportunity opp = new MoveMethodOpportunity(method, targetUnit);

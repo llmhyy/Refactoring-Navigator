@@ -551,8 +551,60 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		return !isInterface() &&
 				!this.getMembers().contains(method) &&
 				!alreadyHasAMethodWithSameSignature(method) &&
-				!alreadyHasAMethodInSuperTypeWithSameSingature(method);
+				!alreadyHasAMethodInSuperTypeWithSameSingature(method) &&
+				(isTheSameTypeWithAFieldAccessedByTheMethod(method) || isAsAParameterOfTheMethod(method));
 				
+	}
+	
+	public boolean isTheSameTypeWithAFieldAccessedByTheMethod(MethodWrapper method){
+		ICompilationUnitWrapper sourceUnit = method.getUnitWrapper();
+		for(UnitMemberWrapper member: sourceUnit.getMembers()){
+			if(member instanceof FieldWrapper){
+				FieldWrapper field = (FieldWrapper)member;
+				
+				for(ProgramReference reference: method.getRefereePointList()){
+					LowLevelGraphNode node = reference.getReferee();
+					if(node instanceof FieldWrapper){
+						FieldWrapper calleeField = (FieldWrapper)node;
+						if(field.equals(calleeField)){
+							/**
+							 * at least one field accessed by the method should be with the same type as target unit
+							 */
+							for(ProgramReference ref: field.getRefereePointList()){
+								if(ref.getReferenceType() == ProgramReference.TYPE_DECLARATION){
+									LowLevelGraphNode n = ref.getReferee();
+									if(n instanceof ICompilationUnitWrapper){
+										ICompilationUnitWrapper type = (ICompilationUnitWrapper)n;
+										if(type.equals(this)){
+											return true;
+										}
+									}
+								}
+								
+							}
+							
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean isAsAParameterOfTheMethod(MethodWrapper method){
+		for(ProgramReference reference: method.getRefereePointList()){
+			if(reference.getReferenceType() == ProgramReference.PARAMETER_ACCESS){
+				LowLevelGraphNode node = reference.getReferee();
+				if(node instanceof ICompilationUnitWrapper){
+					ICompilationUnitWrapper unit = (ICompilationUnitWrapper)node;
+					
+					if(unit.equals(this)){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
 	public boolean alreadyHasAMethodInSuperTypeWithSameSingature(MethodWrapper method){

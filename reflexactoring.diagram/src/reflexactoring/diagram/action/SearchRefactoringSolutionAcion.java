@@ -51,8 +51,7 @@ public class SearchRefactoringSolutionAcion implements
 				RefactoringSequence sequence = new RefactoringSequence(model, moduleList);
 				ArrayList<RefactoringOpportunity> oppList = smellDetector.detect(model);
 				
-				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()) && oppList.size() != 0; i++){
-					
+				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()) && oppList.size() != 0; i++){				
 					
 					if(i==3){
 						System.currentTimeMillis();
