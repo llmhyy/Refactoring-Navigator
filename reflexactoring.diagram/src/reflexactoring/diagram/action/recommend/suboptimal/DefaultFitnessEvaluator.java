@@ -238,7 +238,12 @@ public abstract class DefaultFitnessEvaluator implements FitnessEvaluator {
 		
 		for(int lowLevelNodeIndex=0; lowLevelNodeIndex<gene.getLength(); lowLevelNodeIndex++){
 			int highLevelNodeIndex = gene.getDNA()[lowLevelNodeIndex];
-			result += similarityTable[highLevelNodeIndex][lowLevelNodeIndex];
+			/**
+			 * here, if a new type has no similarity with any module.
+			 */
+			if(lowLevelNodeIndex < similarityTable[0].length){
+				result += similarityTable[highLevelNodeIndex][lowLevelNodeIndex];				
+			}
 		}
 		
 		return result/gene.getLength();

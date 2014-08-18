@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import reflexactoring.diagram.action.recommend.RecommendUtil;
 import reflexactoring.diagram.bean.GraphRelationType;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.ReferencingDetail;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
@@ -18,7 +19,7 @@ import reflexactoring.diagram.util.Settings;
  */
 public class FitnessEvaluatorFactory {
 	
-	public static FitnessEvaluator createFitnessEvaluator(int type){
+	public static FitnessEvaluator createFitnessEvaluator(ProgramModel model, int type){
 		double[][] similarityTable = Settings.similarityTable.convertModuleUnitsSimilarityTableToRawTable();
 		
 		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
@@ -30,18 +31,12 @@ public class FitnessEvaluatorFactory {
 		double[][] highLevelNodeCreationMatrix = RecommendUtil.extractGraph(moduleList, 
 				GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
 		
-		double[][] lowLevelNodeDependencyMatrix;
-		double[][] lowLevelNodeInheritanceMatrix;
-		double[][] lowLevelNodeCreationMatrix;
-		
-		lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
+		double[][] lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
 				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
-		lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
+		double[][] lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
 				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
-		lowLevelNodeCreationMatrix = RecommendUtil.extractGraph(Settings.scope.getScopeCompilationUnitList(), 
+		double[][] lowLevelNodeCreationMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
 				GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
-		
-		
 		
 		switch(type){
 		case FitnessEvaluator.ADVANCED_EVALUATOR:

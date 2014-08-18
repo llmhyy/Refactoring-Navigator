@@ -22,7 +22,8 @@ public class AdvanceEvaluatorAdapter {
 	private ArrayList<Violation> violationList = new ArrayList<>();
 	
 	public double computeFitness(ProgramModel model, ArrayList<ModuleWrapper> moduleList){
-		FitnessEvaluator evaluator = FitnessEvaluatorFactory.createFitnessEvaluator(FitnessEvaluator.ADVANCED_EVALUATOR);
+		FitnessEvaluator evaluator = FitnessEvaluatorFactory.createFitnessEvaluator(model, 
+				FitnessEvaluator.ADVANCED_EVALUATOR);
 		
 		int[] DNA = constructDNA(model, moduleList);
 		

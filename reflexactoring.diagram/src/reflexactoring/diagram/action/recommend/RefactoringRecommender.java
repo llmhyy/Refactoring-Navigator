@@ -102,7 +102,8 @@ public class RefactoringRecommender {
 		Rules rules = new Rules();
 		
 		//FitnessEvaluator evalutor = FitnessEvaluatorFactory.createFitnessEvaluator(FitnessEvaluator.ADVANCED_EVALUATOR);
-		FitnessEvaluator evalutor = FitnessEvaluatorFactory.createFitnessEvaluator(FitnessEvaluator.BALANCED_EVALUATOR);
+		FitnessEvaluator evalutor = FitnessEvaluatorFactory.createFitnessEvaluator(Settings.scope, 
+				FitnessEvaluator.BALANCED_EVALUATOR);
 		
 		PopulationGenerator popGenerator = new PopulationGenerator(
 				Integer.valueOf(ReflexactoringUtil.getPopulationSize()), evalutor);
