@@ -50,6 +50,11 @@ public class BalancedFitnessEvaulator extends DefaultFitnessEvaluator {
 		double inheritViolationNum = 0;
 		double creationViolationNum = 0;
 		
+		if(gene.toString().equals("[2 2 2 0 ]")){
+			System.currentTimeMillis();
+			System.currentTimeMillis();
+		}
+		
 		for(Violation violation: this.violationList){
 			switch(violation.getType()){
 			case Violation.DEPENDENCY_ABSENCE: 
@@ -75,7 +80,7 @@ public class BalancedFitnessEvaulator extends DefaultFitnessEvaluator {
 		
 		double base = this.highLevelNodeDependencyMatrix.length * (this.highLevelNodeDependencyMatrix.length-1);
 		
-		double structureSim = 1 - (depViolationNum + inheritViolationNum + creationViolationNum)/(3*base); 
+		double structureSim = 3 - (depViolationNum + inheritViolationNum + creationViolationNum)/(base); 
 		
 		return (lexicalSimilarity + structureSim)/2;
 		//return lexicalSimilarity;

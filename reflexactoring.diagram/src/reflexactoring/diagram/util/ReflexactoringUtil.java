@@ -344,6 +344,8 @@ public class ReflexactoringUtil {
 						ModuleWrapper originWrapper = findModule(moduleList, origin);
 						ModuleWrapper destinationWrapper = findModule(moduleList, destination);
 						
+						//System.currentTimeMillis();
+						
 						if(originWrapper != null && destinationWrapper != null){
 							if(moduleLink instanceof ModuleDependency){
 								originWrapper.addCalleeModule(destinationWrapper, ReferencingDetail.REFER);
@@ -370,7 +372,7 @@ public class ReflexactoringUtil {
 	
 	public static ModuleWrapper findModule(ArrayList<ModuleWrapper> list, Module module){
 		for(ModuleWrapper wrapper: list){
-			if(wrapper.equals(module)){
+			if(wrapper.getName().equals(module.getName())){
 				return wrapper;
 			}
 		}
