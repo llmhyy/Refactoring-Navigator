@@ -3,6 +3,9 @@
  */
 package reflexactoring.diagram.bean;
 
+import reflexactoring.diagram.bean.programmodel.GraphNode;
+import reflexactoring.diagram.bean.programmodel.ProgramReference;
+
 /**
  * @author linyun
  *

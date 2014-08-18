@@ -34,12 +34,12 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
-import reflexactoring.diagram.bean.FieldWrapper;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
-import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.FieldWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.MethodWrapper;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

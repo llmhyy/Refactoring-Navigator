@@ -1,7 +1,10 @@
 /**
  * 
  */
-package reflexactoring.diagram.bean;
+package reflexactoring.diagram.bean.heuristics;
+
+import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 
 /**
  * @author linyun

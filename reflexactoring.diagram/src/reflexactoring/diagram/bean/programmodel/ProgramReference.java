@@ -1,9 +1,11 @@
 /**
  * 
  */
-package reflexactoring.diagram.bean;
+package reflexactoring.diagram.bean.programmodel;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+
+import reflexactoring.diagram.bean.LowLevelGraphNode;
 
 /**
  * This class stands for a reference in program, for example method invocation, field access

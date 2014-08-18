@@ -1,12 +1,14 @@
-package reflexactoring.diagram.bean;
+package reflexactoring.diagram.bean.heuristics;
 
 import java.util.ArrayList;
+
+import reflexactoring.diagram.bean.ModuleWrapper;
 
 /**
  * @author Adi
  * 
  */
-public class ModuleExtendConfidence {
+public class ModuleCreationConfidence {
 	private ModuleWrapper module;
 	private ArrayList<ModuleWrapper> moduleList;
 	private double[] confidenceList;
@@ -16,7 +18,7 @@ public class ModuleExtendConfidence {
 	 * @param moduleList
 	 * @param confidenceList
 	 */
-	public ModuleExtendConfidence(ModuleWrapper module,
+	public ModuleCreationConfidence(ModuleWrapper module,
 			ArrayList<ModuleWrapper> moduleList, double[] confidenceList) {
 		super();
 		this.module = module;

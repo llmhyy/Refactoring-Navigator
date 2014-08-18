@@ -3,13 +3,13 @@
  */
 package reflexactoring.diagram.action.recommend;
 
-import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
-import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMap;
-import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleMemberStopMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModulePartFixMemberMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitFixMemberMap;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.MethodWrapper;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.util.Settings;
 
 /**

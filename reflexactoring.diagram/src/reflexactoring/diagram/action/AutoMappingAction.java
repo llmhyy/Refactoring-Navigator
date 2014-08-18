@@ -12,11 +12,11 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.ProgramModel;
-import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarityTable;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.refactoring.test.ExtractUtilityClassOperatorTest;
 import reflexactoring.diagram.refactoring.test.MoveMethodOperatorTest;

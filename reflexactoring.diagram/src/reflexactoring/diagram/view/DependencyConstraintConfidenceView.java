@@ -22,8 +22,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
-import reflexactoring.diagram.bean.ModuleDependencyConfidence;
-import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
+import reflexactoring.diagram.bean.heuristics.ModuleDependencyConfidence;
+import reflexactoring.diagram.bean.heuristics.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

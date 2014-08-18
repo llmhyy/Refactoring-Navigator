@@ -8,12 +8,12 @@ import java.util.HashMap;
 
 import reflexactoring.diagram.action.recommend.MemberModuleValidityExaminer;
 import reflexactoring.diagram.action.recommend.RecommendUtil;
-import reflexactoring.diagram.bean.GraphRelationType;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.ReferencingDetail;
-import reflexactoring.diagram.bean.UnitMemberWrapper;
-import reflexactoring.diagram.bean.UnitMemberWrapperList;
+import reflexactoring.diagram.bean.programmodel.GraphRelationType;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ReferencingDetail;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapperList;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

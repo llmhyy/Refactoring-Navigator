@@ -6,7 +6,7 @@ package reflexactoring.diagram.action;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 
 import com.mathworks.toolbox.javabuilder.MWArray;
 import com.mathworks.toolbox.javabuilder.MWClassID;

@@ -18,7 +18,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Type;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.edit.parts.Class2EditPart;
 import reflexactoring.diagram.edit.parts.ClassEditPart;
 import reflexactoring.diagram.edit.parts.Interface2EditPart;

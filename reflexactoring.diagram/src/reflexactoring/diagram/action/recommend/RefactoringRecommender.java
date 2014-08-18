@@ -30,9 +30,9 @@ import reflexactoring.diagram.action.recommend.suboptimal.Population;
 import reflexactoring.diagram.action.recommend.suboptimal.PopulationGenerator;
 import reflexactoring.diagram.action.recommend.suboptimal.Rules;
 import reflexactoring.diagram.action.recommend.suboptimal.Violation;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

@@ -12,8 +12,8 @@ import org.eclipse.gmf.runtime.diagram.ui.editparts.ShapeNodeEditPart;
 import org.eclipse.ui.IObjectActionDelegate;
 
 import reflexactoring.TypeDependency;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.ReferencingDetail;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ReferencingDetail;
 import reflexactoring.diagram.edit.parts.Class2EditPart;
 import reflexactoring.diagram.edit.parts.Interface2EditPart;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;

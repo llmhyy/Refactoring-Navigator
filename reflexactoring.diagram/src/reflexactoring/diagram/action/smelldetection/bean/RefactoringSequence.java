@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
 
 /**
  * @author linyun

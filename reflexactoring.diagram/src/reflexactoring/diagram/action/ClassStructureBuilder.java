@@ -24,13 +24,13 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import reflexactoring.diagram.bean.FieldWrapper;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
-import reflexactoring.diagram.bean.MethodWrapper;
-import reflexactoring.diagram.bean.ProgramReference;
-import reflexactoring.diagram.bean.UnitMemberWrapper;
-import reflexactoring.diagram.bean.UnitMemberWrapperList;
+import reflexactoring.diagram.bean.programmodel.FieldWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.MethodWrapper;
+import reflexactoring.diagram.bean.programmodel.ProgramReference;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapperList;
 import reflexactoring.diagram.util.Settings;
 
 /**

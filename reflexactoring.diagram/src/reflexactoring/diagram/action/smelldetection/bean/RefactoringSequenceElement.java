@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
-import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
 
 /**
  * @author linyun

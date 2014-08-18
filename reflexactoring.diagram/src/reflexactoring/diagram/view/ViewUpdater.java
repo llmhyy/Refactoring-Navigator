@@ -11,10 +11,10 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.diagram.action.popup.ReferenceDetailMap;
 import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
-import reflexactoring.diagram.bean.ModuleCreationConfidenceTable;
-import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
-import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
-import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
+import reflexactoring.diagram.bean.heuristics.ModuleCreationConfidenceTable;
+import reflexactoring.diagram.bean.heuristics.ModuleDependencyConfidenceTable;
+import reflexactoring.diagram.bean.heuristics.ModuleExtendConfidenceTable;
+import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 
 /**

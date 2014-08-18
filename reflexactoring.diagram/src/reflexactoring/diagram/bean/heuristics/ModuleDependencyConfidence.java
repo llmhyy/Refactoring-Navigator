@@ -1,9 +1,11 @@
 /**
  * 
  */
-package reflexactoring.diagram.bean;
+package reflexactoring.diagram.bean.heuristics;
 
 import java.util.ArrayList;
+
+import reflexactoring.diagram.bean.ModuleWrapper;
 
 /**
  * @author linyun

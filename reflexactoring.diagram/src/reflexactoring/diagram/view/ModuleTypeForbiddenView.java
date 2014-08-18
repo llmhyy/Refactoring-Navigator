@@ -30,8 +30,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import reflexactoring.diagram.bean.HeuristicModuleUnitStopMap;
-import reflexactoring.diagram.bean.HeuristicModuleUnitStopMapList;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitStopMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitStopMapList;
 import reflexactoring.diagram.util.Settings;
 
 /**

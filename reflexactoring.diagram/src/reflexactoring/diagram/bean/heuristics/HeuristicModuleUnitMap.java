@@ -1,7 +1,10 @@
 /**
  * 
  */
-package reflexactoring.diagram.bean;
+package reflexactoring.diagram.bean.heuristics;
+
+import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 
 /**
  * This class stands for a module-unit mapping relation.

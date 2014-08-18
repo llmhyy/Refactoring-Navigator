@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractUtilityClassOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

@@ -19,10 +19,10 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Module;
 import reflexactoring.Type;
-import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.edit.parts.ReflexactoringEditPart;
 import reflexactoring.diagram.part.ReflexactoringDiagramEditor;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;

@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.ProgramModel;
-import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

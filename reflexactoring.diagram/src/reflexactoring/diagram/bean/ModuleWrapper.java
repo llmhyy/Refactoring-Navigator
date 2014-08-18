@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import reflexactoring.Module;
+import reflexactoring.diagram.bean.programmodel.GraphNode;
+import reflexactoring.diagram.bean.programmodel.ReferencingDetail;
 
 /**
  * @author linyun
@@ -179,7 +181,7 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	
 	/** 
 	 * (non-Javadoc)
-	 * @see reflexactoring.diagram.bean.GraphNode#getCallerList()
+	 * @see reflexactoring.diagram.bean.programmodel.GraphNode#getCallerList()
 	 */
 	@Override
 	public HashMap<GraphNode, ReferencingDetail> getCallerList(int type) {
@@ -193,7 +195,7 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	}
 
 	/** (non-Javadoc)
-	 * @see reflexactoring.diagram.bean.GraphNode#getCalleeList()
+	 * @see reflexactoring.diagram.bean.programmodel.GraphNode#getCalleeList()
 	 */
 	@Override
 	public HashMap<GraphNode, ReferencingDetail> getCalleeList(int type) {
@@ -207,7 +209,7 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	}
 
 	/** (non-Javadoc)
-	 * @see reflexactoring.diagram.bean.GraphNode#getParentList()
+	 * @see reflexactoring.diagram.bean.programmodel.GraphNode#getParentList()
 	 */
 	@Override
 	public List<? extends GraphNode> getParentList() {
@@ -215,7 +217,7 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 	}
 
 	/** (non-Javadoc)
-	 * @see reflexactoring.diagram.bean.GraphNode#getChildList()
+	 * @see reflexactoring.diagram.bean.programmodel.GraphNode#getChildList()
 	 */
 	@Override
 	public List<? extends GraphNode> getChildList() {

@@ -13,7 +13,7 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.PartInitException;
 
 import reflexactoring.Type;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.edit.parts.Class2EditPart;
 import reflexactoring.diagram.edit.parts.ClassEditPart;
 import reflexactoring.diagram.edit.parts.Interface2EditPart;

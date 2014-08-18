@@ -26,9 +26,9 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
 
-import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
-import reflexactoring.diagram.bean.ModuleUnitsSimilarity;
-import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
+import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarity;
+import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

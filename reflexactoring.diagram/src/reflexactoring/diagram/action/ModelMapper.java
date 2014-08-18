@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import reflexactoring.diagram.action.semantic.TFIDF;
-import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

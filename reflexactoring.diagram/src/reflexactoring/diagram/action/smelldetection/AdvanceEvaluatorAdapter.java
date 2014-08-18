@@ -10,7 +10,7 @@ import reflexactoring.diagram.action.recommend.suboptimal.FitnessEvaluatorFactor
 import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
 import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**

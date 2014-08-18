@@ -1,10 +1,13 @@
 /**
  * 
  */
-package reflexactoring.diagram.bean;
+package reflexactoring.diagram.bean.heuristics;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 
 /**
  * @author Adi

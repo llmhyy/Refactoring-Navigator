@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 
 /**
  * @author linyun

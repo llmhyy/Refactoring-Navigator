@@ -10,19 +10,19 @@ import org.eclipse.jdt.core.ICompilationUnit;
 
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.DependencyWrapper;
-import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMapList;
-import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMapList;
-import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
-import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
-import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
-import reflexactoring.diagram.bean.HeuristicModuleUnitStopMapList;
-import reflexactoring.diagram.bean.ModuleCreationConfidenceTable;
-import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
-import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
-import reflexactoring.diagram.bean.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.ProgramModel;
 import reflexactoring.diagram.bean.efficiency.UnitPair;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleMemberStopMapList;
+import reflexactoring.diagram.bean.heuristics.HeuristicModulePartFixMemberMapList;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitFixMemberMapList;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMapList;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitStopMapList;
+import reflexactoring.diagram.bean.heuristics.ModuleCreationConfidenceTable;
+import reflexactoring.diagram.bean.heuristics.ModuleDependencyConfidenceTable;
+import reflexactoring.diagram.bean.heuristics.ModuleExtendConfidenceTable;
+import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarityTable;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
 
 /**
  * @author linyun

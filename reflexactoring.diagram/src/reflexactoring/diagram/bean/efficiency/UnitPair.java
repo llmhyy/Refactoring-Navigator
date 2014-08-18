@@ -3,7 +3,8 @@
  */
 package reflexactoring.diagram.bean.efficiency;
 
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+
 
 /**
  * @author linyun

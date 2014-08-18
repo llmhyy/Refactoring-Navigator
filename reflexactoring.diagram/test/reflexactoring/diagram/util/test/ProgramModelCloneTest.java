@@ -5,7 +5,7 @@ package reflexactoring.diagram.util.test;
 
 import org.junit.Test;
 
-import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.util.Settings;
 
 /**

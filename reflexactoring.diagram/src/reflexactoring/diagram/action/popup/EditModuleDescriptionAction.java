@@ -16,7 +16,7 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.Module;
 import reflexactoring.ReflexactoringPackage;
 import reflexactoring.diagram.action.MappingDialog;
-import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
 import reflexactoring.diagram.edit.parts.ModuleEditPart;
 import reflexactoring.diagram.util.Settings;
 

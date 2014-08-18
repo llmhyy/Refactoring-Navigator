@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reflexactoring.diagram.bean;
+package reflexactoring.diagram.bean.programmodel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +21,10 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 
+import reflexactoring.diagram.bean.Document;
+import reflexactoring.diagram.bean.LowLevelGraphNode;
+import reflexactoring.diagram.bean.LowLevelSuggestionObject;
+import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.efficiency.UnitPair;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
@@ -388,7 +392,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	
 	/** 
 	 * (non-Javadoc)
-	 * @see reflexactoring.diagram.bean.GraphNode#getCallerList()
+	 * @see reflexactoring.diagram.bean.programmodel.GraphNode#getCallerList()
 	 */
 	@Override
 	public HashMap<GraphNode, ReferencingDetail> getCallerList(int type) {
@@ -404,7 +408,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 
 	/** (non-Javadoc)
-	 * @see reflexactoring.diagram.bean.GraphNode#getCalleeList()
+	 * @see reflexactoring.diagram.bean.programmodel.GraphNode#getCalleeList()
 	 */
 	@Override
 	public HashMap<GraphNode, ReferencingDetail> getCalleeList(int type) {
@@ -421,7 +425,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	
 
 	/** (non-Javadoc)
-	 * @see reflexactoring.diagram.bean.GraphNode#getParentList()
+	 * @see reflexactoring.diagram.bean.programmodel.GraphNode#getParentList()
 	 */
 	@Override
 	public List<? extends GraphNode> getParentList() {
@@ -429,7 +433,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 
 	/** (non-Javadoc)
-	 * @see reflexactoring.diagram.bean.GraphNode#getChildList()
+	 * @see reflexactoring.diagram.bean.programmodel.GraphNode#getChildList()
 	 */
 	@Override
 	public List<? extends GraphNode> getChildList() {

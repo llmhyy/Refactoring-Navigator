@@ -5,8 +5,8 @@ package reflexactoring.diagram.action.smelldetection.bean;
 
 import java.util.ArrayList;
 
-import reflexactoring.diagram.bean.ProgramReference;
-import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.ProgramReference;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 
 /**
  * @author linyun

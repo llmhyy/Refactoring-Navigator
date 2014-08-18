@@ -21,10 +21,10 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
-import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMap;
-import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMapList;
-import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
-import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMapList;
+import reflexactoring.diagram.bean.heuristics.HeuristicModulePartFixMemberMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModulePartFixMemberMapList;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitFixMemberMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitFixMemberMapList;
 import reflexactoring.diagram.util.Settings;
 
 public class MemberFixingView extends ViewPart {

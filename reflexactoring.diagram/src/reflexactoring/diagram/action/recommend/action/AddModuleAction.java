@@ -5,8 +5,8 @@ package reflexactoring.diagram.action.recommend.action;
 
 import java.util.ArrayList;
 
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 
 /**
  * @author linyun

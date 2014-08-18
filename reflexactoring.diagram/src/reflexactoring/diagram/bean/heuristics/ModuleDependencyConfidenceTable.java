@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reflexactoring.diagram.bean;
+package reflexactoring.diagram.bean.heuristics;
 
 import java.util.ArrayList;
 

@@ -6,10 +6,10 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 import java.util.ArrayList;
 
 import reflexactoring.diagram.action.recommend.RecommendUtil;
-import reflexactoring.diagram.bean.GraphRelationType;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.ProgramModel;
-import reflexactoring.diagram.bean.ReferencingDetail;
+import reflexactoring.diagram.bean.programmodel.GraphRelationType;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.ReferencingDetail;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

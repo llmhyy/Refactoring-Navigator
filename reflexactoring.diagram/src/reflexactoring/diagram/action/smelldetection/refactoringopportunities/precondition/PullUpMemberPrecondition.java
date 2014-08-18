@@ -13,15 +13,15 @@ import reflexactoring.diagram.action.smelldetection.refactoringopportunities.Cre
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToSuperclassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
-import reflexactoring.diagram.bean.FieldWrapper;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
-import reflexactoring.diagram.bean.MethodWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.ProgramModel;
-import reflexactoring.diagram.bean.ProgramReference;
-import reflexactoring.diagram.bean.ReferencingDetail;
-import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.FieldWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.MethodWrapper;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.ProgramReference;
+import reflexactoring.diagram.bean.programmodel.ReferencingDetail;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -97,6 +97,32 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		}
 		
 		return refactoringPlaceList;
+	}
+	
+	/**
+	 * One important post condition of pulling up member is to replace the sub-type declaration
+	 * with the super-type declaration. Therefore, we must make sure that such replacement will
+	 * not cause compilation error.
+	 * 
+	 * For this case, if the scope in client class invoking the to-be-pulled-up member, also invoke
+	 * other member in the sub-type, it will be considered illegal to be pulled.
+	 * 
+	 * @param member
+	 * @return
+	 */
+	private boolean isNotCausingCompilationError(UnitMemberWrapper member){
+		//TODO for Lin Yun
+		
+		for(ProgramReference reference: member.getRefererPointList()){
+			LowLevelGraphNode node = reference.getReferer();
+			if(node instanceof UnitMemberWrapper){
+				UnitMemberWrapper callerMember = (UnitMemberWrapper)node;
+				
+				
+			}
+		}
+		
+		return false;
 	}
 	
 	/**

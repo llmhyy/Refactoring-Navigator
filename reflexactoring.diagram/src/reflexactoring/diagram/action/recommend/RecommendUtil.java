@@ -5,10 +5,10 @@ package reflexactoring.diagram.action.recommend;
 
 import java.util.ArrayList;
 
-import reflexactoring.diagram.bean.GraphNode;
-import reflexactoring.diagram.bean.GraphRelationType;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.ReferencingDetail;
+import reflexactoring.diagram.bean.programmodel.GraphNode;
+import reflexactoring.diagram.bean.programmodel.GraphRelationType;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ReferencingDetail;
 
 /**
  * @author linyun

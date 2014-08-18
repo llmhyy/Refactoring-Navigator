@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reflexactoring.diagram.bean;
+package reflexactoring.diagram.bean.programmodel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
+import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.util.DefaultComparator;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 

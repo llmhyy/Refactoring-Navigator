@@ -8,19 +8,19 @@ import java.util.Iterator;
 
 import org.eclipse.ui.PartInitException;
 
-import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
-import reflexactoring.diagram.bean.HeuristicModulePartFixMemberMap;
-import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
-import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.ModuleCreationConfidence;
-import reflexactoring.diagram.bean.ModuleCreationConfidenceTable;
-import reflexactoring.diagram.bean.ModuleDependencyConfidence;
-import reflexactoring.diagram.bean.ModuleDependencyConfidenceTable;
-import reflexactoring.diagram.bean.ModuleExtendConfidence;
-import reflexactoring.diagram.bean.ModuleExtendConfidenceTable;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.UnitMemberWrapper;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleMemberStopMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModulePartFixMemberMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitFixMemberMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
+import reflexactoring.diagram.bean.heuristics.ModuleCreationConfidence;
+import reflexactoring.diagram.bean.heuristics.ModuleCreationConfidenceTable;
+import reflexactoring.diagram.bean.heuristics.ModuleDependencyConfidence;
+import reflexactoring.diagram.bean.heuristics.ModuleDependencyConfidenceTable;
+import reflexactoring.diagram.bean.heuristics.ModuleExtendConfidence;
+import reflexactoring.diagram.bean.heuristics.ModuleExtendConfidenceTable;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 

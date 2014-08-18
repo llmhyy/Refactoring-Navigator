@@ -29,10 +29,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import reflexactoring.diagram.action.MappingDialog;
-import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
-import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMapList;
-import reflexactoring.diagram.bean.HeuristicModuleUnitMap;
-import reflexactoring.diagram.bean.HeuristicModuleUnitMapList;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitFixMemberMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitFixMemberMapList;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMapList;
 import reflexactoring.diagram.util.Settings;
 
 public class AllMemberInClassMappingFixView extends ViewPart {

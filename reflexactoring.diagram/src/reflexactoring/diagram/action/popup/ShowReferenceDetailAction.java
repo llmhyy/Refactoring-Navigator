@@ -8,7 +8,7 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Type;
 import reflexactoring.TypeDependency;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.edit.parts.TypeDependencyEditPart;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.Settings;

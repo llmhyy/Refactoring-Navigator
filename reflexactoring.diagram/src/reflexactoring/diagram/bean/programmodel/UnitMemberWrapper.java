@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reflexactoring.diagram.bean;
+package reflexactoring.diagram.bean.programmodel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +19,10 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
+import reflexactoring.diagram.bean.Document;
+import reflexactoring.diagram.bean.LowLevelGraphNode;
+import reflexactoring.diagram.bean.LowLevelSuggestionObject;
+import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.util.JavaCodeUtil;
 
 /**

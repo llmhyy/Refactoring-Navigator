@@ -8,9 +8,9 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.Module;
 import reflexactoring.Type;
-import reflexactoring.diagram.bean.HeuristicModuleUnitFixMemberMap;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitFixMemberMap;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.edit.parts.Class2EditPart;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.RecordParameters;

@@ -4,9 +4,9 @@
 package reflexactoring.diagram.refactoring.test;
 
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
-import reflexactoring.diagram.bean.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.MethodWrapper;
-import reflexactoring.diagram.bean.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.MethodWrapper;
+import reflexactoring.diagram.bean.programmodel.ProgramModel;
 
 /**
  * @author linyun

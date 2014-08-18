@@ -28,8 +28,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-import reflexactoring.diagram.bean.HeuristicModuleMemberStopMap;
-import reflexactoring.diagram.bean.HeuristicModuleMemberStopMapList;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleMemberStopMap;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleMemberStopMapList;
 import reflexactoring.diagram.util.Settings;
 
 public class ModuleMemberForbiddenView extends ViewPart {
