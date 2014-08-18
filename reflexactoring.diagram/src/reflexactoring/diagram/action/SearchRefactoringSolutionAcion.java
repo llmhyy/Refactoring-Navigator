@@ -139,6 +139,10 @@ public class SearchRefactoringSolutionAcion implements
 			
 			//long t2 = System.currentTimeMillis();
 			//System.out.println("Simluated Model Time: " + (t2-t1));
+			/*if(t2-t1 > 20){
+				System.currentTimeMillis(); 
+				opp.simulate(model);
+			}*/
 			
 			double value = evaluator.computeFitness(testModel, moduleList);
 			

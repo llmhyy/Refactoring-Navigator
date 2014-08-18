@@ -117,42 +117,42 @@ public class ProgramModel{
 	}
 	
 	public ProgramModel clone(){
-		long t1 = System.currentTimeMillis();
+		//long t1 = System.currentTimeMillis();
 		
 		ProgramModel clonedModel = new ProgramModel();
 		
 		ArrayList<ICompilationUnitWrapper> unitList = cloneUnits();
 		
-		long t2 = System.currentTimeMillis();
+		//long t2 = System.currentTimeMillis();
 		//System.out.println("Unit Cloned: " + (t2-t1));
 		
 		clonedModel.setScopeCompilationUnitList(unitList);
 		cloneUnitRelations(clonedModel, this);
 		
-		long t3 = System.currentTimeMillis();
+		//long t3 = System.currentTimeMillis();
 		//System.out.println("Unit Relation Cloned: " + (t3-t2));
 		
 		UnitMemberWrapperList memberList = cloneMembers(clonedModel, this);
 		
-		long t4 = System.currentTimeMillis();
+		//long t4 = System.currentTimeMillis();
 		//System.out.println("Member Cloned: " + (t4-t3));
 		
 		clonedModel.setScopeMemberList(memberList);
 		cloneMemberRelations(clonedModel, this);
 		
-		long t5 = System.currentTimeMillis();
+		//long t5 = System.currentTimeMillis();
 		//System.out.println("Member Relation Cloned: " + (t5-t4));
 		
 		ArrayList<ProgramReference> prList = cloneReference(clonedModel, this);
 		clonedModel.setReferenceList(prList);
 		
-		long t6 = System.currentTimeMillis();
+		//long t6 = System.currentTimeMillis();
 		//System.out.println("Reference Cloned: " + (t5-t4));
 		
 		ArrayList<CloneSet> cloneSets = cloneCloneSets(clonedModel, this);
 		clonedModel.setCloneSets(cloneSets);
 		
-		long t7 = System.currentTimeMillis();
+		//long t7 = System.currentTimeMillis();
 		//System.out.println("Clone Sets Cloned: " + (t5-t4));
 		
 		//System.out.println("Total Cloned: " + (t2-t1));

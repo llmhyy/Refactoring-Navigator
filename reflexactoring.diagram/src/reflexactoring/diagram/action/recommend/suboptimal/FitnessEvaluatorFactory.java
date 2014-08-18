@@ -19,10 +19,8 @@ import reflexactoring.diagram.util.Settings;
  */
 public class FitnessEvaluatorFactory {
 	
-	public static FitnessEvaluator createFitnessEvaluator(ProgramModel model, int type){
+	public static FitnessEvaluator createFitnessEvaluator(ProgramModel model, ArrayList<ModuleWrapper> moduleList, int type){
 		double[][] similarityTable = Settings.similarityTable.convertModuleUnitsSimilarityTableToRawTable();
-		
-		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		
 		double[][] highLevelNodeDependencyMatrix = RecommendUtil.extractGraph(moduleList, 
 				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);

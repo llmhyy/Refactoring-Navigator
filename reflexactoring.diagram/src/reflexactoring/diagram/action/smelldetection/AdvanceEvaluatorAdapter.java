@@ -22,14 +22,22 @@ public class AdvanceEvaluatorAdapter {
 	private ArrayList<Violation> violationList = new ArrayList<>();
 	
 	public double computeFitness(ProgramModel model, ArrayList<ModuleWrapper> moduleList){
-		FitnessEvaluator evaluator = FitnessEvaluatorFactory.createFitnessEvaluator(model, 
+		
+		//long t1 = System.currentTimeMillis();
+		FitnessEvaluator evaluator = FitnessEvaluatorFactory.createFitnessEvaluator(model, moduleList,
 				FitnessEvaluator.ADVANCED_EVALUATOR);
+		//long t2 = System.currentTimeMillis();
+		//System.out.println("Extract model time: " + (t2-t1));
 		
 		int[] DNA = constructDNA(model, moduleList);
 		
 		Genotype gene = new Genotype(DNA, null, evaluator);
 		
+		//long t3 = System.currentTimeMillis();
 		double structureAndLexicalFitness = gene.getFitness();
+		//long t4 = System.currentTimeMillis();
+		//System.out.println("Compute fitness time: " + (t4-t3));
+		
 		double CBO = model.computeNormalizedCBOMetrics();
 		double LCOM = model.computeNormalizedLCOMMetrics();
 		

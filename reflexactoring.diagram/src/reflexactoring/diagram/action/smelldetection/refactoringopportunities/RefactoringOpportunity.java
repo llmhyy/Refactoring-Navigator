@@ -105,12 +105,19 @@ public abstract class RefactoringOpportunity {
 	protected ModuleWrapper calculateBestMappingModule(ProgramModel model,
 			ICompilationUnitWrapper newUnit) {
 		
+		//long t1 = System.currentTimeMillis();
+		
 		ModuleWrapper module = null;
 		double fitness = 0;
 		
 		for(ModuleWrapper m: moduleList){
 			newUnit.setMappingModule(m);
+			
+			//long t3 = System.currentTimeMillis();
 			double f = new AdvanceEvaluatorAdapter().computeFitness(model, moduleList);
+			//long t4 = System.currentTimeMillis();
+			//System.out.println("Calculating fitness: " + (t4-t3));
+			
 			if(module == null){
 				module = m;
 				fitness = f;
@@ -122,6 +129,9 @@ public abstract class RefactoringOpportunity {
 				}
 			}
 		}
+		
+		//long t2 = System.currentTimeMillis();
+		//System.out.println("Calculating best module time: " + (t2-t1));
 		
 		return module;
 	}
