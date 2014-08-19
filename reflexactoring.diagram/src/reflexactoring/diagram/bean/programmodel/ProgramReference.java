@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.bean.programmodel;
 
+import java.util.ArrayList;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import reflexactoring.diagram.bean.LowLevelGraphNode;
@@ -15,15 +17,20 @@ import reflexactoring.diagram.bean.LowLevelGraphNode;
  *
  */
 public class ProgramReference {
+	/**
+	 * The following types are used between members.
+	 */
 	public static final int METHOD_INVOCATION = 1;
 	public static final int FIELD_ACCESS = 2;
+	/**
+	 * The following types are used between member and unit.
+	 */
 	/**
 	 * return type for method and type for field
 	 */
 	public static final int TYPE_DECLARATION = 3;
 	public static final int PARAMETER_ACCESS = 4;
 	public static final int NEW_DEFAULT_CONSTRUCTOR = 5;
-	public static final int INNER_VARIABLE_DECLARATION = 6;
 	
 	private ASTNode originalASTNode;
 	
@@ -31,15 +38,15 @@ public class ProgramReference {
 	private LowLevelGraphNode referee;
 	private int referenceType;
 	
-	private VariableDeclarationWrapper variableDeclaration;
+	private ArrayList<VariableDeclarationWrapper> variableDeclarationList = new ArrayList<>();
 	
 	public ProgramReference(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode originalASTNode, 
-			int referenceType, VariableDeclarationWrapper variableDeclaration){
+			int referenceType, ArrayList<VariableDeclarationWrapper> variableDeclarationList){
 		this.referer = referer;
 		this.referee = referee;
 		this.originalASTNode = originalASTNode;
 		this.referenceType = referenceType;
-		this.setVariableDeclaration(variableDeclaration);
+		this.variableDeclarationList = variableDeclarationList;
 		
 		if(referee instanceof MethodWrapper){
 			this.referenceType = ProgramReference.METHOD_INVOCATION;
@@ -49,6 +56,21 @@ public class ProgramReference {
 		}
 	}
 	
+	/**
+	 * @return the variableDeclarationList
+	 */
+	public ArrayList<VariableDeclarationWrapper> getVariableDeclarationList() {
+		return variableDeclarationList;
+	}
+
+	/**
+	 * @param variableDeclarationList the variableDeclarationList to set
+	 */
+	public void setVariableDeclarationList(
+			ArrayList<VariableDeclarationWrapper> variableDeclarationList) {
+		this.variableDeclarationList = variableDeclarationList;
+	}
+
 	public boolean isInvocationOrAccess(){
 		return (this.referenceType == ProgramReference.METHOD_INVOCATION) ||
 				(this.referenceType == ProgramReference.FIELD_ACCESS);
@@ -161,20 +183,6 @@ public class ProgramReference {
 	 */
 	public void setReferee(LowLevelGraphNode referee) {
 		this.referee = referee;
-	}
-
-	/**
-	 * @return the variableDeclaration
-	 */
-	public VariableDeclarationWrapper getVariableDeclaration() {
-		return variableDeclaration;
-	}
-
-	/**
-	 * @param variableDeclaration the variableDeclaration to set
-	 */
-	public void setVariableDeclaration(VariableDeclarationWrapper variableDeclaration) {
-		this.variableDeclaration = variableDeclaration;
 	}
 	
 	

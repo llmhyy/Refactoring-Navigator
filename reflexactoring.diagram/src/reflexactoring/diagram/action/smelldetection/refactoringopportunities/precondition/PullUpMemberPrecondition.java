@@ -15,6 +15,7 @@ import reflexactoring.diagram.action.smelldetection.refactoringopportunities.Pul
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluenceDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
@@ -120,9 +121,11 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS ||
 					reference.getReferenceType() == ProgramReference.METHOD_INVOCATION){
 				
-				VariableDeclarationWrapper declaration = reference.getVariableDeclaration();
-				if(declaration != null){
-					for(ProgramReference ref: declaration.getReferenceList()){
+				for(VariableDeclarationWrapper declaration: reference.getVariableDeclarationList()){
+					for(DeclarationInfluenceDetail detail: declaration.getInfluencedReferenceList()){
+						
+						ProgramReference ref = detail.getReference();
+						
 						if(ref.getReferenceType() == ProgramReference.FIELD_ACCESS || 
 								ref.getReferenceType() == ProgramReference.METHOD_INVOCATION){
 							LowLevelGraphNode node = ref.getReferee();
@@ -137,8 +140,6 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 						}
 					}
 				}
-				
-				
 			}
 		}
 		return true;

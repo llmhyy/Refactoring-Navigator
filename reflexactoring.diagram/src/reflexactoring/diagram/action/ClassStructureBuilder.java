@@ -27,9 +27,9 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eposoft.jccd.parser.java.antlr3.Antlr3JavaParser.variableDeclaratorId_return;
 
 import reflexactoring.diagram.bean.LowLevelGraphNode;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluenceDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
@@ -86,7 +86,16 @@ public class ClassStructureBuilder {
 								declaration = new VariableDeclarationWrapper(unitWrapper, fieldWrapper.getName(), fragment); 
 							}
 							
-							buildRelation(callerMember, fieldWrapper, name, ProgramReference.FIELD_ACCESS, declaration);
+							ArrayList<VariableDeclarationWrapper> decList = new ArrayList<>();
+							ArrayList<Integer> influcenceTypeList = new ArrayList<>();
+
+							if(null != declaration){
+								decList.add(declaration);								
+								influcenceTypeList.add(DeclarationInfluenceDetail.ACCESS_OBJECT);
+							}
+							
+							buildRelation(callerMember, fieldWrapper, name, ProgramReference.FIELD_ACCESS, 
+									decList, influcenceTypeList);
 						}
 					}
 				}							
@@ -107,14 +116,39 @@ public class ClassStructureBuilder {
 				if (calleeMember instanceof MethodWrapper) {
 					MethodWrapper methodWrapper = (MethodWrapper) calleeMember;
 					if (element.equals(methodWrapper.getJavaMember())) {
+						ArrayList<VariableDeclarationWrapper> decList = new ArrayList<>();
+						ArrayList<Integer> influcenceTypeList = new ArrayList<>();
+						
+						/**
+						 * check the object access, e.g., where the "a" in "a.m()" is declared.
+						 */
 						VariableDeclarationWrapper declaration = null;
 						Expression expression = invocation.getExpression();
 						if(expression instanceof Name){
 							Name name = (Name)expression;
 							declaration = extractVariableDeclarationWrpper(name);
+							
+							if(null != declaration){
+								decList.add(declaration);
+								influcenceTypeList.add(DeclarationInfluenceDetail.ACCESS_OBJECT);
+							}
 						}
 						
-						buildRelation(callerMember, methodWrapper, invocation, ProgramReference.METHOD_INVOCATION, declaration);
+						/**
+						 * check the parameter usage, e.g., where the "p" in "a.m(p)" is declared.
+						 */
+						for(Object obj: invocation.arguments()){
+							SimpleName name = (SimpleName)obj;
+							VariableDeclarationWrapper paramDeclaration = extractVariableDeclarationWrpper(name);
+							
+							if(paramDeclaration != null){
+								decList.add(paramDeclaration);
+								influcenceTypeList.add(DeclarationInfluenceDetail.PARAMETER);
+							}
+						}
+						
+						buildRelation(callerMember, methodWrapper, invocation, ProgramReference.METHOD_INVOCATION, 
+								decList, influcenceTypeList);
 					}
 				}
 			}
@@ -159,11 +193,12 @@ public class ClassStructureBuilder {
 				if (calleeMember instanceof MethodWrapper) {
 					MethodWrapper methodWrapper = (MethodWrapper) calleeMember;
 					String methodKey = methodWrapper.getMethod().resolveBinding().getKey();
-					
-					
 
 					if (key.equals(methodKey)) {
 						isContainedInList = true;
+						
+						ArrayList<VariableDeclarationWrapper> decList = new ArrayList<>();
+						ArrayList<Integer> influcenceTypeList = new ArrayList<>();
 						
 						VariableDeclarationFragment fragment = (VariableDeclarationFragment) creation.getParent();
 						ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(
@@ -172,7 +207,25 @@ public class ClassStructureBuilder {
 						VariableDeclarationWrapper declaration = 
 								new VariableDeclarationWrapper(unitWrapper, fragment.getName().getIdentifier(), fragment);
 						
-						buildRelation(callerMember, methodWrapper, creation, ProgramReference.METHOD_INVOCATION, declaration);
+						decList.add(declaration);
+						influcenceTypeList.add(DeclarationInfluenceDetail.ACCESS_OBJECT);
+						
+						/**
+						 * check the parameter usage, e.g., where the "p" in "a.m(p)" is declared.
+						 */
+						for(Object obj: creation.arguments()){
+							SimpleName name = (SimpleName)obj;
+							VariableDeclarationWrapper paramDeclaration = extractVariableDeclarationWrpper(name);
+							
+							if(paramDeclaration != null){
+								decList.add(paramDeclaration);
+								influcenceTypeList.add(DeclarationInfluenceDetail.PARAMETER);
+							}
+						}
+						
+						
+						buildRelation(callerMember, methodWrapper, creation, ProgramReference.METHOD_INVOCATION, 
+								decList, influcenceTypeList);
 					}
 				}
 			}
@@ -181,7 +234,11 @@ public class ClassStructureBuilder {
 				String qualifiedName = methodBinding.getDeclaringClass().getQualifiedName();
 				ICompilationUnitWrapper correspondingUnit = Settings.scope.findUnit(qualifiedName);
 				if(null != correspondingUnit){
-					buildRelation(callerMember, correspondingUnit, creation, ProgramReference.NEW_DEFAULT_CONSTRUCTOR, null);
+					/**
+					 * empty constructor is always available, therefore, I do not further check the details.
+					 */
+					buildRelation(callerMember, correspondingUnit, creation, ProgramReference.NEW_DEFAULT_CONSTRUCTOR, 
+							new ArrayList<VariableDeclarationWrapper>(), new ArrayList<Integer>());
 				}
 			}
 
@@ -190,27 +247,40 @@ public class ClassStructureBuilder {
 	}
 	
 	private void buildRelation(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode node, 
-			int referenceType, VariableDeclarationWrapper declaration){
-		ProgramReference reference = new ProgramReference(referer, referee, node, referenceType, declaration);
+			int referenceType, ArrayList<VariableDeclarationWrapper> decList, ArrayList<Integer> influenceTypeList){
+		ProgramReference reference = new ProgramReference(referer, referee, node, referenceType, decList);
 		referer.addProgramReferee(reference);
 		referee.addProgramReferer(reference);
 		
 		referenceList.add(reference);
 		
-		if(declaration != null){
-			VariableDeclarationWrapper vdw = declaration;
-			for(VariableDeclarationWrapper dec: declarationList){
-				if(dec.equals(declaration)){
-					vdw = dec;
+		if(decList.size() != 0){
+			/**
+			 * replace new variable declaration with existing variable declaration
+			 */
+			for(VariableDeclarationWrapper declaration: declarationList){
+				for(int i=0; i<decList.size(); i++){
+					VariableDeclarationWrapper dec = decList.get(i);
+					if(dec.equals(declaration)){
+						decList.set(i, declaration);
+					}
 				}
+				
 			}
 			
-			if(!declarationList.contains(vdw)){
-				declarationList.add(vdw);
+			for(int i=0; i<decList.size(); i++){
+				VariableDeclarationWrapper vdw = decList.get(i);
+				int influenceType = influenceTypeList.get(i);
+				
+				if(!declarationList.contains(vdw)){
+					declarationList.add(vdw);
+				}
+				
+				DeclarationInfluenceDetail detail = new DeclarationInfluenceDetail(reference, influenceType);
+				vdw.getInfluencedReferenceList().add(detail);
 			}
 			
-			vdw.getReferenceList().add(reference);	
-			reference.setVariableDeclaration(vdw);
+			reference.setVariableDeclarationList(decList);
 		}
 	}
 
@@ -287,10 +357,8 @@ public class ClassStructureBuilder {
 					String typeName = fd.getType().resolveBinding().getQualifiedName();
 					for(ICompilationUnitWrapper declaringUnitWrapper: compilationUnitList){
 						if(declaringUnitWrapper.getFullQualifiedName().equals(typeName)){
-							VariableDeclarationFragment fragment = (VariableDeclarationFragment) fd.fragments().get(0);
-							VariableDeclarationWrapper declaration = new VariableDeclarationWrapper(declaringUnitWrapper, 
-									fragment.getName().getIdentifier(), fragment);
-							buildRelation(fieldWrapper, declaringUnitWrapper, fd, ProgramReference.TYPE_DECLARATION, declaration);
+							buildRelation(fieldWrapper, declaringUnitWrapper, fd, ProgramReference.TYPE_DECLARATION, 
+									new ArrayList<VariableDeclarationWrapper>(), new ArrayList<Integer>());
 						}
 					}
 
@@ -311,7 +379,8 @@ public class ClassStructureBuilder {
 						String typeName = returnType.resolveBinding().getQualifiedName();
 						for(ICompilationUnitWrapper searchingUnitWrapper: compilationUnitList){
 							if(searchingUnitWrapper.getFullQualifiedName().equals(typeName)){
-								buildRelation(methodWrapper, searchingUnitWrapper, md, ProgramReference.TYPE_DECLARATION, null);
+								buildRelation(methodWrapper, searchingUnitWrapper, md, ProgramReference.TYPE_DECLARATION, 
+										new ArrayList<VariableDeclarationWrapper>(), new ArrayList<Integer>());
 							}
 						}
 					}
@@ -322,9 +391,10 @@ public class ClassStructureBuilder {
 						String typeName = svd.getType().resolveBinding().getQualifiedName();
 						for(ICompilationUnitWrapper declaringUnitWrapper: compilationUnitList){
 							if(declaringUnitWrapper.getFullQualifiedName().equals(typeName)){
-								VariableDeclarationWrapper declaration = 
-										new VariableDeclarationWrapper(declaringUnitWrapper, svd.getName().getIdentifier(), svd);
-								buildRelation(methodWrapper, declaringUnitWrapper, md, ProgramReference.PARAMETER_ACCESS, declaration);
+								/*VariableDeclarationWrapper declaration = 
+										new VariableDeclarationWrapper(declaringUnitWrapper, svd.getName().getIdentifier(), svd);*/
+								buildRelation(methodWrapper, declaringUnitWrapper, md, ProgramReference.PARAMETER_ACCESS, 
+										new ArrayList<VariableDeclarationWrapper>(), new ArrayList<Integer>());
 							}
 						}
 					}

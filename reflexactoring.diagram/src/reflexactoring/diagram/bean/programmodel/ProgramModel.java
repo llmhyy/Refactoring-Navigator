@@ -179,18 +179,29 @@ public class ProgramModel{
 		for(int i=0; i<oldModel.getReferenceList().size(); i++){
 			int referenceIndex = i;
 			ProgramReference oldReference = oldModel.getReferenceList().get(i);
-			VariableDeclarationWrapper oldDec = oldReference.getVariableDeclaration();
-			
-			if(oldDec != null){
+			ArrayList<VariableDeclarationWrapper> oldDecList = oldReference.getVariableDeclarationList();
+			for(VariableDeclarationWrapper oldDec: oldDecList){
 				ProgramReference newReference = clonedModel.getReferenceList().get(referenceIndex);
+				
+				int influenceType = -1;
+				for(DeclarationInfluenceDetail oldDetail: oldDec.getInfluencedReferenceList()){
+					if(oldDetail.getReference() == oldReference){
+						influenceType = oldDetail.getType();
+					}
+				}
+				
+				if(influenceType == -1){
+					System.err.println("influence type equals -1");
+				}
+				
 				
 				int decIndex = oldModel.findVariableDeclarationIndex(oldDec);
 				VariableDeclarationWrapper newDec = clonedModel.getDeclarationList().get(decIndex);
 				
-				newDec.getReferenceList().add(newReference);
-				newReference.setVariableDeclaration(newDec);				
+				DeclarationInfluenceDetail decDetail = new DeclarationInfluenceDetail(newReference, influenceType);
+				newDec.getInfluencedReferenceList().add(decDetail);
+				newReference.getVariableDeclarationList().add(newDec);	
 			}
-			
 		}
 	}
 

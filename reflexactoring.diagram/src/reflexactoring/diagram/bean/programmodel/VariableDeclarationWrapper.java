@@ -16,7 +16,7 @@ public class VariableDeclarationWrapper {
 	private String variableName;
 	private String key;
 	
-	private ArrayList<ProgramReference> referenceList = new ArrayList<>();
+	private ArrayList<DeclarationInfluenceDetail> influencedReferenceList = new ArrayList<>();
 	
 	private VariableDeclaration originalASTNode;
 
@@ -101,20 +101,6 @@ public class VariableDeclarationWrapper {
 	}
 
 	/**
-	 * @return the referenceList
-	 */
-	public ArrayList<ProgramReference> getReferenceList() {
-		return referenceList;
-	}
-
-	/**
-	 * @param referenceList the referenceList to set
-	 */
-	public void setReferenceList(ArrayList<ProgramReference> referenceList) {
-		this.referenceList = referenceList;
-	}
-
-	/**
 	 * @return the key
 	 */
 	public String getKey() {
@@ -126,6 +112,20 @@ public class VariableDeclarationWrapper {
 	 */
 	public void setKey(String key) {
 		this.key = key;
+	}
+
+	/**
+	 * @return the influencedReferenceList
+	 */
+	public ArrayList<DeclarationInfluenceDetail> getInfluencedReferenceList() {
+		return influencedReferenceList;
+	}
+
+	/**
+	 * @param influencedReferenceList the influencedReferenceList to set
+	 */
+	public void setInfluencedReferenceList(ArrayList<DeclarationInfluenceDetail> influencedReferenceList) {
+		this.influencedReferenceList = influencedReferenceList;
 	}
 	
 	
