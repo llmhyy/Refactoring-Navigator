@@ -29,6 +29,7 @@ import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -94,9 +95,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		/**
 		 * change the parameters of method
 		 */
-		objMethod.removeParameter(tarUnit);
-		ArrayList<String> newParameters = extractParameters(originalUnit, objMethod);
+		ArrayList<String> newParameters = extractParameters(originalUnit, objMethod, newModel);
 		objMethod.getParameters().addAll(newParameters);
+		objMethod.removeParameter(tarUnit);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
@@ -130,7 +131,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		return hints;
 	}
 	
-	private ArrayList<String> extractParameters(ICompilationUnitWrapper originalUnit, MethodWrapper objMethod){
+	private ArrayList<String> extractParameters(ICompilationUnitWrapper originalUnit, MethodWrapper objMethod, ProgramModel newModel){
 		ArrayList<FieldWrapper> calleeMemberList = new ArrayList<>();
 		boolean isMethodInvolved = false;
 		for(ProgramReference reference: objMethod.getRefereePointList()){
@@ -153,12 +154,40 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		ArrayList<String> parameters = new ArrayList<>();
 		if(isMethodInvolved){
+			/**
+			 * modify program model
+			 */
+			ProgramReference reference = new ProgramReference(objMethod, originalUnit, objMethod.getJavaElement(), 
+					ProgramReference.PARAMETER_ACCESS, new ArrayList<VariableDeclarationWrapper>());
+			objMethod.addProgramReferee(reference);
+			originalUnit.addProgramReferer(reference);
+			newModel.getReferenceList().add(reference);
+			
+			/**
+			 * change the signature
+			 */
 			String parameter = originalUnit.getName();
 			parameters.add(parameter);
 			return parameters;
 		}
 		else{
 			for(FieldWrapper calleeMember: calleeMemberList){
+				ICompilationUnitWrapper accessType = null;
+				for(ProgramReference ref: calleeMember.getRefereePointList()){
+					if(ref.getReferenceType() == ProgramReference.TYPE_DECLARATION){
+						accessType = (ICompilationUnitWrapper) ref.getReferee();
+					}
+				}
+				
+				if(accessType != null){
+					ProgramReference reference = new ProgramReference(objMethod, accessType, objMethod.getJavaElement(), 
+							ProgramReference.PARAMETER_ACCESS, new ArrayList<VariableDeclarationWrapper>());
+					objMethod.addProgramReferee(reference);
+					accessType.addProgramReferer(reference);
+					newModel.getReferenceList().add(reference);
+				}
+				
+				
 				String parameter = calleeMember.getType();
 				parameters.add(parameter);	
 			}			
