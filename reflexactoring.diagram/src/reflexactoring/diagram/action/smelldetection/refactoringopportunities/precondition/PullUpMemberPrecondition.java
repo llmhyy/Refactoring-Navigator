@@ -70,7 +70,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 				
 				ArrayList<UnitMemberWrapper> counterMemberList = new ArrayList<>();
 				
-				if(!member.isOverrideSuperMember() && isNotCausingCompilationError(member)){
+				if(!member.isOverrideSuperMember() /*&& isNotCausingCompilationError(member)*/){
 					/**
 					 * constructor is not considered counter here.
 					 */
@@ -114,7 +114,10 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	 * @return
 	 */
 	private boolean isNotCausingCompilationError(UnitMemberWrapper member){
-		ICompilationUnitWrapper sourceUnit = member.getUnitWrapper();
+		//ICompilationUnitWrapper sourceUnit = member.getUnitWrapper();
+		if(member.toString().contains("setMessage")){
+			System.currentTimeMillis();
+		}
 		
 		for(ProgramReference reference: member.getRefererPointList()){
 			
@@ -130,11 +133,12 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 								ref.getReferenceType() == ProgramReference.METHOD_INVOCATION){
 							LowLevelGraphNode node = ref.getReferee();
 							if(node instanceof UnitMemberWrapper){
-								UnitMemberWrapper mem = (UnitMemberWrapper)node;
-								if(!(member.equals(mem))){
-									if(mem.getUnitWrapper().equals(sourceUnit)){
+								UnitMemberWrapper calleeMem = (UnitMemberWrapper)node;
+								if(!(member.equals(calleeMem))){
+									return false;
+									/*if(calleeMem.getUnitWrapper().equals(sourceUnit)){
 										return false;
-									}
+									}*/
 								}
 							}
 						}
@@ -164,9 +168,9 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 				System.currentTimeMillis();
 			}*/
 			
-			if(!otherMember.isOverrideSuperMember() && 
-					!isWithCounterCallingRelation(counterMemberList, otherMember) &&
-					isNotCausingCompilationError(otherMember)){
+			if(!otherMember.isOverrideSuperMember()  
+					&& !isWithCounterCallingRelation(counterMemberList, otherMember) 
+					/*&& isNotCausingCompilationError(otherMember)*/){
 				
 				
 				if(member.hasSameSignatureWith(otherMember)){
