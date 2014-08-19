@@ -792,18 +792,14 @@
                icon="icons/menu/search.jpg"
                id="reflexactoring.diagram.action.searchSolution"
                label="Search Refactoring Solution"
-               menubarPath="reflexactoring.diagram.menu/process"
-               style="push"
-               toolbarPath="process">
+               style="push">
          </action>
          <action
                class="reflexactoring.diagram.action.recommend.ClassRecommendAction"
                icon="icons/menu/adjust_mapping.jpg"
                id="reflexactoring.diagram.action.recommendRefacotring"
                label="Adjust Mapping"
-               menubarPath="reflexactoring.diagram.menu/process"
-               style="push"
-               toolbarPath="process">
+               style="push">
          </action>
          <action
                class="reflexactoring.diagram.action.AutoMappingAction"

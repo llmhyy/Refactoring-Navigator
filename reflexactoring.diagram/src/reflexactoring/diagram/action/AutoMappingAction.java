@@ -11,6 +11,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.diagram.action.recommend.ClassRecommendAction;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarityTable;
@@ -101,6 +102,14 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		 * after all, the recompute settings should be set false to improve efficiency
 		 */
 		Settings.isCompliationUnitChanged = false;
+		
+		/**
+		 * generate class recommends and refactoring solutions
+		 */
+		ClassRecommendAction classRecommend = new ClassRecommendAction();
+		classRecommend.run(null); 
+		SearchRefactoringSolutionAcion searchSolution = new SearchRefactoringSolutionAcion();
+		searchSolution.run(null);
 		
 	}
 	

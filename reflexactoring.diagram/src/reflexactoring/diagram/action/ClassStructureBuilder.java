@@ -138,12 +138,14 @@ public class ClassStructureBuilder {
 						 * check the parameter usage, e.g., where the "p" in "a.m(p)" is declared.
 						 */
 						for(Object obj: invocation.arguments()){
-							SimpleName name = (SimpleName)obj;
-							VariableDeclarationWrapper paramDeclaration = extractVariableDeclarationWrpper(name);
-							
-							if(paramDeclaration != null){
-								decList.add(paramDeclaration);
-								influcenceTypeList.add(DeclarationInfluenceDetail.PARAMETER);
+							if(obj instanceof SimpleName){
+								SimpleName name = (SimpleName)obj;
+								VariableDeclarationWrapper paramDeclaration = extractVariableDeclarationWrpper(name);
+								
+								if(paramDeclaration != null){
+									decList.add(paramDeclaration);
+									influcenceTypeList.add(DeclarationInfluenceDetail.PARAMETER);
+								}
 							}
 						}
 						
