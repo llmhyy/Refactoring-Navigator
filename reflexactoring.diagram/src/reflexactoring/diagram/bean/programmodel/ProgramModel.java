@@ -178,7 +178,7 @@ public class ProgramModel{
 			ProgramModel clonedModel, ProgramModel oldModel) {
 		for(int i=0; i<oldModel.getReferenceList().size(); i++){
 			int referenceIndex = i;
-			ProgramReference oldReference = oldModel.getReferenceList().get(i);
+			ProgramReference oldReference = oldModel.getReferenceList().get(referenceIndex);
 			ArrayList<VariableDeclarationWrapper> oldDecList = oldReference.getVariableDeclarationList();
 			for(VariableDeclarationWrapper oldDec: oldDecList){
 				ProgramReference newReference = clonedModel.getReferenceList().get(referenceIndex);
@@ -187,6 +187,7 @@ public class ProgramModel{
 				for(DeclarationInfluenceDetail oldDetail: oldDec.getInfluencedReferenceList()){
 					if(oldDetail.getReference() == oldReference){
 						influenceType = oldDetail.getType();
+						break;
 					}
 				}
 				
@@ -489,7 +490,7 @@ public class ProgramModel{
 			}
 			
 			ProgramReference clonedReference = new ProgramReference(clonedReferer, clonedReferee, 
-					oldReference.getASTNode(), oldReference.getReferenceType(), null);
+					oldReference.getASTNode(), oldReference.getReferenceType(), new ArrayList<VariableDeclarationWrapper>());
 			clonedReference.setReferenceType(oldReference.getReferenceType());
 			
 			clonedReferences.add(clonedReference);
