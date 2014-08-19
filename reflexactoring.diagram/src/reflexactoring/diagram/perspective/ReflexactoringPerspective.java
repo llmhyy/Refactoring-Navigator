@@ -44,7 +44,7 @@ public class ReflexactoringPerspective implements IPerspectiveFactory {
 		//bottom.addView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW);
 		
 		IFolderLayout right = layout.createFolder("right", IPageLayout.RIGHT, 0.7f, editorArea);
-		right.addView(ReflexactoringPerspective.REFACTORING_SUGGESTION);
+		//right.addView(ReflexactoringPerspective.REFACTORING_SUGGESTION);
 		right.addView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
 		right.addView(IPageLayout.ID_OUTLINE);
 	}
