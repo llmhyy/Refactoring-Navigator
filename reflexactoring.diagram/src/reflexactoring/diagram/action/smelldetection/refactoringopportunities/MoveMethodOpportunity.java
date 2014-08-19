@@ -91,6 +91,26 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		originalUnit.getMembers().remove(objMethod);
 		objMethod.setUnitWrapper(tarUnit);
 		tarUnit.addMember(objMethod);
+
+		for(ProgramReference reference: objMethod.getRefereePointList()){
+			if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS){
+				FieldWrapper fieldWrapper = (FieldWrapper)reference.getReferee();
+				ICompilationUnitWrapper fieldType = fieldWrapper.getFieldType();
+				if(fieldType != null && fieldType.equals(tarUnit)){
+					
+					for(ProgramReference ref: objMethod.getRefererPointList()){
+						UnitMemberWrapper member = ref.getReferer();
+						
+						ProgramReference pr = new ProgramReference(member, fieldWrapper, null, 
+								ProgramReference.FIELD_ACCESS, ref.getVariableDeclarationList());
+						member.addProgramReferee(pr);
+						fieldWrapper.addProgramReferer(pr);
+						newModel.getReferenceList().add(pr);
+					}
+					
+				}
+			}
+		}
 		
 		/**
 		 * change the parameters of method
