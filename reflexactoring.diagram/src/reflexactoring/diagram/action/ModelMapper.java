@@ -7,9 +7,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import reflexactoring.diagram.action.recommend.ClassRecommendAction;
+import reflexactoring.diagram.action.recommend.RefactoringRecommender;
+import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
 import reflexactoring.diagram.action.semantic.TFIDF;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
+import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
@@ -21,6 +25,32 @@ import reflexactoring.diagram.util.Settings;
  *
  */
 public class ModelMapper {
+	
+	public void generateMappingRelationWithGA(ArrayList<ModuleWrapper> moduleList,
+			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
+		double[][] overallSimilarityTable; 
+		overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);		
+		clearMappingRelation(moduleList, compilationUnitList);
+		
+		ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(overallSimilarityTable, 
+				moduleList, Settings.scope.getScopeCompilationUnitList());
+		Settings.similarityTable = table;
+		
+		for(ICompilationUnitWrapper unit: compilationUnitList){
+			unit.setMappingModule(moduleList.get(0));
+		}
+		
+		RefactoringRecommender recommender = new RefactoringRecommender();
+		Genotype gene = recommender.achieveOptimalGene(moduleList, compilationUnitList);
+		
+		for(int i=0; i<gene.getLength(); i++){
+			ICompilationUnitWrapper unit = compilationUnitList.get(i);
+			ModuleWrapper module = moduleList.get(gene.getDNA()[i]);
+			
+			unit.setMappingModule(module);
+		}
+	}
+	
 	/**
 	 * The result should be that: for each module in moduleList, the module wrapper class
 	 * will have a list of mapping compilationUnit; in contrast, for each compilationUnit

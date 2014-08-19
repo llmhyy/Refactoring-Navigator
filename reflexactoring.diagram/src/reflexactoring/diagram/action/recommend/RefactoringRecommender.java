@@ -98,7 +98,20 @@ public class RefactoringRecommender {
 		
 		/**
 		 * Now, the the pre-check has been finished, we start GA for refactoring suggestions.
+		 * The first genotype in population should be the best genotype.
 		 */
+		Genotype bestGene = achieveOptimalGene(moduleList, Settings.scope.getScopeCompilationUnitList());
+		Suggestion suggestion = generateClassLevelSuggestion(bestGene, moduleList);
+		
+		ArrayList<Suggestion> suggestions = generateSuggestions(bestGene, suggestion, moduleList);
+		return suggestions;
+	}
+
+	/**
+	 * @param moduleList
+	 * @return
+	 */
+	public Genotype achieveOptimalGene(ArrayList<ModuleWrapper> moduleList, ArrayList<ICompilationUnitWrapper> unitList) {
 		Rules rules = new Rules();
 		
 		//FitnessEvaluator evalutor = FitnessEvaluatorFactory.createFitnessEvaluator(FitnessEvaluator.ADVANCED_EVALUATOR);
@@ -107,9 +120,8 @@ public class RefactoringRecommender {
 		
 		PopulationGenerator popGenerator = new PopulationGenerator(
 				Integer.valueOf(ReflexactoringUtil.getPopulationSize()), evalutor);
-		Population population = popGenerator.createPopulation(Settings.scope.getScopeCompilationUnitList(), moduleList);
-		/*GeneticOptimizer optimizer = new GeneticOptimizer(population, new DefaultSelector(), 
-				new DefaultCrossoverer(), new DefaultMutator(rules.getUnitModuleFixList(), rules.getUnitModuleStopList(), moduleList.size()));*/
+		Population population = popGenerator.createPopulation(unitList, moduleList);
+
 		GeneticOptimizer optimizer = new GeneticOptimizer(population, new DefaultSelector(), 
 				new AdvancedCrossoverer(), new DefaultMutator(rules.getUnitModuleFixList(), rules.getUnitModuleStopList(), moduleList.size()));
 		
@@ -119,11 +131,9 @@ public class RefactoringRecommender {
 		 * The first genotype in population should be the best genotype
 		 */
 		Genotype bestGene = pop.getList().get(0);
-		Suggestion suggestion = generateClassLevelSuggestion(bestGene, moduleList);
-		
-		ArrayList<Suggestion> suggestions = generateSuggestions(bestGene, suggestion, moduleList);
-		return suggestions;
+		return bestGene;
 	}
+	
 	
 	
 	/**
