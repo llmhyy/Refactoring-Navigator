@@ -15,6 +15,8 @@ public class VariableDeclarationWrapper {
 	private ICompilationUnitWrapper unitWrapper;
 	private String variableName;
 	private String key;
+	private boolean isField;
+	private boolean isParameter;
 	
 	private ArrayList<DeclarationInfluenceDetail> influencedReferenceList = new ArrayList<>();
 	
@@ -31,15 +33,20 @@ public class VariableDeclarationWrapper {
 		this.unitWrapper = unitWrapper;
 		this.variableName = variableName;
 		this.originalASTNode = astNode;
+		this.isField = astNode.resolveBinding().isField();
+		this.setParameter(astNode.resolveBinding().isParameter());
 		this.setKey(astNode.resolveBinding().getKey());
 	}
 	
 	public VariableDeclarationWrapper(ICompilationUnitWrapper unitWrapper,
-			String variableName, VariableDeclaration astNode, String key) {
+			String variableName, VariableDeclaration astNode, String key, 
+			boolean isField, boolean isParameter) {
 		super();
 		this.unitWrapper = unitWrapper;
 		this.variableName = variableName;
 		this.originalASTNode = astNode;
+		this.isField = isField;
+		this.setParameter(isParameter);
 		this.setKey(key);
 	}
 	
@@ -126,6 +133,34 @@ public class VariableDeclarationWrapper {
 	 */
 	public void setInfluencedReferenceList(ArrayList<DeclarationInfluenceDetail> influencedReferenceList) {
 		this.influencedReferenceList = influencedReferenceList;
+	}
+
+	/**
+	 * @return the isField
+	 */
+	public boolean isField() {
+		return isField;
+	}
+
+	/**
+	 * @param isField the isField to set
+	 */
+	public void setField(boolean isField) {
+		this.isField = isField;
+	}
+
+	/**
+	 * @return the isParameter
+	 */
+	public boolean isParameter() {
+		return isParameter;
+	}
+
+	/**
+	 * @param isParameter the isParameter to set
+	 */
+	public void setParameter(boolean isParameter) {
+		this.isParameter = isParameter;
 	}
 	
 	

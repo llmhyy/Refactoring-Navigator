@@ -83,12 +83,13 @@ public class SearchRefactoringSolutionAcion implements
 				/**
 				 * prepare prerequisite
 				 */
-				ArrayList<Violation> violations = sequence.get(sequence.size()-1).getViolationList();
-				RefactoringRecommender recommender = new RefactoringRecommender();
-				ArrayList<SuggestionMove> prerequisite = recommender.findHighLevelModificationSuggestion(violations, moduleList);
-				
-				sequence.setPrerequisite(prerequisite);
-				
+				if(sequence.size() != 0){
+					ArrayList<Violation> violations = sequence.get(sequence.size()-1).getViolationList();
+					RefactoringRecommender recommender = new RefactoringRecommender();
+					ArrayList<SuggestionMove> prerequisite = recommender.findHighLevelModificationSuggestion(violations, moduleList);
+					
+					sequence.setPrerequisite(prerequisite);
+				}
 				suggestionList.add(sequence);
 				
 				Display.getDefault().asyncExec(new Runnable() {

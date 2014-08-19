@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.lang.model.type.ReferenceType;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -224,7 +222,8 @@ public class ProgramModel{
 			int unitIndex = oldModel.getICompilationUnitIndex(oldUnit);
 			ICompilationUnitWrapper newUnit = clonedModel.getScopeCompilationUnitList().get(unitIndex);
 			
-			VariableDeclarationWrapper clonedDec = new VariableDeclarationWrapper(newUnit, oldVariableName, oldASTNode, oldKey);
+			VariableDeclarationWrapper clonedDec = new VariableDeclarationWrapper(newUnit, oldVariableName, 
+					oldASTNode, oldKey, oldDec.isField(), oldDec.isParameter());
 			
 			decList.add(clonedDec);
 		}
