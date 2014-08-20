@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 import reflexactoring.diagram.action.semantic.TokenExtractor;
+import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.util.DefaultComparator;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 
@@ -65,6 +66,16 @@ public class FieldWrapper extends UnitMemberWrapper{
 	@Override
 	public void setName(String name){
 		this.name = name;
+	}
+	
+	public ICompilationUnitWrapper getFieldType(){
+		for(ProgramReference reference: this.getRefereePointList()){
+			if(reference.getReferenceType() == ProgramReference.TYPE_DECLARATION){
+				LowLevelGraphNode node = reference.getReferee();
+				return (ICompilationUnitWrapper)node;
+			}
+		}
+		return null;
 	}
 	
 	public String toString(){

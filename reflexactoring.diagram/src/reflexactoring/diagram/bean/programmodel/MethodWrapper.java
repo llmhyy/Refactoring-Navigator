@@ -113,6 +113,19 @@ public class MethodWrapper extends UnitMemberWrapper {
 				break;
 			}
 		}
+		
+		Iterator<ProgramReference> refIter = this.getRefereePointList().iterator();
+		while(refIter.hasNext()){
+			ProgramReference reference = refIter.next(); 
+			if(reference.getReferenceType() == ProgramReference.PARAMETER_ACCESS){
+				LowLevelGraphNode node = reference.getReferee();
+				if(node instanceof ICompilationUnitWrapper){
+					if(targetUnit.equals(node)){
+						refIter.remove();
+					}
+				}
+			}
+		}
 	}
 	
 	private boolean hasSameParameters(MethodWrapper methodWrapper){

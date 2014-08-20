@@ -9,12 +9,14 @@ import org.eclipse.jdt.core.dom.ASTNode;
 
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluenceDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
@@ -113,10 +115,11 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @param newToBePulledMember
 	 * @param newMember
 	 */
-	private void handleReferersOfToBePulledMember(UnitMemberWrapper newToBePulledMember, UnitMemberWrapper newMember){
+	protected void handleReferersOfToBePulledMember(UnitMemberWrapper newToBePulledMember, 
+			UnitMemberWrapper newMember){
 		for(ProgramReference reference: newToBePulledMember.getRefererPointList()){
 			reference.setReferee(newMember);
-			newMember.addProgramReferer(reference);		
+			newMember.addProgramReferer(reference);	
 		}
 		
 		newToBePulledMember.setRefererPointList(new ArrayList<ProgramReference>());
@@ -131,7 +134,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @param newToBePulledMember
 	 * @param newMember
 	 */
-	private void handleRefereesOfToBePulledMember(UnitMemberWrapper newToBePulledMember, UnitMemberWrapper newMember){
+	protected void handleRefereesOfToBePulledMember(UnitMemberWrapper newToBePulledMember, UnitMemberWrapper newMember){
 		for(ProgramReference reference: newToBePulledMember.getRefereePointList()){
 			reference.setReferer(newMember);
 			newMember.addProgramReferee(reference);

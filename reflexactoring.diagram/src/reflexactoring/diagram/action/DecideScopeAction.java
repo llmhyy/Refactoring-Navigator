@@ -161,7 +161,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 							viewUpdater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, false);
 							viewUpdater.updateView(ReflexactoringPerspective.CREATION_CONSTRAINT_CONFIDENCE_VIEW, Settings.creationConfidenceTable, false);
 							//viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW, Settings.heuristicModuleMemberPartFixList, false);
-							viewUpdater.updateView(ReflexactoringPerspective.REFACTORING_SUGGESTION, new ArrayList<Suggestion>(), false);
+							//viewUpdater.updateView(ReflexactoringPerspective.REFACTORING_SUGGESTION, new ArrayList<Suggestion>(), false);
 							
 							AutoMappingAction mappingAction = new AutoMappingAction();
 							mappingAction.run(null);						

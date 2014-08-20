@@ -117,6 +117,14 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 
 		return newModel;
 	}
+	
+	/**
+	 * It is empty because only the signature of those members are pulled.
+	 */
+	@Override
+	protected void handleRefereesOfToBePulledMember(UnitMemberWrapper newToBePulledMember, UnitMemberWrapper newMember){
+		
+	}
 
 	@Override
 	public boolean apply() {
