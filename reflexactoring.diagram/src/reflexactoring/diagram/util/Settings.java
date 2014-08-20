@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.DependencyWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -41,6 +42,7 @@ public class Settings {
 	 * to similar refactoring suggestions.
 	 */
 	public static ArrayList<RefactoringOpportunity> forbiddenOpps = new ArrayList<>();
+	
 	
 	/**
 	 * It is used for specifying user approved refactoring suggestions, which could be used as hints to add reward
@@ -155,12 +157,16 @@ public class Settings {
 	public static final double rewardRate = 0.2;
 	
 	public static final double refactoringOppSimilarity = 0.6;
+
+	public static boolean isScopeRefreshed = true;
 	
 	//===============================================================
 	/**
 	 * The following is used to indicate the visibility of lines on graph
 	 */
 	public static boolean enableVisibility = false;
-	
+	/**
+	 * indicate those type dependencies need to be highlighted
+	 */
 	public static ArrayList<DependencyWrapper> highlightLinks = new ArrayList<>();
 }

@@ -36,7 +36,11 @@ import org.eposoft.jccd.preprocessors.java.RemoveSemicolons;
 import reflexactoring.Type;
 import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
+import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
@@ -48,6 +52,10 @@ public class ProgramModel{
 	private ArrayList<ProgramReference> referenceList = new ArrayList<>();
 	private ArrayList<CloneSet> cloneSets;
 	private ArrayList<VariableDeclarationWrapper> declarationList = new ArrayList<>();
+	/**
+	 * extracting class and long method are only detected for one time.
+	 */
+	private ArrayList<RefactoringOpportunity> oneShotOpportnityList = null;
 	
 	/**
 	 * calculate the CBO (coupling between objects)
@@ -120,52 +128,53 @@ public class ProgramModel{
 	public ProgramModel clone(){
 		//long t1 = System.currentTimeMillis();
 		
-		ProgramModel clonedModel = new ProgramModel();
+		ProgramModel newModel = new ProgramModel();
 		
 		ArrayList<ICompilationUnitWrapper> unitList = cloneUnits();
 		
 		//long t2 = System.currentTimeMillis();
 		//System.out.println("Unit Cloned: " + (t2-t1));
 		
-		clonedModel.setScopeCompilationUnitList(unitList);
-		cloneUnitRelations(clonedModel, this);
+		newModel.setScopeCompilationUnitList(unitList);
+		cloneUnitRelations(newModel, this);
 		
 		//long t3 = System.currentTimeMillis();
 		//System.out.println("Unit Relation Cloned: " + (t3-t2));
 		
-		UnitMemberWrapperList memberList = cloneMembers(clonedModel, this);
+		UnitMemberWrapperList memberList = cloneMembers(newModel, this);
 		
 		//long t4 = System.currentTimeMillis();
 		//System.out.println("Member Cloned: " + (t4-t3));
 		
-		clonedModel.setScopeMemberList(memberList);
-		cloneMemberRelations(clonedModel, this);
+		newModel.setScopeMemberList(memberList);
+		cloneMemberRelations(newModel, this);
 		
 		//long t5 = System.currentTimeMillis();
 		//System.out.println("Member Relation Cloned: " + (t5-t4));
 		
-		ArrayList<ProgramReference> prList = cloneReference(clonedModel, this);
-		clonedModel.setReferenceList(prList);
+		ArrayList<ProgramReference> prList = cloneReference(newModel, this);
+		newModel.setReferenceList(prList);
 		
 		//long t6 = System.currentTimeMillis();
 		//System.out.println("Reference Cloned: " + (t5-t4));
 		
-		ArrayList<VariableDeclarationWrapper> decList = cloneVariableDeclarationList(clonedModel, this);
-		clonedModel.setDeclarationList(decList);
+		ArrayList<VariableDeclarationWrapper> decList = cloneVariableDeclarationList(newModel, this);
+		newModel.setDeclarationList(decList);
 		
-		cloneTheRelationBetweenDeclarationListAndReferenceList(clonedModel, this);
+		cloneTheRelationBetweenDeclarationListAndReferenceList(newModel, this);
 		
-		ArrayList<CloneSet> cloneSets = cloneCloneSets(clonedModel, this);
-		clonedModel.setCloneSets(cloneSets);
+		ArrayList<CloneSet> cloneSets = cloneCloneSets(newModel, this);
+		newModel.setCloneSets(cloneSets);
 		
 		//long t7 = System.currentTimeMillis();
 		//System.out.println("Clone Sets Cloned: " + (t5-t4));
-		
+		ArrayList<RefactoringOpportunity> oneShotOpps = cloneOneShotRefactoringOpportunties(newModel, this);
+		newModel.setOneShotOpportnityList(oneShotOpps);
 		
 		
 		//System.out.println("Total Cloned: " + (t2-t1));
 		
-		return clonedModel;
+		return newModel;
 	}
 	
 	/**
@@ -229,6 +238,33 @@ public class ProgramModel{
 		}
 		
 		return decList;
+	}
+	
+	private ArrayList<RefactoringOpportunity> cloneOneShotRefactoringOpportunties(ProgramModel newModel, ProgramModel oldModel){
+		ArrayList<RefactoringOpportunity> newOneShotOpps = new ArrayList<>();
+		
+		for(RefactoringOpportunity oldOpp: oldModel.getOneShotOpportnityList()){
+			if(oldOpp instanceof ExtractClassOpportunity){
+				ExtractClassOpportunity oldExtractOpp = (ExtractClassOpportunity)oldOpp;
+				ArrayList<UnitMemberWrapper> newExtractMembers = new ArrayList<>();
+				
+				for(UnitMemberWrapper oldExtractMember: oldExtractOpp.getToBeExtractedMembers()){
+					UnitMemberWrapper newExtractMember = newModel.findMember(oldExtractMember);
+					if(newExtractMember == null){
+						System.currentTimeMillis();
+					}
+					
+					newExtractMembers.add(newExtractMember);
+				}
+				
+				ExtractClassOpportunity newExtractOpp = new ExtractClassOpportunity(newExtractMembers, 
+						oldExtractOpp.getRefactoring(), oldExtractOpp.getModuleList());
+				
+				newOneShotOpps.add(newExtractOpp);
+			}
+		}
+		
+		return newOneShotOpps;
 	}
 
 	/**
@@ -831,7 +867,17 @@ public class ProgramModel{
 		return otherUnits;
 	}
 	
-	public void detectClone(ProgramModel model){
+	public void detectExtractClassOpportunties(ArrayList<ModuleWrapper> moduleList){
+		if(Settings.isScopeRefreshed){
+			this.oneShotOpportnityList = new ArrayList<>();
+			ArrayList<RefactoringOpportunity> oppList = new ExtractClassOpportunity(null, null, moduleList).
+					new Precondition().detectOpportunities(this);
+			this.oneShotOpportnityList.addAll(oppList);		
+			Settings.isScopeRefreshed = false;
+		}
+	}
+	
+	public void detectClone(){
 		
 		if(this.cloneSets != null){
 			return;
@@ -840,7 +886,7 @@ public class ProgramModel{
 		ArrayList<JCCDFile> fileList = new ArrayList<JCCDFile>();
 		HashMap<String, ICompilationUnitWrapper> map = new HashMap<>();
 		
-		for(ICompilationUnitWrapper unit: model.getScopeCompilationUnitList()){
+		for(ICompilationUnitWrapper unit: getScopeCompilationUnitList()){
 			IResource resource = unit.getCompilationUnit().getResource();			
 			fileList.add(new JCCDFile(resource.getRawLocation().toFile()));
 			
@@ -970,5 +1016,36 @@ public class ProgramModel{
 	 */
 	public void setDeclarationList(ArrayList<VariableDeclarationWrapper> declarationList) {
 		this.declarationList = declarationList;
+	}
+
+	/**
+	 * @param fullQualifiedTypeName
+	 * @param fieldName
+	 * @return
+	 */
+	public UnitMemberWrapper findMember(String fullQualifiedTypeName, String memberName) {
+		ICompilationUnitWrapper unit = findUnit(fullQualifiedTypeName);
+		if(unit != null){
+			for(UnitMemberWrapper member: unit.getMembers()){
+				if(member.getName().equals(memberName)){
+					return member;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return the oneShotOpportnityList
+	 */
+	public ArrayList<RefactoringOpportunity> getOneShotOpportnityList() {
+		return oneShotOpportnityList;
+	}
+
+	/**
+	 * @param oneShotOpportnityList the oneShotOpportnityList to set
+	 */
+	public void setOneShotOpportnityList(ArrayList<RefactoringOpportunity> oneShotOpportnityList) {
+		this.oneShotOpportnityList = oneShotOpportnityList;
 	}
 }
