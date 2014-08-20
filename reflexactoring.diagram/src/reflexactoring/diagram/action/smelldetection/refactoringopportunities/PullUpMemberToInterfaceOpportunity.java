@@ -5,6 +5,7 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -14,14 +15,24 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.ui.refactoring.RenameSupport;
 import org.eclipse.jface.text.BadLocationException;
@@ -35,11 +46,13 @@ import reflexactoring.diagram.action.popup.RenameMethodsDialog;
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluenceDetail;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
 
 /**
  * @author linyun
@@ -170,7 +183,7 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		}							
 		
 		//make every child class implements the interface	
-		for(UnitMemberWrapper member : this.getToBePulledMemberList()){
+		for(UnitMemberWrapper member : memberList){
 			ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
 			try {
 				unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
@@ -229,8 +242,75 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 				return false;
-			}								
+			}				
+		}
+		
+		//cast method invocation variable into parent interface
+		for(UnitMemberWrapper member : memberList){
+			for(ProgramReference reference : member.getRefererPointList()){
+				for(VariableDeclarationWrapper variable : reference.getVariableDeclarationList()){
+					//cast the declaration into parent interface //TODO
+					VariableDeclaration variableAST = variable.getAstNode();
+					
+					Type currentVariableType = null;
+					
+					if(variableAST instanceof SingleVariableDeclaration){
+						currentVariableType = ((SingleVariableDeclaration) variableAST).getType();
+					}else if(variableAST instanceof VariableDeclarationFragment){
+						if(((VariableDeclarationFragment) variableAST).getParent() instanceof FieldDeclaration){
+							currentVariableType = ((FieldDeclaration) ((VariableDeclarationFragment) variableAST).getParent()).getType();
+						}						
+					}
+					
+					
+					//cast other references' declaration into child class
+					for(DeclarationInfluenceDetail detail : variable.getInfluencedReferenceList()){
+						ProgramReference influencedReference = detail.getReference();
+						
+						if(reference.equals(influencedReference)){
+							
+							if(reference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
+								MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();
+								//for current pulled method's reference, if casted, remove current casting
+								if(detail.getType() == DeclarationInfluenceDetail.ACCESS_OBJECT){
+									if(invocation.getParent().getNodeType() == ASTNode.CAST_EXPRESSION){
+										this.removeCastExpression(member, invocation.getParent());
+									}
+								}
+								//for current pulled method's reference, if parameter casted, remove current casting
+								else if(detail.getType() == DeclarationInfluenceDetail.PARAMETER){
+									List<Expression> arguments = invocation.arguments();
+									for(Expression args : arguments){
+										if(args.getNodeType() == ASTNode.CAST_EXPRESSION){
+											this.removeCastExpression(member, args);
+										}
+									}
+								}
 								
+							}
+							//for current pulled method's reference, if assignment casted, remove current casting
+							else if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Assignment){
+								Assignment assignment = (Assignment) influencedReference.getASTNode();
+								if(assignment.getRightHandSide().getNodeType() == ASTNode.CAST_EXPRESSION){
+									this.removeCastExpression(member, assignment.getRightHandSide());
+								}
+							}
+												
+							
+						}else if(!reference.equals(influencedReference) && influencedReference.getASTNode() instanceof MethodInvocation){
+							
+							MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();
+							//if variableAST belongs to parent interface, it's not the first time to update, then do nothing
+							//otherwise, it's the first time, cast all references to sub class
+							if(currentVariableType != null && ! currentVariableType.equals(parentInterface)){
+								//TODO
+							}
+							
+						}
+						
+					}
+				}
+			}
 		}
 		
 		//call Eclipse API to pull up
@@ -347,5 +427,45 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			
 			return false;
 		}
+	}
+	
+	private boolean removeCastExpression(UnitMemberWrapper member, ASTNode node){
+		ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
+		try {
+			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+			IBuffer buffer = unit.getBuffer();									
+			
+			CompilationUnit compilationUnit = parse(unit);
+			TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
+
+			AST ast = td.getAST();
+			ASTRewrite rewrite= ASTRewrite.create(ast);								
+												
+			CastExpression castExpression= (CastExpression) node;
+			Expression expression = castExpression.getExpression();
+			
+			rewrite.replace(node, expression, null);					
+			
+			Document document = new Document(unit.getSource());
+			TextEdit textEdit = rewrite.rewriteAST(document, null);
+			textEdit.apply(document);
+			
+			buffer.setContents(document.get());	
+			
+			JavaModelUtil.reconcile(unit);
+			unit.commitWorkingCopy(true, new NullProgressMonitor());
+			unit.discardWorkingCopy();
+			
+		} catch (JavaModelException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (MalformedTreeException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (BadLocationException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }
