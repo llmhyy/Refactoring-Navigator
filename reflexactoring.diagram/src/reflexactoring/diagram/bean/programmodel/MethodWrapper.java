@@ -19,9 +19,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
 
-import reflexactoring.diagram.action.semantic.TokenExtractor;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
-import reflexactoring.diagram.util.DefaultComparator;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
@@ -247,8 +245,8 @@ public class MethodWrapper extends UnitMemberWrapper {
 		this.parameters = parameters;
 	}
 
-	/* (non-Javadoc)
-	 * @see reflexactoring.diagram.bean.UnitMemberWrapper#hasSameSignatureWith(reflexactoring.diagram.bean.UnitMemberWrapper)
+	/**
+	 * This method only consider the method signature.
 	 */
 	@Override
 	public boolean hasSameSignatureWith(UnitMemberWrapper member) {
@@ -258,7 +256,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 			boolean isSameReturnType = isWithSameReturnType(methodWrapper);
 			
 			return isSameReturnType && methodWrapper.getName().equals(this.getName()) &&
-					isWithSameParameter(methodWrapper.getParameters(), this.getParameters());
+					isWithSameParameter(this.getParameters());
 		}
 		return false;
 	}
@@ -268,7 +266,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 		if(otherMember instanceof MethodWrapper){
 			MethodWrapper thatMethod = (MethodWrapper)otherMember;
 			
-			if(!this.isWithSameParameter(this.getParameters(), thatMethod.getParameters())){
+			if(!this.isWithSameParameter(thatMethod.getParameters())){
 				return 0;
 			}
 			
@@ -294,7 +292,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 					compareStringSimilarity(getReturnType(), thatMethod.getReturnType());
 			double nameSimilarity = ReflexactoringUtil.
 					compareStringSimilarity(getName(), thatMethod.getName());
-			double paramSimilarity = isWithSameParameter(getParameters(), thatMethod.getParameters())? 1 : 0;
+			double paramSimilarity = isWithSameParameter(thatMethod.getParameters())? 1 : 0;
 			
 			return (returnTypeSimilarity + nameSimilarity + paramSimilarity)/3;
 		}
@@ -326,19 +324,19 @@ public class MethodWrapper extends UnitMemberWrapper {
 		return isSameReturnType;
 	}
 	
-	private boolean isWithSameParameter(ArrayList<String> params1, ArrayList<String> params2){
-		if(params1.size() != params2.size()){
+	public boolean isWithSameParameter(ArrayList<String> params){
+		if(this.parameters.size() != params.size()){
 			return false;
 		}
-		else if(params1.size() == 0){
+		else if(params.size() == 0){
 			return true;
 		}
 		
-		Collections.sort(params1);
-		Collections.sort(params2);
+		Collections.sort(this.parameters);
+		Collections.sort(params);
 		
-		for(int i=0; i<params1.size(); i++){
-			if(!params1.get(i).equals(params2.get(i))){
+		for(int i=0; i<params.size(); i++){
+			if(!this.parameters.get(i).equals(params.get(i))){
 				return false;
 			}
 		}

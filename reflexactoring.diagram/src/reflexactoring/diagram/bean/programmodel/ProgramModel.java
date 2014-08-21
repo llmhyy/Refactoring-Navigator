@@ -883,7 +883,15 @@ public class ProgramModel{
 					ExtractClassOpportunity ecOpp = (ExtractClassOpportunity)opp;
 					
 					for(UnitMemberWrapper memberInExtractedList: ecOpp.getToBeExtractedMembers()){
-						UnitMemberWrapper memberInThisModel = this.findMember(memberInExtractedList);
+						UnitMemberWrapper memberInThisModel = null; 
+						String unitName = ecOpp.getSourceUnit().getFullQualifiedName();
+						if(memberInExtractedList instanceof FieldWrapper){
+							memberInThisModel = this.findField(unitName, memberInExtractedList.getName());
+						}
+						else if(memberInExtractedList instanceof MethodWrapper){
+							memberInThisModel = this.findMethod(unitName, memberInExtractedList.getName(), 
+									((MethodWrapper) memberInExtractedList).getParameters());
+						}
 						if(memberInThisModel == null){
 							oppIter.remove();
 							break;
@@ -1059,13 +1067,15 @@ public class ProgramModel{
 	 * @param fieldName
 	 * @return
 	 */
-	public MethodWrapper findMethod(String fullQualifiedTypeName, String memberName) {
+	public MethodWrapper findMethod(String fullQualifiedTypeName, String methodName, ArrayList<String> params) {
 		ICompilationUnitWrapper unit = findUnit(fullQualifiedTypeName);
 		if(unit != null){
 			for(UnitMemberWrapper member: unit.getMembers()){
 				if(member instanceof MethodWrapper){
-					if(member.getName().equals(memberName)){
-						return (MethodWrapper)member;
+					MethodWrapper thisMethod = (MethodWrapper)member;
+					if(thisMethod.getName().equals(methodName) &&
+							thisMethod.isWithSameParameter(params)){
+						return thisMethod;
 					}					
 				}
 			}

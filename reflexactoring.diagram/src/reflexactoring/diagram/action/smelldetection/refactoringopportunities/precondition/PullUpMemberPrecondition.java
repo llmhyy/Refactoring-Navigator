@@ -71,7 +71,11 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 				
 				ArrayList<UnitMemberWrapper> counterMemberList = new ArrayList<>();
 				
-				if(!member.isOverrideSuperMember() /*&& isNotCausingCompilationError(member)*/){
+				if(member.toString().contains("getMessag")){
+					System.currentTimeMillis();
+				}
+				
+				if(!member.isOverrideSuperMember() && !isDeclaredInParameter(member) /*&& isNotCausingCompilationError(member)*/){
 					/**
 					 * constructor is not considered counter here.
 					 */
@@ -101,6 +105,22 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		}
 		
 		return refactoringPlaceList;
+	}
+	
+	private boolean isDeclaredInParameter(UnitMemberWrapper member){
+		if(member.toString().contains("MapView.getMessage")){
+			System.currentTimeMillis();
+		}
+		
+		for(ProgramReference ref: member.getRefererPointList()){
+			for(ReferenceInflucencedDetail detail: ref.getVariableDeclarationList()){
+				if(detail.getDeclaration().isParameter()){
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -166,12 +186,13 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		for(UnitMemberWrapper otherMember: otherUnit.getMembers()){
 			if(markedMemberList.contains(otherMember))continue;
 			
-			/*if(member.getName().contains("Message") && otherMember.getName().contains("Message")){
+			if(member.getName().contains("Message") && otherMember.getName().contains("Message")){
 				System.currentTimeMillis();
-			}*/
+			}
 			
 			if(!otherMember.isOverrideSuperMember()  
 					&& !isWithCounterCallingRelation(counterMemberList, otherMember) 
+					&& !isDeclaredInParameter(otherMember)
 					/*&& isNotCausingCompilationError(otherMember)*/){
 				
 				
