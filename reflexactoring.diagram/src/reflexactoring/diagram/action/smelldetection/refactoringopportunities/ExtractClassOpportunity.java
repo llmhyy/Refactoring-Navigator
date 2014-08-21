@@ -38,7 +38,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.ui.JavaUI;
-import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.ui.PartInitException;
@@ -46,6 +46,7 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
+import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
@@ -66,6 +67,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	private ArrayList<UnitMemberWrapper> toBeExtractedMembers = new ArrayList<>();
 	private ExtractClassCandidateRefactoring refactoring;
 	private ICompilationUnitWrapper sourceUnit;
+	private String targetUnitName;
 	
 	/**
 	 * @param toBeExtractedMembers
@@ -135,6 +137,8 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		
 		calculateBestMappingModule(newModel, newUnit);
 		
+		this.targetUnitName = newUnit.getFullQualifiedName();
+		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
 		/**
@@ -193,7 +197,6 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 
 	@Override
 	public double computeSimilarityWith(RefactoringOpportunity opp) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -215,7 +218,24 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard); 
 		try { 
 			String titleForFailedChecks = ""; 
-			op.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), titleForFailedChecks); 
+			int status = op.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), titleForFailedChecks); 
+			if(status == IDialogConstants.OK_ID){
+				String newExtractedName = ((ExtractClassRefactoring)refactoring).getExtractedTypeName();
+				
+				for(int i=position; i<sequence.size(); i++){
+					RefactoringSequenceElement element = sequence.get(i);
+					ProgramModel model = element.getConsequenceModel();
+					
+					ICompilationUnitWrapper extractedUnit = model.findUnit(this.targetUnitName);
+					extractedUnit.setSimpleName(newExtractedName);
+					
+					System.currentTimeMillis();
+				}
+				
+				
+			}
+			
+			
 		} catch(InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -278,6 +298,22 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	public void setSourceUnit(ICompilationUnitWrapper sourceUnit) {
 		this.sourceUnit = sourceUnit;
 	}
+	
+	/**
+	 * @return the targetUnitName
+	 */
+	public String getTargetUnitName() {
+		return targetUnitName;
+	}
+
+	/**
+	 * @param targetUnitName the targetUnitName to set
+	 */
+	public void setTargetUnitName(String targetUnitName) {
+		this.targetUnitName = targetUnitName;
+	}
+
+
 
 	public class Precondition extends RefactoringPrecondition{
 
