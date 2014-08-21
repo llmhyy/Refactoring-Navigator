@@ -21,9 +21,7 @@ import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
 import reflexactoring.diagram.action.smelldetection.PenaltyAndRewardCalulator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractUtilityClassOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
@@ -55,7 +53,7 @@ public class SearchRefactoringSolutionAcion implements
 				
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()) && oppList.size() != 0; i++){				
 					
-					if(i==3){
+					if(i==2){
 						System.currentTimeMillis();
 					}
 					
@@ -64,8 +62,8 @@ public class SearchRefactoringSolutionAcion implements
 					long t2 = System.currentTimeMillis();
 					System.out.println(t2-t1);
 					
-					if(sequence.isAnImprovement(element) ||
-							new PenaltyAndRewardCalulator().isConformToUserFeedback(element.getOpportunity())){
+					if(/*sequence.isAnImprovement(element) ||
+							new PenaltyAndRewardCalulator().isConformToUserFeedback(element.getOpportunity())*/i<3){
 						element.setPosition(i);
 						sequence.addElement(element);
 						model = element.getConsequenceModel();
@@ -128,7 +126,7 @@ public class SearchRefactoringSolutionAcion implements
 		
 		for(RefactoringOpportunity opp: oppList){
 			
-			if(opp instanceof ExtractUtilityClassOpportunity){
+			if(opp instanceof ExtractClassOpportunity){
 				System.currentTimeMillis();
 			}
 			

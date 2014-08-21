@@ -31,6 +31,7 @@ public class ProgramReference {
 	public static final int TYPE_DECLARATION = 3;
 	public static final int PARAMETER_ACCESS = 4;
 	public static final int NEW_DEFAULT_CONSTRUCTOR = 5;
+	//public static final int SIMPLE_VARIABLE_DECLARATION = 6;
 	
 	private ASTNode originalASTNode;
 	
@@ -38,10 +39,10 @@ public class ProgramReference {
 	private LowLevelGraphNode referee;
 	private int referenceType;
 	
-	private ArrayList<VariableDeclarationWrapper> variableDeclarationList = new ArrayList<>();
+	private ArrayList<ReferenceInflucencedDetail> variableDeclarationList;
 	
 	public ProgramReference(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode originalASTNode, 
-			int referenceType, ArrayList<VariableDeclarationWrapper> variableDeclarationList){
+			int referenceType, ArrayList<ReferenceInflucencedDetail> variableDeclarationList){
 		this.referer = referer;
 		this.referee = referee;
 		this.originalASTNode = originalASTNode;
@@ -59,7 +60,7 @@ public class ProgramReference {
 	/**
 	 * @return the variableDeclarationList
 	 */
-	public ArrayList<VariableDeclarationWrapper> getVariableDeclarationList() {
+	public ArrayList<ReferenceInflucencedDetail> getVariableDeclarationList() {
 		return variableDeclarationList;
 	}
 
@@ -67,7 +68,7 @@ public class ProgramReference {
 	 * @param variableDeclarationList the variableDeclarationList to set
 	 */
 	public void setVariableDeclarationList(
-			ArrayList<VariableDeclarationWrapper> variableDeclarationList) {
+			ArrayList<ReferenceInflucencedDetail> variableDeclarationList) {
 		this.variableDeclarationList = variableDeclarationList;
 	}
 
@@ -130,6 +131,9 @@ public class ProgramReference {
 		}
 		else if(referenceType == ProgramReference.TYPE_DECLARATION){
 			buffer.append("of type ");
+		}
+		else if(referenceType == ProgramReference.NEW_DEFAULT_CONSTRUCTOR){
+			buffer.append("invoke default constructor of ");
 		}
 		buffer.append(referee.toString());
 		

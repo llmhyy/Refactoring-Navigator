@@ -19,23 +19,29 @@ import reflexactoring.diagram.bean.programmodel.ProgramModel;
 public class BadSmellDetector {
 	
 	private ArrayList<RefactoringPrecondition> preconditionList = new ArrayList<>();
+	private ArrayList<ModuleWrapper> moduleList = new ArrayList<>();
 	
 	public BadSmellDetector(ArrayList<ModuleWrapper> moduleList){
+		this.moduleList = moduleList;
 		//preconditionList.add(new PullUpMemberToInterfaceOpportunity(null,null).new Precondition(moduleList));
 		preconditionList.add(new PullUpMemberPrecondition(moduleList));	
 		//preconditionList.add(new ExtractUtilityClassOpportunity(null,null).new Precondition(moduleList));
 		preconditionList.add(new MoveMethodOpportunity(null, null).new Precodition());
+		//preconditionList.add(new ExtractClassOpportunity(null, null, moduleList).new Precondition());
 	}
 	
 	public ArrayList<RefactoringOpportunity> detect(ProgramModel model){
 		ArrayList<RefactoringOpportunity> opporuntities = new ArrayList<>();
 		
-		model.detectClone(model);
+		model.detectClone();
+		model.detectExtractClassOpportunties(moduleList);
 		
 		for(RefactoringPrecondition precondition: preconditionList){
 			ArrayList<RefactoringOpportunity> oppList = precondition.detectOpportunities(model);
 			opporuntities.addAll(oppList);
 		}
+		
+		opporuntities.addAll(model.getOneShotOpportnityList());
 		
 		return opporuntities;
 	}

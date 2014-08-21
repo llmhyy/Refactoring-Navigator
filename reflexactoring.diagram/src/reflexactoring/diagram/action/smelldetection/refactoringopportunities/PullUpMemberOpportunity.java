@@ -9,12 +9,13 @@ import org.eclipse.jdt.core.dom.ASTNode;
 
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.programmodel.DeclarationInfluenceDetail;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
+import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
@@ -95,7 +96,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		
 		for(UnitMemberWrapper oldMem: toBePulledMemberList){
 			UnitMemberWrapper newToBePulledMember = newModel.findMember(oldMem);
-			handleReferersOfToBePulledMember(newToBePulledMember, newMember);
+			handleReferersOfToBePulledMember(newToBePulledMember, newMember, superUnit, newModel);
 			
 			if(!superUnit.isInterface()){
 				handleRefereesOfToBePulledMember(newToBePulledMember, newMember);
@@ -116,10 +117,45 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @param newMember
 	 */
 	protected void handleReferersOfToBePulledMember(UnitMemberWrapper newToBePulledMember, 
-			UnitMemberWrapper newMember){
+			UnitMemberWrapper newMember, ICompilationUnitWrapper superUnit, ProgramModel newModel){
+		
+		ArrayList<ICompilationUnitWrapper> subClasses = new ArrayList<>();
+		for(UnitMemberWrapper m: toBePulledMemberList){
+			ICompilationUnitWrapper subClass = m.getUnitWrapper();
+			if(!subClasses.contains(subClass)){
+				subClasses.add(subClass);
+			}
+		}
+		
 		for(ProgramReference reference: newToBePulledMember.getRefererPointList()){
 			reference.setReferee(newMember);
-			newMember.addProgramReferer(reference);	
+			newMember.addProgramReferer(reference);
+			
+			/**
+			 * the referer (a member) is related to a declaration
+			 */
+			for(ReferenceInflucencedDetail refDecDetail: reference.getVariableDeclarationList()){	
+				
+				if(refDecDetail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
+					VariableDeclarationWrapper dec = refDecDetail.getDeclaration();
+					if(dec.isField()){
+						UnitMemberWrapper referer = reference.getReferer();
+						ICompilationUnitWrapper declaringClass = referer.getUnitWrapper();
+						String fieldName = dec.getVariableName();
+						
+						FieldWrapper fieldWrapper = newModel.findField(declaringClass.getFullQualifiedName(), fieldName);
+						
+						for(ProgramReference ref: fieldWrapper.getRefereePointList()){
+							if(ref.getReferenceType() == ProgramReference.TYPE_DECLARATION){
+								ICompilationUnitWrapper referedUnit = (ICompilationUnitWrapper) ref.getReferee();
+								if(subClasses.contains(referedUnit)){
+									ref.setReferee(superUnit);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		newToBePulledMember.setRefererPointList(new ArrayList<ProgramReference>());

@@ -29,11 +29,12 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import reflexactoring.diagram.bean.LowLevelGraphNode;
-import reflexactoring.diagram.bean.programmodel.DeclarationInfluenceDetail;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
+import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapperList;
 import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
@@ -86,16 +87,14 @@ public class ClassStructureBuilder {
 								declaration = new VariableDeclarationWrapper(unitWrapper, fieldWrapper.getName(), fragment); 
 							}
 							
-							ArrayList<VariableDeclarationWrapper> decList = new ArrayList<>();
-							ArrayList<Integer> influcenceTypeList = new ArrayList<>();
+							ArrayList<ReferenceInflucencedDetail> decList = new ArrayList<ReferenceInflucencedDetail>();
 
 							if(null != declaration){
-								decList.add(declaration);								
-								influcenceTypeList.add(DeclarationInfluenceDetail.ACCESS_OBJECT);
+								decList.add(new ReferenceInflucencedDetail(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
 							}
 							
 							buildRelation(callerMember, fieldWrapper, name, ProgramReference.FIELD_ACCESS, 
-									decList, influcenceTypeList);
+									decList);
 						}
 					}
 				}							
@@ -116,8 +115,7 @@ public class ClassStructureBuilder {
 				if (calleeMember instanceof MethodWrapper) {
 					MethodWrapper methodWrapper = (MethodWrapper) calleeMember;
 					if (element.equals(methodWrapper.getJavaMember())) {
-						ArrayList<VariableDeclarationWrapper> decList = new ArrayList<>();
-						ArrayList<Integer> influcenceTypeList = new ArrayList<>();
+						ArrayList<ReferenceInflucencedDetail> decList = new ArrayList<>();
 						
 						/**
 						 * check the object access, e.g., where the "a" in "a.m()" is declared.
@@ -129,8 +127,9 @@ public class ClassStructureBuilder {
 							declaration = extractVariableDeclarationWrpper(name);
 							
 							if(null != declaration){
-								decList.add(declaration);
-								influcenceTypeList.add(DeclarationInfluenceDetail.ACCESS_OBJECT);
+								decList.add(new ReferenceInflucencedDetail(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
+								
+								//decList.put(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT);
 							}
 						}
 						
@@ -143,14 +142,15 @@ public class ClassStructureBuilder {
 								VariableDeclarationWrapper paramDeclaration = extractVariableDeclarationWrpper(name);
 								
 								if(paramDeclaration != null){
-									decList.add(paramDeclaration);
-									influcenceTypeList.add(DeclarationInfluenceDetail.PARAMETER);
+									decList.add(new ReferenceInflucencedDetail(paramDeclaration, DeclarationInfluencingDetail.PARAMETER));
+									
+									//decList.put(paramDeclaration, DeclarationInfluencingDetail.PARAMETER);
 								}
 							}
 						}
 						
 						buildRelation(callerMember, methodWrapper, invocation, ProgramReference.METHOD_INVOCATION, 
-								decList, influcenceTypeList);
+								decList);
 					}
 				}
 			}
@@ -199,8 +199,8 @@ public class ClassStructureBuilder {
 					if (key.equals(methodKey)) {
 						isContainedInList = true;
 						
-						ArrayList<VariableDeclarationWrapper> decList = new ArrayList<>();
-						ArrayList<Integer> influcenceTypeList = new ArrayList<>();
+						//HashMap<VariableDeclarationWrapper, Integer> decList = new HashMap<>();
+						ArrayList<ReferenceInflucencedDetail> decList = new ArrayList<>();
 						
 						VariableDeclarationFragment fragment = (VariableDeclarationFragment) creation.getParent();
 						ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(
@@ -209,9 +209,8 @@ public class ClassStructureBuilder {
 						VariableDeclarationWrapper declaration = 
 								new VariableDeclarationWrapper(unitWrapper, fragment.getName().getIdentifier(), fragment);
 						
-						decList.add(declaration);
-						influcenceTypeList.add(DeclarationInfluenceDetail.ACCESS_OBJECT);
-						
+						//decList.put(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT);
+						decList.add(new ReferenceInflucencedDetail(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
 						/**
 						 * check the parameter usage, e.g., where the "p" in "a.m(p)" is declared.
 						 */
@@ -220,14 +219,14 @@ public class ClassStructureBuilder {
 							VariableDeclarationWrapper paramDeclaration = extractVariableDeclarationWrpper(name);
 							
 							if(paramDeclaration != null){
-								decList.add(paramDeclaration);
-								influcenceTypeList.add(DeclarationInfluenceDetail.PARAMETER);
+								//decList.put(paramDeclaration, DeclarationInfluencingDetail.PARAMETER);
+								decList.add(new ReferenceInflucencedDetail(paramDeclaration, DeclarationInfluencingDetail.PARAMETER));
 							}
 						}
 						
 						
 						buildRelation(callerMember, methodWrapper, creation, ProgramReference.METHOD_INVOCATION, 
-								decList, influcenceTypeList);
+								decList);
 					}
 				}
 			}
@@ -240,7 +239,7 @@ public class ClassStructureBuilder {
 					 * empty constructor is always available, therefore, I do not further check the details.
 					 */
 					buildRelation(callerMember, correspondingUnit, creation, ProgramReference.NEW_DEFAULT_CONSTRUCTOR, 
-							new ArrayList<VariableDeclarationWrapper>(), new ArrayList<Integer>());
+							new ArrayList<ReferenceInflucencedDetail>());
 				}
 			}
 
@@ -249,7 +248,7 @@ public class ClassStructureBuilder {
 	}
 	
 	private void buildRelation(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode node, 
-			int referenceType, ArrayList<VariableDeclarationWrapper> decList, ArrayList<Integer> influenceTypeList){
+			int referenceType, ArrayList<ReferenceInflucencedDetail> decList){
 		ProgramReference reference = new ProgramReference(referer, referee, node, referenceType, decList);
 		referer.addProgramReferee(reference);
 		referee.addProgramReferer(reference);
@@ -258,28 +257,27 @@ public class ClassStructureBuilder {
 		
 		if(decList.size() != 0){
 			/**
-			 * replace new variable declaration with existing variable declaration
+			 * there is a global variable to record the overall variable declarations, thus, I replace 
+			 * new variable declaration with existing variable declaration
 			 */
 			for(VariableDeclarationWrapper declaration: declarationList){
-				for(int i=0; i<decList.size(); i++){
-					VariableDeclarationWrapper dec = decList.get(i);
+				for(ReferenceInflucencedDetail detail: decList){
+					VariableDeclarationWrapper dec = detail.getDeclaration();
 					if(dec.equals(declaration)){
-						decList.set(i, declaration);
+						detail.setDeclaration(declaration);
 					}
 				}
 				
 			}
 			
-			for(int i=0; i<decList.size(); i++){
-				VariableDeclarationWrapper vdw = decList.get(i);
-				int influenceType = influenceTypeList.get(i);
-				
-				if(!declarationList.contains(vdw)){
-					declarationList.add(vdw);
+			for(ReferenceInflucencedDetail refDetail: decList){
+				VariableDeclarationWrapper dec = refDetail.getDeclaration();
+				if(!declarationList.contains(dec)){
+					declarationList.add(dec);
 				}
 				
-				DeclarationInfluenceDetail detail = new DeclarationInfluenceDetail(reference, influenceType);
-				vdw.getInfluencedReferenceList().add(detail);
+				DeclarationInfluencingDetail decDetail = new DeclarationInfluencingDetail(reference, refDetail.getType());
+				dec.getInfluencedReferenceList().add(decDetail);
 			}
 			
 			reference.setVariableDeclarationList(decList);
@@ -360,7 +358,7 @@ public class ClassStructureBuilder {
 					for(ICompilationUnitWrapper declaringUnitWrapper: compilationUnitList){
 						if(declaringUnitWrapper.getFullQualifiedName().equals(typeName)){
 							buildRelation(fieldWrapper, declaringUnitWrapper, fd, ProgramReference.TYPE_DECLARATION, 
-									new ArrayList<VariableDeclarationWrapper>(), new ArrayList<Integer>());
+									new ArrayList<ReferenceInflucencedDetail>());
 						}
 					}
 
@@ -382,7 +380,7 @@ public class ClassStructureBuilder {
 						for(ICompilationUnitWrapper searchingUnitWrapper: compilationUnitList){
 							if(searchingUnitWrapper.getFullQualifiedName().equals(typeName)){
 								buildRelation(methodWrapper, searchingUnitWrapper, md, ProgramReference.TYPE_DECLARATION, 
-										new ArrayList<VariableDeclarationWrapper>(), new ArrayList<Integer>());
+										new ArrayList<ReferenceInflucencedDetail>());
 							}
 						}
 					}
@@ -396,7 +394,7 @@ public class ClassStructureBuilder {
 								/*VariableDeclarationWrapper declaration = 
 										new VariableDeclarationWrapper(declaringUnitWrapper, svd.getName().getIdentifier(), svd);*/
 								buildRelation(methodWrapper, declaringUnitWrapper, md, ProgramReference.PARAMETER_ACCESS, 
-										new ArrayList<VariableDeclarationWrapper>(), new ArrayList<Integer>());
+										new ArrayList<ReferenceInflucencedDetail>());
 							}
 						}
 					}
