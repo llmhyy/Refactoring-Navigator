@@ -1,63 +1,15 @@
 package reflexactoring.diagram.view;
 
-import gr.uom.java.jdeodorant.refactoring.manipulators.MoveMethodRefactoring;
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.IOperationHistory;
-import org.eclipse.core.commands.operations.IUndoContext;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jdt.core.IBuffer;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IMember;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.internal.corext.refactoring.RefactoringAvailabilityTester;
-import org.eclipse.jdt.internal.corext.refactoring.RefactoringExecutionStarter;
-import org.eclipse.jdt.internal.corext.refactoring.rename.RenameMethodProcessor;
-import org.eclipse.jdt.internal.corext.refactoring.rename.RenameVirtualMethodProcessor;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
-import org.eclipse.jdt.internal.ui.actions.ActionUtil;
-import org.eclipse.jdt.internal.ui.refactoring.RefactoringMessages;
-import org.eclipse.jdt.internal.ui.util.ExceptionHandler;
-import org.eclipse.jdt.ui.refactoring.RenameSupport;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.window.Window;
-import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.ltk.core.refactoring.CreateChangeOperation;
-import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ltk.core.refactoring.participants.RenameRefactoring;
+import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ControlAdapter;
@@ -78,8 +30,7 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.text.edits.MalformedTreeException;
-import org.eclipse.text.edits.TextEdit;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.FormColors;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
@@ -88,25 +39,19 @@ import org.eclipse.ui.forms.widgets.FormText;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.eclipse.ui.operations.IWorkbenchOperationSupport;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 import reflexactoring.diagram.action.DiagramUpdater;
 import reflexactoring.diagram.action.popup.ReferenceDetailMap;
-import reflexactoring.diagram.action.popup.RenameMethodsDialog;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.recommend.action.CreationAction;
 import reflexactoring.diagram.action.recommend.action.DependencyAction;
 import reflexactoring.diagram.action.recommend.action.ExtendAction;
 import reflexactoring.diagram.action.recommend.action.LinkAction;
 import reflexactoring.diagram.action.recommend.action.RefactoringAction;
-import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.CreateSuperclassAndPullUpMemberOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -114,13 +59,12 @@ import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.heuristics.ModuleCreationConfidence;
 import reflexactoring.diagram.bean.heuristics.ModuleDependencyConfidence;
 import reflexactoring.diagram.bean.heuristics.ModuleExtendConfidence;
-import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
-import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
 import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
+import reflexactoring.diagram.view.annotation.ReferenceAnnotation;
 
 public class RefactoringSuggestionsView extends ViewPart {
 	private Composite parent;
@@ -453,7 +397,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 		formText.setText(buffer.toString(), true, false);
 		formText.setData(element.getOpportunity());
 		formText.addHyperlinkListener(new HyperlinkAdapter() {
-			@SuppressWarnings("restriction")
 			public void linkActivated(HyperlinkEvent e) {
 				RefactoringOpportunity opportunity = (RefactoringOpportunity) formText.getData();
 				if(e.getHref().equals("Forbid")){
@@ -512,6 +455,43 @@ public class RefactoringSuggestionsView extends ViewPart {
 					ReferenceDetailMap map = new ReferenceDetailMap(null, null, element.getOpportunity().getHints());
 					ViewUpdater updater = new ViewUpdater();
 					updater.updateView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW, map, true);
+					
+					ITextEditor sourceEditor;
+					try {
+						ArrayList<CompilationUnit> cuList = new ArrayList<>();
+						
+						for(ASTNode node: element.getOpportunity().getHints()){
+							ASTNode parent = node.getParent();
+							while(parent.getParent() != null){
+								parent = parent.getParent();
+							}
+							CompilationUnit cu = (CompilationUnit)parent;
+							sourceEditor = (ITextEditor)JavaUI.openInEditor(cu.getJavaElement());
+							AnnotationModel annotationModel = (AnnotationModel)sourceEditor.getDocumentProvider().getAnnotationModel(sourceEditor.getEditorInput());
+							
+							if(!cuList.contains(cu)){
+								@SuppressWarnings("unchecked")
+								Iterator<Annotation> annotationIterator = annotationModel.getAnnotationIterator();
+								while(annotationIterator.hasNext()) {
+									Annotation currentAnnotation = annotationIterator.next();
+									annotationModel.removeAnnotation(currentAnnotation);
+								}								
+							}
+							
+							cuList.add(cu);
+							
+							ReferenceAnnotation annotation = new ReferenceAnnotation(false, "You may need to change this part");
+							Position position = new Position(node.getStartPosition(), node.getLength());
+							
+							annotationModel.addAnnotation(annotation, position);
+						}
+						
+						//sourceEditor.setHighlightRange(node.getStartPosition(), node.getLength(), true);
+					} catch (PartInitException e1) {
+						e1.printStackTrace();
+					} catch (JavaModelException e1) {
+						e1.printStackTrace();
+					}
 				}
 				else if(e.getHref().equals("Exec")){					
 					if(opportunity.apply()){						

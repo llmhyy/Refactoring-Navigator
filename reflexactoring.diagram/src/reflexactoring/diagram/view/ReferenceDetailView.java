@@ -72,8 +72,15 @@ public class ReferenceDetailView extends ViewPart {
 					parent = parent.getParent();
 				}
 				CompilationUnit cu = (CompilationUnit)parent;
-				
 				ITextEditor sourceEditor;
+				try {
+					sourceEditor = (ITextEditor)JavaUI.openInEditor(cu.getJavaElement());
+					sourceEditor.setHighlightRange(node.getStartPosition(), node.getLength(), true);
+				} catch (PartInitException | JavaModelException e) {
+					e.printStackTrace();
+				}
+				
+				/*ITextEditor sourceEditor;
 				try {
 					sourceEditor = (ITextEditor)JavaUI.openInEditor(cu.getJavaElement());
 					AnnotationModel annotationModel = (AnnotationModel)sourceEditor.getDocumentProvider().getAnnotationModel(sourceEditor.getEditorInput());
@@ -92,7 +99,7 @@ public class ReferenceDetailView extends ViewPart {
 					e.printStackTrace();
 				} catch (JavaModelException e) {
 					e.printStackTrace();
-				}
+				}*/
 				
 				/*int lineNumber = cu.getLineNumber(node.getStartPosition());
 				
