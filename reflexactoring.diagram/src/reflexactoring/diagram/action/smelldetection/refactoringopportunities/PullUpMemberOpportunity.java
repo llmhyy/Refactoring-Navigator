@@ -130,35 +130,37 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		for(ProgramReference reference: newToBePulledMember.getRefererPointList()){
 			reference.setReferee(newMember);
 			newMember.addProgramReferer(reference);
-			
 			/**
-			 * find the variable declaration defining the access object of the reference, change its type
+			 * find the variable declaration defining the access object of the method invocation, change its type
 			 * declaration from subclass to superclass.
 			 */
-			for(ReferenceInflucencedDetail refDecDetail: reference.getVariableDeclarationList()){	
-				
-				if(refDecDetail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
-					VariableDeclarationWrapper dec = refDecDetail.getDeclaration();
-					if(dec.isField()){
-						UnitMemberWrapper referer = reference.getReferer();
-						ICompilationUnitWrapper declaringClass = referer.getUnitWrapper();
-						String fieldName = dec.getVariableName();
-						
-						FieldWrapper fieldWrapper = newModel.findField(declaringClass.getFullQualifiedName(), fieldName);
-						
-						for(ProgramReference ref: fieldWrapper.getRefereePointList()){
-							if(ref.getReferenceType() == ProgramReference.TYPE_DECLARATION){
-								ICompilationUnitWrapper referedUnit = (ICompilationUnitWrapper) ref.getReferee();
-								if(subClasses.contains(referedUnit)){
-									ref.setReferee(superUnit);
-									dec.setUnitWrapper(superUnit);
+			if(newToBePulledMember instanceof MethodWrapper){
+				for(ReferenceInflucencedDetail refDecDetail: reference.getVariableDeclarationList()){	
+					
+					if(refDecDetail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
+						VariableDeclarationWrapper dec = refDecDetail.getDeclaration();
+						if(dec.isField()){
+							UnitMemberWrapper referer = reference.getReferer();
+							ICompilationUnitWrapper declaringClass = referer.getUnitWrapper();
+							String fieldName = dec.getVariableName();
+							
+							FieldWrapper fieldWrapper = newModel.findField(declaringClass.getFullQualifiedName(), fieldName);
+							
+							for(ProgramReference ref: fieldWrapper.getRefereePointList()){
+								if(ref.getReferenceType() == ProgramReference.TYPE_DECLARATION){
+									ICompilationUnitWrapper referedUnit = (ICompilationUnitWrapper) ref.getReferee();
+									if(subClasses.contains(referedUnit)){
+										ref.setReferee(superUnit);
+										dec.setUnitWrapper(superUnit);
+									}
+									
+									break;
 								}
-								
-								break;
 							}
+							
 						}
-						
 					}
+				
 				}
 			}
 		}
