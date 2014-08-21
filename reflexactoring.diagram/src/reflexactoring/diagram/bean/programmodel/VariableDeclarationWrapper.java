@@ -18,7 +18,7 @@ public class VariableDeclarationWrapper {
 	private boolean isField;
 	private boolean isParameter;
 	
-	private ArrayList<DeclarationInfluenceDetail> influencedReferenceList = new ArrayList<>();
+	private ArrayList<DeclarationInfluencingDetail> influencedReferenceList = new ArrayList<>();
 	
 	private VariableDeclaration originalASTNode;
 
@@ -48,6 +48,11 @@ public class VariableDeclarationWrapper {
 		this.isField = isField;
 		this.setParameter(isParameter);
 		this.setKey(key);
+	}
+	
+	@Override 
+	public int hashCode(){
+		return this.key.hashCode();
 	}
 	
 	@Override
@@ -124,14 +129,14 @@ public class VariableDeclarationWrapper {
 	/**
 	 * @return the influencedReferenceList
 	 */
-	public ArrayList<DeclarationInfluenceDetail> getInfluencedReferenceList() {
+	public ArrayList<DeclarationInfluencingDetail> getInfluencedReferenceList() {
 		return influencedReferenceList;
 	}
 
 	/**
 	 * @param influencedReferenceList the influencedReferenceList to set
 	 */
-	public void setInfluencedReferenceList(ArrayList<DeclarationInfluenceDetail> influencedReferenceList) {
+	public void setInfluencedReferenceList(ArrayList<DeclarationInfluencingDetail> influencedReferenceList) {
 		this.influencedReferenceList = influencedReferenceList;
 	}
 

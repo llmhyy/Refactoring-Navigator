@@ -28,6 +28,7 @@ import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
+import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
 import reflexactoring.diagram.util.Settings;
@@ -178,7 +179,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			 * modify program model
 			 */
 			ProgramReference reference = new ProgramReference(objMethod, originalUnit, objMethod.getJavaElement(), 
-					ProgramReference.PARAMETER_ACCESS, new ArrayList<VariableDeclarationWrapper>());
+					ProgramReference.PARAMETER_ACCESS, new ArrayList<ReferenceInflucencedDetail>());
 			objMethod.addProgramReferee(reference);
 			originalUnit.addProgramReferer(reference);
 			newModel.getReferenceList().add(reference);
@@ -201,7 +202,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 				
 				if(accessType != null){
 					ProgramReference reference = new ProgramReference(objMethod, accessType, objMethod.getJavaElement(), 
-							ProgramReference.PARAMETER_ACCESS, new ArrayList<VariableDeclarationWrapper>());
+							ProgramReference.PARAMETER_ACCESS, new ArrayList<ReferenceInflucencedDetail>());
 					objMethod.addProgramReferee(reference);
 					accessType.addProgramReferer(reference);
 					newModel.getReferenceList().add(reference);

@@ -34,6 +34,7 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
@@ -50,14 +51,17 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	private int id;
 	private ArrayList<UnitMemberWrapper> toBeExtractedMembers = new ArrayList<>();
 	private ExtractClassCandidateRefactoring refactoring;
+	private ICompilationUnitWrapper sourceUnit;
 	
 	/**
 	 * @param toBeExtractedMembers
 	 */
 	public ExtractClassOpportunity(
-			ArrayList<UnitMemberWrapper> toBeExtractedMembers, ExtractClassCandidateRefactoring refactoring, ArrayList<ModuleWrapper> moduleList) {
+			ArrayList<UnitMemberWrapper> toBeExtractedMembers, ExtractClassCandidateRefactoring refactoring, 
+			ArrayList<ModuleWrapper> moduleList, ICompilationUnitWrapper sourceUnit) {
 		super();
 		this.toBeExtractedMembers = toBeExtractedMembers;
+		this.sourceUnit = sourceUnit;
 		this.setRefactoring(refactoring);
 		this.moduleList = moduleList;
 	}
@@ -213,6 +217,20 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		this.refactoring = refactoring;
 	}
 
+	/**
+	 * @return the sourceUnit
+	 */
+	public ICompilationUnitWrapper getSourceUnit() {
+		return sourceUnit;
+	}
+
+	/**
+	 * @param sourceUnit the sourceUnit to set
+	 */
+	public void setSourceUnit(ICompilationUnitWrapper sourceUnit) {
+		this.sourceUnit = sourceUnit;
+	}
+
 	public class Precondition extends RefactoringPrecondition{
 
 		@Override
@@ -234,7 +252,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 						CompilationUnit cu = (CompilationUnit) dec.getRoot();
 						String typeName = ((TypeDeclaration)cu.types().get(0)).resolveBinding().getQualifiedName();
 						
-						UnitMemberWrapper member = Settings.scope.findMember(typeName, fieldName);
+						FieldWrapper member = Settings.scope.findField(typeName, fieldName);
 						toBeExtractedMemberList.add(member);
 					}
 					
@@ -243,11 +261,14 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 						CompilationUnit cu = (CompilationUnit) dec.getRoot();
 						String typeName = ((TypeDeclaration)cu.types().get(0)).resolveBinding().getQualifiedName();
 						
-						UnitMemberWrapper member = Settings.scope.findMember(typeName, methodName);
+						MethodWrapper member = Settings.scope.findMethod(typeName, methodName);
 						toBeExtractedMemberList.add(member);
 					}
 					
-					ExtractClassOpportunity opp = new ExtractClassOpportunity(toBeExtractedMemberList, refactoring, moduleList);
+					ICompilationUnitWrapper sourceUnit = toBeExtractedMemberList.get(0).getUnitWrapper();
+					
+					ExtractClassOpportunity opp = new ExtractClassOpportunity(toBeExtractedMemberList, refactoring, 
+							moduleList, sourceUnit);
 					opp.setId(id);
 					oppList.add(opp);
 				}

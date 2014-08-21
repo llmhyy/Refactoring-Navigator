@@ -186,29 +186,23 @@ public class ProgramModel{
 		for(int i=0; i<oldModel.getReferenceList().size(); i++){
 			int referenceIndex = i;
 			ProgramReference oldReference = oldModel.getReferenceList().get(referenceIndex);
-			ArrayList<VariableDeclarationWrapper> oldDecList = oldReference.getVariableDeclarationList();
-			for(VariableDeclarationWrapper oldDec: oldDecList){
+			ArrayList<ReferenceInflucencedDetail> oldDecList = oldReference.getVariableDeclarationList();
+			for(ReferenceInflucencedDetail refDetail: oldDecList){
+				VariableDeclarationWrapper oldDec = refDetail.getDeclaration();
 				ProgramReference newReference = clonedModel.getReferenceList().get(referenceIndex);
 				
-				int influenceType = -1;
-				for(DeclarationInfluenceDetail oldDetail: oldDec.getInfluencedReferenceList()){
-					if(oldDetail.getReference() == oldReference){
-						influenceType = oldDetail.getType();
-						break;
-					}
+				if(newReference == null){
+					System.err.println("cannot find a reference");
 				}
-				
-				if(influenceType == -1){
-					System.err.println("influence type equals -1");
-				}
-				
 				
 				int decIndex = oldModel.findVariableDeclarationIndex(oldDec);
 				VariableDeclarationWrapper newDec = clonedModel.getDeclarationList().get(decIndex);
 				
-				DeclarationInfluenceDetail decDetail = new DeclarationInfluenceDetail(newReference, influenceType);
+				DeclarationInfluencingDetail decDetail = new DeclarationInfluencingDetail(newReference, refDetail.getType());
 				newDec.getInfluencedReferenceList().add(decDetail);
-				newReference.getVariableDeclarationList().add(newDec);	
+				
+				ReferenceInflucencedDetail refDecDetail = new ReferenceInflucencedDetail(newDec, refDetail.getType());
+				newReference.getVariableDeclarationList().add(refDecDetail);	
 			}
 		}
 	}
@@ -251,14 +245,16 @@ public class ProgramModel{
 				for(UnitMemberWrapper oldExtractMember: oldExtractOpp.getToBeExtractedMembers()){
 					UnitMemberWrapper newExtractMember = newModel.findMember(oldExtractMember);
 					if(newExtractMember == null){
+						System.err.println("model inconsistency: " + oldExtractMember.getName() + "cannot be found when cloning new model");
 						System.currentTimeMillis();
 					}
 					
 					newExtractMembers.add(newExtractMember);
 				}
 				
+				ICompilationUnitWrapper newSourceUnit = newExtractMembers.get(0).getUnitWrapper();
 				ExtractClassOpportunity newExtractOpp = new ExtractClassOpportunity(newExtractMembers, 
-						oldExtractOpp.getRefactoring(), oldExtractOpp.getModuleList());
+						oldExtractOpp.getRefactoring(), oldExtractOpp.getModuleList(), newSourceUnit);
 				
 				newOneShotOpps.add(newExtractOpp);
 			}
@@ -525,7 +521,7 @@ public class ProgramModel{
 			}
 			
 			ProgramReference clonedReference = new ProgramReference(clonedReferer, clonedReferee, 
-					oldReference.getASTNode(), oldReference.getReferenceType(), new ArrayList<VariableDeclarationWrapper>());
+					oldReference.getASTNode(), oldReference.getReferenceType(), new ArrayList<ReferenceInflucencedDetail>());
 			clonedReference.setReferenceType(oldReference.getReferenceType());
 			
 			clonedReferences.add(clonedReference);
@@ -870,10 +866,31 @@ public class ProgramModel{
 	public void detectExtractClassOpportunties(ArrayList<ModuleWrapper> moduleList){
 		if(Settings.isScopeRefreshed){
 			this.oneShotOpportnityList = new ArrayList<>();
-			ArrayList<RefactoringOpportunity> oppList = new ExtractClassOpportunity(null, null, moduleList).
+			ArrayList<RefactoringOpportunity> oppList = new ExtractClassOpportunity(null, null, moduleList, null).
 					new Precondition().detectOpportunities(this);
 			this.oneShotOpportnityList.addAll(oppList);		
 			Settings.isScopeRefreshed = false;
+		}
+		else{
+			/**
+			 * if some to-be-extracted members have been moved beforehand, then this extracting class refactoring
+			 * is invalid and should be removed.
+			 */
+			Iterator<RefactoringOpportunity> oppIter = this.oneShotOpportnityList.iterator();
+			while(oppIter.hasNext()){
+				RefactoringOpportunity opp = oppIter.next();
+				if(opp instanceof ExtractClassOpportunity){
+					ExtractClassOpportunity ecOpp = (ExtractClassOpportunity)opp;
+					
+					for(UnitMemberWrapper memberInExtractedList: ecOpp.getToBeExtractedMembers()){
+						UnitMemberWrapper memberInThisModel = this.findMember(memberInExtractedList);
+						if(memberInThisModel == null){
+							oppIter.remove();
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 	
@@ -1023,12 +1040,33 @@ public class ProgramModel{
 	 * @param fieldName
 	 * @return
 	 */
-	public UnitMemberWrapper findMember(String fullQualifiedTypeName, String memberName) {
+	public FieldWrapper findField(String fullQualifiedTypeName, String memberName) {
 		ICompilationUnitWrapper unit = findUnit(fullQualifiedTypeName);
 		if(unit != null){
 			for(UnitMemberWrapper member: unit.getMembers()){
-				if(member.getName().equals(memberName)){
-					return member;
+				if(member instanceof FieldWrapper){
+					if(member.getName().equals(memberName)){
+						return (FieldWrapper)member;
+					}					
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @param fullQualifiedTypeName
+	 * @param fieldName
+	 * @return
+	 */
+	public MethodWrapper findMethod(String fullQualifiedTypeName, String memberName) {
+		ICompilationUnitWrapper unit = findUnit(fullQualifiedTypeName);
+		if(unit != null){
+			for(UnitMemberWrapper member: unit.getMembers()){
+				if(member instanceof MethodWrapper){
+					if(member.getName().equals(memberName)){
+						return (MethodWrapper)member;
+					}					
 				}
 			}
 		}

@@ -7,7 +7,7 @@ package reflexactoring.diagram.bean.programmodel;
  * @author linyun
  *
  */
-public class DeclarationInfluenceDetail {
+public class DeclarationInfluencingDetail {
 	public static final int OTHER = 0;
 	public static final int ACCESS_OBJECT = 1;
 	public static final int PARAMETER = 2;
@@ -18,7 +18,7 @@ public class DeclarationInfluenceDetail {
 	 * @param reference
 	 * @param type
 	 */
-	public DeclarationInfluenceDetail(ProgramReference reference, int type) {
+	public DeclarationInfluencingDetail(ProgramReference reference, int type) {
 		super();
 		this.reference = reference;
 		this.type = type;
@@ -28,10 +28,10 @@ public class DeclarationInfluenceDetail {
 	public String toString(){
 		String typeString = "";
 		switch(type){
-		case DeclarationInfluenceDetail.ACCESS_OBJECT:
+		case DeclarationInfluencingDetail.ACCESS_OBJECT:
 			typeString = "access object";
 			break;
-		case DeclarationInfluenceDetail.PARAMETER:
+		case DeclarationInfluencingDetail.PARAMETER:
 			typeString = "influence parameter";
 			break;
 		}

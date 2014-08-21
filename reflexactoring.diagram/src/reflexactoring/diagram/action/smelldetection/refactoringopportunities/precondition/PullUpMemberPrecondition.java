@@ -15,12 +15,13 @@ import reflexactoring.diagram.action.smelldetection.refactoringopportunities.Pul
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.programmodel.DeclarationInfluenceDetail;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
+import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
 import reflexactoring.diagram.bean.programmodel.ReferencingDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
@@ -124,8 +125,9 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS ||
 					reference.getReferenceType() == ProgramReference.METHOD_INVOCATION){
 				
-				for(VariableDeclarationWrapper declaration: reference.getVariableDeclarationList()){
-					for(DeclarationInfluenceDetail detail: declaration.getInfluencedReferenceList()){
+				for(ReferenceInflucencedDetail refInDetail: reference.getVariableDeclarationList()){
+					VariableDeclarationWrapper declaration = refInDetail.getDeclaration();
+					for(DeclarationInfluencingDetail detail: declaration.getInfluencedReferenceList()){
 						
 						ProgramReference ref = detail.getReference();
 						
