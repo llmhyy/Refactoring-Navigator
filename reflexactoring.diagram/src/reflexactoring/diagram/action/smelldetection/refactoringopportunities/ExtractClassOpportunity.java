@@ -221,6 +221,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			int status = op.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), titleForFailedChecks); 
 			if(status == IDialogConstants.OK_ID){
 				String newExtractedName = ((ExtractClassRefactoring)refactoring).getExtractedTypeName();
+				String packName = this.targetUnitName.substring(0, this.targetUnitName.lastIndexOf("."));
 				
 				for(int i=position; i<sequence.size(); i++){
 					RefactoringSequenceElement element = sequence.get(i);
@@ -232,7 +233,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 					System.currentTimeMillis();
 				}
 				
-				
+				this.targetUnitName = packName + "." + newExtractedName;
 			}
 			
 			
