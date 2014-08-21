@@ -11,6 +11,8 @@ import gr.uom.java.distance.DistanceMatrix;
 import gr.uom.java.distance.ExtractClassCandidateGroup;
 import gr.uom.java.distance.ExtractClassCandidateRefactoring;
 import gr.uom.java.distance.MySystem;
+import gr.uom.java.jdeodorant.refactoring.manipulators.ExtractClassRefactoring;
+import gr.uom.java.jdeodorant.refactoring.views.MyRefactoringWizard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,19 +21,28 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
+import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.action.Action;
+import org.eclipse.ltk.core.refactoring.Refactoring;
+import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
@@ -187,8 +198,36 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 
 	@Override
 	public boolean apply() {
-		// TODO Auto-generated method stub
-		return false;
+		IFile sourceFile = this.refactoring.getSourceIFile();
+		CompilationUnit sourceCompilationUnit = (CompilationUnit)this.refactoring.getSourceClassTypeDeclaration().getRoot();
+		String extractedClassName = "ExtractedClass";
+		
+		Set<VariableDeclaration> extractedFieldFragments = this.refactoring.getExtractedFieldFragments();
+		Set<MethodDeclaration> extractedMethods = this.refactoring.getExtractedMethods();
+		
+		Refactoring refactoring = new ExtractClassRefactoring(sourceFile, sourceCompilationUnit,
+				this.refactoring.getSourceClassTypeDeclaration(),
+				extractedFieldFragments, extractedMethods,
+				this.refactoring.getDelegateMethods(), extractedClassName);
+		
+		MyRefactoringWizard wizard = new MyRefactoringWizard(refactoring, null);
+		RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard); 
+		try { 
+			String titleForFailedChecks = ""; 
+			op.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), titleForFailedChecks); 
+		} catch(InterruptedException e) {
+			e.printStackTrace();
+		}
+		try {
+			IJavaElement sourceJavaElement = JavaCore.create(sourceFile);
+			JavaUI.openInEditor(sourceJavaElement);
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+		}
+		
+		return true;
 	}
 
 	@Override
