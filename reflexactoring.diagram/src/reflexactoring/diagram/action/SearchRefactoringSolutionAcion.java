@@ -62,8 +62,8 @@ public class SearchRefactoringSolutionAcion implements
 					long t2 = System.currentTimeMillis();
 					System.out.println(t2-t1);
 					
-					if(/*sequence.isAnImprovement(element) ||
-							new PenaltyAndRewardCalulator().isConformToUserFeedback(element.getOpportunity())*/i<3){
+					if(sequence.isAnImprovement(element) ||
+							new PenaltyAndRewardCalulator().isConformToUserFeedback(element.getOpportunity())){
 						element.setPosition(i);
 						sequence.addElement(element);
 						model = element.getConsequenceModel();
@@ -73,9 +73,6 @@ public class SearchRefactoringSolutionAcion implements
 						System.out.println("break in iteration " + i);
 						break;
 					}
-					
-					
-					
 				}
 				
 				/**

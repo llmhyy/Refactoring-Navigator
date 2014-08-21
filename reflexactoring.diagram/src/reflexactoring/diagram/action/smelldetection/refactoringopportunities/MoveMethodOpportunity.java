@@ -253,6 +253,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 			return false;
+		} catch (Exception e){
+			e.printStackTrace();
+			//return true;
 		}
 		
 //		MyRefactoringWizard wizard = new MyRefactoringWizard(refactoring, new TestAction());
