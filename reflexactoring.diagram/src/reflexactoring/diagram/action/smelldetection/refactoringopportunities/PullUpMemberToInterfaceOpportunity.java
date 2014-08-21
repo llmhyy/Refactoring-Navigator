@@ -48,11 +48,12 @@ import reflexactoring.diagram.action.popup.RenameMethodsDialog;
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.programmodel.DeclarationInfluenceDetail;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
+import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
 
@@ -258,7 +259,8 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		//cast method invocation variable into parent interface
 		for(UnitMemberWrapper member : memberList){
 			for(ProgramReference reference : member.getRefererPointList()){
-				for(VariableDeclarationWrapper variable : reference.getVariableDeclarationList()){
+				for(ReferenceInflucencedDetail variableDetail : reference.getVariableDeclarationList()){
+					VariableDeclarationWrapper variable = variableDetail.getDeclaration();
 					//cast the declaration into parent interface 
 					VariableDeclaration variableAST = variable.getAstNode();
 					
@@ -276,21 +278,22 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 					
 					
 					//cast other references' declaration into child class
-					for(DeclarationInfluenceDetail detail : variable.getInfluencedReferenceList()){
+					for(DeclarationInfluencingDetail detail : variable.getInfluencedReferenceList()){
 						ProgramReference influencedReference = detail.getReference();
 						
+						//for current pulled method's reference, if casted, remove current casting
 						if(reference.equals(influencedReference)){
 							
 							if(reference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
 								MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();
 								//for current pulled method's reference, if casted, remove current casting
-								if(detail.getType() == DeclarationInfluenceDetail.ACCESS_OBJECT){
+								if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
 									if(invocation.getParent().getNodeType() == ASTNode.CAST_EXPRESSION){
 										this.modifyCastExpression(member, invocation.getParent(), true, null);
 									}
 								}
 								//for current pulled method's reference, if parameter casted, remove current casting
-								else if(detail.getType() == DeclarationInfluenceDetail.PARAMETER){
+								else if(detail.getType() == DeclarationInfluencingDetail.PARAMETER){
 									List<Expression> arguments = invocation.arguments();
 									for(Expression args : arguments){
 										if(args.getNodeType() == ASTNode.CAST_EXPRESSION){
@@ -320,10 +323,10 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 								if(reference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
 									MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();
 									
-									if(detail.getType() == DeclarationInfluenceDetail.ACCESS_OBJECT){
+									if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
 										this.modifyCastExpression(member, invocation, false, currentVariableType.toString());
 									}
-									else if(detail.getType() == DeclarationInfluenceDetail.PARAMETER){
+									else if(detail.getType() == DeclarationInfluencingDetail.PARAMETER){
 										List<Expression> arguments = invocation.arguments();
 										for(Expression args : arguments){
 											SimpleName name = (SimpleName) args;
