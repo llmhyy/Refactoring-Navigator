@@ -186,7 +186,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		for(UnitMemberWrapper otherMember: otherUnit.getMembers()){
 			if(markedMemberList.contains(otherMember))continue;
 			
-			if(member.getName().contains("Message") && otherMember.getName().contains("Message")){
+			if(member.getName().contains("setItem") && otherMember.getName().contains("setItem")){
 				System.currentTimeMillis();
 			}
 			

@@ -257,7 +257,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 			boolean isSameReturnType = isWithSameReturnType(methodWrapper);
 			
 			return isSameReturnType && methodWrapper.getName().equals(this.getName()) &&
-					isWithSameParameter(this.getParameters());
+					isWithSameParameter(methodWrapper.getParameters());
 		}
 		return false;
 	}
@@ -266,6 +266,8 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public double computeSimilarityForBeingPulledUp(UnitMemberWrapper otherMember){
 		if(otherMember instanceof MethodWrapper){
 			MethodWrapper thatMethod = (MethodWrapper)otherMember;
+			
+			
 			
 			if(!this.isWithSameParameter(thatMethod.getParameters())){
 				return 0;
