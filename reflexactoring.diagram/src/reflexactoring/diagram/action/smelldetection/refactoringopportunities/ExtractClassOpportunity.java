@@ -102,16 +102,22 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		
 		newModel.getScopeCompilationUnitList().add(newUnit);
 		
-		newUnit.setMembers(extractMembers);
-		for(UnitMemberWrapper member: extractMembers){
-			/**
-			 * remove the old containing relation
-			 */
-			member.getUnitWrapper().getMembers().remove(member);
-			/**
-			 * add the new containing relation
-			 */
-			member.setUnitWrapper(newUnit);
+		newUnit.setMembers(extractMembers); 
+		Iterator<UnitMemberWrapper> memIter = extractMembers.get(0).getUnitWrapper().getMembers().iterator();
+		while(memIter.hasNext()){
+			UnitMemberWrapper member = memIter.next();
+			
+			if(extractMembers.contains(member)){
+				/**
+				 * remove the old containing relation
+				 */
+				//member.getUnitWrapper().getMembers().remove(member);
+				memIter.remove();
+				/**
+				 * add the new containing relation
+				 */
+				member.setUnitWrapper(newUnit);				
+			}
 		}
 		
 		calculateBestMappingModule(newModel, newUnit);
@@ -270,10 +276,16 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 						String typeName = ((TypeDeclaration)cu.types().get(0)).resolveBinding().getQualifiedName();
 						
 						MethodWrapper member = Settings.scope.findMethod(typeName, methodName, params);
+						if(member == null){
+							
+							System.currentTimeMillis();
+						}
+						
 						toBeExtractedMemberList.add(member);
 					}
 					
 					ICompilationUnitWrapper sourceUnit = toBeExtractedMemberList.get(0).getUnitWrapper();
+					
 					
 					ExtractClassOpportunity opp = new ExtractClassOpportunity(toBeExtractedMemberList, refactoring, 
 							moduleList, sourceUnit);

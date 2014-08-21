@@ -88,14 +88,15 @@ public class MethodWrapper extends UnitMemberWrapper {
 				ASTNode astNode = (ASTNode)node;
 				SingleVariableDeclaration svd = (SingleVariableDeclaration)astNode;
 				Type type = svd.getType();
-				if(type instanceof SimpleType){
+				parameterTypes.add(type.toString());
+				/*if(type instanceof SimpleType){
 					String typeName = ((SimpleType)type).getName().getFullyQualifiedName();
 					parameterTypes.add(typeName);
 				}
 				else if(type instanceof PrimitiveType){
 					String typeName = ((PrimitiveType)type).toString();
 					parameterTypes.add(typeName);
-				}
+				}*/
 			}
 		}
 		
