@@ -12,11 +12,13 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -28,6 +30,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
@@ -156,7 +159,7 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			return false;
 		}
 		
-		//Create an method in parentInterface
+		//Create an method in parentInterface and set corresponding imports
 		ICompilationUnit interfaceUnit = parentInterface.getCompilationUnit();
 		try{
 			interfaceUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
@@ -172,6 +175,55 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			md.setName(interfaceCompilationUnit.getAST().newSimpleName(newMethodName));
 			md.modifiers().add(interfaceCompilationUnit.getAST().newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD));
 			md.setBody(null);
+			
+			Type returnType = mdOfMemberToPull.getReturnType2();
+			if(returnType != null && !returnType.isPrimitiveType()){
+				if(returnType.isArrayType()){
+					ArrayType arrayType = (ArrayType) returnType;
+					Type elementType = arrayType.getElementType();
+					String name = elementType.resolveBinding().getQualifiedName();
+					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					interfaceCompilationUnit.imports().add(importDeclaration);
+				}else if(returnType.isSimpleType()){
+					String name = returnType.resolveBinding().getQualifiedName();
+					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					interfaceCompilationUnit.imports().add(importDeclaration);
+				}else if(returnType.isParameterizedType()){
+					ParameterizedType pType = (ParameterizedType) returnType;
+					String name = pType.resolveBinding().getQualifiedName().split("<")[0];
+					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					interfaceCompilationUnit.imports().add(importDeclaration);
+				}
+				
+			}
+			
+			
+			List parameters = mdOfMemberToPull.parameters();
+			for(Object o : parameters){
+				VariableDeclaration vd = (VariableDeclaration) o;
+				if(!vd.resolveBinding().getType().isPrimitive()){
+					String name;
+					if(vd.resolveBinding().getType().isParameterizedType()){
+						name = vd.resolveBinding().getType().getTypeDeclaration().getQualifiedName();
+					}else{
+						name = vd.resolveBinding().getType().getQualifiedName();
+					}					
+					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					interfaceCompilationUnit.imports().add(importDeclaration);
+				}
+			}
 			
 			Document interfaceDocument = new Document(interfaceUnit.getSource());
 			TextEdit interfaceTextEdit = interfaceCompilationUnit.rewrite(interfaceDocument, null);
@@ -198,7 +250,8 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
 			try {
 				unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-				IBuffer buffer = unit.getBuffer();									
+				IBuffer buffer = unit.getBuffer();				
+				buffer.getContents();
 				
 				CompilationUnit compilationUnit = parse(unit);
 				compilationUnit.recordModifications();
@@ -241,8 +294,12 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			try {									
 				IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
 				
-				RenameSupport support = RenameSupport.create(methodToRename, newMethodName, RenameSupport.UPDATE_REFERENCES);
-				support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+				if(!methodToRename.getElementName().equals(newMethodName)){
+					
+					RenameSupport support = RenameSupport.create(methodToRename, newMethodName, RenameSupport.UPDATE_REFERENCES);
+					support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+					
+				}
 				
 			} catch (CoreException e1) {
 				e1.printStackTrace();
@@ -255,12 +312,13 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 				return false;
 			}				
 		}
-		
+		/*
 		//cast method invocation variable into parent interface
 		for(UnitMemberWrapper member : memberList){
 			for(ProgramReference reference : member.getRefererPointList()){
 				for(ReferenceInflucencedDetail variableDetail : reference.getVariableDeclarationList()){
 					VariableDeclarationWrapper variable = variableDetail.getDeclaration();
+					ICompilationUnit unit = variable.getUnitWrapper().getCompilationUnit();
 					//cast the declaration into parent interface 
 					VariableDeclaration variableAST = variable.getAstNode();
 					
@@ -268,11 +326,11 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 					
 					if(variableAST instanceof SingleVariableDeclaration){
 						currentVariableType = ((SingleVariableDeclaration) variableAST).getType();						
-						this.modifyType(member, variableAST, parentInterface.getName());
+						this.modifyType(unit, variableAST, parentInterface.getName());
 					}else if(variableAST instanceof VariableDeclarationFragment){
 						if(((VariableDeclarationFragment) variableAST).getParent() instanceof FieldDeclaration){
 							currentVariableType = ((FieldDeclaration) ((VariableDeclarationFragment) variableAST).getParent()).getType();				
-							this.modifyType(member, variableAST, parentInterface.getName());
+							this.modifyType(unit, variableAST, parentInterface.getName());
 						}						
 					}
 					
@@ -285,11 +343,13 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 						if(reference.equals(influencedReference)){
 							
 							if(reference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
-								MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();
+								MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();							
+								
+								ICompilationUnit methodUnit = this.resolveICompilationUnit(invocation.resolveMethodBinding().getJavaElement());
 								//for current pulled method's reference, if casted, remove current casting
 								if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
 									if(invocation.getParent().getNodeType() == ASTNode.CAST_EXPRESSION){
-										this.modifyCastExpression(member, invocation.getParent(), true, null);
+										this.modifyCastExpression(methodUnit, invocation.getParent(), true, null);
 									}
 								}
 								//for current pulled method's reference, if parameter casted, remove current casting
@@ -298,7 +358,7 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 									for(Expression args : arguments){
 										if(args.getNodeType() == ASTNode.CAST_EXPRESSION){
 											if(((CastExpression)args).getType().toString().equals(parentInterface.getName())){
-												this.modifyCastExpression(member, args, true, null);
+												this.modifyCastExpression(methodUnit, args, true, null);
 											}
 										}
 									}
@@ -308,8 +368,10 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 							//for current pulled method's reference, if assignment casted, remove current casting
 							else if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Name){
 								Name name = (Name) influencedReference.getASTNode();
+								
+								ICompilationUnit nameUnit = this.resolveICompilationUnit(name.resolveBinding().getJavaElement());
 								if(name.getNodeType() == ASTNode.CAST_EXPRESSION){
-									this.modifyCastExpression(member, name, true, null);
+									this.modifyCastExpression(nameUnit, name, true, null);
 								}
 							}
 												
@@ -323,8 +385,9 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 								if(reference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
 									MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();
 									
+									ICompilationUnit methodUnit = this.resolveICompilationUnit(invocation.resolveMethodBinding().getJavaElement());
 									if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
-										this.modifyCastExpression(member, invocation, false, currentVariableType.toString());
+										this.modifyCastExpression(methodUnit, invocation, false, currentVariableType.toString());
 									}
 									else if(detail.getType() == DeclarationInfluencingDetail.PARAMETER){
 										List<Expression> arguments = invocation.arguments();
@@ -337,12 +400,12 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 											if(vd instanceof SingleVariableDeclaration){
 												SingleVariableDeclaration svd = (SingleVariableDeclaration) vd;
 												if(svd.getType().toString().equals(currentVariableType.toString())){
-													this.modifyCastExpression(member, args, false, currentVariableType.toString());
+													this.modifyCastExpression(methodUnit, args, false, currentVariableType.toString());
 												}
 											}else if(((VariableDeclarationFragment) vd).getParent() instanceof FieldDeclaration){
 												FieldDeclaration fd = (FieldDeclaration) ((VariableDeclarationFragment) vd).getParent();
 												if(fd.getType().toString().equals(currentVariableType.toString())){
-													this.modifyCastExpression(member, args, false, currentVariableType.toString());
+													this.modifyCastExpression(methodUnit, args, false, currentVariableType.toString());
 												}
 											}
 											
@@ -352,7 +415,9 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 								}
 								else if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Name){
 									Name name = (Name) influencedReference.getASTNode();
-									this.modifyCastExpression(member, name, false, currentVariableType.toString());
+									
+									ICompilationUnit nameUnit = this.resolveICompilationUnit(name.resolveBinding().getJavaElement());
+									this.modifyCastExpression(nameUnit, name, false, currentVariableType.toString());
 								}
 							}
 							
@@ -361,7 +426,7 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 					}
 				}
 			}
-		}
+		}*/
 		
 		//call Eclipse API to pull up
 //		try {
@@ -479,16 +544,12 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		}
 	}
 	
-	private boolean modifyCastExpression(UnitMemberWrapper member, ASTNode node, boolean isRemove, String castType){
-		ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
+	private boolean modifyCastExpression(ICompilationUnit unit, ASTNode node, boolean isRemove, String castType){
 		try {
 			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer buffer = unit.getBuffer();									
-			
-			CompilationUnit compilationUnit = parse(unit);
-			TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
 
-			AST ast = td.getAST();
+			AST ast = node.getAST();
 			ASTRewrite rewrite= ASTRewrite.create(ast);								
 								
 			if(isRemove){				
@@ -499,9 +560,9 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			}else{
 				Expression expressionCopy= (Expression) rewrite.createCopyTarget(node);
 				
-				CastExpression castExpression= td.getAST().newCastExpression();
-				Name name = td.getAST().newSimpleName(castType);
-				Type type = td.getAST().newSimpleType(name);
+				CastExpression castExpression= node.getAST().newCastExpression();
+				Name name = node.getAST().newSimpleName(castType);
+				Type type = node.getAST().newSimpleType(name);
 				castExpression.setType(type);
 				castExpression.setExpression(expressionCopy);
 				
@@ -531,8 +592,7 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		return true;
 	}
 	
-	private boolean modifyType(UnitMemberWrapper member, ASTNode node, String typeName){
-		ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
+	private boolean modifyType(ICompilationUnit unit, ASTNode node, String typeName){
 		try {
 			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer buffer = unit.getBuffer();									
@@ -540,9 +600,8 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			CompilationUnit compilationUnit = parse(unit);
 			compilationUnit.recordModifications();
 			
-			TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
-			Name name = td.getAST().newSimpleName(typeName);
-			Type type = td.getAST().newSimpleType(name);
+			Name name = node.getAST().newSimpleName(typeName);
+			Type type = node.getAST().newSimpleType(name);
 			
 			if(node instanceof VariableDeclaration){
 				if(node instanceof SingleVariableDeclaration){					
@@ -575,5 +634,15 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			return false;
 		}
 		return true;
+	}
+	
+	private ICompilationUnit resolveICompilationUnit(IJavaElement element){
+		IJavaElement parent = null;
+		do{
+			parent = element.getParent();
+		}while(parent != null && !(parent instanceof ICompilationUnit));
+		
+		if(parent == null) return null;
+		return (ICompilationUnit) parent;
 	}
 }
