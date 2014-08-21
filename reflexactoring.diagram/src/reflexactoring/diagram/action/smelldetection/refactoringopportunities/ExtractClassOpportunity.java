@@ -5,6 +5,7 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import gr.uom.java.ast.ASTReader;
 import gr.uom.java.ast.ClassObject;
+import gr.uom.java.ast.CompilationUnitCache;
 import gr.uom.java.ast.SystemObject;
 import gr.uom.java.distance.DistanceMatrix;
 import gr.uom.java.distance.ExtractClassCandidateGroup;
@@ -299,6 +300,8 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		}
 		
 		private ExtractClassCandidateGroup[] getJDeodorantResults(){
+			CompilationUnitCache.getInstance().clearCache();
+			
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IWorkspaceRoot root = workspace.getRoot();
 			
