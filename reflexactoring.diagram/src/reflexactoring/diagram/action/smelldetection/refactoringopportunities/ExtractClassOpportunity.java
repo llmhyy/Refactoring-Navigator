@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
@@ -258,10 +259,17 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 					
 					for(MethodDeclaration dec: methodSet){
 						String methodName = dec.getName().getIdentifier();
+						ArrayList<String> params = new ArrayList<>();
+						for(Object obj: dec.parameters()){
+							SingleVariableDeclaration svd = (SingleVariableDeclaration)obj;
+							String typeString = svd.getType().toString();
+							params.add(typeString);
+						}
+						
 						CompilationUnit cu = (CompilationUnit) dec.getRoot();
 						String typeName = ((TypeDeclaration)cu.types().get(0)).resolveBinding().getQualifiedName();
 						
-						MethodWrapper member = Settings.scope.findMethod(typeName, methodName);
+						MethodWrapper member = Settings.scope.findMethod(typeName, methodName, params);
 						toBeExtractedMemberList.add(member);
 					}
 					
