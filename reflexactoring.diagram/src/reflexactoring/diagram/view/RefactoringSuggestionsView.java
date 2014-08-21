@@ -494,7 +494,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 					}
 				}
 				else if(e.getHref().equals("Exec")){					
-					if(opportunity.apply()){						
+					if(opportunity.apply(element.getPosition(), sequence)){						
 						//refresh the suggestions view
 						RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
 								getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);

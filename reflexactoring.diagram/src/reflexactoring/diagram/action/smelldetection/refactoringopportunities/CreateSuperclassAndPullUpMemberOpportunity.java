@@ -35,6 +35,7 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.diagram.action.popup.RenameMethodsDialog;
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
+import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
@@ -120,7 +121,7 @@ public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpp
 	}
 
 	@Override
-	public boolean apply() {
+	public boolean apply(int position, RefactoringSequence sequence) {
 		JavaClassCreator javaCreator = new JavaClassCreator();
 		ICompilationUnitWrapper parentClass = javaCreator.createClass();	
 		if(parentClass == null){

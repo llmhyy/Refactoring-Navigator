@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
+import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
@@ -175,7 +176,7 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 	}
 
 	@Override
-	public boolean apply() {
+	public boolean apply(int position, RefactoringSequence sequence) {
 		// TODO Auto-generated method stub
 		return false;
 	}

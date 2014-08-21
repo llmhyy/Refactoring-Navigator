@@ -21,6 +21,7 @@ import org.eclipse.ltk.core.refactoring.CreateChangeOperation;
 import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
@@ -220,7 +221,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	
 
 	@Override
-	public boolean apply() {
+	public boolean apply(int position, RefactoringSequence sequence) {
 		MoveMethodOpportunity moveMethodOpportunity = this;
 		
 		MethodDeclaration methodDeclaration = (MethodDeclaration) moveMethodOpportunity.getObjectMethod().getJavaElement();												

@@ -20,6 +20,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.operations.IWorkbenchOperationSupport;
 
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
+import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
@@ -57,9 +58,14 @@ public abstract class RefactoringOpportunity {
 	
 	public abstract double computeSimilarityWith(RefactoringOpportunity opp);
 	/**
-	 * this method is used to apply refactoring on real code
+	 * this method is used to apply refactoring on real code, note that it is possible to need some user input
+	 * for example, a new class name for user to input. Therefore, we need position and sequence to update user's
+	 * input in program model.
+	 * @param position
+	 * @param sequence
+	 * @return
 	 */
-	public abstract boolean apply();
+	public abstract boolean apply(int position, RefactoringSequence sequence);
 	
 	/**
 	 * this method is used to undo apply refactoring on real code, simulate user presses ctrl+Z in default

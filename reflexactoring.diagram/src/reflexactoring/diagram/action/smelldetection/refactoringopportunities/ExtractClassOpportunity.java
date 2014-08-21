@@ -45,6 +45,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
+import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
@@ -197,7 +198,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	}
 
 	@Override
-	public boolean apply() {
+	public boolean apply(int position, RefactoringSequence sequence) {
 		IFile sourceFile = this.refactoring.getSourceIFile();
 		CompilationUnit sourceCompilationUnit = (CompilationUnit)this.refactoring.getSourceClassTypeDeclaration().getRoot();
 		String extractedClassName = "ExtractedClass";
