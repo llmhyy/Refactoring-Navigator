@@ -132,7 +132,8 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			newMember.addProgramReferer(reference);
 			
 			/**
-			 * the referer (a member) is related to a declaration
+			 * find the variable declaration defining the access object of the reference, change its type
+			 * declaration from subclass to superclass.
 			 */
 			for(ReferenceInflucencedDetail refDecDetail: reference.getVariableDeclarationList()){	
 				
@@ -150,9 +151,13 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 								ICompilationUnitWrapper referedUnit = (ICompilationUnitWrapper) ref.getReferee();
 								if(subClasses.contains(referedUnit)){
 									ref.setReferee(superUnit);
+									dec.setUnitWrapper(superUnit);
 								}
+								
+								break;
 							}
 						}
+						
 					}
 				}
 			}
