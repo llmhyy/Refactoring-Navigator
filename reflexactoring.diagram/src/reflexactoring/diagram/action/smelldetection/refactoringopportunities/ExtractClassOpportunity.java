@@ -312,12 +312,17 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			new ASTReader(selectedProject, new NullProgressMonitor());
 			SystemObject systemObject = ASTReader.getSystemObject();
 			Set<ClassObject> classObjectsToBeExamined = new LinkedHashSet<ClassObject>();
-			classObjectsToBeExamined.addAll(systemObject.getClassObjects());
+			//classObjectsToBeExamined.addAll(systemObject.getClassObjects());
 			
 			final Set<String> classNamesToBeExamined = new LinkedHashSet<String>();
+			
+			for(ICompilationUnitWrapper unit: Settings.scope.getScopeCompilationUnitList()){
+				classObjectsToBeExamined.addAll(systemObject.getClassObjects(unit.getCompilationUnit()));
+			}
 			for(ClassObject classObject : classObjectsToBeExamined) {
 				classNamesToBeExamined.add(classObject.getName());
 			}
+			
 			MySystem system = new MySystem(systemObject, true);
 			final DistanceMatrix distanceMatrix = new DistanceMatrix(system);
 			distanceMatrix.generateDistances(new NullProgressMonitor());
