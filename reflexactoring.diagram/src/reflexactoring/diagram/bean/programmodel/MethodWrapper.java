@@ -13,8 +13,6 @@ import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.PrimitiveType;
-import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
@@ -440,6 +438,17 @@ public class MethodWrapper extends UnitMemberWrapper {
 				!isOverrideSuperMember() &&
 				!isCallingSuperMember() &&
 				!isAssignFieldInUnit();
+	}
+	
+	public boolean needDelegation(){
+		for(ProgramReference ref: this.getRefererPointList()){
+			UnitMemberWrapper member = ref.getReferer();
+			if(!member.getUnitWrapper().equals(this.getUnitWrapper())){
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	/**

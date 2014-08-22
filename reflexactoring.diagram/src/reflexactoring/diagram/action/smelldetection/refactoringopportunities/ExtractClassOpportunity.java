@@ -49,11 +49,15 @@ import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
+import reflexactoring.diagram.bean.programmodel.ProgramReference;
+import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
@@ -67,6 +71,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	private ArrayList<UnitMemberWrapper> toBeExtractedMembers = new ArrayList<>();
 	private ExtractClassCandidateRefactoring refactoring;
 	private ICompilationUnitWrapper sourceUnit;
+	private String newFieldName;
 	private String targetUnitName;
 	
 	/**
@@ -110,34 +115,46 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			UnitMemberWrapper newMem = newModel.findMember(member);
 			extractMembers.add(newMem);
 		}
+		
+		ArrayList<UnitMemberWrapper> delegateMethods = identifyDelegatingMethods(extractMembers);
+		
 		//toBeExtractedMembers = extractMembers;
-		
-		ICompilationUnitWrapper newUnit = new ICompilationUnitWrapper(null, false, "ExtractedClass"+NameGernationCounter.retrieveNumber(), 
+		/**
+		 * create a new class named "ExtractClass**"
+		 */
+		ICompilationUnitWrapper newTargetUnit = new ICompilationUnitWrapper(null, false, "ExtractedClass"+NameGernationCounter.retrieveNumber(), 
 				extractMembers.get(0).getUnitWrapper().getPackageName(), null, "");
+		newModel.getScopeCompilationUnitList().add(newTargetUnit);
+		this.targetUnitName = newTargetUnit.getFullQualifiedName();
 		
-		newModel.getScopeCompilationUnitList().add(newUnit);
+		/**
+		 * create a new field in source class
+		 */
+		ICompilationUnitWrapper newSourceUnit = newModel.findUnit(this.sourceUnit.getFullQualifiedName());
+		FieldWrapper newField = new FieldWrapper("extractedClass"+NameGernationCounter.retrieveNumber(), newTargetUnit.getName(), 
+				newSourceUnit, null, "", null);
+		newSourceUnit.getMembers().add(newField);
+		newModel.getScopeMemberList().add(newField);
+		this.newFieldName = newField.getName();
 		
-		newUnit.setMembers(extractMembers); 
-		Iterator<UnitMemberWrapper> memIter = extractMembers.get(0).getUnitWrapper().getMembers().iterator();
-		while(memIter.hasNext()){
-			UnitMemberWrapper member = memIter.next();
-			
-			if(extractMembers.contains(member)){
-				/**
-				 * remove the old containing relation
-				 */
-				//member.getUnitWrapper().getMembers().remove(member);
-				memIter.remove();
-				/**
-				 * add the new containing relation
-				 */
-				member.setUnitWrapper(newUnit);				
-			}
-		}
+		/**
+		 * create type relation
+		 */
+		ProgramReference programReference = new ProgramReference(newField, newTargetUnit, null, 
+				ProgramReference.NEW_DEFAULT_CONSTRUCTOR, new ArrayList<ReferenceInflucencedDetail>());
+		newField.addProgramReferee(programReference);
+		newTargetUnit.addProgramReferer(programReference);
+		newModel.getReferenceList().add(programReference);
 		
-		calculateBestMappingModule(newModel, newUnit);
+		moveExtractMembersToTargetUnit(extractMembers, newModel, newTargetUnit, newSourceUnit); 
 		
-		this.targetUnitName = newUnit.getFullQualifiedName();
+		createDelegatingMethods(newModel, delegateMethods, newTargetUnit, newSourceUnit);
+
+		buildVariableDeclarationRelations(newModel, extractMembers, newTargetUnit, newSourceUnit, newField);
+		
+		System.currentTimeMillis();
+
+		calculateBestMappingModule(newModel, newTargetUnit);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
@@ -157,6 +174,152 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		}
 		
 		return newModel;
+	}
+
+	/**
+	 * @param newModel
+	 * @param extractMembers
+	 * @param newTargetUnit
+	 * @param newSourceUnit
+	 * @param newField
+	 */
+	private void buildVariableDeclarationRelations(ProgramModel newModel,
+			ArrayList<UnitMemberWrapper> extractMembers,
+			ICompilationUnitWrapper newTargetUnit,
+			ICompilationUnitWrapper newSourceUnit, FieldWrapper newField) {
+		/**
+		 * create variable declaration
+		 */
+		VariableDeclarationWrapper variableDeclaration = new VariableDeclarationWrapper(newTargetUnit, newField.getName(), 
+				null, newSourceUnit.getFullQualifiedName()+"."+newField.getName()+"(field)", true, false);
+		newModel.getDeclarationList().add(variableDeclaration);
+		
+		/**
+		 * all the referer to the extracted members may refer to them by accessing object
+		 */
+		for(UnitMemberWrapper newToBeExtractedMember: extractMembers){
+			for(ProgramReference reference: newToBeExtractedMember.getRefererPointList()){
+				UnitMemberWrapper referer = reference.getReferer();
+				
+				if(!referer.getUnitWrapper().equals(newTargetUnit)){
+					ProgramReference ref = new ProgramReference(referer, newField, null, ProgramReference.FIELD_ACCESS);
+					referer.addProgramReferee(ref);
+					newField.addProgramReferer(ref);
+					newModel.getReferenceList().add(ref);
+					
+					ReferenceInflucencedDetail refDetail = new ReferenceInflucencedDetail(variableDeclaration, DeclarationInfluencingDetail.ACCESS_OBJECT);
+					ref.getVariableDeclarationList().add(refDetail);
+					DeclarationInfluencingDetail decDetail = new DeclarationInfluencingDetail(ref, DeclarationInfluencingDetail.ACCESS_OBJECT);
+					variableDeclaration.getInfluencedReferenceList().add(decDetail);
+					
+				}
+				
+			}
+		}
+	}
+
+	/**
+	 * @param newModel
+	 * @param delegateMethods
+	 * @param newTargetUnit
+	 * @param newSourceUnit
+	 */
+	private void createDelegatingMethods(ProgramModel newModel,
+			ArrayList<UnitMemberWrapper> delegateMethods,
+			ICompilationUnitWrapper newTargetUnit,
+			ICompilationUnitWrapper newSourceUnit) {
+		/**
+		 * create delegating method
+		 */
+		for(UnitMemberWrapper member: delegateMethods){
+			MethodWrapper method = (MethodWrapper)member;
+			MethodWrapper newDeletegateMethod = new MethodWrapper(method.getName(), 
+					method.getReturnType(), method.getParameters(), 
+					method.isConstructor(), newSourceUnit, method.getTermFrequency(), 
+					method.getDescription(), null);
+			newSourceUnit.getMembers().add(newDeletegateMethod);
+			newModel.getScopeMemberList().add(newDeletegateMethod);
+
+			/**
+			 * the referer of the delegated method need to refer to the delegating method
+			 */
+			for(ProgramReference ref: member.getRefererPointList()){
+				UnitMemberWrapper referer = ref.getReferer();
+				if(!(referer.getUnitWrapper().equals(newSourceUnit) && referer.getUnitWrapper().equals(newTargetUnit))){
+					ProgramReference outSideRef = new ProgramReference(referer, newDeletegateMethod, null, ProgramReference.METHOD_INVOCATION, ref.getVariableDeclarationList());
+					referer.addProgramReferee(outSideRef);
+					newDeletegateMethod.addProgramReferer(outSideRef);
+					newModel.getReferenceList().add(outSideRef);
+				}
+			}
+			
+			/**
+			 * make the delegating method call newly created method
+			 */
+			ProgramReference newRef = new ProgramReference(newDeletegateMethod, method, null, ProgramReference.METHOD_INVOCATION);
+			newDeletegateMethod.addProgramReferee(newRef);
+			method.addProgramReferer(newRef);
+			newModel.getReferenceList().add(newRef);
+		}
+	}
+
+	/**
+	 * @param extractMembers
+	 * @param newTargetUnit
+	 * @param newSourceUnit
+	 */
+	private void moveExtractMembersToTargetUnit(
+			ArrayList<UnitMemberWrapper> extractMembers, ProgramModel newModel,
+			ICompilationUnitWrapper newTargetUnit,
+			ICompilationUnitWrapper newSourceUnit) {
+		/**
+		 * remove those to-be-extracted members from source unit.
+		 */
+		Iterator<UnitMemberWrapper> memIter = newSourceUnit.getMembers().iterator();
+		while(memIter.hasNext()){
+			UnitMemberWrapper member = memIter.next();
+			
+			if(extractMembers.contains(member)){
+				/**
+				 * remove the old containing relation
+				 */
+				//member.getUnitWrapper().getMembers().remove(member);
+				memIter.remove();
+				
+				if(member instanceof MethodWrapper){
+					/**
+					 * change the parameters of method
+					 */
+					MethodWrapper objMethod = (MethodWrapper)member;
+					ArrayList<String> newParameters = RefactoringOppUtil.extractParameters(newSourceUnit, objMethod, newModel);
+					objMethod.getParameters().addAll(newParameters);
+					objMethod.removeParameter(newTargetUnit);
+				}
+				/**
+				 * add the new containing relation
+				 */
+				member.setUnitWrapper(newTargetUnit);				
+			}
+		}
+		newTargetUnit.setMembers(extractMembers);
+	}
+
+	/**
+	 * identify delegating method
+	 * @param extractMembers
+	 * @return
+	 */
+	private ArrayList<UnitMemberWrapper> identifyDelegatingMethods(
+			ArrayList<UnitMemberWrapper> extractMembers) {
+		ArrayList<UnitMemberWrapper> delegateMethods = new ArrayList<>();
+		for(UnitMemberWrapper member: extractMembers){
+			if(member instanceof MethodWrapper){
+				if(((MethodWrapper)member).needDelegation()){
+					delegateMethods.add(member);
+				}
+			}
+		}
+		return delegateMethods;
 	}
 	
 	/**
@@ -234,6 +397,9 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 				}
 				
 				this.targetUnitName = packName + "." + newExtractedName;
+				String head = "" + newExtractedName.toCharArray()[0];
+				head = head.toLowerCase();
+				this.newFieldName = head + newExtractedName.substring(1, newExtractedName.length());
 			}
 			
 			
@@ -312,6 +478,22 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	 */
 	public void setTargetUnitName(String targetUnitName) {
 		this.targetUnitName = targetUnitName;
+	}
+
+
+
+	/**
+	 * @return the newFieldName
+	 */
+	public String getNewFieldName() {
+		return newFieldName;
+	}
+
+	/**
+	 * @param newFieldName the newFieldName to set
+	 */
+	public void setNewFieldName(String newFieldName) {
+		this.newFieldName = newFieldName;
 	}
 
 

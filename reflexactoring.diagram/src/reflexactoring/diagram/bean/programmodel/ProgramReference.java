@@ -39,7 +39,7 @@ public class ProgramReference {
 	private LowLevelGraphNode referee;
 	private int referenceType;
 	
-	private ArrayList<ReferenceInflucencedDetail> variableDeclarationList;
+	private ArrayList<ReferenceInflucencedDetail> variableDeclarationList = new ArrayList<>();
 	
 	public ProgramReference(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode originalASTNode, 
 			int referenceType, ArrayList<ReferenceInflucencedDetail> variableDeclarationList){
@@ -55,6 +55,41 @@ public class ProgramReference {
 		else if(referee instanceof FieldWrapper){
 			this.referenceType = ProgramReference.FIELD_ACCESS;
 		}
+	}
+	
+	public ProgramReference(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode originalASTNode, 
+			int referenceType){
+		this.referer = referer;
+		this.referee = referee;
+		this.originalASTNode = originalASTNode;
+		this.referenceType = referenceType;
+		
+		if(referee instanceof MethodWrapper){
+			this.referenceType = ProgramReference.METHOD_INVOCATION;
+		}
+		else if(referee instanceof FieldWrapper){
+			this.referenceType = ProgramReference.FIELD_ACCESS;
+		}
+	}
+	
+	public boolean isInvokedByAccessingObject(){
+		for(ReferenceInflucencedDetail detail: this.variableDeclarationList){
+			if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean isInokedByParameter(){
+		for(ReferenceInflucencedDetail detail: this.variableDeclarationList){
+			if(detail.getType() == DeclarationInfluencingDetail.PARAMETER){
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
