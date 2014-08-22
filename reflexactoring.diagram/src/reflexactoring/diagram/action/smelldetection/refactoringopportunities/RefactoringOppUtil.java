@@ -19,6 +19,16 @@ import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
  *
  */
 public class RefactoringOppUtil {
+	
+	public static ArrayList<UnitMemberWrapper> copyAList(ArrayList<UnitMemberWrapper> list){
+		ArrayList<UnitMemberWrapper> newList = new ArrayList<>();
+		for(UnitMemberWrapper m: list){
+			newList.add(m);
+		}
+		
+		return newList;
+	}
+	
 	public static ArrayList<String> extractParameters(ICompilationUnitWrapper originalUnit, MethodWrapper objMethod, ProgramModel newModel){
 		ArrayList<FieldWrapper> calleeMemberList = new ArrayList<>();
 		boolean isMethodInvolved = false;

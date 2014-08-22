@@ -114,7 +114,7 @@ public class ProgramModel{
 			
 			double LCOM = 0; 
 			if(distinctAccessTime >= 2){
-				LCOM = (methodNum*fieldNum-distinctAccessTime)/(methodNum*fieldNum-fieldNum);
+				LCOM = (methodNum*fieldNum-distinctAccessTime)/(methodNum*fieldNum/*-fieldNum*/);
 			}
 			
 			double normalizedLCOM = LCOM/2;

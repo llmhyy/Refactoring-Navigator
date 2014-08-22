@@ -203,7 +203,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 				
 				if(!referer.getUnitWrapper().equals(newTargetUnit)){
 					ProgramReference ref = new ProgramReference(referer, newField, null, ProgramReference.FIELD_ACCESS);
-					referer.addProgramReferee(ref);
+				referer.addProgramReferee(ref);
 					newField.addProgramReferer(ref);
 					newModel.getReferenceList().add(ref);
 					
@@ -360,6 +360,49 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 
 	@Override
 	public double computeSimilarityWith(RefactoringOpportunity opp) {
+		if(opp instanceof ExtractClassOpportunity){
+			ExtractClassOpportunity thatOpp = (ExtractClassOpportunity)opp;
+			
+			double simSum = 0;
+			
+			ArrayList<UnitMemberWrapper> thisList = RefactoringOppUtil.copyAList(getToBeExtractedMembers());
+			ArrayList<UnitMemberWrapper> thatList = RefactoringOppUtil.copyAList(thatOpp.getToBeExtractedMembers());
+			
+			int base = thisList.size() + thatList.size();
+			
+			Iterator<UnitMemberWrapper> memIter = thisList.iterator();
+			while(memIter.hasNext()){
+				UnitMemberWrapper thisMem = memIter.next();
+				
+				double bestSim = 0;
+				UnitMemberWrapper bestThatMem = null;
+				for(UnitMemberWrapper thatMem: thatList){
+					double s = thisMem.computeSimilarityWith(thatMem);
+					if(bestThatMem == null){
+						bestThatMem = thatMem;
+						bestSim = s;
+					}
+					else{
+						if(bestSim < s){
+							bestThatMem = thatMem;
+							bestSim = s;
+						}
+					}
+				}
+				
+				simSum += bestSim;
+				
+				memIter.remove();
+				if(bestThatMem != null){
+					thatList.remove(bestThatMem);					
+				}
+			}
+			
+			System.currentTimeMillis();
+			
+			return 2*simSum/base;
+		}
+		
 		return 0;
 	}
 
