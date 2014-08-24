@@ -20,7 +20,9 @@ import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTMatcher;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.CastExpression;
@@ -599,12 +601,42 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			AST ast= nodeInfoList.get(0).node.getAST();
 			ASTRewrite rewrite= ASTRewrite.create(ast);*/
 			
-			for(ASTNodeInfo nodeInfo : nodeInfoList){			
+			for(ASTNodeInfo nodeInfo : nodeInfoList){	
 				
-				//TODO
-				ASTNode node = NodeFinder.perform(compilationUnit, nodeInfo.node.getStartPosition(), nodeInfo.node.getLength());
+				//TODO for LinYun
+				CompilationUnit oldCU = (CompilationUnit) nodeInfo.node.getRoot();
+				ASTNode oldDeclaringNode = nodeInfo.node;
+				while(!(oldDeclaringNode instanceof MethodDeclaration || oldDeclaringNode instanceof FieldDeclaration) 
+						&& oldDeclaringNode != null){
+					oldDeclaringNode = oldDeclaringNode.getParent();
+				}
 				
-				//ASTNode node = compilationUnit.findDeclaringNode(((MethodInvocation)((Name) nodeInfo.node).getParent()).resolveMethodBinding().getKey()); //TODO
+				if(oldDeclaringNode == null){
+					System.err.println("some ast node is declared in neither method or field ");
+					return false;
+				}
+				
+				int methodLineNum = oldCU.getLineNumber(oldDeclaringNode.getStartPosition());
+				int nodeLineNum = oldCU.getLineNumber(nodeInfo.node.getStartPosition());
+				int lineDiff = nodeLineNum - methodLineNum;
+				int spaceDiff = nodeInfo.node.getStartPosition() - oldCU.getPosition(nodeLineNum, 0);
+
+				ASTNode newDeclaringNode = null;
+				if(oldDeclaringNode instanceof MethodDeclaration){
+					newDeclaringNode = compilationUnit.findDeclaringNode(((MethodDeclaration)oldDeclaringNode).resolveBinding().getKey());
+				}
+				else if(oldDeclaringNode instanceof FieldDeclaration){
+					FieldDeclaration fd = (FieldDeclaration)(FieldDeclaration)oldDeclaringNode;
+					VariableDeclarationFragment fragment = (VariableDeclarationFragment) fd.fragments().get(0);
+					newDeclaringNode = compilationUnit.findDeclaringNode(fragment.resolveBinding().getKey());
+				}
+				
+				int lineNum = compilationUnit.getLineNumber(newDeclaringNode.getStartPosition()) + lineDiff;
+				int startPosition = compilationUnit.getPosition(lineNum, 0) + spaceDiff;
+				
+				ASTNode node = NodeFinder.perform(compilationUnit, startPosition, 0);
+				
+				//ASTNode node = compilationUnit.findDeclaringNode(((MethodInvocation)((Name) nodeInfo.node).getParent()).resolveMethodBinding().getKey()); 
 
 				if(nodeInfo.isRemove){
 					ParenthesizedExpression pa2Expression = (ParenthesizedExpression) node.getParent().getParent().getParent();
