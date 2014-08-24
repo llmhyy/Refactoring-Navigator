@@ -34,7 +34,7 @@ public class PullUpMemberToExistingInterface extends PullUpMemberOpportunity{
 	@Override
 	public ProgramModel simulate(ProgramModel model) {
 		// TODO Auto-generated method stub
-		return null;
+		return model;
 	}
 
 	/* (non-Javadoc)
