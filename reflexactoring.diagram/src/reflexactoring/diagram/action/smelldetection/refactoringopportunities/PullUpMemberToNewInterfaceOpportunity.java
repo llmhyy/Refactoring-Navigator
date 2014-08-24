@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMember;
@@ -58,7 +59,7 @@ import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.PlatformUI;
 
-import reflexactoring.diagram.action.popup.RenameMethodsDialog;
+import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
@@ -155,18 +156,18 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 		//get all members to be pulled
 		ArrayList<UnitMemberWrapper> memberList = this.getToBePulledMemberList();
 		IMember[] members = new IMember[memberList.size()];
-		String[] methodNames = new String[memberList.size()];
+		String[] memberNames = new String[memberList.size()];
 		for(UnitMemberWrapper memberWrapper : memberList){
 			members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();	
-			methodNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
+			memberNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
 		}
 		
 		//show a wizard to rename all the funcions into one name
-		String newMethodName = "";
-		RenameMethodsDialog dialog = new RenameMethodsDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
+		String newMemberName = "";
+		RenameMembersDialog dialog = new RenameMembersDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, memberNames);
 		dialog.create();
 		if(dialog.open() == Window.OK){
-			newMethodName = dialog.getNewMethodName();								
+			newMemberName = dialog.getNewMemberName();								
 		}else{
 			return false;
 		}
@@ -184,7 +185,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(interfaceCompilationUnit.getAST(), mdOfMemberToPull);
 			
 			((TypeDeclaration) interfaceCompilationUnit.types().get(0)).bodyDeclarations().add(md);
-			md.setName(interfaceCompilationUnit.getAST().newSimpleName(newMethodName));
+			md.setName(interfaceCompilationUnit.getAST().newSimpleName(newMemberName));
 			md.modifiers().add(interfaceCompilationUnit.getAST().newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD));
 			md.setBody(null);
 			
@@ -301,18 +302,28 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			}
 		}	
 									
-		//rename each method
+		//rename each member
 		for(UnitMemberWrapper memberWrapper : memberList){	
-			try {									
-				IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
-				
-				if(!methodToRename.getElementName().equals(newMethodName)){
+			try {
+				if(memberWrapper.getJavaMember() instanceof IMethod){
+					IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
 					
-					RenameSupport support = RenameSupport.create(methodToRename, newMethodName, RenameSupport.UPDATE_REFERENCES);
-					support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+					if(!methodToRename.getElementName().equals(newMemberName)){
+						
+						RenameSupport support = RenameSupport.create(methodToRename, newMemberName, RenameSupport.UPDATE_REFERENCES);
+						support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+						
+					}
+				}else{
+					IField fieldToRename = (IField) memberWrapper.getJavaMember();
 					
+					if(!fieldToRename.getElementName().equals(newMemberName)){
+						
+						RenameSupport support = RenameSupport.create(fieldToRename, newMemberName, RenameSupport.UPDATE_REFERENCES);
+						support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+						
+					}
 				}
-				
 			} catch (CoreException e1) {
 				e1.printStackTrace();
 				return false;
@@ -327,7 +338,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 		
 		HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>> modificationMap = new HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>>();
 		
-		//cast method invocation variable into parent interface, summarize a map out first
+		//cast corresponding variable into parent interface, summarize a map out first
 		for(UnitMemberWrapper member : memberList){
 			for(ProgramReference reference : member.getRefererPointList()){
 				for(ReferenceInflucencedDetail variableDetail : reference.getVariableDeclarationList()){
@@ -636,12 +647,6 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 					if(methodDeclarationNode instanceof MethodDeclaration){
 						MethodDeclaration md = (MethodDeclaration) methodDeclarationNode;
 						md.accept(new ReturnStatementVisitor(oldTypeName, ast, rewrite, nodeInfo));
-						
-						/*for(Object o : md.getBody().statements()){
-							Statement statement = (Statement) o;
-							if(statement instanceof ReturnStatement){
-							}
-						}*/
 					}
 				}
 				
