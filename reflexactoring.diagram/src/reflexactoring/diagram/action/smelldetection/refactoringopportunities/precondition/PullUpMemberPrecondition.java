@@ -9,9 +9,12 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.CreateSuperclassAndPullUpMemberOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToExistingClass;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToNewClass;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToExistingInterface;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewInterfaceOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToSuperclassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToExistingClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -75,7 +78,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 					System.currentTimeMillis();
 				}
 				
-				if(!member.isOverrideSuperMember() && !isDeclaredInParameter(member) /*&& isNotCausingCompilationError(member)*/){
+				if(!member.isOverrideSuperMember() && !member.isItsInvocationInfluencedByParameter() /*&& isNotCausingCompilationError(member)*/){
 					/**
 					 * constructor is not considered counter here.
 					 */
@@ -105,22 +108,6 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		}
 		
 		return refactoringPlaceList;
-	}
-	
-	private boolean isDeclaredInParameter(UnitMemberWrapper member){
-		if(member.toString().contains("MapView.getMessage")){
-			System.currentTimeMillis();
-		}
-		
-		for(ProgramReference ref: member.getRefererPointList()){
-			for(ReferenceInflucencedDetail detail: ref.getVariableDeclarationList()){
-				if(detail.getDeclaration().isParameter()){
-					return true;
-				}
-			}
-		}
-		
-		return false;
 	}
 	
 	/**
@@ -192,7 +179,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			
 			if(!otherMember.isOverrideSuperMember()  
 					&& !isWithCounterCallingRelation(counterMemberList, otherMember) 
-					&& !isDeclaredInParameter(otherMember)
+					&& !otherMember.isItsInvocationInfluencedByParameter()
 					/*&& isNotCausingCompilationError(otherMember)*/){
 				
 				
@@ -250,6 +237,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			ArrayList<ModuleWrapper> moduleList) {
 		ArrayList<RefactoringOpportunity> opportunities = new ArrayList<>();
 		
+		//TODO check reference, only pulling existing is possible, otherwise, it is impossible.
 		for(ArrayList<UnitMemberWrapper> refactoringPlace: refactoringPlaceList){
 			ICompilationUnitWrapper commonAncestor = findCommonAncestor(refactoringPlace);
 			boolean isWithoutAnySuperclass = isWithoutAnySuperclass(refactoringPlace);
@@ -258,27 +246,67 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			UnitMemberWrapper member = refactoringPlace.get(0);
 			
 			if((isWithSimilarBody || (member instanceof FieldWrapper)) && !isRelyOnOtherMemberInDeclaringClass &&
+					/**
+					 * either all the members or none of the members share(s) a common ancestor class.
+					 */
 					((commonAncestor != null) || (isWithoutAnySuperclass))){
 				if(commonAncestor != null){
-					PullUpMemberToSuperclassOpportunity opp = 
-							new PullUpMemberToSuperclassOpportunity(refactoringPlace, moduleList, commonAncestor);
+					PullUpMemberToExistingClassOpportunity opp = 
+							new PullUpMemberToExistingClassOpportunity(refactoringPlace, moduleList, commonAncestor);
 					opportunities.add(opp);
 				}
 				else{
-					CreateSuperclassAndPullUpMemberOpportunity opp = 
-							new CreateSuperclassAndPullUpMemberOpportunity(refactoringPlace, moduleList);
+					PullUpMemberToNewClassOpportunity opp = 
+							new PullUpMemberToNewClassOpportunity(refactoringPlace, moduleList);
 					opportunities.add(opp);
+				}
+			}
+			else if(commonAncestor != null){
+				if(member instanceof MethodWrapper){
+					PullUpAbstractMethodToExistingClass existingClassOpp = 
+							new PullUpAbstractMethodToExistingClass(refactoringPlace, commonAncestor, moduleList);
+					opportunities.add(existingClassOpp);					
 				}
 			}
 			
 			if(member instanceof MethodWrapper){
-				PullUpMemberToNewInterfaceOpportunity opportunity = 
+				PullUpMemberToNewInterfaceOpportunity newInterfaceOpp = 
 						new PullUpMemberToNewInterfaceOpportunity(refactoringPlace, moduleList);
-				opportunities.add(opportunity);				
+				opportunities.add(newInterfaceOpp);		
+				
+				PullUpAbstractMethodToNewClass newClassOpp = new PullUpAbstractMethodToNewClass(refactoringPlace, moduleList);
+				opportunities.add(newClassOpp);
+				
+				ArrayList<ICompilationUnitWrapper> commonInterfaceList = findCommonInterface(refactoringPlace);
+				for(ICompilationUnitWrapper commonInterface: commonInterfaceList){
+					PullUpMemberToExistingInterface existingInterfaceOpp =
+							new PullUpMemberToExistingInterface(refactoringPlace, commonInterface, moduleList);
+				}
 			}
 		}
 		
 		return opportunities;
+	}
+
+	/**
+	 * A member (e.g., a method m()) is invoked such as ((B)a).m(), if the "a" is declared like "A a = new B()",
+	 * in this case, m() can only be pulled into A, not another interface.
+	 * @return
+	 */
+	public boolean isItsInvocationInfluencedByAnAbstractDeclaration(){
+		//TODO
+		return true;
+	}
+	
+	/**
+	 * @param refactoringPlace
+	 * @return
+	 */
+	private ArrayList<ICompilationUnitWrapper> findCommonInterface(
+			ArrayList<UnitMemberWrapper> refactoringPlace) {
+		//TODO
+		//ArrayList<ICompilationUnitWrapper> commonInterfaces = refactoringPlace.get(0).getUnitWrapper().
+		return null;
 	}
 	
 	/**
