@@ -363,7 +363,10 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		if(opp instanceof ExtractClassOpportunity){
 			ExtractClassOpportunity thatOpp = (ExtractClassOpportunity)opp;
 			
-			double simSum = 0;
+			double sim = ReflexactoringUtil.computeSetSimilarity(getToBeExtractedMembers(), thatOpp.getToBeExtractedMembers());
+			
+			return sim;
+			/*double simSum = 0;
 			
 			ArrayList<UnitMemberWrapper> thisList = RefactoringOppUtil.copyAList(getToBeExtractedMembers());
 			ArrayList<UnitMemberWrapper> thatList = RefactoringOppUtil.copyAList(thatOpp.getToBeExtractedMembers());
@@ -400,7 +403,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			
 			System.currentTimeMillis();
 			
-			return 2*simSum/base;
+			return 2*simSum/base;*/
 		}
 		
 		return 0;
@@ -443,6 +446,9 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 				String head = "" + newExtractedName.toCharArray()[0];
 				head = head.toLowerCase();
 				this.newFieldName = head + newExtractedName.substring(1, newExtractedName.length());
+			}
+			else{
+				return false;
 			}
 			
 			
