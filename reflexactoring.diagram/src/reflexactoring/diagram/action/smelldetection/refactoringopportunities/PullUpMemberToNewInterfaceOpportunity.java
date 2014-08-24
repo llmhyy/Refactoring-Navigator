@@ -178,7 +178,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			interfaceUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer interfaceBuffer = interfaceUnit.getBuffer();		
 			
-			CompilationUnit interfaceCompilationUnit = parse(interfaceUnit);
+			CompilationUnit interfaceCompilationUnit = RefactoringOppUtil.parse(interfaceUnit);
 			interfaceCompilationUnit.recordModifications();
 			
 			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
@@ -195,14 +195,14 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 					ArrayType arrayType = (ArrayType) returnType;
 					Type elementType = arrayType.getElementType();
 					String name = elementType.resolveBinding().getQualifiedName();
-					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
 					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
 					interfaceCompilationUnit.imports().add(importDeclaration);
 				}else if(returnType.isSimpleType()){
 					String name = returnType.resolveBinding().getQualifiedName();
-					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
 					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
@@ -210,7 +210,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 				}else if(returnType.isParameterizedType()){
 					ParameterizedType pType = (ParameterizedType) returnType;
 					String name = pType.resolveBinding().getQualifiedName().split("<")[0];
-					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
 					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
@@ -230,7 +230,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 					}else{
 						name = vd.resolveBinding().getType().getQualifiedName();
 					}					
-					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
 					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
@@ -266,7 +266,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 				IBuffer buffer = unit.getBuffer();				
 				buffer.getContents();
 				
-				CompilationUnit compilationUnit = parse(unit);
+				CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
 				compilationUnit.recordModifications();
 				
 				TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
@@ -274,7 +274,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 				Type type = td.getAST().newSimpleType(name);
 				td.superInterfaceTypes().add(type);
 				
-				Name qualifiedName = createQualifiedName(td.getAST(), parentInterface.getFullQualifiedName());
+				Name qualifiedName = RefactoringOppUtil.createQualifiedName(td.getAST(), parentInterface.getFullQualifiedName());
 				ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
 				importDeclaration.setName(qualifiedName);
 				importDeclaration.setOnDemand(false);
@@ -592,7 +592,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			String oldTypeName = null;
 			
 
-			CompilationUnit compilationUnit = parse(unit);
+			CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
 		
 			AST ast = compilationUnit.getAST();
 			ASTRewrite rewrite= ASTRewrite.create(ast);		
@@ -731,13 +731,13 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer buffer = unit.getBuffer();									
 			
-			CompilationUnit compilationUnit = parse(unit);
+			CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
 			VariableDeclaration variableNode = (VariableDeclaration) compilationUnit.findDeclaringNode(variableNode0.resolveBinding().getKey());
 			
 			compilationUnit.recordModifications();
 			
 			//add import
-			Name qualifiedName = createQualifiedName(compilationUnit.getAST(), parentInterface.getFullQualifiedName());
+			Name qualifiedName = RefactoringOppUtil.createQualifiedName(compilationUnit.getAST(), parentInterface.getFullQualifiedName());
 			ImportDeclaration importDeclaration = compilationUnit.getAST().newImportDeclaration();
 			importDeclaration.setName(qualifiedName);
 			importDeclaration.setOnDemand(false);

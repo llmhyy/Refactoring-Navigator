@@ -5,6 +5,13 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.SimpleName;
+
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
@@ -93,5 +100,30 @@ public class RefactoringOppUtil {
 		
 		
 		return parameters;
+	}
+	
+
+	protected static CompilationUnit parse(ICompilationUnit unit) {
+		ASTParser parser = ASTParser.newParser(AST.JLS4); 
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource(unit); // set source
+		parser.setResolveBindings(true); // we need bindings later on
+		return (CompilationUnit) parser.createAST(null /* IProgressMonitor */); // parse
+	}
+	
+	protected static Name createQualifiedName(AST ast, String classToImport) {
+		String[] parts = classToImport.split("\\."); //$NON-NLS-1$
+
+		Name name = null;
+
+		for (int i = 0; i < parts.length; i++) {
+			SimpleName simpleName = ast.newSimpleName(parts[i]);
+			if (i == 0) {
+				name = simpleName;
+			} else {
+				name = ast.newQualifiedName(name, simpleName);
+			}
+		}
+		return name;
 	}
 }

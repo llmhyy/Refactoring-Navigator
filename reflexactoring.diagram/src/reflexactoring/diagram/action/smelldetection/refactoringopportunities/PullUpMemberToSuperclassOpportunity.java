@@ -143,7 +143,7 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 			parentClassUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer parentClassBuffer = parentClassUnit.getBuffer();		
 			
-			CompilationUnit parentClassCompilationUnit = parse(parentClassUnit);
+			CompilationUnit parentClassCompilationUnit = RefactoringOppUtil.parse(parentClassUnit);
 			parentClassCompilationUnit.recordModifications();
 			
 			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								

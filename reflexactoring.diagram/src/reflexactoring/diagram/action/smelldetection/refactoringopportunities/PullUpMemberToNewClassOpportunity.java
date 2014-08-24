@@ -151,7 +151,7 @@ public class PullUpMemberToNewClassOpportunity  extends PullUpMemberOpportunity 
 			parentClassUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer parentClassBuffer = parentClassUnit.getBuffer();		
 			
-			CompilationUnit parentClassCompilationUnit = parse(parentClassUnit);
+			CompilationUnit parentClassCompilationUnit = RefactoringOppUtil.parse(parentClassUnit);
 			parentClassCompilationUnit.recordModifications();
 			
 			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
@@ -189,7 +189,7 @@ public class PullUpMemberToNewClassOpportunity  extends PullUpMemberOpportunity 
 				unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 				IBuffer buffer = unit.getBuffer();									
 				
-				CompilationUnit compilationUnit = parse(unit);
+				CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
 				compilationUnit.recordModifications();
 				
 				TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
@@ -197,7 +197,7 @@ public class PullUpMemberToNewClassOpportunity  extends PullUpMemberOpportunity 
 				Type type = td.getAST().newSimpleType(name);
 				td.setSuperclassType(type);
 				
-				Name qualifiedName = createQualifiedName(td.getAST(), parentClass.getFullQualifiedName());
+				Name qualifiedName = RefactoringOppUtil.createQualifiedName(td.getAST(), parentClass.getFullQualifiedName());
 				ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
 				importDeclaration.setName(qualifiedName);
 				importDeclaration.setOnDemand(false);
