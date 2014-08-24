@@ -76,12 +76,12 @@ import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
  * @author linyun
  * 
  */
-public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity {
+public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportunity {
 
 	/**
 	 * @param toBePulledMemberList
 	 */
-	public PullUpMemberToInterfaceOpportunity(
+	public PullUpMemberToNewInterfaceOpportunity(
 			ArrayList<UnitMemberWrapper> toBePulledMemberList,
 			ArrayList<ModuleWrapper> moduleList) {
 		super(toBePulledMemberList, moduleList);
@@ -97,8 +97,8 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 	
 	@Override
 	public boolean equals(Object obj){
-		if(obj instanceof PullUpMemberToInterfaceOpportunity){
-			PullUpMemberToInterfaceOpportunity thatOpp = (PullUpMemberToInterfaceOpportunity)obj;
+		if(obj instanceof PullUpMemberToNewInterfaceOpportunity){
+			PullUpMemberToNewInterfaceOpportunity thatOpp = (PullUpMemberToNewInterfaceOpportunity)obj;
 			if(thatOpp.isHavingSameMemberList(toBePulledMemberList)){
 				return true;
 			}

@@ -5,7 +5,7 @@ package reflexactoring.diagram.refactoring.test;
 
 import java.util.ArrayList;
 
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewInterfaceOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
@@ -25,7 +25,7 @@ public class PullUpMethodInInterfaceOperatorTest {
 		
 		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		
-		PullUpMemberToInterfaceOpportunity opp = new PullUpMemberToInterfaceOpportunity(toBePulledList, moduleList);
+		PullUpMemberToNewInterfaceOpportunity opp = new PullUpMemberToNewInterfaceOpportunity(toBePulledList, moduleList);
 	
 		ProgramModel newModel = opp.simulate(model);
 		

@@ -10,7 +10,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.CreateSuperclassAndPullUpMemberOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToSuperclassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
@@ -272,8 +272,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			}
 			
 			if(member instanceof MethodWrapper){
-				PullUpMemberToInterfaceOpportunity opportunity = 
-						new PullUpMemberToInterfaceOpportunity(refactoringPlace, moduleList);
+				PullUpMemberToNewInterfaceOpportunity opportunity = 
+						new PullUpMemberToNewInterfaceOpportunity(refactoringPlace, moduleList);
 				opportunities.add(opportunity);				
 			}
 		}
