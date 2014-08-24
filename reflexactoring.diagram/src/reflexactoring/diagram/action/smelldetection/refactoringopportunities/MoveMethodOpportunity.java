@@ -4,6 +4,7 @@
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import gr.uom.java.jdeodorant.refactoring.manipulators.MoveMethodRefactoring;
+import gr.uom.java.jdeodorant.refactoring.views.MyRefactoringWizard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +21,8 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.ltk.core.refactoring.CreateChangeOperation;
 import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
+import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
@@ -44,7 +47,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	private ICompilationUnitWrapper targetUnit;
 	private ICompilationUnitWrapper sourceUnit;
 
-	private PerformChangeOperation performOperation;
+	//private PerformChangeOperation performOperation;
 	
 	public MoveMethodOpportunity(UnitMemberWrapper objectMethod, ICompilationUnitWrapper targetUnit){
 		this.objectMethod = objectMethod;
@@ -178,54 +181,54 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 				sTypeDeclaration, tTypeDeclaration, methodDeclaration,
 				additionalMethodsToBeMoved, false, moveMethodOpportunity.getObjectMethod().getName());
 		
-		try {
-			NullProgressMonitor monitor = new NullProgressMonitor();
-			RefactoringStatus status = refactoring.checkAllConditions(monitor);
-			CreateChangeOperation operation = new CreateChangeOperation(refactoring);			
-			performOperation = new PerformChangeOperation(operation);
-			performOperation.run(monitor);
-		} catch (OperationCanceledException e1) {
-			e1.printStackTrace();
-			return false;
-		} catch (CoreException e1) {
-			e1.printStackTrace();
-			return false;
-		} catch (Exception e){
-			e.printStackTrace();
-			//return true;
-		}
-		
-//		MyRefactoringWizard wizard = new MyRefactoringWizard(refactoring, new TestAction());
-//		RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard); 
-//		try { 
-//			String titleForFailedChecks = ""; //$NON-NLS-1$ 
-//			op.run(getSite().getShell(), titleForFailedChecks); 
-//		} catch(InterruptedException e1) {
+//		try {
+//			NullProgressMonitor monitor = new NullProgressMonitor();
+//			RefactoringStatus status = refactoring.checkAllConditions(monitor);
+//			CreateChangeOperation operation = new CreateChangeOperation(refactoring);			
+//			performOperation = new PerformChangeOperation(operation);
+//			performOperation.run(monitor);
+//		} catch (OperationCanceledException e1) {
 //			e1.printStackTrace();
+//			return false;
+//		} catch (CoreException e1) {
+//			e1.printStackTrace();
+//			return false;
+//		} catch (Exception e){
+//			e.printStackTrace();
+//			return false;
 //		}
+		
+		MyRefactoringWizard wizard = new MyRefactoringWizard(refactoring, null);
+		RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard); 
+		try { 
+			String titleForFailedChecks = ""; //$NON-NLS-1$ 
+			op.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), titleForFailedChecks); 
+		} catch(InterruptedException e1) {
+			e1.printStackTrace();
+		}
 		
 		return true;
 	}
 	
-	@Override
-	public boolean undoApply(){
-		if(performOperation != null){
-			try {
-				NullProgressMonitor monitor = new NullProgressMonitor();		
-				PerformChangeOperation performUndoOperation = new PerformChangeOperation(performOperation.getUndoChange());
-				performUndoOperation.run(monitor);
-			} catch (OperationCanceledException e1) {
-				e1.printStackTrace();
-				return false;
-			} catch (CoreException e1) {
-				e1.printStackTrace();
-				return false;
-			}
-		}else{
-			return false;
-		}
-		return true;
-	}
+//	@Override
+//	public boolean undoApply(){
+//		if(performOperation != null){
+//			try {
+//				NullProgressMonitor monitor = new NullProgressMonitor();		
+//				PerformChangeOperation performUndoOperation = new PerformChangeOperation(performOperation.getUndoChange());
+//				performUndoOperation.run(monitor);
+//			} catch (OperationCanceledException e1) {
+//				e1.printStackTrace();
+//				return false;
+//			} catch (CoreException e1) {
+//				e1.printStackTrace();
+//				return false;
+//			}
+//		}else{
+//			return false;
+//		}
+//		return true;
+//	}
 
 	@Override
 	protected boolean checkLegal(ProgramModel model) {
