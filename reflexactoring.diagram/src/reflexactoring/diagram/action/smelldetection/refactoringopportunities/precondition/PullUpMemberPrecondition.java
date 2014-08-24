@@ -4,6 +4,7 @@
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
@@ -237,7 +238,6 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			ArrayList<ModuleWrapper> moduleList) {
 		ArrayList<RefactoringOpportunity> opportunities = new ArrayList<>();
 		
-		//TODO check reference, only pulling existing is possible, otherwise, it is impossible.
 		for(ArrayList<UnitMemberWrapper> refactoringPlace: refactoringPlaceList){
 			ICompilationUnitWrapper commonAncestor = findCommonAncestor(refactoringPlace);
 			boolean isWithoutAnySuperclass = isWithoutAnySuperclass(refactoringPlace);
@@ -245,42 +245,59 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			boolean isWithSimilarBody = isWithSimilarBody(model, refactoringPlace);
 			UnitMemberWrapper member = refactoringPlace.get(0);
 			
+			boolean isSuitableForPullingIntoNewUnit = isAValidatePullUpInTermsOfReference(refactoringPlace, null);
+			boolean isSuitableForPullingIntoCommonSuperClass = isAValidatePullUpInTermsOfReference(refactoringPlace, commonAncestor);
+			
+			//System.currentTimeMillis();
+			
 			if((isWithSimilarBody || (member instanceof FieldWrapper)) && !isRelyOnOtherMemberInDeclaringClass &&
 					/**
 					 * either all the members or none of the members share(s) a common ancestor class.
 					 */
 					((commonAncestor != null) || (isWithoutAnySuperclass))){
 				if(commonAncestor != null){
-					PullUpMemberToExistingClassOpportunity opp = 
-							new PullUpMemberToExistingClassOpportunity(refactoringPlace, moduleList, commonAncestor);
-					opportunities.add(opp);
+					if(isSuitableForPullingIntoCommonSuperClass){
+						PullUpMemberToExistingClassOpportunity opp = 
+								new PullUpMemberToExistingClassOpportunity(refactoringPlace, moduleList, commonAncestor);
+						opportunities.add(opp);						
+					}
 				}
 				else{
-					PullUpMemberToNewClassOpportunity opp = 
-							new PullUpMemberToNewClassOpportunity(refactoringPlace, moduleList);
-					opportunities.add(opp);
+					if(isSuitableForPullingIntoNewUnit){
+						PullUpMemberToNewClassOpportunity opp = 
+								new PullUpMemberToNewClassOpportunity(refactoringPlace, moduleList);
+						opportunities.add(opp);						
+					}
 				}
 			}
 			else if(commonAncestor != null){
 				if(member instanceof MethodWrapper){
-					PullUpAbstractMethodToExistingClass existingClassOpp = 
-							new PullUpAbstractMethodToExistingClass(refactoringPlace, commonAncestor, moduleList);
-					opportunities.add(existingClassOpp);					
+					if(isSuitableForPullingIntoCommonSuperClass){
+						PullUpAbstractMethodToExistingClass existingClassOpp = 
+								new PullUpAbstractMethodToExistingClass(refactoringPlace, commonAncestor, moduleList);
+						opportunities.add(existingClassOpp);											
+					}
 				}
 			}
 			
 			if(member instanceof MethodWrapper){
-				PullUpMemberToNewInterfaceOpportunity newInterfaceOpp = 
-						new PullUpMemberToNewInterfaceOpportunity(refactoringPlace, moduleList);
-				opportunities.add(newInterfaceOpp);		
-				
-				PullUpAbstractMethodToNewClass newClassOpp = new PullUpAbstractMethodToNewClass(refactoringPlace, moduleList);
-				opportunities.add(newClassOpp);
+				if(isSuitableForPullingIntoNewUnit){
+					PullUpMemberToNewInterfaceOpportunity newInterfaceOpp = 
+							new PullUpMemberToNewInterfaceOpportunity(refactoringPlace, moduleList);
+					opportunities.add(newInterfaceOpp);		
+					
+					
+					PullUpAbstractMethodToNewClass newClassOpp = new PullUpAbstractMethodToNewClass(refactoringPlace, moduleList);
+					opportunities.add(newClassOpp);
+				}
 				
 				ArrayList<ICompilationUnitWrapper> commonInterfaceList = findCommonInterface(refactoringPlace);
 				for(ICompilationUnitWrapper commonInterface: commonInterfaceList){
-					PullUpMemberToExistingInterface existingInterfaceOpp =
-							new PullUpMemberToExistingInterface(refactoringPlace, commonInterface, moduleList);
+					if(isAValidatePullUpInTermsOfReference(refactoringPlace, commonInterface)){
+						PullUpMemberToExistingInterface existingInterfaceOpp =
+								new PullUpMemberToExistingInterface(refactoringPlace, commonInterface, moduleList);
+						opportunities.add(existingInterfaceOpp);						
+					}
 				}
 			}
 		}
@@ -293,8 +310,24 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	 * in this case, m() can only be pulled into A, not another interface.
 	 * @return
 	 */
-	public boolean isItsInvocationInfluencedByAnAbstractDeclaration(){
-		//TODO
+	public boolean isAValidatePullUpInTermsOfReference(ArrayList<UnitMemberWrapper> refactoringPlace,
+			ICompilationUnitWrapper targetUnit){
+		for(UnitMemberWrapper pulledMember: refactoringPlace){
+			for(ProgramReference reference: pulledMember.getRefererPointList()){
+				for(ReferenceInflucencedDetail detail: reference.getVariableDeclarationList()){
+					if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
+						ICompilationUnitWrapper declaredType = detail.getDeclaration().getUnitWrapper();
+						ICompilationUnitWrapper existingSubclass = pulledMember.getUnitWrapper();
+						if(existingSubclass.getAllAncestors().contains(declaredType)){
+							if(targetUnit == null || !targetUnit.equals(declaredType)){
+								return false;
+							}
+						} 
+					}
+				}
+			}
+		}
+		
 		return true;
 	}
 	
@@ -304,9 +337,25 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	 */
 	private ArrayList<ICompilationUnitWrapper> findCommonInterface(
 			ArrayList<UnitMemberWrapper> refactoringPlace) {
-		//TODO
-		//ArrayList<ICompilationUnitWrapper> commonInterfaces = refactoringPlace.get(0).getUnitWrapper().
-		return null;
+		ArrayList<ICompilationUnitWrapper> commonInterfaces = 
+				refactoringPlace.get(0).getUnitWrapper().getAllAncesterSuperInterfaces();
+		
+		System.currentTimeMillis();
+		
+		for(int i=1; i<refactoringPlace.size(); i++){
+			UnitMemberWrapper pulledMember = refactoringPlace.get(i);
+			ArrayList<ICompilationUnitWrapper> interfaces = pulledMember.getUnitWrapper().getAllAncesterSuperInterfaces();
+			
+			Iterator<ICompilationUnitWrapper> interfIter = commonInterfaces.iterator();
+			while(interfIter.hasNext()){
+				ICompilationUnitWrapper interf = interfIter.next();
+				if(interfaces.size() != 0 && !interfaces.contains(interf)){
+					interfIter.remove();
+				}
+			}
+		}
+		
+		return commonInterfaces;
 	}
 	
 	/**

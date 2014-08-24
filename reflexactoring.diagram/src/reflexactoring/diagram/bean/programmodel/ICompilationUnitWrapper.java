@@ -5,6 +5,7 @@ package reflexactoring.diagram.bean.programmodel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -145,8 +146,21 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		return this.getFullQualifiedName();
 	}
 	
+	public ArrayList<ICompilationUnitWrapper> getAllAncesterSuperInterfaces(){
+		ArrayList<ICompilationUnitWrapper> superInterfaceList = getAllAncestors();
+		Iterator<ICompilationUnitWrapper> interfIter = superInterfaceList.iterator();
+		while(interfIter.hasNext()){
+			ICompilationUnitWrapper unit = interfIter.next();
+			if(!unit.isInterface()){
+				interfIter.remove();
+			}
+		}
+		
+		return superInterfaceList;
+	}
+	
 	public ArrayList<ICompilationUnitWrapper> getAllAncestors(){
-		if(this.ancestors == null){
+		if(this.ancestors == null || this.ancestors.size() == 0){
 			ArrayList<ICompilationUnitWrapper> ancestors = new ArrayList<>();
 			
 			if(this.superClass != null){
