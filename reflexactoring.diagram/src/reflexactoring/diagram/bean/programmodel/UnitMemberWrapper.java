@@ -18,7 +18,6 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 
-import reflexactoring.diagram.action.semantic.TokenExtractor;
 import reflexactoring.diagram.bean.Document;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.LowLevelSuggestionObject;
@@ -263,7 +262,20 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 		}
 	}
 
+	public boolean isItsInvocationInfluencedByParameter(){
+		for(ProgramReference ref: getRefererPointList()){
+			for(ReferenceInflucencedDetail detail: ref.getVariableDeclarationList()){
+				if(detail.getDeclaration().isParameter()){
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	public abstract boolean hasSameSignatureWith(UnitMemberWrapper member);
 
 	public abstract double computeSimilarityForBeingPulledUp(UnitMemberWrapper otherMember);
+
 }

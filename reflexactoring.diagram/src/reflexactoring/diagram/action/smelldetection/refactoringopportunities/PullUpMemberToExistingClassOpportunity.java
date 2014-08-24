@@ -17,10 +17,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.ui.refactoring.RenameSupport;
@@ -32,27 +29,23 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.popup.RenameMethodsDialog;
-import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
-import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 
 /**
  * @author linyun
  *
  */
-public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity{
+public class PullUpMemberToExistingClassOpportunity extends PullUpMemberOpportunity{
 
 	/**
 	 * @param toBePulledMemberList
 	 */
-	public PullUpMemberToSuperclassOpportunity(
+	public PullUpMemberToExistingClassOpportunity(
 			ArrayList<UnitMemberWrapper> toBePulledMemberList, ArrayList<ModuleWrapper> moduleList, 
 			ICompilationUnitWrapper targetUnit) {
 		super(toBePulledMemberList, moduleList);
@@ -69,8 +62,8 @@ public class PullUpMemberToSuperclassOpportunity extends PullUpMemberOpportunity
 	
 	@Override
 	public boolean equals(Object obj){
-		if(obj instanceof PullUpMemberToSuperclassOpportunity){
-			PullUpMemberToSuperclassOpportunity thatOpp = (PullUpMemberToSuperclassOpportunity)obj;
+		if(obj instanceof PullUpMemberToExistingClassOpportunity){
+			PullUpMemberToExistingClassOpportunity thatOpp = (PullUpMemberToExistingClassOpportunity)obj;
 			if(thatOpp.isHavingSameMemberList(toBePulledMemberList) && 
 					thatOpp.getTargetSuperclass().equals(getTargetSuperclass())){
 				return true;

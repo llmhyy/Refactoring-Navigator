@@ -46,12 +46,12 @@ import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
  * @author linyun
  *
  */
-public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpportunity {
+public class PullUpMemberToNewClassOpportunity  extends PullUpMemberOpportunity {
 
 	/**
 	 * @param toBePulledMemberList
 	 */
-	public CreateSuperclassAndPullUpMemberOpportunity(
+	public PullUpMemberToNewClassOpportunity(
 			ArrayList<UnitMemberWrapper> toBePulledMemberList, ArrayList<ModuleWrapper> moduleList) {
 		super(toBePulledMemberList, moduleList);
 	}
@@ -66,8 +66,8 @@ public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpp
 	
 	@Override
 	public boolean equals(Object obj){
-		if(obj instanceof CreateSuperclassAndPullUpMemberOpportunity){
-			CreateSuperclassAndPullUpMemberOpportunity thatOpp = (CreateSuperclassAndPullUpMemberOpportunity)obj;
+		if(obj instanceof PullUpMemberToNewClassOpportunity){
+			PullUpMemberToNewClassOpportunity thatOpp = (PullUpMemberToNewClassOpportunity)obj;
 			if(isHavingSameMemberList(thatOpp.getToBePulledMemberList())){
 				return true;
 			}
