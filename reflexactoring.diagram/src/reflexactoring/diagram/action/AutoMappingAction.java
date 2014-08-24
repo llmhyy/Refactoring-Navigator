@@ -12,7 +12,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.recommend.ClassRecommendAction;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewInterfaceOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;

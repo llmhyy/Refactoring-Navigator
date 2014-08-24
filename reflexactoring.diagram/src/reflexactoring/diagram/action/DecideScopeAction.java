@@ -44,7 +44,7 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.Activator;
 import reflexactoring.diagram.action.recommend.Suggestion;
 import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewInterfaceOpportunity;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;

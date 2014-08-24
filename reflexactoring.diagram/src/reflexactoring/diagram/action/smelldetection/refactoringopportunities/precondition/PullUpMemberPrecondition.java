@@ -13,7 +13,7 @@ import reflexactoring.diagram.action.smelldetection.refactoringopportunities.Pul
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToNewClass;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToExistingInterface;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewClassOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToInterfaceOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToExistingClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
@@ -270,8 +270,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			}
 			
 			if(member instanceof MethodWrapper){
-				PullUpMemberToInterfaceOpportunity newInterfaceOpp = 
-						new PullUpMemberToInterfaceOpportunity(refactoringPlace, moduleList);
+				PullUpMemberToNewInterfaceOpportunity newInterfaceOpp = 
+						new PullUpMemberToNewInterfaceOpportunity(refactoringPlace, moduleList);
 				opportunities.add(newInterfaceOpp);		
 				
 				PullUpAbstractMethodToNewClass newClassOpp = new PullUpAbstractMethodToNewClass(refactoringPlace, moduleList);
