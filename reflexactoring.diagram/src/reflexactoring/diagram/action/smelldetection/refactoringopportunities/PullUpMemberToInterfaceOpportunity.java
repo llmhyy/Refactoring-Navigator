@@ -5,14 +5,17 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
@@ -30,13 +33,17 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.ui.refactoring.RenameSupport;
@@ -313,28 +320,18 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 				return false;
 			}				
 		}
-		/*
-		//cast method invocation variable into parent interface
+		
+		HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>> modificationMap = new HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>>();
+		
+		//cast method invocation variable into parent interface, summarize a map out first
 		for(UnitMemberWrapper member : memberList){
 			for(ProgramReference reference : member.getRefererPointList()){
 				for(ReferenceInflucencedDetail variableDetail : reference.getVariableDeclarationList()){
 					VariableDeclarationWrapper variable = variableDetail.getDeclaration();
-					ICompilationUnit unit = variable.getUnitWrapper().getCompilationUnit();
 					//cast the declaration into parent interface 
-					VariableDeclaration variableAST = variable.getAstNode();
-					
-					Type currentVariableType = null;
-					
-					if(variableAST instanceof SingleVariableDeclaration){
-						currentVariableType = ((SingleVariableDeclaration) variableAST).getType();						
-						this.modifyType(unit, variableAST, parentInterface.getName());
-					}else if(variableAST instanceof VariableDeclarationFragment){
-						if(((VariableDeclarationFragment) variableAST).getParent() instanceof FieldDeclaration){
-							currentVariableType = ((FieldDeclaration) ((VariableDeclarationFragment) variableAST).getParent()).getType();				
-							this.modifyType(unit, variableAST, parentInterface.getName());
-						}						
-					}
-					
+					VariableDeclaration variableAST = variable.getAstNode();	
+					ICompilationUnit unit = (ICompilationUnit) ((CompilationUnit) variableAST.getRoot()).getJavaElement();
+					Type currentVariableType = this.modifyDeclarationType(unit, variableAST, parentInterface); 
 					
 					//cast other references' declaration into child class
 					for(DeclarationInfluencingDetail detail : variable.getInfluencedReferenceList()){
@@ -343,36 +340,41 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 						//for current pulled method's reference, if casted, remove current casting
 						if(reference.equals(influencedReference)){
 							
-							if(reference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
-								MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();							
+							if(influencedReference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
+								MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();	
 								
-								ICompilationUnit methodUnit = this.resolveICompilationUnit(invocation.resolveMethodBinding().getJavaElement());
 								//for current pulled method's reference, if casted, remove current casting
 								if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
-									if(invocation.getParent().getNodeType() == ASTNode.CAST_EXPRESSION){
-										this.modifyCastExpression(methodUnit, invocation.getParent(), true, null);
+									if(invocation.getExpression().getNodeType() == ASTNode.CAST_EXPRESSION){
+										
+										this.addNodeInfoToMap(modificationMap, invocation.getExpression(), true, null);
+					
 									}
 								}
 								//for current pulled method's reference, if parameter casted, remove current casting
 								else if(detail.getType() == DeclarationInfluencingDetail.PARAMETER){
 									List<Expression> arguments = invocation.arguments();
 									for(Expression args : arguments){
-										if(args.getNodeType() == ASTNode.CAST_EXPRESSION){
-											if(((CastExpression)args).getType().toString().equals(parentInterface.getName())){
-												this.modifyCastExpression(methodUnit, args, true, null);
-											}
+										if(args.getNodeType() == ASTNode.PARENTHESIZED_EXPRESSION 
+												&& ((ParenthesizedExpression)args).getExpression().getNodeType() == ASTNode.CAST_EXPRESSION
+												&& ((CastExpression)((ParenthesizedExpression)args).getExpression()).getType().toString().equals(parentInterface.getName())){
+
+											this.addNodeInfoToMap(modificationMap, args, true, null);
+											
 										}
 									}
 								}
 								
 							}
 							//for current pulled method's reference, if assignment casted, remove current casting
-							else if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Name){
+							else if(influencedReference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Name){
 								Name name = (Name) influencedReference.getASTNode();
 								
-								ICompilationUnit nameUnit = this.resolveICompilationUnit(name.resolveBinding().getJavaElement());
-								if(name.getNodeType() == ASTNode.CAST_EXPRESSION){
-									this.modifyCastExpression(nameUnit, name, true, null);
+								if(name.getParent().getNodeType() == ASTNode.PARENTHESIZED_EXPRESSION 
+										&& name.getParent().getParent().getNodeType() == ASTNode.CAST_EXPRESSION){
+
+									this.addNodeInfoToMap(modificationMap, name, true, null);
+																		
 								}
 							}
 												
@@ -382,43 +384,34 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 							//if variableAST belongs to parent interface, it's not the first time to update, then do nothing
 							//otherwise, it's the first time, cast all references to sub class
 							if(currentVariableType != null && !currentVariableType.toString().equals(parentInterface.getName())){
-
-								if(reference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
+								
+								if(influencedReference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
 									MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();
-									
-									ICompilationUnit methodUnit = this.resolveICompilationUnit(invocation.resolveMethodBinding().getJavaElement());
+																		
 									if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
-										this.modifyCastExpression(methodUnit, invocation, false, currentVariableType.toString());
+
+										this.addNodeInfoToMap(modificationMap, invocation.getExpression(), false, currentVariableType.toString());
+										
 									}
 									else if(detail.getType() == DeclarationInfluencingDetail.PARAMETER){
 										List<Expression> arguments = invocation.arguments();
 										for(Expression args : arguments){
-											SimpleName name = (SimpleName) args;
+											Name name = (Name) args;
 											
-											IBinding binding = name.resolveBinding();
-											ASTNode node = member.getUnitWrapper().getJavaUnit().findDeclaringNode(binding);
-											VariableDeclaration vd = (VariableDeclaration)node;
-											if(vd instanceof SingleVariableDeclaration){
-												SingleVariableDeclaration svd = (SingleVariableDeclaration) vd;
-												if(svd.getType().toString().equals(currentVariableType.toString())){
-													this.modifyCastExpression(methodUnit, args, false, currentVariableType.toString());
-												}
-											}else if(((VariableDeclarationFragment) vd).getParent() instanceof FieldDeclaration){
-												FieldDeclaration fd = (FieldDeclaration) ((VariableDeclarationFragment) vd).getParent();
-												if(fd.getType().toString().equals(currentVariableType.toString())){
-													this.modifyCastExpression(methodUnit, args, false, currentVariableType.toString());
-												}
+											if(name.resolveTypeBinding().getName().equals(currentVariableType.toString())){
+												
+												this.addNodeInfoToMap(modificationMap, args, false, currentVariableType.toString());
+												
 											}
-											
 										}
 									}
 									
 								}
-								else if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Name){
+								else if(influencedReference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Name){
 									Name name = (Name) influencedReference.getASTNode();
 									
-									ICompilationUnit nameUnit = this.resolveICompilationUnit(name.resolveBinding().getJavaElement());
-									this.modifyCastExpression(nameUnit, name, false, currentVariableType.toString());
+									this.addNodeInfoToMap(modificationMap, name, false, currentVariableType.toString());
+									
 								}
 							}
 							
@@ -427,7 +420,12 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 					}
 				}
 			}
-		}*/
+		}
+		
+		//do modifications: add or remove casting
+		for(ICompilationUnit icu : modificationMap.keySet()){
+			this.modifyCastExpression(modificationMap.get(icu));
+		}
 		
 		//call Eclipse API to pull up
 //		try {
@@ -544,41 +542,114 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			return false;
 		}
 	}
-	
-	private boolean modifyCastExpression(ICompilationUnit unit, ASTNode node, boolean isRemove, String castType){
-		try {
-			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-			IBuffer buffer = unit.getBuffer();									
-
-			AST ast = node.getAST();
-			ASTRewrite rewrite= ASTRewrite.create(ast);								
-								
-			if(isRemove){				
-				CastExpression castExpression= (CastExpression) node;
-				Expression expression = castExpression.getExpression();
-				
-				rewrite.replace(node, expression, null);	
-			}else{
-				Expression expressionCopy= (Expression) rewrite.createCopyTarget(node);
-				
-				CastExpression castExpression= node.getAST().newCastExpression();
-				Name name = node.getAST().newSimpleName(castType);
-				Type type = node.getAST().newSimpleType(name);
-				castExpression.setType(type);
-				castExpression.setExpression(expressionCopy);
-				
-				rewrite.replace(node, castExpression, null);
+		
+	class ASTNodeInfo {
+		ASTNode node;
+		boolean isRemove;
+		String castType;
+		public ASTNodeInfo(ASTNode node, boolean isRemove, String castType){
+			this.node = node;
+			this.isRemove = isRemove;
+			this.castType = castType;
+		}
+		public boolean equails(Object o){
+			if(o instanceof ASTNodeInfo){
+				if(((ASTNodeInfo)o).node.equals(this.node)
+						&& ((ASTNodeInfo)o).isRemove == this.isRemove
+						&& ((ASTNodeInfo)o).castType.equals(this.castType)) return true;
 			}
+			return false;
+		}
+	}
+	
+	private void addNodeInfoToMap(HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>> map, ASTNode node, boolean isRemove, String castType){
+		ICompilationUnit icu = (ICompilationUnit) ((CompilationUnit) node.getRoot()).getJavaElement();
+		ASTNodeInfo info = new ASTNodeInfo(node, isRemove, castType);
+		if(!map.containsKey(icu)){
+			ArrayList<ASTNodeInfo> infoList = new ArrayList<ASTNodeInfo>();
+			infoList.add(info);
+			map.put(icu, infoList);
+		}else{
+			if(!map.get(icu).contains(info)){
+				map.get(icu).add(info);
+			}
+		}
+	}
+	
+	private boolean modifyCastExpression(ArrayList<ASTNodeInfo> nodeInfoList){
+		try {
+			ICompilationUnit unit = (ICompilationUnit) ((CompilationUnit) nodeInfoList.get(0).node.getRoot()).getJavaElement();
+			String source = unit.getBuffer().getContents();
+			Document document= new Document(source);
 			
-			Document document = new Document(unit.getSource());
+
+			CompilationUnit compilationUnit = parse(unit);
+			//VariableDeclaration variableNode = (VariableDeclaration) compilationUnit.findDeclaringNode(variableNode0.resolveBinding().getKey());
+			
+		
+			//AST ast = nodeInfoList.get(0).node.getAST();
+			AST ast = compilationUnit.getAST();
+			ASTRewrite rewrite= ASTRewrite.create(ast);		
+			
+			
+			/*ICompilationUnit unit = (ICompilationUnit) ((CompilationUnit) nodeInfoList.get(0).node.getRoot()).getJavaElement();
+			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+			IBuffer buffer = unit.getBuffer();		
+			
+			AST ast= nodeInfoList.get(0).node.getAST();
+			ASTRewrite rewrite= ASTRewrite.create(ast);*/
+			
+			for(ASTNodeInfo nodeInfo : nodeInfoList){			
+				
+				//TODO
+				ASTNode node = NodeFinder.perform(compilationUnit, nodeInfo.node.getStartPosition(), nodeInfo.node.getLength());
+				
+				//ASTNode node = compilationUnit.findDeclaringNode(((MethodInvocation)((Name) nodeInfo.node).getParent()).resolveMethodBinding().getKey()); //TODO
+
+				if(nodeInfo.isRemove){
+					ParenthesizedExpression pa2Expression = (ParenthesizedExpression) node.getParent().getParent().getParent();
+					
+					CastExpression castExpression= (CastExpression) pa2Expression.getExpression();
+					ParenthesizedExpression paExpression = (ParenthesizedExpression) castExpression.getExpression();
+					Expression expression = paExpression.getExpression();
+					
+					rewrite.replace(node, expression, null);
+				}else{
+					Expression expressionCopy = (Expression) rewrite.createCopyTarget(node);
+					
+					ParenthesizedExpression paExpression = ast.newParenthesizedExpression();	
+					paExpression.setExpression(expressionCopy);
+					
+					CastExpression castExpression = ast.newCastExpression();
+					Name name = ast.newSimpleName(nodeInfo.castType);
+					Type type = ast.newSimpleType(name);
+					castExpression.setType(type);
+					castExpression.setExpression(paExpression);
+					
+					ParenthesizedExpression pa2Expression = ast.newParenthesizedExpression();	
+					pa2Expression.setExpression(castExpression);
+					
+					rewrite.replace(node, pa2Expression, null);
+				}
+				
+			}			
+			
+			TextEdit textEdit = rewrite.rewriteAST(document, unit.getJavaProject().getOptions(true));
+			textEdit.apply(document);
+			
+			String newSource = document.get();
+			unit.getBuffer().setContents(newSource);
+			
+			/*Document document = new Document(unit.getSource());
 			TextEdit textEdit = rewrite.rewriteAST(document, null);
 			textEdit.apply(document);
+
 			
 			buffer.setContents(document.get());	
 			
 			JavaModelUtil.reconcile(unit);
 			unit.commitWorkingCopy(true, new NullProgressMonitor());
-			unit.discardWorkingCopy();
+			unit.discardWorkingCopy();*/
 			
 		} catch (JavaModelException e1) {
 			e1.printStackTrace();
@@ -593,26 +664,61 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		return true;
 	}
 	
-	private boolean modifyType(ICompilationUnit unit, ASTNode node, String typeName){
+	/**
+	 * modify the declaration type into new typeName
+	 * 
+	 * @param unit
+	 * @param variableNode0
+	 * @param typeName
+	 * @return the original type of the declaration
+	 * 
+	 */
+	private Type modifyDeclarationType(ICompilationUnit unit, VariableDeclaration variableNode0, ICompilationUnitWrapper parentInterface){
+		Type currentVariableType = null;		
 		try {
 			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer buffer = unit.getBuffer();									
 			
 			CompilationUnit compilationUnit = parse(unit);
+			VariableDeclaration variableNode = (VariableDeclaration) compilationUnit.findDeclaringNode(variableNode0.resolveBinding().getKey());
+			
 			compilationUnit.recordModifications();
 			
-			Name name = node.getAST().newSimpleName(typeName);
-			Type type = node.getAST().newSimpleType(name);
-			
-			if(node instanceof VariableDeclaration){
-				if(node instanceof SingleVariableDeclaration){					
-					((SingleVariableDeclaration) node).setType(type);
-				}else if(node instanceof VariableDeclarationFragment){
-					if(((VariableDeclarationFragment) node).getParent() instanceof FieldDeclaration){
-						((FieldDeclaration) ((VariableDeclarationFragment) node).getParent()).setType(type);
-					}						
+			//add import
+			Name qualifiedName = createQualifiedName(compilationUnit.getAST(), parentInterface.getFullQualifiedName());
+			ImportDeclaration importDeclaration = compilationUnit.getAST().newImportDeclaration();
+			importDeclaration.setName(qualifiedName);
+			importDeclaration.setOnDemand(false);
+			boolean hasImport = false;
+			for(Object o : compilationUnit.imports()){
+				ImportDeclaration currentImport = (ImportDeclaration) o;
+				if(currentImport.toString().equals(importDeclaration.toString())) {
+					hasImport = true;
+					break;
 				}
-			}else return false;
+			}
+			if(!hasImport){
+				compilationUnit.imports().add(importDeclaration);				
+			}
+			
+			//modify type
+			Name name = compilationUnit.getAST().newSimpleName(parentInterface.getName());
+			Type type = compilationUnit.getAST().newSimpleType(name);
+			if(variableNode instanceof SingleVariableDeclaration){					
+				currentVariableType = ((SingleVariableDeclaration) variableNode).getType();	
+				((SingleVariableDeclaration) variableNode).setType(type);
+			}else if(variableNode instanceof VariableDeclarationFragment){
+				if(((VariableDeclarationFragment) variableNode).getParent() instanceof FieldDeclaration){
+					currentVariableType = ((FieldDeclaration) ((VariableDeclarationFragment) variableNode).getParent()).getType();	
+					((FieldDeclaration) ((VariableDeclarationFragment) variableNode).getParent()).setType(type);
+				}else if(((VariableDeclarationFragment) variableNode).getParent() instanceof VariableDeclarationStatement){
+					currentVariableType = ((VariableDeclarationStatement) ((VariableDeclarationFragment) variableNode).getParent()).getType();
+					((VariableDeclarationStatement) ((VariableDeclarationFragment) variableNode).getParent()).setType(type);
+				}else if(((VariableDeclarationFragment) variableNode).getParent() instanceof VariableDeclarationExpression){
+					currentVariableType = ((VariableDeclarationExpression) ((VariableDeclarationFragment) variableNode).getParent()).getType();
+					((VariableDeclarationExpression) ((VariableDeclarationFragment) variableNode).getParent()).setType(type);
+				}
+			}			
 			
 			Document document = new Document(unit.getSource());
 			TextEdit textEdit = compilationUnit.rewrite(document, null);
@@ -626,24 +732,30 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			
 		} catch (JavaModelException e1) {
 			e1.printStackTrace();
-			return false;
+			return null;
 		} catch (MalformedTreeException e1) {
 			e1.printStackTrace();
-			return false;
+			return null;
 		} catch (BadLocationException e1) {
 			e1.printStackTrace();
-			return false;
+			return null;
 		}
-		return true;
+		return currentVariableType;
 	}
 	
-	private ICompilationUnit resolveICompilationUnit(IJavaElement element){
-		IJavaElement parent = null;
-		do{
-			parent = element.getParent();
-		}while(parent != null && !(parent instanceof ICompilationUnit));
-		
-		if(parent == null) return null;
-		return (ICompilationUnit) parent;
-	}
+/*	private ICompilationUnit resolveICompilationUnit(IJavaElement element){
+
+		if (element instanceof IMember) {
+            return ((IMember) element).getCompilationUnit();
+        } else if (element instanceof IAnnotation 
+                // ignore annotations on PackageDeclaration, such as in package-info.java
+                && element.getParent() instanceof IMember) { 
+            return ((IMember) (element.getParent())).getCompilationUnit();
+        } else if (element instanceof ICompilationUnit) {
+            return (ICompilationUnit) element;
+        } else if (element instanceof ILocalVariable){
+        	return  ((ILocalVariable) element).getDeclaringMember().getCompilationUnit();
+        }
+        return null;
+	}*/
 }
