@@ -439,8 +439,8 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 
 	@Override
 	protected boolean checkLegal(ProgramModel model) {
-		Precondition precondition = new Precondition(getModuleList());
-		return precondition.checkLegal(model);
+		//TODO
+		return true;
 	}
 	
 	@Override
@@ -485,60 +485,6 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		
 		return refactoringDetails;
 	};
-
-	public class Precondition extends
-			PullUpMemberPrecondition {
-
-		/**
-		 * @param moduleList
-		 */
-		public Precondition(ArrayList<ModuleWrapper> moduleList) {
-			super(moduleList);
-		}
-
-		@Override
-		protected ArrayList<RefactoringOpportunity> detectPullingUpOpportunities(ProgramModel model, ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList,
-				ArrayList<ModuleWrapper> moduleList) {
-			ArrayList<RefactoringOpportunity> opportunities = new ArrayList<>();
-			
-			for(ArrayList<UnitMemberWrapper> refactoringPlace: refactoringPlaceList){
-				UnitMemberWrapper member = refactoringPlace.get(0);
-				
-				if(member instanceof MethodWrapper){
-					PullUpMemberToInterfaceOpportunity opportunity = 
-							new PullUpMemberToInterfaceOpportunity(refactoringPlace, moduleList);
-					opportunities.add(opportunity);				
-				}
-			}
-			
-			return opportunities;
-		}
-		
-		/**
-		 * Given data input by a refactoring opportunity, check whether such opportunity still validates.
-		 * 
-		 * @param model
-		 * @param refactoringPlace
-		 * @return
-		 */
-		@Override
-		public boolean checkLegal(ProgramModel model) {
-			ArrayList<UnitMemberWrapper> newTBPMemberList = new ArrayList<>();
-			for(UnitMemberWrapper oldMember: toBePulledMemberList){
-				UnitMemberWrapper newMember = model.findMember(oldMember);
-				if(newMember != null){
-					newTBPMemberList.add(newMember);
-				}
-			}
-			
-			if(newTBPMemberList.size() >= 2){
-				toBePulledMemberList = newTBPMemberList;
-				return true;
-			}
-			
-			return false;
-		}
-	}
 		
 	class ASTNodeInfo {
 		ASTNode node;

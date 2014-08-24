@@ -19,7 +19,6 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -41,7 +40,6 @@ import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
-import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 
 /**
@@ -253,8 +251,8 @@ public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpp
 
 	@Override
 	protected boolean checkLegal(ProgramModel model) {
-		Precondition precondition = new Precondition(getModuleList());
-		return precondition.checkLegal(model);
+		//TODO
+		return true;
 	}
 	
 	@Override
@@ -295,65 +293,4 @@ public class CreateSuperclassAndPullUpMemberOpportunity  extends PullUpMemberOpp
 		
 		return refactoringDetails;
 	};
-
-	public class Precondition extends PullUpMemberPrecondition{
-
-		/**
-		 * @param moduleList
-		 */
-		public Precondition(ArrayList<ModuleWrapper> moduleList) {
-			super(moduleList);
-		}
-		
-		@Override
-		protected ArrayList<RefactoringOpportunity> detectPullingUpOpportunities(ProgramModel model, ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList,
-				ArrayList<ModuleWrapper> moduleList) {
-			ArrayList<RefactoringOpportunity> opportunities = new ArrayList<>();
-			
-			for(ArrayList<UnitMemberWrapper> refactoringPlace: refactoringPlaceList){
-				if(isLegal(model, refactoringPlace)){
-					CreateSuperclassAndPullUpMemberOpportunity opp = 
-							new CreateSuperclassAndPullUpMemberOpportunity(refactoringPlace, moduleList);
-					opportunities.add(opp);
-				}	
-				
-			}
-			
-			return opportunities;
-		}
-		
-		public boolean checkLegal(ProgramModel model){
-			ArrayList<UnitMemberWrapper> newTBPMemberList = new ArrayList<>();
-			for(UnitMemberWrapper oldMember: toBePulledMemberList){
-				UnitMemberWrapper newMember = model.findMember(oldMember);
-				if(newMember != null){
-					newTBPMemberList.add(newMember);
-				}
-			}
-			
-			if(newTBPMemberList.size() >= 2 && isLegal(model, newTBPMemberList)){
-				toBePulledMemberList = newTBPMemberList;
-				return true;
-			}
-			
-			return false;
-		}
-		
-		private boolean isLegal(ProgramModel model, ArrayList<UnitMemberWrapper> refactoringPlace){
-			ICompilationUnitWrapper commonAncestor = findCommonAncestor(refactoringPlace);
-			boolean isWithoutAnySuperclass = isWithoutAnySuperclass(refactoringPlace);
-			boolean isRelyOnOtherMemberInDeclaringClass = isRelyOnOtherMemberInDeclaringClass(refactoringPlace);
-			boolean isWithSimilarBody = isWithSimilarBody(model, refactoringPlace);
-			UnitMemberWrapper member = refactoringPlace.get(0);
-			
-			if((isWithSimilarBody || (member instanceof FieldWrapper)) && !isRelyOnOtherMemberInDeclaringClass &&
-					((commonAncestor != null) || (isWithoutAnySuperclass))){
-				if(commonAncestor == null){
-					return true;
-				}
-			}
-			
-			return false;
-		}
-	}
 }
