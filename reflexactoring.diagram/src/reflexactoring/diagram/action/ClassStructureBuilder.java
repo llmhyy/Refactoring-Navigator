@@ -113,7 +113,13 @@ public class ClassStructureBuilder {
 			}
 			
 			public boolean visit(SimpleName name){
-				setDeclaration(extractVariableDeclarationWrpper(name));
+				if(name.resolveBinding() instanceof IVariableBinding){
+					setDeclaration(extractVariableDeclarationWrpper(name));					
+				}
+				else{
+					this.declaration = null;
+				}
+				
 				return false;
 			}
 
@@ -166,7 +172,9 @@ public class ClassStructureBuilder {
 								ExpressionVisitor expVisitor = new ExpressionVisitor();
 								expression.accept(expVisitor);
 								declaration = expVisitor.getDeclaration();
-								decList.add(new ReferenceInflucencedDetail(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
+								if(null != declaration){
+									decList.add(new ReferenceInflucencedDetail(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
+								}
 							}
 						}
 						

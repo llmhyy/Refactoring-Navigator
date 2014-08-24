@@ -62,6 +62,7 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
+import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
@@ -435,6 +436,27 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			this.modifyCastExpression(modificationMap.get(icu));
 		}
 		
+		//refresh the model
+		for(int i = position; i < sequence.size(); i++ ){
+			ProgramModel model = sequence.get(i).getConsequenceModel();
+			
+			ICompilationUnitWrapper oldUnit = this.targetUnit;
+			oldUnit.setSimpleName(parentInterface.getName());
+			ICompilationUnitWrapper oldUnitInModel = model.findUnit(oldUnit.getFullQualifiedName());
+			oldUnitInModel.setSimpleName(parentInterface.getName());
+			
+			for(UnitMemberWrapper memberWrapper : memberList){	
+				UnitMemberWrapper oldMemberInModel;
+				if(memberWrapper.getJavaMember() instanceof IMethod){
+					oldMemberInModel = model.findMethod(memberWrapper.getUnitWrapper().getFullQualifiedName(),
+													memberWrapper.getName(), ((MethodWrapper)memberWrapper).getParameterTypes());
+				}else{
+					oldMemberInModel = model.findField(memberWrapper.getUnitWrapper().getFullQualifiedName(), memberWrapper.getName());
+				}
+				oldMemberInModel.setName(newMemberName);
+			}
+		}
+		
 		//call Eclipse API to pull up
 //		try {
 //			System.out.println(RefactoringAvailabilityTester.isPullUpAvailable(membersToPull));
@@ -444,9 +466,10 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 //		} catch (JavaModelException jme) {
 //			ExceptionHandler.handle(jme, RefactoringMessages.OpenRefactoringWizardAction_refactoring, RefactoringMessages.OpenRefactoringWizardAction_exception);
 //		}	
-		
+				
 		return true;
 	}
+	
 
 	@Override
 	protected boolean checkLegal(ProgramModel model) {
