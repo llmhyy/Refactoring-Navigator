@@ -38,8 +38,10 @@ import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
+import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
@@ -347,21 +349,19 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 								
 								//for current pulled method's reference, if casted, remove current casting
 								if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
-									if(invocation.getExpression().getNodeType() == ASTNode.CAST_EXPRESSION){
-										
-										this.addNodeInfoToMap(modificationMap, invocation.getExpression(), true, null);
-					
-									}
+									
+									this.addNodeInfoToMap(modificationMap, invocation.getExpression(), true, currentVariableType.toString());
+									
 								}
 								//for current pulled method's reference, if parameter casted, remove current casting
 								else if(detail.getType() == DeclarationInfluencingDetail.PARAMETER){
 									List<Expression> arguments = invocation.arguments();
 									for(Expression args : arguments){
-										if(args.getNodeType() == ASTNode.PARENTHESIZED_EXPRESSION 
-												&& ((ParenthesizedExpression)args).getExpression().getNodeType() == ASTNode.CAST_EXPRESSION
-												&& ((CastExpression)((ParenthesizedExpression)args).getExpression()).getType().toString().equals(parentInterface.getName())){
+										Name name = (Name) args;
+										
+										if(name.resolveTypeBinding().getName().equals(currentVariableType.toString())){
 
-											this.addNodeInfoToMap(modificationMap, args, true, null);
+											this.addNodeInfoToMap(modificationMap, args, true, currentVariableType.toString());
 											
 										}
 									}
@@ -372,12 +372,7 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 							else if(influencedReference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Name){
 								Name name = (Name) influencedReference.getASTNode();
 								
-								if(name.getParent().getNodeType() == ASTNode.PARENTHESIZED_EXPRESSION 
-										&& name.getParent().getParent().getNodeType() == ASTNode.CAST_EXPRESSION){
-
-									this.addNodeInfoToMap(modificationMap, name, true, null);
-																		
-								}
+								this.addNodeInfoToMap(modificationMap, name, true, currentVariableType.toString());
 							}
 												
 							
@@ -547,26 +542,26 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		
 	class ASTNodeInfo {
 		ASTNode node;
-		boolean isRemove;
+		boolean isToBePulled;
 		String castType;
-		public ASTNodeInfo(ASTNode node, boolean isRemove, String castType){
+		public ASTNodeInfo(ASTNode node, boolean isToBePulled, String castType){
 			this.node = node;
-			this.isRemove = isRemove;
+			this.isToBePulled = isToBePulled;
 			this.castType = castType;
 		}
 		public boolean equails(Object o){
 			if(o instanceof ASTNodeInfo){
 				if(((ASTNodeInfo)o).node.equals(this.node)
-						&& ((ASTNodeInfo)o).isRemove == this.isRemove
+						&& ((ASTNodeInfo)o).isToBePulled == this.isToBePulled
 						&& ((ASTNodeInfo)o).castType.equals(this.castType)) return true;
 			}
 			return false;
 		}
 	}
 	
-	private void addNodeInfoToMap(HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>> map, ASTNode node, boolean isRemove, String castType){
+	private void addNodeInfoToMap(HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>> map, ASTNode node, boolean isToBePulled, String castType){
 		ICompilationUnit icu = (ICompilationUnit) ((CompilationUnit) node.getRoot()).getJavaElement();
-		ASTNodeInfo info = new ASTNodeInfo(node, isRemove, castType);
+		ASTNodeInfo info = new ASTNodeInfo(node, isToBePulled, castType);
 		if(!map.containsKey(icu)){
 			ArrayList<ASTNodeInfo> infoList = new ArrayList<ASTNodeInfo>();
 			infoList.add(info);
@@ -578,75 +573,93 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 		}
 	}
 	
+	public class ReturnStatementVisitor extends ASTVisitor {
+		private String oldTypeName;
+		private AST ast;
+		private ASTRewrite rewrite;
+		private ASTNodeInfo nodeInfo;
+		
+		/**
+		 * @param oldTypeName
+		 * @param ast
+		 * @param rewrite
+		 * @param nodeInfo
+		 */
+		public ReturnStatementVisitor(String oldTypeName, AST ast,
+				ASTRewrite rewrite, ASTNodeInfo nodeInfo) {
+			super();
+			this.oldTypeName = oldTypeName;
+			this.ast = ast;
+			this.rewrite = rewrite;
+			this.nodeInfo = nodeInfo;
+		}
+
+		public boolean visit(ReturnStatement statement){
+			
+			Expression exp = statement.getExpression();
+			
+			if(exp == null){
+				return false;
+			}
+			
+			if(exp.resolveTypeBinding().getName().equals(oldTypeName)){
+				
+				Expression expressionCopy1 = (Expression) rewrite.createCopyTarget(exp);
+				
+				ParenthesizedExpression paExpression1 = ast.newParenthesizedExpression();	
+				paExpression1.setExpression(expressionCopy1);
+				
+				CastExpression castExpression1 = ast.newCastExpression();
+				Name name1 = ast.newSimpleName(nodeInfo.castType);
+				Type type1 = ast.newSimpleType(name1);
+				castExpression1.setType(type1);
+				castExpression1.setExpression(paExpression1);
+				
+				ParenthesizedExpression pa2Expression1 = ast.newParenthesizedExpression();	
+				pa2Expression1.setExpression(castExpression1);
+				
+				rewrite.replace(exp, pa2Expression1, null);
+				
+			}
+			
+			
+			return true;
+		}
+	}
+	
 	private boolean modifyCastExpression(ArrayList<ASTNodeInfo> nodeInfoList){
 		try {
 			ICompilationUnit unit = (ICompilationUnit) ((CompilationUnit) nodeInfoList.get(0).node.getRoot()).getJavaElement();
 			String source = unit.getBuffer().getContents();
 			Document document= new Document(source);
+			String oldTypeName = null;
 			
 
 			CompilationUnit compilationUnit = parse(unit);
-			//VariableDeclaration variableNode = (VariableDeclaration) compilationUnit.findDeclaringNode(variableNode0.resolveBinding().getKey());
-			
 		
-			//AST ast = nodeInfoList.get(0).node.getAST();
 			AST ast = compilationUnit.getAST();
 			ASTRewrite rewrite= ASTRewrite.create(ast);		
 			
-			
-			/*ICompilationUnit unit = (ICompilationUnit) ((CompilationUnit) nodeInfoList.get(0).node.getRoot()).getJavaElement();
-			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-			IBuffer buffer = unit.getBuffer();		
-			
-			AST ast= nodeInfoList.get(0).node.getAST();
-			ASTRewrite rewrite= ASTRewrite.create(ast);*/
-			
 			for(ASTNodeInfo nodeInfo : nodeInfoList){	
 				
-				//TODO for LinYun
-				CompilationUnit oldCU = (CompilationUnit) nodeInfo.node.getRoot();
-				ASTNode oldDeclaringNode = nodeInfo.node;
-				while(!(oldDeclaringNode instanceof MethodDeclaration || oldDeclaringNode instanceof FieldDeclaration) 
-						&& oldDeclaringNode != null){
-					oldDeclaringNode = oldDeclaringNode.getParent();
-				}
-				
-				if(oldDeclaringNode == null){
-					System.err.println("some ast node is declared in neither method or field ");
-					return false;
-				}
-				
-				int methodLineNum = oldCU.getLineNumber(oldDeclaringNode.getStartPosition());
-				int nodeLineNum = oldCU.getLineNumber(nodeInfo.node.getStartPosition());
-				int lineDiff = nodeLineNum - methodLineNum;
-				int spaceDiff = nodeInfo.node.getStartPosition() - oldCU.getPosition(nodeLineNum, 0);
+				ASTNode node = findCorrespondingNode(compilationUnit, nodeInfo);
+				if(node == null) return false;
 
-				ASTNode newDeclaringNode = null;
-				if(oldDeclaringNode instanceof MethodDeclaration){
-					newDeclaringNode = compilationUnit.findDeclaringNode(((MethodDeclaration)oldDeclaringNode).resolveBinding().getKey());
-				}
-				else if(oldDeclaringNode instanceof FieldDeclaration){
-					FieldDeclaration fd = (FieldDeclaration)(FieldDeclaration)oldDeclaringNode;
-					VariableDeclarationFragment fragment = (VariableDeclarationFragment) fd.fragments().get(0);
-					newDeclaringNode = compilationUnit.findDeclaringNode(fragment.resolveBinding().getKey());
-				}
-				
-				int lineNum = compilationUnit.getLineNumber(newDeclaringNode.getStartPosition()) + lineDiff;
-				int startPosition = compilationUnit.getPosition(lineNum, 0) + spaceDiff;
-				
-				ASTNode node = NodeFinder.perform(compilationUnit, startPosition, 0);
-				
-				//ASTNode node = compilationUnit.findDeclaringNode(((MethodInvocation)((Name) nodeInfo.node).getParent()).resolveMethodBinding().getKey()); 
-
-				if(nodeInfo.isRemove){
-					ParenthesizedExpression pa2Expression = (ParenthesizedExpression) node.getParent().getParent().getParent();
+				//for current pulled method's reference, if casted, remove current casting
+				if(nodeInfo.isToBePulled){
+					if(node instanceof ParenthesizedExpression && ((ParenthesizedExpression) node).getExpression() instanceof CastExpression){
+						ParenthesizedExpression pa2Expression = (ParenthesizedExpression) node;
+						
+						CastExpression castExpression= (CastExpression) pa2Expression.getExpression();
+						ParenthesizedExpression paExpression = (ParenthesizedExpression) castExpression.getExpression();
+						Expression expression = paExpression.getExpression();
+						
+						rewrite.replace(node, expression, null);
+					}
 					
-					CastExpression castExpression= (CastExpression) pa2Expression.getExpression();
-					ParenthesizedExpression paExpression = (ParenthesizedExpression) castExpression.getExpression();
-					Expression expression = paExpression.getExpression();
-					
-					rewrite.replace(node, expression, null);
 				}else{
+					oldTypeName = ((Expression) node).resolveTypeBinding().getName();
+					
 					Expression expressionCopy = (Expression) rewrite.createCopyTarget(node);
 					
 					ParenthesizedExpression paExpression = ast.newParenthesizedExpression();	
@@ -662,26 +675,39 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 					pa2Expression.setExpression(castExpression);
 					
 					rewrite.replace(node, pa2Expression, null);
+					
+
+					//modify return type if needed
+					ASTNode methodDeclarationNode = node;
+					//this node should not be in an invocation while the invocation is in a return statement, such as : return control.setItem();
+					//we only change those node which are not in a return statement, such as return control
+					while(!(methodDeclarationNode instanceof MethodDeclaration 
+							|| methodDeclarationNode instanceof ReturnStatement 
+							|| methodDeclarationNode instanceof TypeDeclaration) 
+								&& methodDeclarationNode != null){
+						methodDeclarationNode = methodDeclarationNode.getParent();
+					}
+					if(methodDeclarationNode instanceof MethodDeclaration){
+						MethodDeclaration md = (MethodDeclaration) methodDeclarationNode;
+						md.accept(new ReturnStatementVisitor(oldTypeName, ast, rewrite, nodeInfo));
+						
+						/*for(Object o : md.getBody().statements()){
+							Statement statement = (Statement) o;
+							if(statement instanceof ReturnStatement){
+							}
+						}*/
+					}
 				}
 				
-			}			
+
+			}
+				
 			
 			TextEdit textEdit = rewrite.rewriteAST(document, unit.getJavaProject().getOptions(true));
 			textEdit.apply(document);
 			
 			String newSource = document.get();
 			unit.getBuffer().setContents(newSource);
-			
-			/*Document document = new Document(unit.getSource());
-			TextEdit textEdit = rewrite.rewriteAST(document, null);
-			textEdit.apply(document);
-
-			
-			buffer.setContents(document.get());	
-			
-			JavaModelUtil.reconcile(unit);
-			unit.commitWorkingCopy(true, new NullProgressMonitor());
-			unit.discardWorkingCopy();*/
 			
 		} catch (JavaModelException e1) {
 			e1.printStackTrace();
@@ -694,6 +720,49 @@ public class PullUpMemberToInterfaceOpportunity extends PullUpMemberOpportunity 
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * find the corresponding node of old nodeInfo in the new compilationUnit
+	 * 
+	 * @param compilationUnit
+	 * @param nodeInfo
+	 * @return
+	 */
+	private ASTNode findCorrespondingNode(CompilationUnit compilationUnit,
+			ASTNodeInfo nodeInfo) {
+		CompilationUnit oldCU = (CompilationUnit) nodeInfo.node.getRoot();
+		ASTNode oldDeclaringNode = nodeInfo.node;
+		while(!(oldDeclaringNode instanceof MethodDeclaration || oldDeclaringNode instanceof FieldDeclaration) 
+				&& oldDeclaringNode != null){
+			oldDeclaringNode = oldDeclaringNode.getParent();
+		}
+		
+		if(oldDeclaringNode == null){
+			System.err.println("some ast node is declared in neither method or field ");
+			return null;
+		}
+		
+		int methodLineNum = oldCU.getLineNumber(oldDeclaringNode.getStartPosition());
+		int nodeLineNum = oldCU.getLineNumber(nodeInfo.node.getStartPosition());
+		int lineDiff = nodeLineNum - methodLineNum;
+		int spaceDiff = nodeInfo.node.getStartPosition() - oldCU.getPosition(nodeLineNum, 0);
+
+		ASTNode newDeclaringNode = null;
+		if(oldDeclaringNode instanceof MethodDeclaration){
+			newDeclaringNode = compilationUnit.findDeclaringNode(((MethodDeclaration)oldDeclaringNode).resolveBinding().getKey());
+		}
+		else if(oldDeclaringNode instanceof FieldDeclaration){
+			FieldDeclaration fd = (FieldDeclaration)oldDeclaringNode;
+			VariableDeclarationFragment fragment = (VariableDeclarationFragment) fd.fragments().get(0);
+			newDeclaringNode = compilationUnit.findDeclaringNode(fragment.resolveBinding().getKey());
+		}
+		
+		int lineNum = compilationUnit.getLineNumber(newDeclaringNode.getStartPosition()) + lineDiff;
+		int startPosition = compilationUnit.getPosition(lineNum, 0) + spaceDiff;
+		
+		ASTNode node = NodeFinder.perform(compilationUnit, startPosition, 0);
+		return node;
 	}
 	
 	/**
