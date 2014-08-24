@@ -142,28 +142,4 @@ public abstract class RefactoringOpportunity {
 		return module;
 	}
 	
-
-	protected CompilationUnit parse(ICompilationUnit unit) {
-		ASTParser parser = ASTParser.newParser(AST.JLS4); 
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setSource(unit); // set source
-		parser.setResolveBindings(true); // we need bindings later on
-		return (CompilationUnit) parser.createAST(null /* IProgressMonitor */); // parse
-	}
-	
-	protected Name createQualifiedName(AST ast, String classToImport) {
-		String[] parts = classToImport.split("\\."); //$NON-NLS-1$
-
-		Name name = null;
-
-		for (int i = 0; i < parts.length; i++) {
-			SimpleName simpleName = ast.newSimpleName(parts[i]);
-			if (i == 0) {
-				name = simpleName;
-			} else {
-				name = ast.newQualifiedName(name, simpleName);
-			}
-		}
-		return name;
-	}
 }

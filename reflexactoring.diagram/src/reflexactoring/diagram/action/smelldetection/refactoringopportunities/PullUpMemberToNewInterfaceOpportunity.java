@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMember;
@@ -58,7 +59,7 @@ import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.PlatformUI;
 
-import reflexactoring.diagram.action.popup.RenameMethodsDialog;
+import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
@@ -155,18 +156,18 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 		//get all members to be pulled
 		ArrayList<UnitMemberWrapper> memberList = this.getToBePulledMemberList();
 		IMember[] members = new IMember[memberList.size()];
-		String[] methodNames = new String[memberList.size()];
+		String[] memberNames = new String[memberList.size()];
 		for(UnitMemberWrapper memberWrapper : memberList){
 			members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();	
-			methodNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
+			memberNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
 		}
 		
 		//show a wizard to rename all the funcions into one name
-		String newMethodName = "";
-		RenameMethodsDialog dialog = new RenameMethodsDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
+		String newMemberName = "";
+		RenameMembersDialog dialog = new RenameMembersDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, memberNames);
 		dialog.create();
 		if(dialog.open() == Window.OK){
-			newMethodName = dialog.getNewMethodName();								
+			newMemberName = dialog.getNewMemberName();								
 		}else{
 			return false;
 		}
@@ -177,14 +178,14 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			interfaceUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer interfaceBuffer = interfaceUnit.getBuffer();		
 			
-			CompilationUnit interfaceCompilationUnit = parse(interfaceUnit);
+			CompilationUnit interfaceCompilationUnit = RefactoringOppUtil.parse(interfaceUnit);
 			interfaceCompilationUnit.recordModifications();
 			
 			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
 			MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(interfaceCompilationUnit.getAST(), mdOfMemberToPull);
 			
 			((TypeDeclaration) interfaceCompilationUnit.types().get(0)).bodyDeclarations().add(md);
-			md.setName(interfaceCompilationUnit.getAST().newSimpleName(newMethodName));
+			md.setName(interfaceCompilationUnit.getAST().newSimpleName(newMemberName));
 			md.modifiers().add(interfaceCompilationUnit.getAST().newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD));
 			md.setBody(null);
 			
@@ -194,14 +195,14 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 					ArrayType arrayType = (ArrayType) returnType;
 					Type elementType = arrayType.getElementType();
 					String name = elementType.resolveBinding().getQualifiedName();
-					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
 					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
 					interfaceCompilationUnit.imports().add(importDeclaration);
 				}else if(returnType.isSimpleType()){
 					String name = returnType.resolveBinding().getQualifiedName();
-					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
 					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
@@ -209,7 +210,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 				}else if(returnType.isParameterizedType()){
 					ParameterizedType pType = (ParameterizedType) returnType;
 					String name = pType.resolveBinding().getQualifiedName().split("<")[0];
-					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
 					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
@@ -229,7 +230,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 					}else{
 						name = vd.resolveBinding().getType().getQualifiedName();
 					}					
-					Name qualifiedName = createQualifiedName(interfaceCompilationUnit.getAST(), name);
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
 					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
@@ -265,7 +266,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 				IBuffer buffer = unit.getBuffer();				
 				buffer.getContents();
 				
-				CompilationUnit compilationUnit = parse(unit);
+				CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
 				compilationUnit.recordModifications();
 				
 				TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
@@ -273,7 +274,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 				Type type = td.getAST().newSimpleType(name);
 				td.superInterfaceTypes().add(type);
 				
-				Name qualifiedName = createQualifiedName(td.getAST(), parentInterface.getFullQualifiedName());
+				Name qualifiedName = RefactoringOppUtil.createQualifiedName(td.getAST(), parentInterface.getFullQualifiedName());
 				ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
 				importDeclaration.setName(qualifiedName);
 				importDeclaration.setOnDemand(false);
@@ -301,18 +302,28 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			}
 		}	
 									
-		//rename each method
+		//rename each member
 		for(UnitMemberWrapper memberWrapper : memberList){	
-			try {									
-				IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
-				
-				if(!methodToRename.getElementName().equals(newMethodName)){
+			try {
+				if(memberWrapper.getJavaMember() instanceof IMethod){
+					IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
 					
-					RenameSupport support = RenameSupport.create(methodToRename, newMethodName, RenameSupport.UPDATE_REFERENCES);
-					support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+					if(!methodToRename.getElementName().equals(newMemberName)){
+						
+						RenameSupport support = RenameSupport.create(methodToRename, newMemberName, RenameSupport.UPDATE_REFERENCES);
+						support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+						
+					}
+				}else{
+					IField fieldToRename = (IField) memberWrapper.getJavaMember();
 					
+					if(!fieldToRename.getElementName().equals(newMemberName)){
+						
+						RenameSupport support = RenameSupport.create(fieldToRename, newMemberName, RenameSupport.UPDATE_REFERENCES);
+						support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+						
+					}
 				}
-				
 			} catch (CoreException e1) {
 				e1.printStackTrace();
 				return false;
@@ -327,7 +338,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 		
 		HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>> modificationMap = new HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>>();
 		
-		//cast method invocation variable into parent interface, summarize a map out first
+		//cast corresponding variable into parent interface, summarize a map out first
 		for(UnitMemberWrapper member : memberList){
 			for(ProgramReference reference : member.getRefererPointList()){
 				for(ReferenceInflucencedDetail variableDetail : reference.getVariableDeclarationList()){
@@ -581,7 +592,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			String oldTypeName = null;
 			
 
-			CompilationUnit compilationUnit = parse(unit);
+			CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
 		
 			AST ast = compilationUnit.getAST();
 			ASTRewrite rewrite= ASTRewrite.create(ast);		
@@ -636,12 +647,6 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 					if(methodDeclarationNode instanceof MethodDeclaration){
 						MethodDeclaration md = (MethodDeclaration) methodDeclarationNode;
 						md.accept(new ReturnStatementVisitor(oldTypeName, ast, rewrite, nodeInfo));
-						
-						/*for(Object o : md.getBody().statements()){
-							Statement statement = (Statement) o;
-							if(statement instanceof ReturnStatement){
-							}
-						}*/
 					}
 				}
 				
@@ -726,13 +731,13 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer buffer = unit.getBuffer();									
 			
-			CompilationUnit compilationUnit = parse(unit);
+			CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
 			VariableDeclaration variableNode = (VariableDeclaration) compilationUnit.findDeclaringNode(variableNode0.resolveBinding().getKey());
 			
 			compilationUnit.recordModifications();
 			
 			//add import
-			Name qualifiedName = createQualifiedName(compilationUnit.getAST(), parentInterface.getFullQualifiedName());
+			Name qualifiedName = RefactoringOppUtil.createQualifiedName(compilationUnit.getAST(), parentInterface.getFullQualifiedName());
 			ImportDeclaration importDeclaration = compilationUnit.getAST().newImportDeclaration();
 			importDeclaration.setName(qualifiedName);
 			importDeclaration.setOnDemand(false);

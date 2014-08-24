@@ -22,20 +22,20 @@ import org.eclipse.swt.widgets.Text;
  * @author Adi
  *
  */
-public class RenameMethodsDialog extends TitleAreaDialog {
+public class RenameMembersDialog extends TitleAreaDialog {
 
-	private Text newMethodNameText;
+	private Text newMemberNameText;
 	
-	private String newMethodName;
-	private String[] oldMethodNames;
+	private String newMemberName;
+	private String[] oldMemberNames;
 	
 	/**
 	 * @param parentShell
 	 */
-	public RenameMethodsDialog(Shell parentShell, String newMethodName, String[] oldMethodNames) {
+	public RenameMembersDialog(Shell parentShell, String newMemberName, String[] oldMemberNames) {
 		super(parentShell);
-		this.newMethodName = newMethodName;
-		this.oldMethodNames = oldMethodNames;
+		this.newMemberName = newMemberName;
+		this.oldMemberNames = oldMemberNames;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -43,17 +43,17 @@ public class RenameMethodsDialog extends TitleAreaDialog {
 		setHelpAvailable(false);
 		super.create();
 		
-		setTitle("Set new name for methods to be pulled up.");
+		setTitle("Set new name for members to be pulled up.");
 		
 		String methods = "";
-		for(int i = 0; i < oldMethodNames.length; i++){
-			methods += oldMethodNames[i];
-			if(i != oldMethodNames.length - 1){
+		for(int i = 0; i < oldMemberNames.length; i++){
+			methods += oldMemberNames[i];
+			if(i != oldMemberNames.length - 1){
 				methods += " , ";
 			}
 		}
 		
-		setMessage("Please set the new name for methods: " + methods, IMessageProvider.INFORMATION);
+		setMessage("Please set the new name for members: " + methods, IMessageProvider.INFORMATION);
 	}
 
 
@@ -78,14 +78,14 @@ public class RenameMethodsDialog extends TitleAreaDialog {
 		nameLabel.setText("New Method Name");
 		nameLabel.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
 
-		newMethodNameText = new Text(workArea, SWT.BORDER);
+		newMemberNameText = new Text(workArea, SWT.BORDER);
 		GridData nameTextData = new GridData(SWT.FILL, SWT.FILL, false, false);
 		nameTextData.widthHint = 460;
 		nameTextData.heightHint = 20;
-		newMethodNameText.setLayoutData(nameTextData);
+		newMemberNameText.setLayoutData(nameTextData);
 		
-		String content = (this.newMethodName == null)? oldMethodNames[0].split("\\.")[1] : this.newMethodName;
-		newMethodNameText.setText(content);
+		String content = (this.newMemberName == null)? oldMemberNames[0].split("\\.")[1] : this.newMemberName;
+		newMemberNameText.setText(content);
 		
 		return workArea;
 	}
@@ -141,11 +141,11 @@ public class RenameMethodsDialog extends TitleAreaDialog {
 	
 	@Override
 	protected void okPressed() {
-		this.newMethodName = newMethodNameText.getText();
+		this.newMemberName = newMemberNameText.getText();
 		super.okPressed();
 	}
 	
-	public String getNewMethodName(){
-		return this.newMethodName;
+	public String getNewMemberName(){
+		return this.newMemberName;
 	}
 }

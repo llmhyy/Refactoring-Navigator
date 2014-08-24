@@ -28,7 +28,7 @@ import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.PlatformUI;
 
-import reflexactoring.diagram.action.popup.RenameMethodsDialog;
+import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -122,10 +122,10 @@ public class PullUpMemberToExistingClassOpportunity extends PullUpMemberOpportun
 		
 		//show a wizard to rename all the funcions into one name
 		String newMethodName = "";
-		RenameMethodsDialog dialog = new RenameMethodsDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
+		RenameMembersDialog dialog = new RenameMembersDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
 		dialog.create();
 		if(dialog.open() == Window.OK){
-			newMethodName = dialog.getNewMethodName();								
+			newMethodName = dialog.getNewMemberName();								
 		}else{
 			return false;
 		}
@@ -136,7 +136,7 @@ public class PullUpMemberToExistingClassOpportunity extends PullUpMemberOpportun
 			parentClassUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer parentClassBuffer = parentClassUnit.getBuffer();		
 			
-			CompilationUnit parentClassCompilationUnit = parse(parentClassUnit);
+			CompilationUnit parentClassCompilationUnit = RefactoringOppUtil.parse(parentClassUnit);
 			parentClassCompilationUnit.recordModifications();
 			
 			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
