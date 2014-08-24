@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -103,6 +104,34 @@ public class ClassStructureBuilder {
 			return false;
 		}
 
+		public class ExpressionVisitor extends ASTVisitor{
+			
+			private VariableDeclarationWrapper declaration;
+
+			public boolean visit(SimpleType type){
+				return false;
+			}
+			
+			public boolean visit(SimpleName name){
+				setDeclaration(extractVariableDeclarationWrpper(name));
+				return false;
+			}
+
+			/**
+			 * @return the declaration
+			 */
+			public VariableDeclarationWrapper getDeclaration() {
+				return declaration;
+			}
+
+			/**
+			 * @param declaration the declaration to set
+			 */
+			public void setDeclaration(VariableDeclarationWrapper declaration) {
+				this.declaration = declaration;
+			}
+		}
+		
 		/**
 		 * invoke method
 		 */
@@ -122,16 +151,25 @@ public class ClassStructureBuilder {
 						 */
 						VariableDeclarationWrapper declaration = null;
 						Expression expression = invocation.getExpression();
-						if(expression instanceof Name){
-							Name name = (Name)expression;
-							declaration = extractVariableDeclarationWrpper(name);
-							
-							if(null != declaration){
-								decList.add(new ReferenceInflucencedDetail(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
+						if(expression != null){
+							if(expression instanceof Name){
+								Name name = (Name)expression;
+								declaration = extractVariableDeclarationWrpper(name);
 								
-								//decList.put(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT);
+								if(null != declaration){
+									decList.add(new ReferenceInflucencedDetail(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
+									
+									//decList.put(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT);
+								}
+							}
+							else{
+								ExpressionVisitor expVisitor = new ExpressionVisitor();
+								expression.accept(expVisitor);
+								declaration = expVisitor.getDeclaration();
+								decList.add(new ReferenceInflucencedDetail(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
 							}
 						}
+						
 						
 						/**
 						 * check the parameter usage, e.g., where the "p" in "a.m(p)" is declared.
