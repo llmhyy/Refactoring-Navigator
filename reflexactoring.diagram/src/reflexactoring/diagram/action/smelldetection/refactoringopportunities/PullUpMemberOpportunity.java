@@ -401,7 +401,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @param memberList
 	 * @param newMemberName
 	 */
-	protected static boolean createAbstractMethodInParent(
+	protected boolean createAbstractMethodInParent(
 			ICompilationUnitWrapper parent,
 			ArrayList<UnitMemberWrapper> memberList, String newMemberName) {
 		ICompilationUnit parentUnit = parent.getCompilationUnit();
@@ -835,7 +835,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @param memberList
 	 * @param newMemberName
 	 */
-	protected static boolean renameMembers(ArrayList<UnitMemberWrapper> memberList,
+	protected boolean renameMembers(ArrayList<UnitMemberWrapper> memberList,
 			String newMemberName) {
 		for(UnitMemberWrapper memberWrapper : memberList){	
 			try {
