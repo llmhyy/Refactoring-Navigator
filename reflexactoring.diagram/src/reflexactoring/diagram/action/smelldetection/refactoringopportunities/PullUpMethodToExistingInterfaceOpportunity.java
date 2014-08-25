@@ -54,7 +54,7 @@ public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOppo
 
 	@Override
 	public String getRefactoringName() {
-		return "Pull Up Member to Existing Interface";
+		return "Pull Up Method to Existing Interface";
 	}
 
 	@Override

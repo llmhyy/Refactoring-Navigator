@@ -208,7 +208,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		}
 		
 		String head = "" + simpleName.toCharArray()[0];
-		simpleName = head + simpleName.substring(1, simpleName.length());
+		simpleName = head.toUpperCase() + simpleName.substring(1, simpleName.length());
 		
 		ICompilationUnitWrapper newUnit = new ICompilationUnitWrapper(subClassUnit.getMappingModule(), 
 				isInterface, simpleName, subClassUnit.getPackageName(), null, "abstract");
