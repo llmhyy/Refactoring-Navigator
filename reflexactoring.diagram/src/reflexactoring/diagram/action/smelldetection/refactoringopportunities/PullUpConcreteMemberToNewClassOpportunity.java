@@ -187,7 +187,7 @@ public class PullUpConcreteMemberToNewClassOpportunity  extends PullUpMemberOppo
 	}
 
 	@Override
-	protected boolean checkLegal(ProgramModel model) {
+	protected boolean checkLegal() {
 		//TODO
 		return true;
 	}

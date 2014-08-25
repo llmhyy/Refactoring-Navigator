@@ -235,7 +235,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 //	}
 
 	@Override
-	protected boolean checkLegal(ProgramModel model) {
+	protected boolean checkLegal() {
 		// TODO Auto-generated method stub
 		return false;
 	}

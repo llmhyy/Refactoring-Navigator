@@ -206,7 +206,7 @@ public class PullUpMethodToNewInterfaceOpportunity extends PullUpMemberOpportuni
 	}	
 
 	@Override
-	protected boolean checkLegal(ProgramModel model) {
+	protected boolean checkLegal() {
 		//TODO
 		return true;
 	}
