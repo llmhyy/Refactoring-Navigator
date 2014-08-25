@@ -11,26 +11,19 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTMatcher;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ArrayType;
-import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -40,9 +33,7 @@ import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.ReturnStatement;
-import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
@@ -62,8 +53,7 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
-import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
@@ -597,24 +587,7 @@ public class PullUpMethodToNewInterfaceOpportunity extends PullUpMemberOpportuni
 		return refactoringDetails;
 	};
 		
-	public class ASTNodeInfo {
-		ASTNode node;
-		boolean isToBePulled;
-		String castType;
-		public ASTNodeInfo(ASTNode node, boolean isToBePulled, String castType){
-			this.node = node;
-			this.isToBePulled = isToBePulled;
-			this.castType = castType;
-		}
-		public boolean equails(Object o){
-			if(o instanceof ASTNodeInfo){
-				if(((ASTNodeInfo)o).node.equals(this.node)
-						&& ((ASTNodeInfo)o).isToBePulled == this.isToBePulled
-						&& ((ASTNodeInfo)o).castType.equals(this.castType)) return true;
-			}
-			return false;
-		}
-	}
+	
 	
 	protected void addNodeInfoToMap(HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>> map, ASTNode node, boolean isToBePulled, String castType){
 		ICompilationUnit icu = (ICompilationUnit) ((CompilationUnit) node.getRoot()).getJavaElement();
@@ -630,59 +603,7 @@ public class PullUpMethodToNewInterfaceOpportunity extends PullUpMemberOpportuni
 		}
 	}
 	
-	public class ReturnStatementVisitor extends ASTVisitor {
-		private String oldTypeName;
-		private AST ast;
-		private ASTRewrite rewrite;
-		private ASTNodeInfo nodeInfo;
-		
-		/**
-		 * @param oldTypeName
-		 * @param ast
-		 * @param rewrite
-		 * @param nodeInfo
-		 */
-		public ReturnStatementVisitor(String oldTypeName, AST ast,
-				ASTRewrite rewrite, ASTNodeInfo nodeInfo) {
-			super();
-			this.oldTypeName = oldTypeName;
-			this.ast = ast;
-			this.rewrite = rewrite;
-			this.nodeInfo = nodeInfo;
-		}
-
-		public boolean visit(ReturnStatement statement){
-			
-			Expression exp = statement.getExpression();
-			
-			if(exp == null){
-				return false;
-			}
-			
-			if(exp.resolveTypeBinding().getName().equals(oldTypeName)){
-				
-				Expression expressionCopy1 = (Expression) rewrite.createCopyTarget(exp);
-				
-				ParenthesizedExpression paExpression1 = ast.newParenthesizedExpression();	
-				paExpression1.setExpression(expressionCopy1);
-				
-				CastExpression castExpression1 = ast.newCastExpression();
-				Name name1 = ast.newSimpleName(nodeInfo.castType);
-				Type type1 = ast.newSimpleType(name1);
-				castExpression1.setType(type1);
-				castExpression1.setExpression(paExpression1);
-				
-				ParenthesizedExpression pa2Expression1 = ast.newParenthesizedExpression();	
-				pa2Expression1.setExpression(castExpression1);
-				
-				rewrite.replace(exp, pa2Expression1, null);
-				
-			}
-			
-			
-			return true;
-		}
-	}
+	
 	
 	private boolean modifyCastExpression(ArrayList<ASTNodeInfo> nodeInfoList){
 		try {

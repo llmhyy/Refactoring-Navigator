@@ -1,7 +1,7 @@
 /**
  * 
  */
-package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
+package reflexactoring.diagram.action.smelldetection.refactoringopportunities.util;
 
 import java.util.ArrayList;
 
@@ -103,7 +103,7 @@ public class RefactoringOppUtil {
 	}
 	
 
-	protected static CompilationUnit parse(ICompilationUnit unit) {
+	public static CompilationUnit parse(ICompilationUnit unit) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4); 
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(unit); // set source
@@ -111,7 +111,7 @@ public class RefactoringOppUtil {
 		return (CompilationUnit) parser.createAST(null /* IProgressMonitor */); // parse
 	}
 	
-	protected static Name createQualifiedName(AST ast, String classToImport) {
+	public static Name createQualifiedName(AST ast, String classToImport) {
 		String[] parts = classToImport.split("\\."); //$NON-NLS-1$
 
 		Name name = null;
