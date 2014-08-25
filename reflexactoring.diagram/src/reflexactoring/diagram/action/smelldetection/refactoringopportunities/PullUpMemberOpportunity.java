@@ -703,10 +703,13 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	protected boolean modifyCastExpression(ArrayList<ASTNodeInfo> nodeInfoList){
 		try {
 			ICompilationUnit unit = (ICompilationUnit) ((CompilationUnit) nodeInfoList.get(0).node.getRoot()).getJavaElement();
-			String source = unit.getBuffer().getContents();
-			Document document= new Document(source);
+//			String source = unit.getBuffer().getContents();
+//			Document document= new Document(source);
 			String oldTypeName = null;
 			
+
+			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+			IBuffer buffer = unit.getBuffer();			
 
 			CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
 		
@@ -770,11 +773,22 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			}
 				
 			
-			TextEdit textEdit = rewrite.rewriteAST(document, unit.getJavaProject().getOptions(true));
-			textEdit.apply(document);
+//			TextEdit textEdit = rewrite.rewriteAST(document, unit.getJavaProject().getOptions(true));
+//			textEdit.apply(document);
+//			
+//			String newSource = document.get();
+//			unit.getBuffer().setContents(newSource);
 			
-			String newSource = document.get();
-			unit.getBuffer().setContents(newSource);
+			Document document = new Document(unit.getSource());
+			TextEdit textEdit = rewrite.rewriteAST(document, null);
+			textEdit.apply(document);
+
+			
+			buffer.setContents(document.get());	
+			
+			JavaModelUtil.reconcile(unit);
+			unit.commitWorkingCopy(true, new NullProgressMonitor());
+			unit.discardWorkingCopy();
 			
 		} catch (JavaModelException e1) {
 			e1.printStackTrace();
