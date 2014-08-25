@@ -491,7 +491,7 @@ public class PullUpMethodToNewInterfaceOpportunity extends PullUpMemberOpportuni
 	
 	@Override
 	public String getRefactoringName() {
-		return "Pull Up Member to New Interface";
+		return "Pull Up Method to New Interface";
 	}
 	
 	public ICompilationUnitWrapper getTargetInterface(){
