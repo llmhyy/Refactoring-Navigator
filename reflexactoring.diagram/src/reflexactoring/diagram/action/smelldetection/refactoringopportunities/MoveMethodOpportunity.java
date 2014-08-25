@@ -209,6 +209,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		}
 		
 		return true;
+		
+		
+		//TODO refresh model (get new method name first)
 	}
 	
 //	@Override

@@ -4,8 +4,16 @@
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IMember;
+import org.eclipse.jface.window.Window;
+import org.eclipse.ui.PlatformUI;
+
+import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberOpportunity.ASTNodeInfo;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
@@ -67,8 +75,51 @@ public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOppo
 
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
-		// TODO Auto-generated method stub
-		return false;
+		ICompilationUnitWrapper parentInterface = this.targetUnit;
+
+		//get all members to be pulled
+		ArrayList<UnitMemberWrapper> memberList = this.getToBePulledMemberList();
+		IMember[] members = new IMember[memberList.size()];
+		String[] memberNames = new String[memberList.size()];
+		for(UnitMemberWrapper memberWrapper : memberList){
+			members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();	
+			memberNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
+		}
+		
+		//show a wizard to rename all the funcions into one name
+		String newMemberName = "";
+		RenameMembersDialog dialog = new RenameMembersDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, memberNames);
+		dialog.create();
+		if(dialog.open() == Window.OK){
+			newMemberName = dialog.getNewMemberName();								
+		}else{
+			return false;
+		}
+		
+		//Create an abstract method in parentInterface and set corresponding imports
+		if(!createAbstractMethodInInterface(parentInterface, memberList, newMemberName)){
+			return false;
+		}
+		
+		//rename each member
+		if(!renameMembers(memberList, newMemberName)){
+			return false;
+		}
+
+		//cast corresponding variable into parent interface, summarize a map out first		
+		HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>> modificationMap = summarizeCastMap(parentInterface, memberList);
+		
+		//do modifications: add or remove casting
+		for(ICompilationUnit icu : modificationMap.keySet()){
+			if(!this.modifyCastExpression(modificationMap.get(icu))){
+				return false;
+			}
+		}
+
+		//refresh the model
+		refreshModel(position, sequence, parentInterface, memberList, newMemberName);
+		
+		return true;
 	}
 
 	@Override

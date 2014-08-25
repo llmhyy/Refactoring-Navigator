@@ -349,7 +349,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			Iterator<ICompilationUnitWrapper> interfIter = commonInterfaces.iterator();
 			while(interfIter.hasNext()){
 				ICompilationUnitWrapper interf = interfIter.next();
-				if(interfaces.size() != 0 && !interfaces.contains(interf)){
+				if(!interfaces.contains(interf)){
 					interfIter.remove();
 				}
 			}
