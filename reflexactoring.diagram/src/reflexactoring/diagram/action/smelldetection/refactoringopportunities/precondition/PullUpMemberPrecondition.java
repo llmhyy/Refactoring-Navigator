@@ -12,9 +12,9 @@ import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToExistingClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToNewClassOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToExistingInterfaceOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToExistingInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewClassOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewInterfaceOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToNewInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToExistingClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
@@ -282,8 +282,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			
 			if(member instanceof MethodWrapper){
 				if(isSuitableForPullingIntoNewUnit){
-					PullUpMemberToNewInterfaceOpportunity newInterfaceOpp = 
-							new PullUpMemberToNewInterfaceOpportunity(refactoringPlace, moduleList);
+					PullUpMethodToNewInterfaceOpportunity newInterfaceOpp = 
+							new PullUpMethodToNewInterfaceOpportunity(refactoringPlace, moduleList);
 					opportunities.add(newInterfaceOpp);		
 					
 					
@@ -294,8 +294,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 				ArrayList<ICompilationUnitWrapper> commonInterfaceList = findCommonInterface(refactoringPlace);
 				for(ICompilationUnitWrapper commonInterface: commonInterfaceList){
 					if(isAValidatePullUpInTermsOfReference(refactoringPlace, commonInterface)){
-						PullUpMemberToExistingInterfaceOpportunity existingInterfaceOpp =
-								new PullUpMemberToExistingInterfaceOpportunity(refactoringPlace, commonInterface, moduleList);
+						PullUpMethodToExistingInterfaceOpportunity existingInterfaceOpp =
+								new PullUpMethodToExistingInterfaceOpportunity(refactoringPlace, commonInterface, moduleList);
 						opportunities.add(existingInterfaceOpp);						
 					}
 				}

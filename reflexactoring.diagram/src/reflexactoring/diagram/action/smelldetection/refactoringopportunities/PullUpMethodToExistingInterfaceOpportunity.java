@@ -15,13 +15,13 @@ import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
  * @author linyun
  *
  */
-public class PullUpMemberToExistingInterfaceOpportunity extends PullUpMemberOpportunity{
+public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOpportunity{
 
 	/**
 	 * @param toBePulledMemberList
 	 * @param moduleList
 	 */
-	public PullUpMemberToExistingInterfaceOpportunity(
+	public PullUpMethodToExistingInterfaceOpportunity(
 			ArrayList<UnitMemberWrapper> toBePulledMemberList, ICompilationUnitWrapper targetUnit,
 			ArrayList<ModuleWrapper> moduleList) {
 		super(toBePulledMemberList, moduleList);
