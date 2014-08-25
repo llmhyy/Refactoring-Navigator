@@ -13,9 +13,9 @@ import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToExistingClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToNewClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToExistingInterfaceOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpConcreteMemberToNewClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToNewInterfaceOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToExistingClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpConcreteMemberToExistingClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -257,15 +257,15 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 					((commonAncestor != null) || (isWithoutAnySuperclass))){
 				if(commonAncestor != null){
 					if(isSuitableForPullingIntoCommonSuperClass){
-						PullUpMemberToExistingClassOpportunity opp = 
-								new PullUpMemberToExistingClassOpportunity(refactoringPlace, moduleList, commonAncestor);
+						PullUpConcreteMemberToExistingClassOpportunity opp = 
+								new PullUpConcreteMemberToExistingClassOpportunity(refactoringPlace, moduleList, commonAncestor);
 						opportunities.add(opp);						
 					}
 				}
 				else{
 					if(isSuitableForPullingIntoNewUnit){
-						PullUpMemberToNewClassOpportunity opp = 
-								new PullUpMemberToNewClassOpportunity(refactoringPlace, moduleList);
+						PullUpConcreteMemberToNewClassOpportunity opp = 
+								new PullUpConcreteMemberToNewClassOpportunity(refactoringPlace, moduleList);
 						opportunities.add(opp);						
 					}
 				}
