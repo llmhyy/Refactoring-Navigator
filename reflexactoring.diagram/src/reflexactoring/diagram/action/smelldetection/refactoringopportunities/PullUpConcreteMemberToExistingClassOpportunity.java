@@ -5,6 +5,7 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -31,8 +32,10 @@ import org.eclipse.ui.PlatformUI;
 import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberOpportunity.ASTNodeInfo;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
@@ -107,87 +110,60 @@ public class PullUpConcreteMemberToExistingClassOpportunity extends PullUpMember
 	
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
-		ICompilationUnitWrapper parentClass = this.targetUnit;	
-		if(parentClass == null){
-			return false;
-		}
+		ICompilationUnitWrapper parentClass = this.targetUnit;
+		boolean isField = this.getToBePulledMemberList().get(0) instanceof FieldWrapper;
 
 		//get all members to be pulled
 		ArrayList<UnitMemberWrapper> memberList = this.getToBePulledMemberList();
 		IMember[] members = new IMember[memberList.size()];
-		String[] methodNames = new String[memberList.size()];
+		String[] memberNames = new String[memberList.size()];
 		for(UnitMemberWrapper memberWrapper : memberList){
 			members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();	
-			methodNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
+			memberNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
 		}
 		
-		//show a wizard to rename all the funcions into one name
-		String newMethodName = "";
-		RenameMembersDialog dialog = new RenameMembersDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
+		//show a wizard to rename all the members into one name
+		String newMemberName = "";
+		RenameMembersDialog dialog = new RenameMembersDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, memberNames);
 		dialog.create();
 		if(dialog.open() == Window.OK){
-			newMethodName = dialog.getNewMemberName();								
+			newMemberName = dialog.getNewMemberName();								
 		}else{
 			return false;
 		}
 		
-		//Create an method in parentClass
-		ICompilationUnit parentClassUnit = parentClass.getCompilationUnit();
-		try{
-			parentClassUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-			IBuffer parentClassBuffer = parentClassUnit.getBuffer();		
-			
-			CompilationUnit parentClassCompilationUnit = RefactoringOppUtil.parse(parentClassUnit);
-			parentClassCompilationUnit.recordModifications();
-			
-			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
-			MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(parentClassCompilationUnit.getAST(), mdOfMemberToPull);
-			
-			((TypeDeclaration) parentClassCompilationUnit.types().get(0)).bodyDeclarations().add(md);
-			md.setName(parentClassCompilationUnit.getAST().newSimpleName(newMethodName));
-			Block block = parentClassCompilationUnit.getAST().newBlock();
-			md.setBody(block);
-			
-			Document parentClassDocument = new Document(parentClassUnit.getSource());
-			TextEdit parentClassTextEdit = parentClassCompilationUnit.rewrite(parentClassDocument, null);
-			parentClassTextEdit.apply(parentClassDocument);
-			
-			parentClassBuffer.setContents(parentClassDocument.get());	
-			
-			JavaModelUtil.reconcile(parentClassUnit);
-			parentClassUnit.commitWorkingCopy(true, new NullProgressMonitor());
-			parentClassUnit.discardWorkingCopy();
-		} catch (JavaModelException e1) {
-			e1.printStackTrace();
-			return false;
-		} catch (MalformedTreeException e1) {
-			e1.printStackTrace();
-			return false;
-		} catch (BadLocationException e1) {
-			e1.printStackTrace();
-			return false;
+		//create member in parent class 
+		if(isField){
+			//create the declaration and initialization of field in parent class
+			if(!createConcreteFieldInParent(parentClass, memberList, newMemberName)){
+				return false;
+			}
+		}else{
+			//Create a concrete method in parent class and set corresponding imports
+			if(!createConcreteMethodInParent(parentClass, memberList, newMemberName)){
+				return false;
+			}
 		}
-									
-		//rename each method
-		for(UnitMemberWrapper memberWrapper : memberList){	
-			try {									
-				IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
-				
-				RenameSupport support = RenameSupport.create(methodToRename, newMethodName, RenameSupport.UPDATE_REFERENCES);
-				support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
-				
-			} catch (CoreException e1) {
-				e1.printStackTrace();
+		
+		//remove the one in child classes
+		for(UnitMemberWrapper member : memberList){
+			if(!removeConcreteMemberInChild(member)){
 				return false;
-			} catch (InvocationTargetException e1) {
-				e1.printStackTrace();
-				return false;
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-				return false;
-			}								
-								
+			}
 		}
+
+		//cast corresponding variable into parent class, summarize a map out first		
+		HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>> modificationMap = summarizeCastMap(parentClass, memberList);
+		
+		//do modifications: add or remove casting
+		for(ICompilationUnit icu : modificationMap.keySet()){
+			if(!this.modifyCastExpression(modificationMap.get(icu))){
+				return false;
+			}
+		}
+
+		//refresh the model
+		refreshModel(position, sequence, parentClass, memberList, newMemberName);
 		
 		return true;
 	}

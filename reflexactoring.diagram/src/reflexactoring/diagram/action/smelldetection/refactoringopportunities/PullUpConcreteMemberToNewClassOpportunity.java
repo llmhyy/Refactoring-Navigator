@@ -5,6 +5,7 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -35,6 +36,7 @@ import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberOpportunity.ASTNodeInfo;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -121,131 +123,65 @@ public class PullUpConcreteMemberToNewClassOpportunity  extends PullUpMemberOppo
 
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
+		//create new class
 		JavaClassCreator javaCreator = new JavaClassCreator();
 		ICompilationUnitWrapper parentClass = javaCreator.createClass();	
 		if(parentClass == null){
 			return false;
-		}
+		}		
+		boolean isField = this.getToBePulledMemberList().get(0) instanceof FieldWrapper;
 
 		//get all members to be pulled
 		ArrayList<UnitMemberWrapper> memberList = this.getToBePulledMemberList();
 		IMember[] members = new IMember[memberList.size()];
-		String[] methodNames = new String[memberList.size()];
+		String[] memberNames = new String[memberList.size()];
 		for(UnitMemberWrapper memberWrapper : memberList){
 			members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();	
-			methodNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
+			memberNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
 		}
 		
-		//show a wizard to rename all the funcions into one name
-		String newMethodName = "";
-		RenameMembersDialog dialog = new RenameMembersDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, methodNames);
+		//show a wizard to rename all the members into one name
+		String newMemberName = "";
+		RenameMembersDialog dialog = new RenameMembersDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), null, memberNames);
 		dialog.create();
 		if(dialog.open() == Window.OK){
-			newMethodName = dialog.getNewMemberName();								
+			newMemberName = dialog.getNewMemberName();								
 		}else{
 			return false;
 		}
 		
-		//Create an method in parentClass
-		ICompilationUnit parentClassUnit = parentClass.getCompilationUnit();
-		try{
-			parentClassUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-			IBuffer parentClassBuffer = parentClassUnit.getBuffer();		
-			
-			CompilationUnit parentClassCompilationUnit = RefactoringOppUtil.parse(parentClassUnit);
-			parentClassCompilationUnit.recordModifications();
-			
-			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
-			MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(parentClassCompilationUnit.getAST(), mdOfMemberToPull);
-			
-			((TypeDeclaration) parentClassCompilationUnit.types().get(0)).bodyDeclarations().add(md);
-			md.setName(parentClassCompilationUnit.getAST().newSimpleName(newMethodName));
-			Block block = parentClassCompilationUnit.getAST().newBlock();
-			md.setBody(block);
-			
-			Document parentClassDocument = new Document(parentClassUnit.getSource());
-			TextEdit parentClassTextEdit = parentClassCompilationUnit.rewrite(parentClassDocument, null);
-			parentClassTextEdit.apply(parentClassDocument);
-			
-			parentClassBuffer.setContents(parentClassDocument.get());	
-			
-			JavaModelUtil.reconcile(parentClassUnit);
-			parentClassUnit.commitWorkingCopy(true, new NullProgressMonitor());
-			parentClassUnit.discardWorkingCopy();
-		} catch (JavaModelException e1) {
-			e1.printStackTrace();
-			return false;
-		} catch (MalformedTreeException e1) {
-			e1.printStackTrace();
-			return false;
-		} catch (BadLocationException e1) {
-			e1.printStackTrace();
-			return false;
-		}							
-		
-		//make every child class extends the superclass	
-		for(UnitMemberWrapper member : this.getToBePulledMemberList()){
-			ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
-			try {
-				unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-				IBuffer buffer = unit.getBuffer();									
-				
-				CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
-				compilationUnit.recordModifications();
-				
-				TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
-				Name name = td.getAST().newSimpleName(parentClass.getName());
-				Type type = td.getAST().newSimpleType(name);
-				td.setSuperclassType(type);
-				
-				Name qualifiedName = RefactoringOppUtil.createQualifiedName(td.getAST(), parentClass.getFullQualifiedName());
-				ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
-				importDeclaration.setName(qualifiedName);
-				importDeclaration.setOnDemand(false);
-				compilationUnit.imports().add(importDeclaration);
-				
-				Document document = new Document(unit.getSource());
-				TextEdit textEdit = compilationUnit.rewrite(document, null);
-				textEdit.apply(document);
-				
-				buffer.setContents(document.get());	
-				
-				JavaModelUtil.reconcile(unit);
-				unit.commitWorkingCopy(true, new NullProgressMonitor());
-				unit.discardWorkingCopy();
-				
-			} catch (JavaModelException e1) {
-				e1.printStackTrace();
-				return false;
-			} catch (MalformedTreeException e1) {
-				e1.printStackTrace();
-				return false;
-			} catch (BadLocationException e1) {
-				e1.printStackTrace();
+		//create member in parent class 
+		if(isField){
+			//create the declaration and initialization of field in parent class
+			if(!createConcreteFieldInParent(parentClass, memberList, newMemberName)){
 				return false;
 			}
-		}	
-									
-		//rename each method
-		for(UnitMemberWrapper memberWrapper : memberList){	
-			try {									
-				IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
-				
-				RenameSupport support = RenameSupport.create(methodToRename, newMethodName, RenameSupport.UPDATE_REFERENCES);
-				support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
-				
-			} catch (CoreException e1) {
-				e1.printStackTrace();
+		}else{
+			//Create a concrete method in parent class and set corresponding imports
+			if(!createConcreteMethodInParent(parentClass, memberList, newMemberName)){
 				return false;
-			} catch (InvocationTargetException e1) {
-				e1.printStackTrace();
-				return false;
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-				return false;
-			}								
-								
+			}
 		}
+		
+		//remove the one in child classes
+		for(UnitMemberWrapper member : memberList){
+			if(!removeConcreteMemberInChild(member)){
+				return false;
+			}
+		}
+
+		//cast corresponding variable into parent class, summarize a map out first		
+		HashMap<ICompilationUnit, ArrayList<ASTNodeInfo>> modificationMap = summarizeCastMap(parentClass, memberList);
+		
+		//do modifications: add or remove casting
+		for(ICompilationUnit icu : modificationMap.keySet()){
+			if(!this.modifyCastExpression(modificationMap.get(icu))){
+				return false;
+			}
+		}
+
+		//refresh the model
+		refreshModel(position, sequence, parentClass, memberList, newMemberName);
 		
 		return true;
 	}

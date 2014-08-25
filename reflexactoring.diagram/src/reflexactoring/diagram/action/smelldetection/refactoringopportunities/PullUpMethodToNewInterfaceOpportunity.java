@@ -165,7 +165,7 @@ public class PullUpMethodToNewInterfaceOpportunity extends PullUpMemberOpportuni
 		}
 		
 		//Create an abstract method in parentInterface and set corresponding imports
-		if(!createAbstractMethodInInterface(parentInterface, memberList, newMemberName)){
+		if(!createAbstractMethodInParent(parentInterface, memberList, newMemberName)){
 			return false;
 		}
 		

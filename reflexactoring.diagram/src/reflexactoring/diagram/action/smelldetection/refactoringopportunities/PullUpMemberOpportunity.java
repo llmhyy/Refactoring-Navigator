@@ -40,6 +40,7 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.ui.refactoring.RenameSupport;
@@ -396,27 +397,27 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	}
 
 	/**
-	 * @param parentInterface
+	 * @param parent
 	 * @param memberList
 	 * @param newMemberName
 	 */
-	protected static boolean createAbstractMethodInInterface(
-			ICompilationUnitWrapper parentInterface,
+	protected static boolean createAbstractMethodInParent(
+			ICompilationUnitWrapper parent,
 			ArrayList<UnitMemberWrapper> memberList, String newMemberName) {
-		ICompilationUnit interfaceUnit = parentInterface.getCompilationUnit();
+		ICompilationUnit parentUnit = parent.getCompilationUnit();
 		try{
-			interfaceUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
-			IBuffer interfaceBuffer = interfaceUnit.getBuffer();		
+			parentUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+			IBuffer parentBuffer = parentUnit.getBuffer();		
 			
-			CompilationUnit interfaceCompilationUnit = RefactoringOppUtil.parse(interfaceUnit);
-			interfaceCompilationUnit.recordModifications();
+			CompilationUnit parentCompilationUnit = RefactoringOppUtil.parse(parentUnit);
+			parentCompilationUnit.recordModifications();
 			
 			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
-			MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(interfaceCompilationUnit.getAST(), mdOfMemberToPull);
+			MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(parentCompilationUnit.getAST(), mdOfMemberToPull);
 			
-			((TypeDeclaration) interfaceCompilationUnit.types().get(0)).bodyDeclarations().add(md);
-			md.setName(interfaceCompilationUnit.getAST().newSimpleName(newMemberName));
-			md.modifiers().add(interfaceCompilationUnit.getAST().newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD));
+			((TypeDeclaration) parentCompilationUnit.types().get(0)).bodyDeclarations().add(md);
+			md.setName(parentCompilationUnit.getAST().newSimpleName(newMemberName));
+			md.modifiers().add(parentCompilationUnit.getAST().newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD));
 			md.setBody(null);
 			
 			Type returnType = mdOfMemberToPull.getReturnType2();
@@ -425,26 +426,26 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 					ArrayType arrayType = (ArrayType) returnType;
 					Type elementType = arrayType.getElementType();
 					String name = elementType.resolveBinding().getQualifiedName();
-					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
-					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
-					interfaceCompilationUnit.imports().add(importDeclaration);
+					parentCompilationUnit.imports().add(importDeclaration);
 				}else if(returnType.isSimpleType()){
 					String name = returnType.resolveBinding().getQualifiedName();
-					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
-					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
-					interfaceCompilationUnit.imports().add(importDeclaration);
+					parentCompilationUnit.imports().add(importDeclaration);
 				}else if(returnType.isParameterizedType()){
 					ParameterizedType pType = (ParameterizedType) returnType;
 					String name = pType.resolveBinding().getQualifiedName().split("<")[0];
-					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
-					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
-					interfaceCompilationUnit.imports().add(importDeclaration);
+					parentCompilationUnit.imports().add(importDeclaration);
 				}
 				
 			}
@@ -460,23 +461,261 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 					}else{
 						name = vd.resolveBinding().getType().getQualifiedName();
 					}					
-					Name qualifiedName = RefactoringOppUtil.createQualifiedName(interfaceCompilationUnit.getAST(), name);
-					ImportDeclaration importDeclaration = interfaceCompilationUnit.getAST().newImportDeclaration();
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
 					importDeclaration.setName(qualifiedName);
 					importDeclaration.setOnDemand(false);
-					interfaceCompilationUnit.imports().add(importDeclaration);
+					parentCompilationUnit.imports().add(importDeclaration);
 				}
 			}
 			
-			Document interfaceDocument = new Document(interfaceUnit.getSource());
-			TextEdit interfaceTextEdit = interfaceCompilationUnit.rewrite(interfaceDocument, null);
-			interfaceTextEdit.apply(interfaceDocument);
+			Document parentDocument = new Document(parentUnit.getSource());
+			TextEdit parentTextEdit = parentCompilationUnit.rewrite(parentDocument, null);
+			parentTextEdit.apply(parentDocument);
 			
-			interfaceBuffer.setContents(interfaceDocument.get());	
+			parentBuffer.setContents(parentDocument.get());	
 			
-			JavaModelUtil.reconcile(interfaceUnit);
-			interfaceUnit.commitWorkingCopy(true, new NullProgressMonitor());
-			interfaceUnit.discardWorkingCopy();
+			JavaModelUtil.reconcile(parentUnit);
+			parentUnit.commitWorkingCopy(true, new NullProgressMonitor());
+			parentUnit.discardWorkingCopy();
+		} catch (JavaModelException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (MalformedTreeException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (BadLocationException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @param parent
+	 * @param memberList
+	 * @param newMemberName
+	 */
+	protected static boolean createConcreteMethodInParent(
+			ICompilationUnitWrapper parent,
+			ArrayList<UnitMemberWrapper> memberList, String newMemberName) {
+		ICompilationUnit parentUnit = parent.getCompilationUnit();
+		try{
+			parentUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+			IBuffer parentBuffer = parentUnit.getBuffer();		
+			
+			CompilationUnit parentCompilationUnit = RefactoringOppUtil.parse(parentUnit);
+			parentCompilationUnit.recordModifications();
+			
+			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
+			MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(parentCompilationUnit.getAST(), mdOfMemberToPull);
+			
+			((TypeDeclaration) parentCompilationUnit.types().get(0)).bodyDeclarations().add(md);
+			md.setName(parentCompilationUnit.getAST().newSimpleName(newMemberName));
+			boolean hasModifier = false;
+			for(Object o : md.modifiers()){
+				Modifier m = (Modifier) o;
+				if(m.getKeyword().toFlagValue() == Modifier.PUBLIC || m.getKeyword().toFlagValue() == Modifier.PROTECTED){
+					hasModifier = true;
+					break;
+				}else if(m.getKeyword().toFlagValue() == Modifier.PRIVATE){
+					hasModifier = true;
+					m.setKeyword(Modifier.ModifierKeyword.PROTECTED_KEYWORD);
+					break;
+				}
+			}
+			if(!hasModifier){
+				md.modifiers().add(parentCompilationUnit.getAST().newModifier(Modifier.ModifierKeyword.PROTECTED_KEYWORD));
+			}
+			
+			Type returnType = mdOfMemberToPull.getReturnType2();
+			if(returnType != null && !returnType.isPrimitiveType()){
+				if(returnType.isArrayType()){
+					ArrayType arrayType = (ArrayType) returnType;
+					Type elementType = arrayType.getElementType();
+					String name = elementType.resolveBinding().getQualifiedName();
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					parentCompilationUnit.imports().add(importDeclaration);
+				}else if(returnType.isSimpleType()){
+					String name = returnType.resolveBinding().getQualifiedName();
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					parentCompilationUnit.imports().add(importDeclaration);
+				}else if(returnType.isParameterizedType()){
+					ParameterizedType pType = (ParameterizedType) returnType;
+					String name = pType.resolveBinding().getQualifiedName().split("<")[0];
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					parentCompilationUnit.imports().add(importDeclaration);
+				}
+				
+			}
+			
+			
+			List parameters = mdOfMemberToPull.parameters();
+			for(Object o : parameters){
+				VariableDeclaration vd = (VariableDeclaration) o;
+				if(!vd.resolveBinding().getType().isPrimitive()){
+					String name;
+					if(vd.resolveBinding().getType().isParameterizedType()){
+						name = vd.resolveBinding().getType().getTypeDeclaration().getQualifiedName();
+					}else{
+						name = vd.resolveBinding().getType().getQualifiedName();
+					}					
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					parentCompilationUnit.imports().add(importDeclaration);
+				}
+			}
+			
+			Document parentDocument = new Document(parentUnit.getSource());
+			TextEdit parentTextEdit = parentCompilationUnit.rewrite(parentDocument, null);
+			parentTextEdit.apply(parentDocument);
+			
+			parentBuffer.setContents(parentDocument.get());	
+			
+			JavaModelUtil.reconcile(parentUnit);
+			parentUnit.commitWorkingCopy(true, new NullProgressMonitor());
+			parentUnit.discardWorkingCopy();
+		} catch (JavaModelException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (MalformedTreeException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (BadLocationException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @param parent
+	 * @param memberList
+	 * @param newMemberName
+	 */
+	protected static boolean createConcreteFieldInParent(
+			ICompilationUnitWrapper parent,
+			ArrayList<UnitMemberWrapper> memberList, String newMemberName) {
+		ICompilationUnit parentUnit = parent.getCompilationUnit();
+		try{
+			parentUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+			IBuffer parentBuffer = parentUnit.getBuffer();		
+			
+			CompilationUnit parentCompilationUnit = RefactoringOppUtil.parse(parentUnit);
+			parentCompilationUnit.recordModifications();
+			
+			FieldDeclaration fdOfMemberToPull = (FieldDeclaration) memberList.get(0).getJavaElement();	
+			FieldDeclaration fd = (FieldDeclaration) ASTNode.copySubtree(parentCompilationUnit.getAST(), fdOfMemberToPull);
+			boolean hasModifier = false;
+			for(Object o : fd.modifiers()){
+				Modifier m = (Modifier) o;
+				if(m.getKeyword().toFlagValue() == Modifier.PUBLIC || m.getKeyword().toFlagValue() == Modifier.PROTECTED){
+					hasModifier = true;
+					break;
+				}else if(m.getKeyword().toFlagValue() == Modifier.PRIVATE){
+					hasModifier = true;
+					m.setKeyword(Modifier.ModifierKeyword.PROTECTED_KEYWORD);
+					break;
+				}
+			}
+			if(!hasModifier){
+				fd.modifiers().add(parentCompilationUnit.getAST().newModifier(Modifier.ModifierKeyword.PROTECTED_KEYWORD));
+			}
+			
+			((TypeDeclaration) parentCompilationUnit.types().get(0)).bodyDeclarations().add(fd);
+			VariableDeclarationFragment fragment = (VariableDeclarationFragment) fd.fragments().get(0);
+			fragment.setName(parentCompilationUnit.getAST().newSimpleName(newMemberName));
+			
+			Type fieldType = fdOfMemberToPull.getType();
+			if(fieldType != null && !fieldType.isPrimitiveType()){
+				if(fieldType.isArrayType()){
+					ArrayType arrayType = (ArrayType) fieldType;
+					Type elementType = arrayType.getElementType();
+					String name = elementType.resolveBinding().getQualifiedName();
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					parentCompilationUnit.imports().add(importDeclaration);
+				}else if(fieldType.isSimpleType()){
+					String name = fieldType.resolveBinding().getQualifiedName();
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					parentCompilationUnit.imports().add(importDeclaration);
+				}else if(fieldType.isParameterizedType()){
+					ParameterizedType pType = (ParameterizedType) fieldType;
+					String name = pType.resolveBinding().getQualifiedName().split("<")[0];
+					Name qualifiedName = RefactoringOppUtil.createQualifiedName(parentCompilationUnit.getAST(), name);
+					ImportDeclaration importDeclaration = parentCompilationUnit.getAST().newImportDeclaration();
+					importDeclaration.setName(qualifiedName);
+					importDeclaration.setOnDemand(false);
+					parentCompilationUnit.imports().add(importDeclaration);
+				}
+				
+			}
+			
+			Document parentDocument = new Document(parentUnit.getSource());
+			TextEdit parentTextEdit = parentCompilationUnit.rewrite(parentDocument, null);
+			parentTextEdit.apply(parentDocument);
+			
+			parentBuffer.setContents(parentDocument.get());	
+			
+			JavaModelUtil.reconcile(parentUnit);
+			parentUnit.commitWorkingCopy(true, new NullProgressMonitor());
+			parentUnit.discardWorkingCopy();
+		} catch (JavaModelException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (MalformedTreeException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (BadLocationException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+
+	/**
+	 * @param parent
+	 * @param memberList
+	 * @param newMemberName
+	 */
+	protected static boolean removeConcreteMemberInChild(UnitMemberWrapper member) {
+		ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
+		try{
+			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+			IBuffer buffer = unit.getBuffer();		
+			
+			CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
+			compilationUnit.recordModifications();
+									
+			ASTNode node = findCorrespondingNode(compilationUnit, member.getJavaElement());
+			node.delete(); //TODO (it's [int]!!!!)
+			
+			Document parentDocument = new Document(unit.getSource());
+			TextEdit parentTextEdit = compilationUnit.rewrite(parentDocument, null);
+			parentTextEdit.apply(parentDocument);
+			
+			buffer.setContents(parentDocument.get());	
+			
+			JavaModelUtil.reconcile(unit);
+			unit.commitWorkingCopy(true, new NullProgressMonitor());
+			unit.discardWorkingCopy();
 		} catch (JavaModelException e1) {
 			e1.printStackTrace();
 			return false;
@@ -512,6 +751,57 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 				td.superInterfaceTypes().add(type);
 				
 				Name qualifiedName = RefactoringOppUtil.createQualifiedName(td.getAST(), parentInterface.getFullQualifiedName());
+				ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
+				importDeclaration.setName(qualifiedName);
+				importDeclaration.setOnDemand(false);
+				compilationUnit.imports().add(importDeclaration);
+				
+				Document document = new Document(unit.getSource());
+				TextEdit textEdit = compilationUnit.rewrite(document, null);
+				textEdit.apply(document);
+				
+				buffer.setContents(document.get());	
+				
+				JavaModelUtil.reconcile(unit);
+				unit.commitWorkingCopy(true, new NullProgressMonitor());
+				unit.discardWorkingCopy();
+				
+			} catch (JavaModelException e1) {
+				e1.printStackTrace();
+				return false;
+			} catch (MalformedTreeException e1) {
+				e1.printStackTrace();
+				return false;
+			} catch (BadLocationException e1) {
+				e1.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * @param parentClass
+	 * @param memberList
+	 */
+	protected static boolean addSubClassExtends(ICompilationUnitWrapper parentClass,
+			ArrayList<UnitMemberWrapper> memberList) {
+		for(UnitMemberWrapper member : memberList){
+			ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
+			try {
+				unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
+				IBuffer buffer = unit.getBuffer();				
+				buffer.getContents();
+				
+				CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
+				compilationUnit.recordModifications();
+				
+				TypeDeclaration td = (TypeDeclaration)compilationUnit.types().get(0);	
+				Name name = td.getAST().newSimpleName(parentClass.getName());
+				Type type = td.getAST().newSimpleType(name);
+				td.setSuperclassType(type);
+				
+				Name qualifiedName = RefactoringOppUtil.createQualifiedName(td.getAST(), parentClass.getFullQualifiedName());
 				ImportDeclaration importDeclaration = td.getAST().newImportDeclaration();
 				importDeclaration.setName(qualifiedName);
 				importDeclaration.setOnDemand(false);
@@ -596,7 +886,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			for(ProgramReference reference : member.getRefererPointList()){
 				for(ReferenceInflucencedDetail variableDetail : reference.getVariableDeclarationList()){
 					VariableDeclarationWrapper variable = variableDetail.getDeclaration();
-					//cast the declaration into parent interface 
+					//cast the declaration into parent class 
 					VariableDeclaration variableAST = variable.getAstNode();	
 					ICompilationUnit unit = (ICompilationUnit) ((CompilationUnit) variableAST.getRoot()).getJavaElement();
 					Type currentVariableType = modifyDeclarationType(unit, variableAST, parent); 
@@ -642,7 +932,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 							
 						}else if(!reference.equals(influencedReference) && influencedReference.getASTNode() instanceof MethodInvocation){
 							
-							//if variableAST belongs to parent interface, it's not the first time to update, then do nothing
+							//if variableAST belongs to parent class, it's not the first time to update, then do nothing
 							//otherwise, it's the first time, cast all references to sub class
 							if(currentVariableType != null && !currentVariableType.toString().equals(parent.getName())){
 								
@@ -718,7 +1008,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			
 			for(ASTNodeInfo nodeInfo : nodeInfoList){	
 				
-				ASTNode node = findCorrespondingNode(compilationUnit, nodeInfo);
+				ASTNode node = findCorrespondingNode(compilationUnit, nodeInfo.node);
 				if(node == null) return false;
 
 				//for current pulled method's reference, if casted, remove current casting
@@ -809,13 +1099,13 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * find the corresponding node of old nodeInfo in the new compilationUnit
 	 * 
 	 * @param compilationUnit
-	 * @param nodeInfo
+	 * @param node
 	 * @return
 	 */
-	private ASTNode findCorrespondingNode(CompilationUnit compilationUnit,
-			ASTNodeInfo nodeInfo) {
-		CompilationUnit oldCU = (CompilationUnit) nodeInfo.node.getRoot();
-		ASTNode oldDeclaringNode = nodeInfo.node;
+	private static ASTNode findCorrespondingNode(CompilationUnit compilationUnit,
+			ASTNode node) {
+		CompilationUnit oldCU = (CompilationUnit) node.getRoot();
+		ASTNode oldDeclaringNode = node;
 		while(!(oldDeclaringNode instanceof MethodDeclaration || oldDeclaringNode instanceof FieldDeclaration) 
 				&& oldDeclaringNode != null){
 			oldDeclaringNode = oldDeclaringNode.getParent();
@@ -827,9 +1117,9 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		}
 		
 		int methodLineNum = oldCU.getLineNumber(oldDeclaringNode.getStartPosition());
-		int nodeLineNum = oldCU.getLineNumber(nodeInfo.node.getStartPosition());
+		int nodeLineNum = oldCU.getLineNumber(node.getStartPosition());
 		int lineDiff = nodeLineNum - methodLineNum;
-		int spaceDiff = nodeInfo.node.getStartPosition() - oldCU.getPosition(nodeLineNum, 0);
+		int spaceDiff = node.getStartPosition() - oldCU.getPosition(nodeLineNum, 0);
 
 		ASTNode newDeclaringNode = null;
 		if(oldDeclaringNode instanceof MethodDeclaration){
@@ -844,8 +1134,8 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		int lineNum = compilationUnit.getLineNumber(newDeclaringNode.getStartPosition()) + lineDiff;
 		int startPosition = compilationUnit.getPosition(lineNum, 0) + spaceDiff;
 		
-		ASTNode node = NodeFinder.perform(compilationUnit, startPosition, 0);
-		return node;
+		ASTNode newNode = NodeFinder.perform(compilationUnit, startPosition, 0);
+		return newNode;
 	}
 	
 	/**
@@ -857,7 +1147,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @return the original type of the declaration
 	 * 
 	 */
-	protected static Type modifyDeclarationType(ICompilationUnit unit, VariableDeclaration variableNode0, ICompilationUnitWrapper parentInterface){
+	protected static Type modifyDeclarationType(ICompilationUnit unit, VariableDeclaration variableNode0, ICompilationUnitWrapper parent){
 		Type currentVariableType = null;		
 		try {
 			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
@@ -869,7 +1159,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			compilationUnit.recordModifications();
 			
 			//add import
-			Name qualifiedName = RefactoringOppUtil.createQualifiedName(compilationUnit.getAST(), parentInterface.getFullQualifiedName());
+			Name qualifiedName = RefactoringOppUtil.createQualifiedName(compilationUnit.getAST(), parent.getFullQualifiedName());
 			ImportDeclaration importDeclaration = compilationUnit.getAST().newImportDeclaration();
 			importDeclaration.setName(qualifiedName);
 			importDeclaration.setOnDemand(false);
@@ -886,7 +1176,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			}
 			
 			//modify type
-			Name name = compilationUnit.getAST().newSimpleName(parentInterface.getName());
+			Name name = compilationUnit.getAST().newSimpleName(parent.getName());
 			Type type = compilationUnit.getAST().newSimpleType(name);
 			if(variableNode instanceof SingleVariableDeclaration){					
 				currentVariableType = ((SingleVariableDeclaration) variableNode).getType();	
@@ -958,7 +1248,9 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 				}else{
 					oldMemberInModel = model.findField(memberWrapper.getUnitWrapper().getFullQualifiedName(), toBeReplacedMemberNameList.get(j));
 				}
-				oldMemberInModel.setName(newMemberName);
+				if(oldMemberInModel !=null) {
+					oldMemberInModel.setName(newMemberName);
+				}
 			}
 			
 		}
