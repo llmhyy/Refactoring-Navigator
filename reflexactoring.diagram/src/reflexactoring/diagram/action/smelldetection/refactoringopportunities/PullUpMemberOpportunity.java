@@ -74,7 +74,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @param superUnit
 	 * @return
 	 */
-	protected UnitMemberWrapper createNewMemberInSuperClass(ProgramModel newModel, ICompilationUnitWrapper superUnit) {
+	protected UnitMemberWrapper createNewMemberInSuperUnit(ProgramModel newModel, ICompilationUnitWrapper superUnit, boolean isPullSignature) {
 		UnitMemberWrapper oldMember = toBePulledMemberList.get(0);
 		
 		UnitMemberWrapper newMember = null;
@@ -98,7 +98,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			UnitMemberWrapper newToBePulledMember = newModel.findMember(oldMem);
 			handleReferersOfToBePulledMember(newToBePulledMember, newMember, superUnit, newModel);
 			
-			if(!superUnit.isInterface()){
+			if(!isPullSignature){
 				handleRefereesOfToBePulledMember(newToBePulledMember, newMember);
 			}
 			
@@ -206,6 +206,9 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		}else{
 			simpleName += "Parent" + NameGernationCounter.retrieveNumber();
 		}
+		
+		String head = "" + simpleName.toCharArray()[0];
+		simpleName = head + simpleName.substring(1, simpleName.length());
 		
 		ICompilationUnitWrapper newUnit = new ICompilationUnitWrapper(subClassUnit.getMappingModule(), 
 				isInterface, simpleName, subClassUnit.getPackageName(), null, "abstract");

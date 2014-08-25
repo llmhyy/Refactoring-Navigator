@@ -15,58 +15,62 @@ import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
  * @author linyun
  *
  */
-public class PullUpMemberToExistingInterface extends PullUpMemberOpportunity{
+public class PullUpAbstractMethodToExistingClassOpportunity extends
+		PullUpMemberOpportunity {
 
 	/**
 	 * @param toBePulledMemberList
 	 * @param moduleList
 	 */
-	public PullUpMemberToExistingInterface(
+	public PullUpAbstractMethodToExistingClassOpportunity(
 			ArrayList<UnitMemberWrapper> toBePulledMemberList, ICompilationUnitWrapper targetUnit,
 			ArrayList<ModuleWrapper> moduleList) {
 		super(toBePulledMemberList, moduleList);
 		this.targetUnit = targetUnit;
 	}
+	
+	@Override
+	public String toString(){
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(super.toString());
+		buffer.append(" (signature) to class ");
+		buffer.append(this.targetUnit.getName());
+		return buffer.toString();
+	}
 
-	/* (non-Javadoc)
-	 * @see reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity#simulate(reflexactoring.diagram.bean.programmodel.ProgramModel)
-	 */
 	@Override
 	public ProgramModel simulate(ProgramModel model) {
-		// TODO Auto-generated method stub
-		return model;
+		ProgramModel newModel = model.clone();
+		/**
+		 * create a new method in the parent class and change reference
+		 */
+		ICompilationUnitWrapper newClass = newModel.findUnit(this.targetUnit.getFullQualifiedName());
+		createNewMemberInSuperUnit(newModel, newClass, true);
+		
+		newModel.updateUnitCallingRelationByMemberRelations();
+		
+		return newModel;
 	}
 
-	/* (non-Javadoc)
-	 * @see reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity#getRefactoringName()
-	 */
 	@Override
 	public String getRefactoringName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Pull Up Abstract Method to Existing Class";
 	}
 
-	/* (non-Javadoc)
-	 * @see reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity#getRefactoringDetails()
-	 */
 	@Override
 	public ArrayList<String> getRefactoringDetails() {
 		// TODO Auto-generated method stub
-		return null;
+		ArrayList<String> details = new ArrayList<>();
+		details.add(toString());
+		return details;
 	}
 
-	/* (non-Javadoc)
-	 * @see reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity#apply(int, reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence)
-	 */
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity#checkLegal(reflexactoring.diagram.bean.programmodel.ProgramModel)
-	 */
 	@Override
 	protected boolean checkLegal(ProgramModel model) {
 		// TODO Auto-generated method stub

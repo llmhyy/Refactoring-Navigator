@@ -121,7 +121,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 		 * create a new method in the newly created interface and change
 		 * reference
 		 */
-		createNewMemberInSuperClass(newModel, newInterfaceUnit);
+		createNewMemberInSuperUnit(newModel, newInterfaceUnit, true);
 
 		newModel.updateUnitCallingRelationByMemberRelations();
 

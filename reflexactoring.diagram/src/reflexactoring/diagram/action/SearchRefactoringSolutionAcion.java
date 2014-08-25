@@ -35,9 +35,8 @@ public class SearchRefactoringSolutionAcion implements
 	
 	@Override
 	public void run(IAction action) {
-		// TODO Lin Yun
 		
-		Job job = new Job("Searching for solutions by moving types"){
+		Job job = new Job("Searching for refactoring solutions"){
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				//monitor.beginTask("Searching Solution...", iterNum.intValue());

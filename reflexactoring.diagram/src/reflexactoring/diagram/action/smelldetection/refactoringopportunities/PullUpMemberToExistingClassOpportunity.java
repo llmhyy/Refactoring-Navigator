@@ -88,7 +88,7 @@ public class PullUpMemberToExistingClassOpportunity extends PullUpMemberOpportun
 		 * create a new method in the parent class and change reference
 		 */
 		ICompilationUnitWrapper newSuperclass = newModel.findUnit(this.targetUnit.getFullQualifiedName());
-		createNewMemberInSuperClass(newModel, newSuperclass);
+		createNewMemberInSuperUnit(newModel, newSuperclass, false);
 		
 		/**
 		 * delete the to-be-pulled members in model

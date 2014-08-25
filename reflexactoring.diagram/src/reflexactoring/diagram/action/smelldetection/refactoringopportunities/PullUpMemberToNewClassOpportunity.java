@@ -95,7 +95,7 @@ public class PullUpMemberToNewClassOpportunity  extends PullUpMemberOpportunity 
 		/**
 		 * create a new method in the parent class and change reference
 		 */
-		createNewMemberInSuperClass(newModel, newSuperClassUnit);
+		createNewMemberInSuperUnit(newModel, newSuperClassUnit, false);
 		
 		/**
 		 * delete the to-be-pulled members in model

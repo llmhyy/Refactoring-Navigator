@@ -10,9 +10,9 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToExistingClass;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToNewClass;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToExistingInterface;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToExistingClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToNewClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToExistingInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToNewInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberToExistingClassOpportunity;
@@ -273,8 +273,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			else if(commonAncestor != null){
 				if(member instanceof MethodWrapper){
 					if(isSuitableForPullingIntoCommonSuperClass){
-						PullUpAbstractMethodToExistingClass existingClassOpp = 
-								new PullUpAbstractMethodToExistingClass(refactoringPlace, commonAncestor, moduleList);
+						PullUpAbstractMethodToExistingClassOpportunity existingClassOpp = 
+								new PullUpAbstractMethodToExistingClassOpportunity(refactoringPlace, commonAncestor, moduleList);
 						opportunities.add(existingClassOpp);											
 					}
 				}
@@ -287,15 +287,15 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 					opportunities.add(newInterfaceOpp);		
 					
 					
-					PullUpAbstractMethodToNewClass newClassOpp = new PullUpAbstractMethodToNewClass(refactoringPlace, moduleList);
+					PullUpAbstractMethodToNewClassOpportunity newClassOpp = new PullUpAbstractMethodToNewClassOpportunity(refactoringPlace, moduleList);
 					opportunities.add(newClassOpp);
 				}
 				
 				ArrayList<ICompilationUnitWrapper> commonInterfaceList = findCommonInterface(refactoringPlace);
 				for(ICompilationUnitWrapper commonInterface: commonInterfaceList){
 					if(isAValidatePullUpInTermsOfReference(refactoringPlace, commonInterface)){
-						PullUpMemberToExistingInterface existingInterfaceOpp =
-								new PullUpMemberToExistingInterface(refactoringPlace, commonInterface, moduleList);
+						PullUpMemberToExistingInterfaceOpportunity existingInterfaceOpp =
+								new PullUpMemberToExistingInterfaceOpportunity(refactoringPlace, commonInterface, moduleList);
 						opportunities.add(existingInterfaceOpp);						
 					}
 				}
