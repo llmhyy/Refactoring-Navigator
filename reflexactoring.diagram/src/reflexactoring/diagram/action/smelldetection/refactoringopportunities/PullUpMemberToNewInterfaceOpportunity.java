@@ -306,7 +306,7 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 		//rename each member
 		for(UnitMemberWrapper memberWrapper : memberList){	
 			try {
-				if(memberWrapper.getJavaMember() instanceof IMethod){
+				if(memberWrapper instanceof MethodWrapper){
 					IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
 					
 					if(!methodToRename.getElementName().equals(newMemberName)){
@@ -436,25 +436,37 @@ public class PullUpMemberToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			this.modifyCastExpression(modificationMap.get(icu));
 		}
 		
+		String toBeReplacedTypeName = this.targetUnit.getFullQualifiedName();
+		ArrayList<String> toBeReplacedMemberNameList = new ArrayList<>();
+		for(UnitMemberWrapper member: this.toBePulledMemberList){
+			toBeReplacedMemberNameList.add(member.getName());
+		}
+		
 		//refresh the model
 		for(int i = position; i < sequence.size(); i++ ){
 			ProgramModel model = sequence.get(i).getConsequenceModel();
 			
-			ICompilationUnitWrapper oldUnit = this.targetUnit;
-			oldUnit.setSimpleName(parentInterface.getName());
-			ICompilationUnitWrapper oldUnitInModel = model.findUnit(oldUnit.getFullQualifiedName());
+			ICompilationUnitWrapper oldUnitInModel = model.findUnit(toBeReplacedTypeName);
 			oldUnitInModel.setSimpleName(parentInterface.getName());
 			
-			for(UnitMemberWrapper memberWrapper : memberList){	
+			for(int j=0; j<memberList.size(); j++){
+				UnitMemberWrapper memberWrapper = memberList.get(j);
 				UnitMemberWrapper oldMemberInModel;
-				if(memberWrapper.getJavaMember() instanceof IMethod){
+				if(memberWrapper instanceof MethodWrapper){
 					oldMemberInModel = model.findMethod(memberWrapper.getUnitWrapper().getFullQualifiedName(),
-													memberWrapper.getName(), ((MethodWrapper)memberWrapper).getParameterTypes());
+													toBeReplacedMemberNameList.get(j), ((MethodWrapper)memberWrapper).getParameterTypes());
 				}else{
-					oldMemberInModel = model.findField(memberWrapper.getUnitWrapper().getFullQualifiedName(), memberWrapper.getName());
+					oldMemberInModel = model.findField(memberWrapper.getUnitWrapper().getFullQualifiedName(), toBeReplacedMemberNameList.get(j));
 				}
 				oldMemberInModel.setName(newMemberName);
 			}
+			
+		}
+		
+		ICompilationUnitWrapper oldUnit = this.targetUnit;
+		oldUnit.setSimpleName(parentInterface.getName());
+		for(int j=0; j<this.toBePulledMemberList.size(); j++){
+			toBePulledMemberList.get(j).setName(toBeReplacedMemberNameList.get(j));
 		}
 		
 		//call Eclipse API to pull up
