@@ -33,6 +33,7 @@ import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.ReturnStatement;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -54,6 +55,7 @@ import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
@@ -395,6 +397,61 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			return true;
 		}
 	}
+	
+	public class FieldDeclarationVisitor extends ASTVisitor {
+
+		private String newMemberName;
+
+		/**
+		 * @param newMemberName
+		 */
+		public FieldDeclarationVisitor(String newMemberName) {
+			super();
+			this.newMemberName = newMemberName;
+		}
+		
+		public boolean visit(FieldDeclaration fd){
+			if(((VariableDeclarationFragment) fd.fragments().get(0)).getName().toString().equals(newMemberName)){
+				fd.delete();
+				return false;
+			}
+			
+			return true;
+		}
+	}
+	
+	public class MethodDeclarationVisitor extends ASTVisitor {
+
+		private String newMemberName;
+		ArrayList<String> paramList;
+
+		/**
+		 * @param newMemberName
+		 */
+		public MethodDeclarationVisitor(String newMemberName, ArrayList<String> paramList) {
+			super();
+			this.newMemberName = newMemberName;
+			this.paramList = paramList;
+		}
+		
+		public boolean visit(MethodDeclaration md){
+			boolean hasSameParam = true;
+			for(Object o : md.parameters()){
+				SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
+				String pName = ((SimpleType) svd.getType()).getName().toString();
+				if(!pName.equals(paramList.get(md.parameters().indexOf(o)))){
+					hasSameParam = false;
+					break;
+				}
+			}
+			if(md.getName().toString().equals(newMemberName) && hasSameParam){
+				md.delete();
+				return false;
+			}
+			
+			return true;
+		}
+	}
 
 	/**
 	 * @param parent
@@ -695,7 +752,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @param memberList
 	 * @param newMemberName
 	 */
-	protected static boolean removeConcreteMemberInChild(UnitMemberWrapper member) {
+	protected boolean removeConcreteMemberInChild(UnitMemberWrapper member, String newMemberName) {
 		ICompilationUnit unit = member.getUnitWrapper().getCompilationUnit();
 		try{
 			unit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
@@ -704,8 +761,11 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			CompilationUnit compilationUnit = RefactoringOppUtil.parse(unit);
 			compilationUnit.recordModifications();
 									
-			ASTNode node = findCorrespondingNode(compilationUnit, member.getJavaElement());
-			node.delete(); //TODO (it's [int]!!!!)
+			if(member instanceof MethodWrapper){
+				compilationUnit.accept(new MethodDeclarationVisitor(newMemberName, ((MethodWrapper) member).getParameters()));
+			}else{
+				compilationUnit.accept(new FieldDeclarationVisitor(newMemberName));
+			}
 			
 			Document parentDocument = new Document(unit.getSource());
 			TextEdit parentTextEdit = compilationUnit.rewrite(parentDocument, null);

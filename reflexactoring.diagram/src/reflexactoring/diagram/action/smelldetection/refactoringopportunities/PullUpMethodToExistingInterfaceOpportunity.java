@@ -80,10 +80,8 @@ public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOppo
 
 		//get all members to be pulled
 		ArrayList<UnitMemberWrapper> memberList = this.getToBePulledMemberList();
-		IMember[] members = new IMember[memberList.size()];
 		String[] memberNames = new String[memberList.size()];
 		for(UnitMemberWrapper memberWrapper : memberList){
-			members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();	
 			memberNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
 		}
 		

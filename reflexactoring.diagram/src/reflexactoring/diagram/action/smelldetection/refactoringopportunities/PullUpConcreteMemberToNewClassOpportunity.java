@@ -133,10 +133,8 @@ public class PullUpConcreteMemberToNewClassOpportunity  extends PullUpMemberOppo
 
 		//get all members to be pulled
 		ArrayList<UnitMemberWrapper> memberList = this.getToBePulledMemberList();
-		IMember[] members = new IMember[memberList.size()];
 		String[] memberNames = new String[memberList.size()];
 		for(UnitMemberWrapper memberWrapper : memberList){
-			members[memberList.indexOf(memberWrapper)] = memberWrapper.getJavaMember();	
 			memberNames[memberList.indexOf(memberWrapper)] = memberWrapper.getUnitWrapper().getName() + "." + memberWrapper.getName();
 		}
 		
@@ -161,11 +159,21 @@ public class PullUpConcreteMemberToNewClassOpportunity  extends PullUpMemberOppo
 			if(!createConcreteMethodInParent(parentClass, memberList, newMemberName)){
 				return false;
 			}
+		}		
+
+		//make every child class extends the class	
+		if(!addSubClassExtends(parentClass, memberList)){
+			return false;
 		}
 		
-		//remove the one in child classes
+		//rename each member
+		if(!renameMembers(memberList, newMemberName)){
+			return false;
+		}
+			
+		//remove the declaration in child classes
 		for(UnitMemberWrapper member : memberList){
-			if(!removeConcreteMemberInChild(member)){
+			if(!removeConcreteMemberInChild(member, newMemberName)){
 				return false;
 			}
 		}
