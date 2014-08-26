@@ -34,7 +34,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 	
 	public MethodWrapper(String name, String returnType, ArrayList<String> parameters, boolean isConstructor, 
 			ICompilationUnitWrapper unitWrapper, HashMap<String, Integer> termFrequency, String description, 
-			MethodDeclaration method){
+			MethodDeclaration method, boolean isAbstract, String modifier){
 		super(unitWrapper);
 		this.name = name;
 		this.setReturnType(returnType);
@@ -43,6 +43,8 @@ public class MethodWrapper extends UnitMemberWrapper {
 		this.termFrequency = termFrequency;
 		this.description = description;
 		this.method = method;
+		this.isAbstract = isAbstract;
+		this.modifier = modifier;
 	}
 	
 	public MethodWrapper(MethodDeclaration method, ICompilationUnitWrapper unitWrapper){
@@ -54,6 +56,9 @@ public class MethodWrapper extends UnitMemberWrapper {
 		this.isConstructor = this.method.resolveBinding().isConstructor();
 		Type type = this.method.getReturnType2();
 		this.returnType = (type == null)? null : type.toString();
+		
+		int modifierFlag = method.getModifiers();
+		this.modifier = ModifierWrapper.parseSecurityModifer(modifierFlag);
 		
 		//String content = new TokenExtractor(unitWrapper).extractTokens(method);
 		//content = content + generateTitle();

@@ -60,6 +60,7 @@ import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
+import reflexactoring.diagram.bean.programmodel.ModifierWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
@@ -127,13 +128,14 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		UnitMemberWrapper newMember = null;
 		if(oldMember instanceof MethodWrapper){
 			MethodWrapper methodWrapper = (MethodWrapper)oldMember;
-			newMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), methodWrapper.getParameters(), 
-					methodWrapper.isConstructor(), superUnit, null, methodWrapper.getDescription(), null);			
+			newMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), 
+					methodWrapper.getParameters(), methodWrapper.isConstructor(), superUnit, null, 
+					methodWrapper.getDescription(), null, isPullSignature, ModifierWrapper.PUBLIC);			
 		}
 		else if(oldMember instanceof FieldWrapper){
 			FieldWrapper fieldWrapper = (FieldWrapper)oldMember;
 			newMember = new FieldWrapper(fieldWrapper.getName(), fieldWrapper.getType(), superUnit,
-					null, fieldWrapper.getDescription(), null);
+					null, fieldWrapper.getDescription(), null, false, oldMember.getModifier());
 		}
 		
 		if(newMember == null)return null;
@@ -258,7 +260,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		simpleName = head.toUpperCase() + simpleName.substring(1, simpleName.length());
 		
 		ICompilationUnitWrapper newUnit = new ICompilationUnitWrapper(subClassUnit.getMappingModule(), 
-				isInterface, simpleName, subClassUnit.getPackageName(), null, "abstract");
+				isInterface, simpleName, subClassUnit.getPackageName(), null, "abstract", true, ModifierWrapper.PUBLIC);
 		
 		newModel.getScopeCompilationUnitList().add(newUnit);
 		

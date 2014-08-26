@@ -54,6 +54,7 @@ import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
+import reflexactoring.diagram.bean.programmodel.ModifierWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
@@ -124,7 +125,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		 * create a new class named "ExtractClass**"
 		 */
 		ICompilationUnitWrapper newTargetUnit = new ICompilationUnitWrapper(null, false, "ExtractedClass"+NameGernationCounter.retrieveNumber(), 
-				extractMembers.get(0).getUnitWrapper().getPackageName(), null, "");
+				extractMembers.get(0).getUnitWrapper().getPackageName(), null, "", false, ModifierWrapper.PUBLIC);
 		newModel.getScopeCompilationUnitList().add(newTargetUnit);
 		this.targetUnitName = newTargetUnit.getFullQualifiedName();
 		
@@ -133,7 +134,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		 */
 		ICompilationUnitWrapper newSourceUnit = newModel.findUnit(this.sourceUnit.getFullQualifiedName());
 		FieldWrapper newField = new FieldWrapper("extractedClass"+NameGernationCounter.retrieveNumber(), newTargetUnit.getName(), 
-				newSourceUnit, null, "", null);
+				newSourceUnit, null, "", null, false, ModifierWrapper.PUBLIC);
 		newSourceUnit.getMembers().add(newField);
 		newModel.getScopeMemberList().add(newField);
 		this.newFieldName = newField.getName();
@@ -237,7 +238,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			MethodWrapper newDeletegateMethod = new MethodWrapper(method.getName(), 
 					method.getReturnType(), method.getParameters(), 
 					method.isConstructor(), newSourceUnit, method.getTermFrequency(), 
-					method.getDescription(), null);
+					method.getDescription(), null, false, ModifierWrapper.PUBLIC);
 			newSourceUnit.getMembers().add(newDeletegateMethod);
 			newModel.getScopeMemberList().add(newDeletegateMethod);
 

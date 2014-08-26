@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorPart;
@@ -40,8 +41,10 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	private CompilationUnit javaUnit;
 	
 	private boolean isInterface;
+	private boolean isAbstract;
 	private String simpleName;
 	private String packageName;
+	private String modifier;
 	
 	private ICompilationUnitWrapper superClass;
 	private ArrayList<ICompilationUnitWrapper> superInterfaceList = new ArrayList<>();
@@ -75,7 +78,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 * @param packageName
 	 */
 	public ICompilationUnitWrapper(ModuleWrapper mappingModule, boolean isInterface, String simpleName, 
-			String packageName, HashMap<String, Integer> termFrequency, String description) {
+			String packageName, HashMap<String, Integer> termFrequency, String description, boolean isAbstract, String modifier) {
 		super();
 		this.mappingModule = mappingModule;
 		this.isInterface = isInterface;
@@ -83,6 +86,8 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		this.packageName = packageName;
 		this.termFrequency = termFrequency;
 		this.description = description;
+		this.isAbstract = isAbstract;
+		this.modifier = modifier;
 	}
 
 	/**
@@ -112,6 +117,10 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		 */
 		TypeDeclaration typeDeclar = (TypeDeclaration) this.javaUnit.types().get(0);
 		this.isInterface = typeDeclar.isInterface();
+		
+		int modiferFlag = typeDeclar.getModifiers();
+		this.modifier = ModifierWrapper.parseSecurityModifer(modiferFlag);
+		this.isAbstract = Modifier.isAbstract(modiferFlag);
 		
 		this.packageName = "";
 		try {
@@ -697,5 +706,33 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	@Override
 	public void addProgramReferee(ProgramReference reference){
 		this.refereePointList.add(reference);
+	}
+
+	/**
+	 * @return the modifier
+	 */
+	public String getModifier() {
+		return modifier;
+	}
+
+	/**
+	 * @param modifier the modifier to set
+	 */
+	public void setModifier(String modifier) {
+		this.modifier = modifier;
+	}
+
+	/**
+	 * @return the isAbstract
+	 */
+	public boolean isAbstract() {
+		return isAbstract;
+	}
+
+	/**
+	 * @param isAbstract the isAbstract to set
+	 */
+	public void setAbstract(boolean isAbstract) {
+		this.isAbstract = isAbstract;
 	}
 }

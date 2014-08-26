@@ -15,6 +15,7 @@ import reflexactoring.diagram.action.smelldetection.refactoringopportunities.pre
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
+import reflexactoring.diagram.bean.programmodel.ModifierWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
@@ -68,14 +69,15 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		 */
 		String className = "UtilityClass" + NameGernationCounter.retrieveNumber();
 		String packageName = cloneSet.getInstances().get(0).getMember().getUnitWrapper().getPackageName();
-		ICompilationUnitWrapper utilityClass = new ICompilationUnitWrapper(null, false, className, packageName, null, "utility");
+		ICompilationUnitWrapper utilityClass = new ICompilationUnitWrapper(null, false, className, packageName, null, 
+				"Utility", false, ModifierWrapper.PUBLIC);
 		newModel.getScopeCompilationUnitList().add(utilityClass);
 		/**
 		 * create a new utility method
 		 */
 		String methodName = "utilityMethod" + NameGernationCounter.retrieveNumber();
 		MethodWrapper utilityMethod = new MethodWrapper(methodName, "void", new ArrayList<String>(), false, 
-				utilityClass, null, "utility", null);
+				utilityClass, null, "utility", null, false, ModifierWrapper.PUBLIC);
 		newModel.getScopeMemberList().add(utilityMethod);
 		/**
 		 * build declaring relation between utility class and utility method

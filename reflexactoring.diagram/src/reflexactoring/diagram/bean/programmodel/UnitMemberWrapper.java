@@ -29,6 +29,10 @@ import reflexactoring.diagram.util.JavaCodeUtil;
  *
  */
 public abstract class UnitMemberWrapper extends Document implements LowLevelSuggestionObject, LowLevelGraphNode, SimilarityComputable {
+	
+	protected String modifier;
+	protected boolean isAbstract;
+	
 	protected ICompilationUnitWrapper unitWrapper;
 	/**
 	 * stands for the unit members referring this unit member
@@ -85,6 +89,34 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	 */
 	public void setUnitWrapper(ICompilationUnitWrapper unitWrapper) {
 		this.unitWrapper = unitWrapper;
+	}
+	
+	/**
+	 * @return the modifier
+	 */
+	public String getModifier() {
+		return modifier;
+	}
+
+	/**
+	 * @param modifier the modifier to set
+	 */
+	public void setModifier(String modifier) {
+		this.modifier = modifier;
+	}
+
+	/**
+	 * @return the isAbstract
+	 */
+	public boolean isAbstract() {
+		return isAbstract;
+	}
+
+	/**
+	 * @param isAbstract the isAbstract to set
+	 */
+	public void setAbstract(boolean isAbstract) {
+		this.isAbstract = isAbstract;
 	}
 
 	@Override
@@ -187,6 +219,8 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	public void setRefereePointList(ArrayList<ProgramReference> refereePointList) {
 		this.refereePointList = refereePointList;
 	}
+	
+	
 	
 	public ProgramReference removeReferer(ProgramReference reference){
 		Iterator<ProgramReference> refIter = this.refererPointList.iterator();

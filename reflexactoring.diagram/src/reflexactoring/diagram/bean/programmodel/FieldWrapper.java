@@ -26,13 +26,16 @@ public class FieldWrapper extends UnitMemberWrapper{
 	private String type;
 	
 	public FieldWrapper(String name, String type, ICompilationUnitWrapper unitWrapper, 
-			HashMap<String, Integer> termFrequency, String description, FieldDeclaration field){
+			HashMap<String, Integer> termFrequency, String description, FieldDeclaration field, 
+			boolean isAbstract, String modifier){
 		super(unitWrapper);
 		this.type = type;
 		this.name = name;
 		this.termFrequency = termFrequency;
 		this.description = description;
 		this.field = field;
+		this.modifier = modifier;
+		this.isAbstract = isAbstract;
 	}
 	
 	public FieldWrapper(FieldDeclaration field, ICompilationUnitWrapper unitWrapper){
@@ -41,6 +44,9 @@ public class FieldWrapper extends UnitMemberWrapper{
 		
 		this.name = ((VariableDeclaration)field.fragments().get(0)).getName().getIdentifier();
 		this.type = field.getType().toString();
+		
+		int modifierFlag = field.getModifiers();
+		this.modifier = ModifierWrapper.parseSecurityModifer(modifierFlag);
 		
 		String content = new TokenExtractor(unitWrapper).extractTokens(field);
 		content = content + " " + generateTitle().toLowerCase();

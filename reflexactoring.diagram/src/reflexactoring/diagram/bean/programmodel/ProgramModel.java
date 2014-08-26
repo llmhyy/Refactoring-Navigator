@@ -338,7 +338,8 @@ public class ProgramModel{
 		ArrayList<ICompilationUnitWrapper> clonedUnits = new ArrayList<>();
 		for(ICompilationUnitWrapper unit: scopeCompilationUnitList){
 			ICompilationUnitWrapper clonedUnit = new ICompilationUnitWrapper(unit.getMappingModule(), unit.isInterface(), 
-					unit.getSimpleName(), unit.getPackageName(), unit.getTermFrequency(), unit.getDescription());
+					unit.getSimpleName(), unit.getPackageName(), unit.getTermFrequency(), unit.getDescription(),
+					unit.isAbstract(), unit.getModifier());
 			if(unit.getCompilationUnit() != null){
 				/**
 				 * The following four statements is time-consuming
@@ -444,13 +445,14 @@ public class ProgramModel{
 			UnitMemberWrapper clonedMember = null;	
 			if(oldMember instanceof FieldWrapper){
 				clonedMember = new FieldWrapper(oldMember.getName(), ((FieldWrapper) oldMember).getType(), 
-						clonedMemberUnit, oldMember.getTermFrequency(), oldMember.getDescription(), ((FieldWrapper) oldMember).getField());
+						clonedMemberUnit, oldMember.getTermFrequency(), oldMember.getDescription(), 
+						((FieldWrapper) oldMember).getField(), oldMember.isAbstract(), oldMember.getModifier());
 			}else if(oldMember instanceof MethodWrapper){
 				MethodWrapper methodWrapper = (MethodWrapper)oldMember;
 				clonedMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), 
 						methodWrapper.cloneParameters(), methodWrapper.isConstructor(), 
 						clonedMemberUnit, methodWrapper.getTermFrequency(), methodWrapper.getDescription(),
-						methodWrapper.getMethod());
+						methodWrapper.getMethod(), methodWrapper.isAbstract(), methodWrapper.getModifier());
 			}	
 			/*if(member.getJavaElement() != null){
 				if(member instanceof FieldWrapper){
