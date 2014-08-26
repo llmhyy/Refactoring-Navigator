@@ -41,7 +41,6 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
-import org.eclipse.jdt.core.dom.Modifier.ModifierKeyword;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.ui.refactoring.RenameSupport;
@@ -55,7 +54,6 @@ import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.SuggestionObject;
 import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
@@ -105,6 +103,9 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	@Override
 	public ArrayList<ASTNode> getHints() {
 		ArrayList<ASTNode> hints = new ArrayList<>();
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			hints.add(member.getJavaElement());
+		}
 		for(UnitMemberWrapper member: toBePulledMemberList){
 			for(ProgramReference reference: member.getRefererPointList()){
 				ASTNode node = reference.getASTNode();

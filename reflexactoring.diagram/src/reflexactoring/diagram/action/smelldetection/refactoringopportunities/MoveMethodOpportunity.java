@@ -172,15 +172,13 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	@Override
 	public ArrayList<ASTNode> getHints() {
 		ArrayList<ASTNode> hints = new ArrayList<>();
+		hints.add(objectMethod.getJavaElement());
 		for(ProgramReference reference: objectMethod.getRefererPointList()){
 			ASTNode node = reference.getASTNode();
 			hints.add(node);
 		}
 		return hints;
 	}
-	
-	
-	
 
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
