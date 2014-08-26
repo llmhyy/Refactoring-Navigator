@@ -8,6 +8,7 @@ import gr.uom.java.jdeodorant.refactoring.views.MyRefactoringWizard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -83,6 +84,27 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	@Override
 	public ProgramModel simulate(ProgramModel model) {
 		ProgramModel newModel = model.clone();
+		
+		/**
+		 * TODO, if the re-implementation of extracting class is done, the following code could
+		 * be removed.
+		 * 
+		 * remove some exclusive opportunities,
+		 */
+		Iterator<RefactoringOpportunity> oppIter = newModel.getOneShotOpportnityList().iterator();
+		while(oppIter.hasNext()){
+			RefactoringOpportunity opp = oppIter.next();
+			if(opp instanceof ExtractClassOpportunity){
+				ExtractClassOpportunity extractClassOpp = (ExtractClassOpportunity)opp;
+				
+				for(UnitMemberWrapper extractedMember: extractClassOpp.getToBeExtractedMembers()){
+					if(extractedMember.equals(this.objectMethod)){
+						oppIter.remove();
+						break;
+					}
+				}
+			}
+		}
 		
 		MethodWrapper objMethod = (MethodWrapper)newModel.findMember(this.objectMethod);
 		ICompilationUnitWrapper tarUnit = newModel.findUnit(this.targetUnit.getFullQualifiedName());
