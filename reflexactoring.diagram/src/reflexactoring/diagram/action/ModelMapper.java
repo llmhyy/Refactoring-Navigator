@@ -10,6 +10,7 @@ import java.util.List;
 import reflexactoring.diagram.action.recommend.ClassRecommendAction;
 import reflexactoring.diagram.action.recommend.RefactoringRecommender;
 import reflexactoring.diagram.action.recommend.suboptimal.Genotype;
+import reflexactoring.diagram.action.recommend.suboptimal.Rules;
 import reflexactoring.diagram.action.semantic.TFIDF;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
@@ -30,14 +31,24 @@ public class ModelMapper {
 			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
 		double[][] overallSimilarityTable; 
 		overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);		
-		clearMappingRelation(moduleList, compilationUnitList);
+		//clearMappingRelation(moduleList, compilationUnitList);
 		
 		ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(overallSimilarityTable, 
 				moduleList, Settings.scope.getScopeCompilationUnitList());
 		Settings.similarityTable = table;
 		
 		for(ICompilationUnitWrapper unit: compilationUnitList){
-			unit.setMappingModule(moduleList.get(0));
+			if(unit.getMappingModule() == null){
+				Rules rules = new Rules();
+				int unitIndex = Settings.scope.getICompilationUnitIndex(unit);
+				Integer moduleIndex = rules.getUnitModuleFixList().get(unitIndex);
+				if(moduleIndex == null){
+					unit.setMappingModule(moduleList.get(0));									
+				}
+				else{
+					unit.setMappingModule(moduleList.get(moduleIndex));
+				}
+			}
 		}
 		
 		RefactoringRecommender recommender = new RefactoringRecommender();
