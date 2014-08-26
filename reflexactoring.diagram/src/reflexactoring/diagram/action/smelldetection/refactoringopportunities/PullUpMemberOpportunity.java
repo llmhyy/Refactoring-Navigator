@@ -180,37 +180,36 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			reference.setReferee(newMember);
 			newMember.addProgramReferer(reference);
 			/**
-			 * find the variable declaration defining the access object of the method invocation, change its type
-			 * declaration from subclass to superclass.
+			 * find the variable declaration defining the access object of the method invocation and field access, 
+			 * change its type declaration from subclass to superclass.
 			 */
-			if(newToBePulledMember instanceof MethodWrapper){
-				for(ReferenceInflucencedDetail refDecDetail: reference.getVariableDeclarationList()){	
+			for(ReferenceInflucencedDetail refDecDetail: reference.getVariableDeclarationList()){	
+				
+				if(refDecDetail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
+					VariableDeclarationWrapper dec = refDecDetail.getDeclaration();
 					
-					if(refDecDetail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
-						VariableDeclarationWrapper dec = refDecDetail.getDeclaration();
-						if(dec.isField()){
-							UnitMemberWrapper referer = reference.getReferer();
-							ICompilationUnitWrapper declaringClass = referer.getUnitWrapper();
-							String fieldName = dec.getVariableName();
-							
-							FieldWrapper fieldWrapper = newModel.findField(declaringClass.getFullQualifiedName(), fieldName);
-							
-							for(ProgramReference ref: fieldWrapper.getRefereePointList()){
-								if(ref.getReferenceType() == ProgramReference.TYPE_DECLARATION){
-									ICompilationUnitWrapper referedUnit = (ICompilationUnitWrapper) ref.getReferee();
-									if(subClasses.contains(referedUnit)){
-										ref.setReferee(superUnit);
-										dec.setUnitWrapper(superUnit);
-									}
-									
-									break;
+					dec.setUnitWrapper(superUnit);
+					
+					if(dec.isField()){
+						UnitMemberWrapper referer = reference.getReferer();
+						ICompilationUnitWrapper declaringClass = referer.getUnitWrapper();
+						String fieldName = dec.getVariableName();
+						FieldWrapper fieldWrapper = newModel.findField(declaringClass.getFullQualifiedName(), fieldName);
+						
+						for(ProgramReference ref: fieldWrapper.getRefereePointList()){
+							if(ref.getReferenceType() == ProgramReference.TYPE_DECLARATION){
+								ICompilationUnitWrapper referedUnit = (ICompilationUnitWrapper) ref.getReferee();
+								if(subClasses.contains(referedUnit)){
+									ref.setReferee(superUnit);
+									dec.setUnitWrapper(superUnit);
 								}
+								
+								break;
 							}
-							
 						}
 					}
-				
 				}
+			
 			}
 		}
 		
