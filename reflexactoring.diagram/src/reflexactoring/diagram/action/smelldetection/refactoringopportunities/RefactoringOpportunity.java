@@ -85,12 +85,11 @@ public abstract class RefactoringOpportunity {
 	
 	
 	/**
-	 * this method is used to check whether a refactoring opportunity still hold true, on the process of checking
-	 * validity, some opportunity might be updated and then get validated.
+	 * this method is used to check whether a refactoring opportunity still hold true.
 	 * @param model
 	 * @return
 	 */
-	protected abstract boolean checkLegal(ProgramModel model);
+	protected abstract boolean checkLegal();
 	/**
 	 * @return the moduleList
 	 */

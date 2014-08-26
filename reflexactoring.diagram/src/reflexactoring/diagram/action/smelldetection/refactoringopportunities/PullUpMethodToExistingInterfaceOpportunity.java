@@ -8,13 +8,11 @@ import java.util.HashMap;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMember;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberOpportunity.ASTNodeInfo;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
@@ -122,7 +120,7 @@ public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOppo
 	}
 
 	@Override
-	protected boolean checkLegal(ProgramModel model) {
+	protected boolean checkLegal() {
 		// TODO Auto-generated method stub
 		return false;
 	}

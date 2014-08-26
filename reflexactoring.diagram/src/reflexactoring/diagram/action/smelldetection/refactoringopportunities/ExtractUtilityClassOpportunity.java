@@ -182,9 +182,9 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 	}
 	
 	@Override
-	protected boolean checkLegal(ProgramModel model) {
-		Precondition precondition = new Precondition(getModuleList());
-		return precondition.checkLegal(model);
+	protected boolean checkLegal() {
+		//TODO
+		return false;
 	}
 
 	@Override

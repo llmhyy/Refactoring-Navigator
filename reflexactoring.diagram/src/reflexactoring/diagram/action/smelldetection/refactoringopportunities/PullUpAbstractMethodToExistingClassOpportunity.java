@@ -121,7 +121,7 @@ public class PullUpAbstractMethodToExistingClassOpportunity extends
 	}
 
 	@Override
-	protected boolean checkLegal(ProgramModel model) {
+	protected boolean checkLegal() {
 		// TODO Auto-generated method stub
 		return false;
 	}
