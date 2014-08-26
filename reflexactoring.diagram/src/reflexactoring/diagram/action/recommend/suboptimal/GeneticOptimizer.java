@@ -33,7 +33,7 @@ public class GeneticOptimizer {
 	
 	public Population optimize(){
 		Population pop = this.population;
-		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getIterationNumber()); i++){			
+		for(int i=0; i<Integer.valueOf(ReflexactoringUtil.getMappingIterationNumber()); i++){			
 			/**
 			 * derive a new generation.
 			 */

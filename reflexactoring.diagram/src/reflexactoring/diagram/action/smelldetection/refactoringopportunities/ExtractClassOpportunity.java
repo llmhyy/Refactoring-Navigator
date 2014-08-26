@@ -26,9 +26,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -470,9 +475,51 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	}
 
 	@Override
-	protected boolean checkLegal() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean checkLegal() {		
+		try {
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);			
+
+			//check whether sourceUnit exists or not
+			IType sourceType = javaProject.findType(sourceUnit.getFullQualifiedName());
+			if(sourceType == null){
+				return false;
+			}
+			ICompilationUnit sourceUnit = sourceType.getCompilationUnit();		
+			if(sourceUnit == null){
+				return false;
+			}			
+
+			//check whether to be exracted member exists or not
+			for(UnitMemberWrapper member : toBeExtractedMembers){
+				if(member instanceof MethodWrapper){				
+					IMethod[] methods = sourceType.findMethods((IMethod) ((MethodWrapper) member).getJavaMember());	
+					if(methods == null || methods.length != 1){
+						return false;
+					}
+				}else{
+					IField field = (IField) ((FieldWrapper) member).getJavaMember();
+					IField[] fields = sourceType.getFields();
+					boolean fieldExist = false;
+					for(IField f : fields){
+						if(f.getFlags() == field.getFlags() && f.getElementName().equals(field.getElementName())
+								&& f.getElementType() == field.getElementType()){
+							fieldExist = true;
+							break;
+						}
+					}
+					if(!fieldExist){
+						return false;
+					}
+				}
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**

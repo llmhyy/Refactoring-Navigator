@@ -135,7 +135,8 @@ public class Settings {
 	public static double alpha = 0.5;
 	public static double beta = 0.5;
 	public static double mutationRate = 0.01;
-	public static int geneticIterationNum = 1000;
+	public static int mappingIterationNum = 1000;
+	public static int climbIterationNum = 1000;
 	public static int populationSize = 50;
 	public static int suggestionNum = 3;
 	

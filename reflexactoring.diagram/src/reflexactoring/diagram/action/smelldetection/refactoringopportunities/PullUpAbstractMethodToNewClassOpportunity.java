@@ -129,9 +129,8 @@ public class PullUpAbstractMethodToNewClassOpportunity extends PullUpMemberOppor
 	}
 
 	@Override
-	protected boolean checkLegal() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean checkLegal() {
+		return super.checkLegal();
 	}
 
 

@@ -11,14 +11,21 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ltk.core.refactoring.CreateChangeOperation;
 import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -37,6 +44,7 @@ import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -184,20 +192,36 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	public boolean apply(int position, RefactoringSequence sequence) {
 		MoveMethodOpportunity moveMethodOpportunity = this;
 		
-		MethodDeclaration methodDeclaration = (MethodDeclaration) moveMethodOpportunity.getObjectMethod().getJavaElement();												
-		CompilationUnit sourceCompilationUnit = moveMethodOpportunity.getSourceUnit().getJavaUnit();
-		CompilationUnit targetCompilationUnit = moveMethodOpportunity.getTargetUnit().getJavaUnit();
+		MethodDeclaration methodDeclaration = (MethodDeclaration) moveMethodOpportunity.getObjectMethod().getJavaElement();	
+		
+		CompilationUnit sourceCompilationUnit = null; 
+		CompilationUnit targetCompilationUnit = null;
+		try {
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);
+			
+			IType sourceType = javaProject.findType(moveMethodOpportunity.getSourceUnit().getFullQualifiedName());
+			ICompilationUnit sourceUnit = sourceType.getCompilationUnit();
+			sourceCompilationUnit = RefactoringOppUtil.parse(sourceUnit);
+			
+			IType targetType = javaProject.findType(moveMethodOpportunity.getTargetUnit().getFullQualifiedName());
+			ICompilationUnit targetUnit = targetType.getCompilationUnit();
+			targetCompilationUnit = RefactoringOppUtil.parse(targetUnit);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}		
+		if(sourceCompilationUnit == null || targetCompilationUnit == null){
+			return false;
+		}
+		
+//		CompilationUnit sourceCompilationUnit = moveMethodOpportunity.getSourceUnit().getJavaUnit(); 
+//		CompilationUnit targetCompilationUnit = moveMethodOpportunity.getTargetUnit().getJavaUnit();
 		TypeDeclaration sTypeDeclaration = (TypeDeclaration) sourceCompilationUnit.types().get(0);
 		TypeDeclaration tTypeDeclaration = (TypeDeclaration) targetCompilationUnit.types().get(0);
 		
 		Map<MethodInvocation, MethodDeclaration> additionalMethodsToBeMoved = new HashMap<MethodInvocation, MethodDeclaration>();
-//		for(ProgramReference reference : moveMethodOpportunity.getObjectMethod().getRefererPointList()){
-//			additionalMethodsToBeMoved.put((MethodInvocation)reference.getASTNode(), (MethodDeclaration)((UnitMemberWrapper) reference.getReferee()).getJavaElement());
-//			if(!additionalMethodsToBeMoved.containsKey((MethodInvocation)reference.getASTNode())){
-//				additionalMethodsToBeMoved.put((MethodInvocation)reference.getASTNode(), methodDeclaration);
-//			}
-//		}
-		
+
 		MoveMethodRefactoring refactoring = new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit,
 				sTypeDeclaration, tTypeDeclaration, methodDeclaration,
 				additionalMethodsToBeMoved, false, moveMethodOpportunity.getObjectMethod().getName());
@@ -206,7 +230,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 //			NullProgressMonitor monitor = new NullProgressMonitor();
 //			RefactoringStatus status = refactoring.checkAllConditions(monitor);
 //			CreateChangeOperation operation = new CreateChangeOperation(refactoring);			
-//			performOperation = new PerformChangeOperation(operation);
+//			PerformChangeOperation performOperation = new PerformChangeOperation(operation);
 //			performOperation.run(monitor);
 //		} catch (OperationCanceledException e1) {
 //			e1.printStackTrace();
@@ -223,15 +247,18 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard); 
 		try { 
 			String titleForFailedChecks = ""; //$NON-NLS-1$ 
-			op.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), titleForFailedChecks); 
+			if(op.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), titleForFailedChecks) == IDialogConstants.CANCEL_ID){
+				return false;
+			}
 		} catch(InterruptedException e1) {
 			e1.printStackTrace();
 		}
+
+		//refresh model
+		String newMethodName = refactoring.getMovedMethodName();
+		refreshModel(position, sequence, newMethodName);
 		
 		return true;
-		
-		
-		//TODO refresh model (get new method name first)
 	}
 	
 //	@Override
@@ -255,9 +282,43 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 //	}
 
 	@Override
-	protected boolean checkLegal() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean checkLegal() {		
+		try {
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);			
+
+			//check whether sourceUnit exists or not
+			IType sourceType = javaProject.findType(sourceUnit.getFullQualifiedName());
+			if(sourceType == null){
+				return false;
+			}
+			ICompilationUnit sourceUnit = sourceType.getCompilationUnit();		
+			if(sourceUnit == null){
+				return false;
+			}			
+
+			//check whether targetUnit exists or not
+			IType targetType = javaProject.findType(targetUnit.getFullQualifiedName());
+			if(targetType == null){
+				return false;
+			}
+			ICompilationUnit targetUnit = targetType.getCompilationUnit();		
+			if(targetUnit == null){
+				return false;
+			}
+
+			//check whether objectMethod exists or not
+			IMethod[] objectMethods = sourceType.findMethods((IMethod) objectMethod.getJavaMember());	
+			if(objectMethods == null || objectMethods.length != 1){
+				return false;
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 
 	/**
@@ -404,5 +465,18 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			return false;
 		}
 		
+	}
+	
+	protected void refreshModel(int position, RefactoringSequence sequence, String newMethodName) {
+		String fullQualifiedTypeName = this.objectMethod.getUnitWrapper().getFullQualifiedName();
+		String toBeReplacedMethodName = this.objectMethod.getName();
+		ArrayList<String> toBeReplacedMethodParam = ((MethodWrapper)this.objectMethod).getParameters();
+		
+		for(int i = position; i < sequence.size(); i++ ){
+			ProgramModel model = sequence.get(i).getConsequenceModel();
+			
+			MethodWrapper oldMethodInModel = model.findMethod(fullQualifiedTypeName, toBeReplacedMethodName, toBeReplacedMethodParam);
+			oldMethodInModel.setName(newMethodName);
+		}
 	}
 }

@@ -18,6 +18,7 @@ public class RefactoringSequenceElement {
 	private ProgramModel consequenceModel;
 	private double fitnessValue;
 	private ArrayList<Violation> violationList;
+	private boolean isApply = false;
 	/**
 	 * used to record the position of this element in the whole refactoring sequence.
 	 */
@@ -107,5 +108,19 @@ public class RefactoringSequenceElement {
 	 */
 	public void setPosition(int position) {
 		this.position = position;
+	}
+
+	/**
+	 * @return the isApply
+	 */
+	public boolean isApply() {
+		return isApply;
+	}
+
+	/**
+	 * @param isApply the isApply to set
+	 */
+	public void setApply(boolean isApply) {
+		this.isApply = isApply;
 	}
 }

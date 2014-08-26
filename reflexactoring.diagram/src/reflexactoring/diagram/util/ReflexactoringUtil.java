@@ -80,13 +80,22 @@ public class ReflexactoringUtil {
 		Activator.getDefault().getPreferenceStore().putValue(ProjectInfoPage.STOP_LIST, stopList);
 	}
 	
-	public static String getIterationNumber() {
-		String iterationNum = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.ITERATION_NUMBER);
-		return (iterationNum == null || iterationNum.length() == 0)? String.valueOf(Settings.geneticIterationNum) : iterationNum;
+	public static String getMappingIterationNumber() {
+		String iterationNum = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.MAPPING_ITERATION_NUMBER);
+		return (iterationNum == null || iterationNum.length() == 0)? String.valueOf(Settings.mappingIterationNum) : iterationNum;
 	}
 	
-	public static void setIterationNumber(String iterationNumber){
-		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.ITERATION_NUMBER, iterationNumber);
+	public static void setMappingIterationNumber(String iterationNumber){
+		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.MAPPING_ITERATION_NUMBER, iterationNumber);
+	}
+	
+	public static String getClimbIterationNumber() {
+		String iterationNum = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.CLIMB_ITERATION_NUMBER);
+		return (iterationNum == null || iterationNum.length() == 0)? String.valueOf(Settings.climbIterationNum) : iterationNum;
+	}
+	
+	public static void setClimbIterationNumber(String iterationNumber){
+		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.CLIMB_ITERATION_NUMBER, iterationNumber);
 	}
 	
 	public static String getPopulationSize() {

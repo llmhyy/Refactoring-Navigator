@@ -6,8 +6,14 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 
@@ -18,6 +24,7 @@ import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun
@@ -121,9 +128,29 @@ public class PullUpAbstractMethodToExistingClassOpportunity extends
 	}
 
 	@Override
-	protected boolean checkLegal() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean checkLegal() {		
+		try {
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);			
+			
+			//check whether targetUnit exists or not
+			IType targetType = javaProject.findType(targetUnit.getFullQualifiedName());	
+			if(targetType == null){
+				return false;
+			}
+			ICompilationUnit targetUnit = targetType.getCompilationUnit();		
+			if(targetUnit == null){
+				return false;
+			}
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+			return false;
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return super.checkLegal();
 	}
-
 }

@@ -204,9 +204,8 @@ public class PullUpMethodToNewInterfaceOpportunity extends PullUpMemberOpportuni
 	}	
 
 	@Override
-	protected boolean checkLegal() {
-		//TODO
-		return true;
+	public boolean checkLegal() {
+		return super.checkLegal();
 	}
 	
 	@Override

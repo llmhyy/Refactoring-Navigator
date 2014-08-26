@@ -195,9 +195,8 @@ public class PullUpConcreteMemberToNewClassOpportunity  extends PullUpMemberOppo
 	}
 
 	@Override
-	protected boolean checkLegal() {
-		//TODO
-		return true;
+	public boolean checkLegal() {
+		return super.checkLegal();
 	}
 	
 	@Override

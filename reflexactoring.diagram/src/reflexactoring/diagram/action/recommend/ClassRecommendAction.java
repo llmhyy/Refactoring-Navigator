@@ -35,7 +35,7 @@ public class ClassRecommendAction implements
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				
-				Double iterNum = Double.valueOf(ReflexactoringUtil.getIterationNumber());
+				Double iterNum = Double.valueOf(ReflexactoringUtil.getMappingIterationNumber());
 				monitor.beginTask("Searching Solution...", iterNum.intValue());
 				
 				//RefactoringRecommenderForOldRepresentation recommender = new RefactoringRecommenderForOldRepresentation();
