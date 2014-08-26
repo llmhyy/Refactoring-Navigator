@@ -8,13 +8,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -462,9 +468,15 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 */
 	protected boolean createAbstractMethodInParent(
 			ICompilationUnitWrapper parent,
-			ArrayList<UnitMemberWrapper> memberList, String newMemberName) {
-		ICompilationUnit parentUnit = parent.getCompilationUnit();
-		try{
+			ArrayList<UnitMemberWrapper> memberList, String newMemberName) {		
+		//ICompilationUnit parentUnit = parent.getCompilationUnit();
+		try{			
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);
+			IType parentType = javaProject.findType(parent.getFullQualifiedName());
+			ICompilationUnit parentUnit = parentType.getCompilationUnit();			
+			
 			parentUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer parentBuffer = parentUnit.getBuffer();		
 			
@@ -546,6 +558,9 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		} catch (BadLocationException e1) {
 			e1.printStackTrace();
 			return false;
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
 		}
 		return true;
 	}
@@ -558,8 +573,14 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	protected static boolean createConcreteMethodInParent(
 			ICompilationUnitWrapper parent,
 			ArrayList<UnitMemberWrapper> memberList, String newMemberName) {
-		ICompilationUnit parentUnit = parent.getCompilationUnit();
-		try{
+		//ICompilationUnit parentUnit = parent.getCompilationUnit();
+		try{			
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);
+			IType parentType = javaProject.findType(parent.getFullQualifiedName());
+			ICompilationUnit parentUnit = parentType.getCompilationUnit();		
+			
 			parentUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer parentBuffer = parentUnit.getBuffer();		
 			
@@ -654,6 +675,9 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		} catch (BadLocationException e1) {
 			e1.printStackTrace();
 			return false;
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
 		}
 		return true;
 	}
@@ -666,8 +690,14 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	protected static boolean createConcreteFieldInParent(
 			ICompilationUnitWrapper parent,
 			ArrayList<UnitMemberWrapper> memberList, String newMemberName) {
-		ICompilationUnit parentUnit = parent.getCompilationUnit();
-		try{
+		//ICompilationUnit parentUnit = parent.getCompilationUnit();
+		try{			
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);
+			IType parentType = javaProject.findType(parent.getFullQualifiedName());
+			ICompilationUnit parentUnit = parentType.getCompilationUnit();		
+			
 			parentUnit.becomeWorkingCopy(new SubProgressMonitor(new NullProgressMonitor(), 1));
 			IBuffer parentBuffer = parentUnit.getBuffer();		
 			
@@ -743,6 +773,9 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			return false;
 		} catch (BadLocationException e1) {
 			e1.printStackTrace();
+			return false;
+		} catch (CoreException e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;
