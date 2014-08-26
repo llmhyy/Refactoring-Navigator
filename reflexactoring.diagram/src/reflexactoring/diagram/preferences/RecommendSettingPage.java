@@ -20,14 +20,16 @@ public class RecommendSettingPage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
 	public static final String MUTATION_RATE = "mutationRate";
-	public static final String ITERATION_NUMBER = "iterationNumber";
+	public static final String MAPPING_ITERATION_NUMBER = "mappingIterationNumber";
+	public static final String CLIMB_ITERATION_NUMBER = "climbIterationNumber";
 	public static final String POPULATION_SIZE = "populationSize";
 	public static final String ALPHA = "alpha";
 	public static final String BETA = "beta";
 	public static final String SUGGESTION_NUMBER = "suggestionNumber";
 	
 	
-	private Text iterationNumberText;
+	private Text mappingIterationNumberText;
+	private Text climbIterationNumberText;
 	private Text populationSizeText;
 	private Text mutationRateText;
 	private Text alphaText;
@@ -63,13 +65,21 @@ public class RecommendSettingPage extends PreferencePage implements
 		
 		composite.setLayout(layout);
 		
-		Label iterationNumberLabel = new Label(composite, SWT.NONE);
-		iterationNumberLabel.setText("Iteration Number");
-		iterationNumberText = new Text(composite, SWT.BORDER);
-		iterationNumberText.setText(ReflexactoringUtil.getIterationNumber());
-		GridData iterationNumberData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		iterationNumberData.horizontalSpan = 2;
-		iterationNumberText.setLayoutData(iterationNumberData);
+		Label mappingIterationNumberLabel = new Label(composite, SWT.NONE);
+		mappingIterationNumberLabel.setText("Mapping Iteration Number");
+		mappingIterationNumberText = new Text(composite, SWT.BORDER);
+		mappingIterationNumberText.setText(ReflexactoringUtil.getMappingIterationNumber());
+		GridData mappingIterationNumberData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		mappingIterationNumberData.horizontalSpan = 2;
+		mappingIterationNumberText.setLayoutData(mappingIterationNumberData);
+		
+		Label climpIterationNumberLabel = new Label(composite, SWT.NONE);
+		climpIterationNumberLabel.setText("Climb Iteration Number");
+		climbIterationNumberText = new Text(composite, SWT.BORDER);
+		climbIterationNumberText.setText(ReflexactoringUtil.getMappingIterationNumber());
+		GridData climpIterationNumberData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		climpIterationNumberData.horizontalSpan = 2;
+		climbIterationNumberText.setLayoutData(climpIterationNumberData);
 		
 		Label populationSizeLabel = new Label(composite, SWT.NONE);
 		populationSizeLabel.setText("Population Size");
@@ -127,14 +137,16 @@ public class RecommendSettingPage extends PreferencePage implements
 	
 	public boolean performOk(){
 		Preferences preferences = ConfigurationScope.INSTANCE.getNode("Reflexactoring");
-		preferences.put(ITERATION_NUMBER, this.iterationNumberText.getText());
+		preferences.put(MAPPING_ITERATION_NUMBER, this.mappingIterationNumberText.getText());
+		preferences.put(CLIMB_ITERATION_NUMBER, this.climbIterationNumberText.getText());
 		preferences.put(POPULATION_SIZE, this.populationSizeText.getText());
 		preferences.put(MUTATION_RATE, this.mutationRateText.getText());
 		preferences.put(ALPHA, this.alphaText.getText());
 		preferences.put(BETA, this.betaText.getText());
 		preferences.put(SUGGESTION_NUMBER, this.suggestionNumberText.getText());
 		
-		ReflexactoringUtil.setIterationNumber(this.iterationNumberText.getText());
+		ReflexactoringUtil.setMappingIterationNumber(this.mappingIterationNumberText.getText());
+		ReflexactoringUtil.setClimbIterationNumber(this.climbIterationNumberText.getText());
 		ReflexactoringUtil.setPopulationSize(this.populationSizeText.getText());
 		ReflexactoringUtil.setMutationRate(this.mutationRateText.getText());
 		ReflexactoringUtil.setAlpha(this.alphaText.getText());

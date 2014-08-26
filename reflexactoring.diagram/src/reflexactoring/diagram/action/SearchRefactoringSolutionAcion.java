@@ -50,7 +50,7 @@ public class SearchRefactoringSolutionAcion implements
 				
 				System.currentTimeMillis();
 				
-				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getIterationNumber()) && oppList.size() != 0; i++){				
+				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getClimbIterationNumber()) && oppList.size() != 0; i++){				
 					
 					if(i==2){
 						System.currentTimeMillis();

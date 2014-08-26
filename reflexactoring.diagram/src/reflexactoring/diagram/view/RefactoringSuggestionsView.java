@@ -529,6 +529,8 @@ public class RefactoringSuggestionsView extends ViewPart {
 						
 						//update model
 						Settings.scope = element.getConsequenceModel();
+						
+						MessageDialog.openInformation(null, "Apply Done", "Apply is finished, you can continue refactoring now.");
 					}											
 				}
 				else if(e.getHref().equals("Undo")){
