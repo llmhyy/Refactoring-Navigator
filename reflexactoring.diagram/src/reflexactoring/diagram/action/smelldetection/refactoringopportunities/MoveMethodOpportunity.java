@@ -11,9 +11,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -37,6 +43,7 @@ import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -182,22 +189,42 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
+		if(!this.checkLegal()){
+			return false;
+		}
+		
 		MoveMethodOpportunity moveMethodOpportunity = this;
 		
-		MethodDeclaration methodDeclaration = (MethodDeclaration) moveMethodOpportunity.getObjectMethod().getJavaElement();												
-		CompilationUnit sourceCompilationUnit = moveMethodOpportunity.getSourceUnit().getJavaUnit();
-		CompilationUnit targetCompilationUnit = moveMethodOpportunity.getTargetUnit().getJavaUnit();
+		MethodDeclaration methodDeclaration = (MethodDeclaration) moveMethodOpportunity.getObjectMethod().getJavaElement();	
+		
+		CompilationUnit sourceCompilationUnit = null; 
+		CompilationUnit targetCompilationUnit = null;
+		try {
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);
+			
+			IType sourceType = javaProject.findType(moveMethodOpportunity.getSourceUnit().getFullQualifiedName());
+			ICompilationUnit sourceUnit = sourceType.getCompilationUnit();
+			sourceCompilationUnit = RefactoringOppUtil.parse(sourceUnit);
+			
+			IType targetType = javaProject.findType(moveMethodOpportunity.getSourceUnit().getFullQualifiedName());
+			ICompilationUnit targetUnit = targetType.getCompilationUnit();
+			targetCompilationUnit = RefactoringOppUtil.parse(targetUnit);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}		
+		if(sourceCompilationUnit == null || targetCompilationUnit == null){
+			return false;
+		}
+		
+//		CompilationUnit sourceCompilationUnit = moveMethodOpportunity.getSourceUnit().getJavaUnit(); 
+//		CompilationUnit targetCompilationUnit = moveMethodOpportunity.getTargetUnit().getJavaUnit();
 		TypeDeclaration sTypeDeclaration = (TypeDeclaration) sourceCompilationUnit.types().get(0);
 		TypeDeclaration tTypeDeclaration = (TypeDeclaration) targetCompilationUnit.types().get(0);
 		
 		Map<MethodInvocation, MethodDeclaration> additionalMethodsToBeMoved = new HashMap<MethodInvocation, MethodDeclaration>();
-//		for(ProgramReference reference : moveMethodOpportunity.getObjectMethod().getRefererPointList()){
-//			additionalMethodsToBeMoved.put((MethodInvocation)reference.getASTNode(), (MethodDeclaration)((UnitMemberWrapper) reference.getReferee()).getJavaElement());
-//			if(!additionalMethodsToBeMoved.containsKey((MethodInvocation)reference.getASTNode())){
-//				additionalMethodsToBeMoved.put((MethodInvocation)reference.getASTNode(), methodDeclaration);
-//			}
-//		}
-		
+
 		MoveMethodRefactoring refactoring = new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit,
 				sTypeDeclaration, tTypeDeclaration, methodDeclaration,
 				additionalMethodsToBeMoved, false, moveMethodOpportunity.getObjectMethod().getName());
@@ -256,9 +283,37 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 //	}
 
 	@Override
-	protected boolean checkLegal() {
-		// TODO Auto-generated method stub
-		return false;
+	protected boolean checkLegal() {		
+		try {
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);			
+
+			//check whether sourceUnit exists or not
+			IType sourceType = javaProject.findType(sourceUnit.getFullQualifiedName());
+			ICompilationUnit sourceUnit = sourceType.getCompilationUnit();		
+			if(sourceUnit == null){
+				return false;
+			}			
+
+			//check whether targetUnit exists or not
+			IType targetType = javaProject.findType(targetUnit.getFullQualifiedName());
+			ICompilationUnit targetUnit = targetType.getCompilationUnit();		
+			if(targetUnit == null){
+				return false;
+			}
+
+			//check whether objectMethod exists or not
+			IMethod[] objectMethods = sourceType.findMethods((IMethod) objectMethod.getJavaMember());	
+			if(objectMethods == null || objectMethods.length != 1){
+				return false;
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 
 	/**

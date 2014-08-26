@@ -75,6 +75,10 @@ public class PullUpAbstractMethodToExistingClassOpportunity extends
 
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
+		if(!this.checkLegal()){
+			return false;
+		}
+		
 		ICompilationUnitWrapper parentClass = this.targetUnit;
 
 		//get all members to be pulled
@@ -122,8 +126,7 @@ public class PullUpAbstractMethodToExistingClassOpportunity extends
 
 	@Override
 	protected boolean checkLegal() {
-		// TODO Auto-generated method stub
-		return false;
+		return super.checkLegal();
 	}
 
 }

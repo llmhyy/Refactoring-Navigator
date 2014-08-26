@@ -74,6 +74,10 @@ public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOppo
 
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
+		if(!this.checkLegal()){
+			return false;
+		}
+		
 		ICompilationUnitWrapper parentInterface = this.targetUnit;
 
 		//get all members to be pulled
@@ -121,8 +125,7 @@ public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOppo
 
 	@Override
 	protected boolean checkLegal() {
-		// TODO Auto-generated method stub
-		return false;
+		return super.checkLegal();
 	}
 
 }

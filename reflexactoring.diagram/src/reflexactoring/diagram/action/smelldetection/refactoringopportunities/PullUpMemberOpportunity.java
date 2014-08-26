@@ -121,6 +121,57 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		return hints;
 	}
 
+	@Override
+	protected boolean checkLegal() {
+		try {
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);			
+
+			//check whether targetUnit exists or not
+			IType targetType = javaProject.findType(targetUnit.getFullQualifiedName());
+			ICompilationUnit targetUnit = targetType.getCompilationUnit();		
+			if(targetUnit == null){
+				return false;
+			}
+
+			//check whether to be pulled member exists or not
+			for(UnitMemberWrapper member : toBePulledMemberList){
+				if(member instanceof MethodWrapper){					
+					IType sourceType = javaProject.findType(member.getUnitWrapper().getFullQualifiedName());
+					IMethod[] methods = sourceType.findMethods((IMethod) ((MethodWrapper) member).getJavaMember());	
+					if(methods == null || methods.length != 1){
+						return false;
+					}
+				}else{
+					IField field = (IField) ((FieldWrapper) member).getJavaMember();
+					IType sourceType = javaProject.findType(member.getUnitWrapper().getFullQualifiedName());
+					if(sourceType == null){
+						return false;
+					}
+					IField[] fields = sourceType.getFields();
+					boolean fieldExist = false;
+					for(IField f : fields){
+						if(f.getFlags() == field.getFlags() && f.getElementName() == field.getElementName()
+								&& f.getElementType() == field.getElementType()){
+							fieldExist = true;
+							break;
+						}
+					}
+					if(!fieldExist){
+						return false;
+					}
+				}
+			}
+			
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+
 	/**
 	 * In this method, a new member is created, the following relations are built: containment relation between member and unit,
 	 * all the references to to-be-pulled members now point to the new member in unit.

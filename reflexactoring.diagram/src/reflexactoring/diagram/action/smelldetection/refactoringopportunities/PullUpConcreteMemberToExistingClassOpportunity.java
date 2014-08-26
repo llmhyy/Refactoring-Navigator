@@ -110,6 +110,10 @@ public class PullUpConcreteMemberToExistingClassOpportunity extends PullUpMember
 	
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
+		if(!this.checkLegal()){
+			return false;
+		}
+		
 		ICompilationUnitWrapper parentClass = this.targetUnit;
 		boolean isField = this.getToBePulledMemberList().get(0) instanceof FieldWrapper;
 
@@ -173,8 +177,7 @@ public class PullUpConcreteMemberToExistingClassOpportunity extends PullUpMember
 	
 	@Override
 	protected boolean checkLegal() {
-		//TODO
-		return true;
+		return super.checkLegal();
 	}
 	
 	@Override
