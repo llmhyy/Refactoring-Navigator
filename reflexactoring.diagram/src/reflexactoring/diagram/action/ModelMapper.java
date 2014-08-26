@@ -30,15 +30,15 @@ public class ModelMapper {
 			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
 		double[][] overallSimilarityTable; 
 		overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);		
-		clearMappingRelation(moduleList, compilationUnitList);
+		//clearMappingRelation(moduleList, compilationUnitList);
 		
 		ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(overallSimilarityTable, 
 				moduleList, Settings.scope.getScopeCompilationUnitList());
 		Settings.similarityTable = table;
 		
-		for(ICompilationUnitWrapper unit: compilationUnitList){
+		/*for(ICompilationUnitWrapper unit: compilationUnitList){
 			unit.setMappingModule(moduleList.get(0));
-		}
+		}*/
 		
 		RefactoringRecommender recommender = new RefactoringRecommender();
 		Genotype gene = recommender.achieveOptimalGene(moduleList, compilationUnitList);
