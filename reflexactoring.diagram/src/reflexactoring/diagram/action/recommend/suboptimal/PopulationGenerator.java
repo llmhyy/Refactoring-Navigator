@@ -43,6 +43,10 @@ public class PopulationGenerator {
 			ModuleWrapper module = unit.getMappingModule();
 			int index = ReflexactoringUtil.getModuleIndex(moduleList, module);
 			
+			if(index == -1){
+				System.currentTimeMillis();
+			}
+			
 			seedDNA[i] = index;
 		}
 		
