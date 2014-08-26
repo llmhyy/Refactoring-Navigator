@@ -89,7 +89,7 @@ public abstract class RefactoringOpportunity {
 	 * @param model
 	 * @return
 	 */
-	protected abstract boolean checkLegal();
+	public abstract boolean checkLegal();
 	/**
 	 * @return the moduleList
 	 */

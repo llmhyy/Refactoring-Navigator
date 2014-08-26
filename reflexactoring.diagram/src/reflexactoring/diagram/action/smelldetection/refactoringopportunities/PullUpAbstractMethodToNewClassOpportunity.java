@@ -73,10 +73,6 @@ public class PullUpAbstractMethodToNewClassOpportunity extends PullUpMemberOppor
 
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
-		if(!this.checkLegal()){
-			return false;
-		}
-		
 		//create new class
 		JavaClassCreator javaCreator = new JavaClassCreator();
 		ICompilationUnitWrapper parentClass = javaCreator.createClass();	
@@ -133,7 +129,7 @@ public class PullUpAbstractMethodToNewClassOpportunity extends PullUpMemberOppor
 	}
 
 	@Override
-	protected boolean checkLegal() {
+	public boolean checkLegal() {
 		return super.checkLegal();
 	}
 

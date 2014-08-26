@@ -189,10 +189,6 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
-		if(!this.checkLegal()){
-			return false;
-		}
-		
 		MoveMethodOpportunity moveMethodOpportunity = this;
 		
 		MethodDeclaration methodDeclaration = (MethodDeclaration) moveMethodOpportunity.getObjectMethod().getJavaElement();	
@@ -283,7 +279,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 //	}
 
 	@Override
-	protected boolean checkLegal() {		
+	public boolean checkLegal() {		
 		try {
 			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
 			project.open(null);

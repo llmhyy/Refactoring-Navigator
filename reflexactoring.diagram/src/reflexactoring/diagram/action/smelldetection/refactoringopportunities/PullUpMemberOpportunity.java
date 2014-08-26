@@ -122,7 +122,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	}
 
 	@Override
-	protected boolean checkLegal() {
+	public boolean checkLegal() {
 		try {
 			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
 			project.open(null);

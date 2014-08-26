@@ -138,10 +138,6 @@ public class PullUpMethodToNewInterfaceOpportunity extends PullUpMemberOpportuni
 
 	@Override
 	public boolean apply(int position, RefactoringSequence sequence) {
-		if(!this.checkLegal()){
-			return false;
-		}
-		
 		//create new interface
 		JavaClassCreator javaCreator = new JavaClassCreator();
 		ICompilationUnitWrapper parentInterface = javaCreator.createInterface();	
@@ -208,7 +204,7 @@ public class PullUpMethodToNewInterfaceOpportunity extends PullUpMemberOpportuni
 	}	
 
 	@Override
-	protected boolean checkLegal() {
+	public boolean checkLegal() {
 		return super.checkLegal();
 	}
 	

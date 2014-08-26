@@ -184,7 +184,7 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 	}
 	
 	@Override
-	protected boolean checkLegal() {
+	public boolean checkLegal() {
 		//TODO
 		return false;
 	}
