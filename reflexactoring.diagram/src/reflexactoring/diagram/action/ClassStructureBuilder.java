@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
@@ -248,7 +249,21 @@ public class ClassStructureBuilder {
 						//HashMap<VariableDeclarationWrapper, Integer> decList = new HashMap<>();
 						ArrayList<ReferenceInflucencedDetail> decList = new ArrayList<>();
 						
-						VariableDeclarationFragment fragment = (VariableDeclarationFragment) creation.getParent();
+						CompilationUnit cu = callerMember.getUnitWrapper().getJavaUnit();
+						VariableDeclarationFragment fragment = null;
+						ASTNode parent = creation.getParent(); 
+						if(parent instanceof VariableDeclarationFragment){
+							fragment = (VariableDeclarationFragment) parent;							
+						}
+						else if(parent instanceof Assignment){
+							Assignment assignment = (Assignment)parent;
+							Expression expression = assignment.getLeftHandSide();
+							if(expression instanceof SimpleName){
+								SimpleName name = (SimpleName)expression;
+								fragment = (VariableDeclarationFragment) cu.findDeclaringNode(name.resolveBinding().getKey());
+							}
+						}
+						
 						ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(
 								creation.getType().resolveBinding().getQualifiedName());
 						
@@ -261,13 +276,17 @@ public class ClassStructureBuilder {
 						 * check the parameter usage, e.g., where the "p" in "a.m(p)" is declared.
 						 */
 						for(Object obj: creation.arguments()){
-							SimpleName name = (SimpleName)obj;
-							VariableDeclarationWrapper paramDeclaration = extractVariableDeclarationWrpper(name);
-							
-							if(paramDeclaration != null){
-								//decList.put(paramDeclaration, DeclarationInfluencingDetail.PARAMETER);
-								decList.add(new ReferenceInflucencedDetail(paramDeclaration, DeclarationInfluencingDetail.PARAMETER));
+							if(obj instanceof SimpleName){
+								SimpleName name = (SimpleName)obj;
+								VariableDeclarationWrapper paramDeclaration = extractVariableDeclarationWrpper(name);
+								
+								if(paramDeclaration != null){
+									//decList.put(paramDeclaration, DeclarationInfluencingDetail.PARAMETER);
+									decList.add(new ReferenceInflucencedDetail(paramDeclaration, DeclarationInfluencingDetail.PARAMETER));
+								}
+								
 							}
+							
 						}
 						
 						
