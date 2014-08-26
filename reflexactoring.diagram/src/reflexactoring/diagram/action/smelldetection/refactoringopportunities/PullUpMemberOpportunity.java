@@ -218,6 +218,8 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 				}
 			
 			}
+			
+			
 		}
 		
 		newToBePulledMember.setRefererPointList(new ArrayList<ProgramReference>());

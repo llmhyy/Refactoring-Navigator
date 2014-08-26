@@ -21,6 +21,7 @@ import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
+import reflexactoring.diagram.bean.programmodel.GraphNode;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
@@ -256,7 +257,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 					 */
 					((commonAncestor != null) || (isWithoutAnySuperclass))){
 				if(commonAncestor != null){
-					if(isSuitableForPullingIntoCommonSuperClass){
+					if(isSuitableForPullingIntoCommonSuperClass &&
+							isOtherSiblingClassNotSharePossibleAbstractMethod(refactoringPlace, commonAncestor)){
 						PullUpConcreteMemberToExistingClassOpportunity opp = 
 								new PullUpConcreteMemberToExistingClassOpportunity(refactoringPlace, moduleList, commonAncestor);
 						opportunities.add(opp);						
@@ -272,7 +274,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			}
 			else if(commonAncestor != null){
 				if(member instanceof MethodWrapper){
-					if(isSuitableForPullingIntoCommonSuperClass){
+					if(isSuitableForPullingIntoCommonSuperClass &&
+							isOtherSiblingClassNotSharePossibleAbstractMethod(refactoringPlace, commonAncestor)){
 						PullUpAbstractMethodToExistingClassOpportunity existingClassOpp = 
 								new PullUpAbstractMethodToExistingClassOpportunity(refactoringPlace, commonAncestor, moduleList);
 						opportunities.add(existingClassOpp);											
@@ -293,7 +296,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 				
 				ArrayList<ICompilationUnitWrapper> commonInterfaceList = findCommonInterface(refactoringPlace);
 				for(ICompilationUnitWrapper commonInterface: commonInterfaceList){
-					if(isAValidatePullUpInTermsOfReference(refactoringPlace, commonInterface)){
+					if(isAValidatePullUpInTermsOfReference(refactoringPlace, commonInterface) &&
+							isOtherSiblingClassNotSharePossibleAbstractMethod(refactoringPlace, commonInterface)){
 						PullUpMethodToExistingInterfaceOpportunity existingInterfaceOpp =
 								new PullUpMethodToExistingInterfaceOpportunity(refactoringPlace, commonInterface, moduleList);
 						opportunities.add(existingInterfaceOpp);						
@@ -303,6 +307,49 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		}
 		
 		return opportunities;
+	}
+	
+	public boolean isOtherSiblingClassNotSharePossibleAbstractMethod(ArrayList<UnitMemberWrapper> refactoringPlace, 
+			ICompilationUnitWrapper targetUnit){
+		
+		ArrayList<ICompilationUnitWrapper> list = new ArrayList<>();
+		for(UnitMemberWrapper member: refactoringPlace){
+			list.add(member.getUnitWrapper());
+		}
+		
+		if(targetUnit.isInterface()){
+			ArrayList<ICompilationUnitWrapper> commonInterfaces = findCommonInterface(refactoringPlace);
+			for(ICompilationUnitWrapper interf: commonInterfaces){
+				if(interf.equals(targetUnit)){
+					for(GraphNode child: interf.getChildList()){
+						if(child instanceof ICompilationUnitWrapper){
+							ICompilationUnitWrapper childUnit = (ICompilationUnitWrapper)child;
+							if(!list.contains(childUnit)){
+								return false;
+							}
+						}
+					}
+				}
+			}
+			
+			
+		}
+		else{
+			ICompilationUnitWrapper commonAncestor = findCommonAncestor(refactoringPlace);
+			if(commonAncestor != null){
+				for(GraphNode child: commonAncestor.getChildList()){
+					if(child instanceof ICompilationUnitWrapper){
+						ICompilationUnitWrapper childUnit = (ICompilationUnitWrapper)child;
+						if(!list.contains(childUnit)){
+							return false;
+						}
+					}
+				}
+			}
+			
+		}
+		
+		return true;
 	}
 
 	/**
