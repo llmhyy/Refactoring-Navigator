@@ -229,11 +229,12 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		} catch(InterruptedException e1) {
 			e1.printStackTrace();
 		}
+
+		//refresh model
+		String newMethodName = refactoring.getMovedMethodName();
+		refreshModel(position, sequence, newMethodName);
 		
 		return true;
-		
-		
-		//TODO refresh model (get new method name first)
 	}
 	
 //	@Override
@@ -406,5 +407,18 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			return false;
 		}
 		
+	}
+	
+	protected void refreshModel(int position, RefactoringSequence sequence, String newMethodName) {
+		String fullQualifiedTypeName = this.objectMethod.getUnitWrapper().getFullQualifiedName();
+		String toBeReplacedMethodName = this.objectMethod.getName();
+		ArrayList<String> toBeReplacedMethodParam = ((MethodWrapper)this.objectMethod).getParameters();
+		
+		for(int i = position; i < sequence.size(); i++ ){
+			ProgramModel model = sequence.get(i).getConsequenceModel();
+			
+			MethodWrapper oldMethodInModel = model.findMethod(fullQualifiedTypeName, toBeReplacedMethodName, toBeReplacedMethodParam);
+			oldMethodInModel.setName(newMethodName);
+		}
 	}
 }
