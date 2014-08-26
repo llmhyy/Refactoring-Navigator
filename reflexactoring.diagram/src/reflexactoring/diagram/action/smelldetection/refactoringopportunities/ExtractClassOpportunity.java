@@ -503,7 +503,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 					IField[] fields = sourceType.getFields();
 					boolean fieldExist = false;
 					for(IField f : fields){
-						if(f.getFlags() == field.getFlags() && f.getElementName() == field.getElementName()
+						if(f.getFlags() == field.getFlags() && f.getElementName().equals(field.getElementName())
 								&& f.getElementType() == field.getElementType()){
 							fieldExist = true;
 							break;

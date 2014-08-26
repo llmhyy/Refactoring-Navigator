@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ltk.core.refactoring.CreateChangeOperation;
 import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -204,7 +205,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			ICompilationUnit sourceUnit = sourceType.getCompilationUnit();
 			sourceCompilationUnit = RefactoringOppUtil.parse(sourceUnit);
 			
-			IType targetType = javaProject.findType(moveMethodOpportunity.getSourceUnit().getFullQualifiedName());
+			IType targetType = javaProject.findType(moveMethodOpportunity.getTargetUnit().getFullQualifiedName());
 			ICompilationUnit targetUnit = targetType.getCompilationUnit();
 			targetCompilationUnit = RefactoringOppUtil.parse(targetUnit);
 		} catch (CoreException e) {
@@ -229,7 +230,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 //			NullProgressMonitor monitor = new NullProgressMonitor();
 //			RefactoringStatus status = refactoring.checkAllConditions(monitor);
 //			CreateChangeOperation operation = new CreateChangeOperation(refactoring);			
-//			performOperation = new PerformChangeOperation(operation);
+//			PerformChangeOperation performOperation = new PerformChangeOperation(operation);
 //			performOperation.run(monitor);
 //		} catch (OperationCanceledException e1) {
 //			e1.printStackTrace();
@@ -246,7 +247,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard); 
 		try { 
 			String titleForFailedChecks = ""; //$NON-NLS-1$ 
-			op.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), titleForFailedChecks); 
+			if(op.run(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), titleForFailedChecks) == IDialogConstants.CANCEL_ID){
+				return false;
+			}
 		} catch(InterruptedException e1) {
 			e1.printStackTrace();
 		}

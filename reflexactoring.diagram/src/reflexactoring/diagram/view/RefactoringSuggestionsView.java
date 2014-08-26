@@ -247,6 +247,9 @@ public class RefactoringSuggestionsView extends ViewPart {
 						}
 					}
 				}
+				
+				//don't make it green and gray temporarily
+				/*
 				if(sequence.indexOf(element) < currentElementIndex){
 					//make the former steps a little bit different					
 					//the nearest one is able & color lighter
@@ -268,9 +271,9 @@ public class RefactoringSuggestionsView extends ViewPart {
 						formText.setBackground(DARK_GREEN);
 						elementComposite.setBackground(DARK_GREEN);
 						//elementComposite.setEnabled(false);
-						/**
+						*//**
 						 * Leaving it true for my debugging -- LinYun
-						 */
+						 *//*
 						elementComposite.setEnabled(true);
 					}
 				}else if(sequence.indexOf(element) > currentElementIndex){
@@ -280,11 +283,20 @@ public class RefactoringSuggestionsView extends ViewPart {
 					formText.setBackground(LIGHT_GRAY);
 					elementComposite.setBackground(LIGHT_GRAY);
 					//elementComposite.setEnabled(false);
-					/**
+					*//**
 					 * Leaving it true for my debugging -- LinYun
-					 */
+					 *//*
 					elementComposite.setEnabled(true);
 				}
+				*/
+				
+				if(element.isApply()){
+					detailBar.setBackground(LIGHT_GRAY);
+					formComposite.setBackground(LIGHT_GRAY);
+					formText.setBackground(LIGHT_GRAY);
+					elementComposite.setBackground(LIGHT_GRAY);
+				}
+				
 				elementComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			}
 			
@@ -497,7 +509,10 @@ public class RefactoringSuggestionsView extends ViewPart {
 				else if(e.getHref().equals("Exec")){	
 					if(!opportunity.checkLegal()){
 						MessageDialog.openError(null, "Check Legal Error", "It's not legal to do this apply now.");
-					}else if(opportunity.apply(element.getPosition(), sequence)){						
+					}else if(opportunity.apply(element.getPosition(), sequence)){					
+						//set the element composite gray
+						element.setApply(true);	
+						
 						//refresh the suggestions view
 						RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
 								getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
@@ -518,6 +533,9 @@ public class RefactoringSuggestionsView extends ViewPart {
 				}
 				else if(e.getHref().equals("Undo")){
 					if(opportunity.undoApply()){
+						//set the element composite back
+						element.setApply(false);
+						
 						//refresh the suggestions view
 						RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
 								getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
@@ -537,7 +555,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 						ViewUpdater updater = new ViewUpdater();
 						updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
 						
-
 						//update model
 						if(element.getPosition() != 0){
 							Settings.scope = sequence.get(element.getPosition()-1).getConsequenceModel();							

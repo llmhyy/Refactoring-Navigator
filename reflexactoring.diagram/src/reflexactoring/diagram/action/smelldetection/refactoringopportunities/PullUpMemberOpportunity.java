@@ -148,7 +148,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 					IField[] fields = sourceType.getFields();
 					boolean fieldExist = false;
 					for(IField f : fields){
-						if(f.getFlags() == field.getFlags() && f.getElementName() == field.getElementName()
+						if(f.getFlags() == field.getFlags() && f.getElementName().equals(field.getElementName())
 								&& f.getElementType() == field.getElementType()){
 							fieldExist = true;
 							break;
@@ -1046,7 +1046,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 								//for current pulled method's reference, if casted, remove current casting
 								if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
 									
-									addNodeInfoToMap(modificationMap, invocation.getExpression(), true, currentVariableType.toString());
+									addNodeInfoToMap(modificationMap, invocation.getExpression(), true, null);
 									
 								}
 								//for current pulled method's reference, if parameter casted, remove current casting
@@ -1057,7 +1057,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 										
 										if(name.resolveTypeBinding().getName().equals(currentVariableType.toString())){
 
-											addNodeInfoToMap(modificationMap, args, true, currentVariableType.toString());
+											addNodeInfoToMap(modificationMap, args, true, null);
 											
 										}
 									}
@@ -1068,7 +1068,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 							else if(influencedReference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Name){
 								Name name = (Name) influencedReference.getASTNode();
 								
-								addNodeInfoToMap(modificationMap, name, true, currentVariableType.toString());
+								addNodeInfoToMap(modificationMap, name, true, null);
 							}
 												
 							
@@ -1155,7 +1155,8 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 
 				//for current pulled method's reference, if casted, remove current casting
 				if(nodeInfo.isToBePulled){
-					if(node instanceof ParenthesizedExpression && ((ParenthesizedExpression) node).getExpression() instanceof CastExpression){
+					if(node instanceof ParenthesizedExpression && ((ParenthesizedExpression) node).getExpression() instanceof CastExpression
+							&& ((CastExpression) ((ParenthesizedExpression) node).getExpression()).getExpression() instanceof ParenthesizedExpression){
 						ParenthesizedExpression pa2Expression = (ParenthesizedExpression) node;
 						
 						CastExpression castExpression= (CastExpression) pa2Expression.getExpression();
@@ -1379,6 +1380,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			ProgramModel model = sequence.get(i).getConsequenceModel();
 			
 			ICompilationUnitWrapper oldUnitInModel = model.findUnit(toBeReplacedTypeName);
+			oldUnitInModel.setPackageName(parent.getPackageName());
 			oldUnitInModel.setSimpleName(parent.getName());
 			
 			for(int j=0; j<memberList.size(); j++){

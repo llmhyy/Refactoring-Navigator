@@ -7,8 +7,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
@@ -40,6 +47,7 @@ import reflexactoring.diagram.action.smelldetection.refactoringopportunities.Ext
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.ModuleWrapper;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -690,7 +698,28 @@ public class ProgramModel{
 	public ArrayList<ICompilationUnit> getScopeRawCompilationUnitList(){
 		ArrayList<ICompilationUnit> units = new ArrayList<>();
 		for(ICompilationUnitWrapper wrapper: this.scopeCompilationUnitList){
-			units.add(wrapper.getCompilationUnit());
+			if(wrapper.getCompilationUnit() == null){
+				/**
+				 * find real compilationunit in files
+				 */
+				try {
+					IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+					project.open(null);
+					IJavaProject javaProject = JavaCore.create(project);
+					IType type = javaProject.findType(wrapper.getFullQualifiedName());
+					if(type != null){
+						ICompilationUnit iunit = type.getCompilationUnit();
+						if(iunit != null){
+							units.add(iunit);
+						}
+					}
+				} catch (CoreException e) {
+					e.printStackTrace();
+				}
+			}
+			else{
+				units.add(wrapper.getCompilationUnit());				
+			}
 		}
 		
 		return units;
