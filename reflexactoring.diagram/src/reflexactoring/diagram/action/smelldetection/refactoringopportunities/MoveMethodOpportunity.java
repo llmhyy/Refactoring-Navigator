@@ -291,6 +291,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 
 			//check whether sourceUnit exists or not
 			IType sourceType = javaProject.findType(sourceUnit.getFullQualifiedName());
+			if(sourceType == null){
+				return false;
+			}
 			ICompilationUnit sourceUnit = sourceType.getCompilationUnit();		
 			if(sourceUnit == null){
 				return false;
@@ -298,6 +301,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 
 			//check whether targetUnit exists or not
 			IType targetType = javaProject.findType(targetUnit.getFullQualifiedName());
+			if(targetType == null){
+				return false;
+			}
 			ICompilationUnit targetUnit = targetType.getCompilationUnit();		
 			if(targetUnit == null){
 				return false;

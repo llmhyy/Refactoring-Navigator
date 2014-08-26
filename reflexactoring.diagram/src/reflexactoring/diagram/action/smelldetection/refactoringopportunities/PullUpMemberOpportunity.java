@@ -126,19 +126,15 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		try {
 			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
 			project.open(null);
-			IJavaProject javaProject = JavaCore.create(project);			
-
-			//check whether targetUnit exists or not
-			IType targetType = javaProject.findType(targetUnit.getFullQualifiedName());
-			ICompilationUnit targetUnit = targetType.getCompilationUnit();		
-			if(targetUnit == null){
-				return false;
-			}
+			IJavaProject javaProject = JavaCore.create(project);
 
 			//check whether to be pulled member exists or not
 			for(UnitMemberWrapper member : toBePulledMemberList){
 				if(member instanceof MethodWrapper){					
 					IType sourceType = javaProject.findType(member.getUnitWrapper().getFullQualifiedName());
+					if(sourceType == null){
+						return false;
+					}
 					IMethod[] methods = sourceType.findMethods((IMethod) ((MethodWrapper) member).getJavaMember());	
 					if(methods == null || methods.length != 1){
 						return false;
