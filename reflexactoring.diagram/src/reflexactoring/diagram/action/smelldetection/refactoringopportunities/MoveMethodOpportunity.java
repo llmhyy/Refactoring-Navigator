@@ -222,6 +222,8 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		Map<MethodInvocation, MethodDeclaration> additionalMethodsToBeMoved = new HashMap<MethodInvocation, MethodDeclaration>();
 
+		methodDeclaration = (MethodDeclaration)sourceCompilationUnit.findDeclaringNode(methodDeclaration.resolveBinding().getKey());
+		
 		MoveMethodRefactoring refactoring = new MoveMethodRefactoring(sourceCompilationUnit, targetCompilationUnit,
 				sTypeDeclaration, tTypeDeclaration, methodDeclaration,
 				additionalMethodsToBeMoved, false, moveMethodOpportunity.getObjectMethod().getName());
