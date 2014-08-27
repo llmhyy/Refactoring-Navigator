@@ -395,7 +395,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 					if(method.isLegalMethodToBeMoved()){
 						for(ICompilationUnitWrapper targetUnit: model.getScopeCompilationUnitList()){
 							
-							if(method.toString().contains("updateMap") && targetUnit.toString().contains("Map")){
+							if(method.toString().contains("saveItem") && targetUnit.toString().contains("Item")){
 								System.currentTimeMillis();
 							}
 							

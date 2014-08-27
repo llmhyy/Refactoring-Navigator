@@ -152,7 +152,7 @@ public class Settings {
 	 * The following is the parameters for detecting bad smell
 	 */
 	public static final double counterMethodSimilarity = 0.8;
-	public static final double featureEnvyThreshold = 0.2;
+	public static final double featureEnvyThreshold = 0.05;
 	
 	public static final double penaltyRate = 0.2;
 	public static final double rewardRate = 0.2;
