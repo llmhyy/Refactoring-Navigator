@@ -1055,9 +1055,9 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 								else if(detail.getType() == DeclarationInfluencingDetail.PARAMETER){
 									List<Expression> arguments = invocation.arguments();
 									for(Expression args : arguments){
-										Name name = (Name) args;
+										//Name name = (Name) args;
 										
-										if(name.resolveTypeBinding().getName().equals(currentVariableType.toString())){
+										if(args.resolveTypeBinding().getName().equals(currentVariableType.toString())){
 
 											addNodeInfoToMap(modificationMap, args, true, null);
 											
@@ -1091,9 +1091,9 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 									else if(detail.getType() == DeclarationInfluencingDetail.PARAMETER){
 										List<Expression> arguments = invocation.arguments();
 										for(Expression args : arguments){
-											Name name = (Name) args;
+											//Name name = (Name) args;
 											
-											if(name.resolveTypeBinding().getName().equals(currentVariableType.toString())){
+											if(args.resolveTypeBinding().getName().equals(currentVariableType.toString())){
 												
 												addNodeInfoToMap(modificationMap, args, false, currentVariableType.toString());
 												
@@ -1384,6 +1384,31 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			ICompilationUnitWrapper oldUnitInModel = model.findUnit(toBeReplacedTypeName);
 			oldUnitInModel.setPackageName(parent.getPackageName());
 			oldUnitInModel.setSimpleName(parent.getName());
+
+			/**
+			 * Replace the name of the member in super class/ interfaces
+			 */
+			UnitMemberWrapper firstToBePulledMember = this.toBePulledMemberList.get(0);
+			for(UnitMemberWrapper member: oldUnitInModel.getMembers()){
+				boolean isMemberAMethod = member instanceof MethodWrapper;
+				boolean isPulledMemberMethod = firstToBePulledMember instanceof MethodWrapper;
+				
+				if(isMemberAMethod == isPulledMemberMethod){
+					if(isMemberAMethod){
+						MethodWrapper method = (MethodWrapper)member;
+						if(method.hasSameSignatureWith(firstToBePulledMember)){
+							method.setName(newMemberName);
+						}
+					}
+					else{
+						FieldWrapper field = (FieldWrapper)member;
+						if(field.getName().equals(firstToBePulledMember.getName())){
+							field.setName(newMemberName);
+						}
+					}
+				}
+			}
+			
 			
 			for(int j=0; j<memberList.size(); j++){
 				UnitMemberWrapper memberWrapper = memberList.get(j);
@@ -1398,6 +1423,8 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 					oldMemberInModel.setName(newMemberName);
 				}
 			}
+			
+			
 			
 		}
 		
