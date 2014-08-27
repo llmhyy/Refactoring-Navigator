@@ -526,13 +526,17 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		
 		public boolean visit(MethodDeclaration md){
 			boolean hasSameParam = true;
-			for(Object o : md.parameters()){
-				SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
-				String pName = ((SimpleType) svd.getType()).getName().toString();
-				if(!pName.equals(paramList.get(md.parameters().indexOf(o)))){
-					hasSameParam = false;
-					break;
+			if(paramList.size() == md.parameters().size()){
+				for(Object o : md.parameters()){
+					SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
+					String pName = svd.getType().toString();
+					
+					if(!pName.equals(paramList.get(md.parameters().indexOf(o)))){
+						hasSameParam = false;
+						break;
+					}
 				}
+				
 			}
 			if(md.getName().toString().equals(methodName) && hasSameParam){
 				result = md;
