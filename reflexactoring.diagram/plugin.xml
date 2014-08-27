@@ -956,7 +956,7 @@
       <specification
             annotationType="reflexactoring.diagram.specification.hint"
             colorPreferenceKey="hint_annotation_color"
-            colorPreferenceValue="192,255,192"
+            colorPreferenceValue="0,244,244"
             contributesToHeader="false"
             highlightPreferenceKey="hint_annotation_hightlight"
             highlightPreferenceValue="true"
