@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -40,6 +39,20 @@ public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOppo
 			ArrayList<ModuleWrapper> moduleList) {
 		super(toBePulledMemberList, moduleList);
 		this.targetUnit = targetUnit;
+	}
+	
+	@Override
+	public double computeSimilarityWith(RefactoringOpportunity opp){
+		if(opp instanceof PullUpMethodToExistingInterfaceOpportunity){
+			PullUpMethodToExistingInterfaceOpportunity thatOpp = (PullUpMethodToExistingInterfaceOpportunity)opp;
+			
+			double memberSim = ReflexactoringUtil.computeSetSimilarity(toBePulledMemberList, thatOpp.getToBePulledMemberList());
+			double unitSim = ReflexactoringUtil.computeSetSimilarity(getUnitsOfToBePulledMembers(), thatOpp.getUnitsOfToBePulledMembers());
+			
+			return (memberSim + unitSim)/2;
+		}
+		
+		return 0;
 	}
 	
 	@Override

@@ -336,7 +336,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		return newUnit;
 	}
 	
-	@Override
+	/*@Override
 	public double computeSimilarityWith(RefactoringOpportunity opp){
 		if(opp instanceof PullUpMemberOpportunity){
 			PullUpMemberOpportunity thatOpp = (PullUpMemberOpportunity)opp;
@@ -348,7 +348,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		}
 		
 		return 0;
-	}
+	}*/
 	
 	public ArrayList<ICompilationUnitWrapper> getUnitsOfToBePulledMembers(){
 		ArrayList<ICompilationUnitWrapper> units = new ArrayList<>();

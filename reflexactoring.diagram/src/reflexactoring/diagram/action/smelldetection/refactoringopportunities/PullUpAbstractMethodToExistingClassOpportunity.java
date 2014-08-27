@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -19,7 +18,6 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberOpportunity.ASTNodeInfo;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
@@ -42,6 +40,20 @@ public class PullUpAbstractMethodToExistingClassOpportunity extends
 			ArrayList<ModuleWrapper> moduleList) {
 		super(toBePulledMemberList, moduleList);
 		this.targetUnit = targetUnit;
+	}
+	
+	@Override
+	public double computeSimilarityWith(RefactoringOpportunity opp){
+		if(opp instanceof PullUpAbstractMethodToExistingClassOpportunity){
+			PullUpAbstractMethodToExistingClassOpportunity thatOpp = (PullUpAbstractMethodToExistingClassOpportunity)opp;
+			
+			double memberSim = ReflexactoringUtil.computeSetSimilarity(toBePulledMemberList, thatOpp.getToBePulledMemberList());
+			double unitSim = ReflexactoringUtil.computeSetSimilarity(getUnitsOfToBePulledMembers(), thatOpp.getUnitsOfToBePulledMembers());
+			
+			return (memberSim + unitSim)/2;
+		}
+		
+		return 0;
 	}
 	
 	@Override

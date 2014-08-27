@@ -3,66 +3,21 @@
  */
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IMember;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ArrayType;
-import org.eclipse.jdt.core.dom.CastExpression;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.jdt.core.dom.ParameterizedType;
-import org.eclipse.jdt.core.dom.ParenthesizedExpression;
-import org.eclipse.jdt.core.dom.ReturnStatement;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
-import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
-import org.eclipse.jdt.ui.refactoring.RenameSupport;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.Document;
 import org.eclipse.jface.window.Window;
-import org.eclipse.text.edits.MalformedTreeException;
-import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.recommend.gencode.JavaClassCreator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.programmodel.MethodWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
-import reflexactoring.diagram.bean.programmodel.ProgramReference;
-import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
-import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun
@@ -77,6 +32,20 @@ public class PullUpMethodToNewInterfaceOpportunity extends PullUpMemberOpportuni
 			ArrayList<UnitMemberWrapper> toBePulledMemberList,
 			ArrayList<ModuleWrapper> moduleList) {
 		super(toBePulledMemberList, moduleList);
+	}
+	
+	@Override
+	public double computeSimilarityWith(RefactoringOpportunity opp){
+		if(opp instanceof PullUpMethodToNewInterfaceOpportunity){
+			PullUpMethodToNewInterfaceOpportunity thatOpp = (PullUpMethodToNewInterfaceOpportunity)opp;
+			
+			double memberSim = ReflexactoringUtil.computeSetSimilarity(toBePulledMemberList, thatOpp.getToBePulledMemberList());
+			double unitSim = ReflexactoringUtil.computeSetSimilarity(getUnitsOfToBePulledMembers(), thatOpp.getUnitsOfToBePulledMembers());
+			
+			return (memberSim + unitSim)/2;
+		}
+		
+		return 0;
 	}
 
 	@Override

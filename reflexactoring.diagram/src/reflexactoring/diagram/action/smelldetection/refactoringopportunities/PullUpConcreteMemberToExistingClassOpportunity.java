@@ -3,41 +3,22 @@
  */
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IMember;
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
-import org.eclipse.jdt.ui.refactoring.RenameSupport;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.Document;
 import org.eclipse.jface.window.Window;
-import org.eclipse.text.edits.MalformedTreeException;
-import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.popup.RenameMembersDialog;
 import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMemberOpportunity.ASTNodeInfo;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
@@ -59,6 +40,20 @@ public class PullUpConcreteMemberToExistingClassOpportunity extends PullUpMember
 			ICompilationUnitWrapper targetUnit) {
 		super(toBePulledMemberList, moduleList);
 		this.targetUnit = targetUnit;
+	}
+	
+	@Override
+	public double computeSimilarityWith(RefactoringOpportunity opp){
+		if(opp instanceof PullUpConcreteMemberToExistingClassOpportunity){
+			PullUpConcreteMemberToExistingClassOpportunity thatOpp = (PullUpConcreteMemberToExistingClassOpportunity)opp;
+			
+			double memberSim = ReflexactoringUtil.computeSetSimilarity(toBePulledMemberList, thatOpp.getToBePulledMemberList());
+			double unitSim = ReflexactoringUtil.computeSetSimilarity(getUnitsOfToBePulledMembers(), thatOpp.getUnitsOfToBePulledMembers());
+			
+			return (memberSim + unitSim)/2;
+		}
+		
+		return 0;
 	}
 	
 	@Override
