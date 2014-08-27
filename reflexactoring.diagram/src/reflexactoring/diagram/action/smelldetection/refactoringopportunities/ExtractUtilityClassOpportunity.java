@@ -4,6 +4,7 @@
 package reflexactoring.diagram.action.smelldetection.refactoringopportunities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -69,7 +70,7 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		 */
 		String className = "UtilityClass" + NameGernationCounter.retrieveNumber();
 		String packageName = cloneSet.getInstances().get(0).getMember().getUnitWrapper().getPackageName();
-		ICompilationUnitWrapper utilityClass = new ICompilationUnitWrapper(null, false, className, packageName, null, 
+		ICompilationUnitWrapper utilityClass = new ICompilationUnitWrapper(null, false, className, packageName, new HashMap<String, Integer>(), 
 				"Utility", false, ModifierWrapper.PUBLIC);
 		newModel.getScopeCompilationUnitList().add(utilityClass);
 		/**

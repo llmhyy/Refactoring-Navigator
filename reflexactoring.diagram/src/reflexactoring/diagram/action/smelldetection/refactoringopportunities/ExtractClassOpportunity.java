@@ -130,7 +130,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		 * create a new class named "ExtractClass**"
 		 */
 		ICompilationUnitWrapper newTargetUnit = new ICompilationUnitWrapper(null, false, "ExtractedClass"+NameGernationCounter.retrieveNumber(), 
-				extractMembers.get(0).getUnitWrapper().getPackageName(), null, "", false, ModifierWrapper.PUBLIC);
+				extractMembers.get(0).getUnitWrapper().getPackageName(), new HashMap<String, Integer>(), "", false, ModifierWrapper.PUBLIC);
 		newModel.getScopeCompilationUnitList().add(newTargetUnit);
 		this.targetUnitName = newTargetUnit.getFullQualifiedName();
 		
