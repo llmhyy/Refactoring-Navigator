@@ -47,6 +47,7 @@ public abstract class Document {
 	 */
 	public void extractTermFrequency(String content){
 		//content = ReflexactoringUtil.performStemmingAndRemovingStopWord(content);
+		if(content == null) return;
 		String[] list = content.split(" ");
 		for(String keyword: list){
 			Integer freq = termFrequency.get(keyword);
