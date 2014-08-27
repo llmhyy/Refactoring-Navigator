@@ -107,11 +107,14 @@ public class MethodWrapper extends UnitMemberWrapper {
 	}
 	
 	public void removeParameter(ICompilationUnitWrapper targetUnit){
+		boolean isParamsContainsTargetUnit = false;
+		
 		Iterator<String> strIter = this.parameters.iterator();
 		while(strIter.hasNext()){
 			String paramType = strIter.next();
 			if(paramType.equals(targetUnit.getName())){
 				strIter.remove();
+				isParamsContainsTargetUnit = true;
 				break;
 			}
 		}
@@ -127,6 +130,41 @@ public class MethodWrapper extends UnitMemberWrapper {
 					}
 				}
 			}
+		}
+		
+		if(isParamsContainsTargetUnit){
+			for(ProgramReference reference: this.getRefererPointList()){
+				
+				double bestSim = 0;
+				ReferenceInflucencedDetail refDetail0 = null;
+				DeclarationInfluencingDetail decDetail0 = null;
+				
+				for(ReferenceInflucencedDetail refDetail: reference.getVariableDeclarationList()){
+					if(refDetail.getType() == DeclarationInfluencingDetail.PARAMETER){
+						ICompilationUnitWrapper paramType = refDetail.getDeclaration().getUnitWrapper();
+						
+						double sim = paramType.computeSimilarityWith(targetUnit);
+						if(sim >= bestSim){
+							bestSim = sim;
+							refDetail0 = refDetail;
+							
+							for(DeclarationInfluencingDetail decDetail: refDetail.getDeclaration().getInfluencedReferenceList()){
+								if(decDetail.getReference() == reference){
+									decDetail0 = decDetail;
+									break;
+								}
+							}
+						}
+					}
+				}
+				
+				if(refDetail0 != null){
+					refDetail0.setType(DeclarationInfluencingDetail.ACCESS_OBJECT);
+					decDetail0.setType(DeclarationInfluencingDetail.ACCESS_OBJECT);					
+				}
+				
+			}
+			
 		}
 	}
 	

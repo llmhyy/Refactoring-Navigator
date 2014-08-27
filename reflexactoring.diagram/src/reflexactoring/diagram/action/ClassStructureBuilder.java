@@ -183,17 +183,26 @@ public class ClassStructureBuilder {
 						/**
 						 * check the parameter usage, e.g., where the "p" in "a.m(p)" is declared.
 						 */
+						VariableDeclarationWrapper paramDeclaration = null;
 						for(Object obj: invocation.arguments()){
-							if(obj instanceof SimpleName){
-								SimpleName name = (SimpleName)obj;
-								VariableDeclarationWrapper paramDeclaration = extractVariableDeclarationWrpper(name);
+							if(obj instanceof Name){
+								Name name = (Name)obj;
+								paramDeclaration = extractVariableDeclarationWrpper(name);
 								
-								if(paramDeclaration != null){
+								if(null != paramDeclaration){
 									decList.add(new ReferenceInflucencedDetail(paramDeclaration, DeclarationInfluencingDetail.PARAMETER));
-									
-									//decList.put(paramDeclaration, DeclarationInfluencingDetail.PARAMETER);
 								}
 							}
+							else{
+								Expression paramExpression = (Expression)obj;
+								ExpressionVisitor expVisitor = new ExpressionVisitor();
+								paramExpression.accept(expVisitor);
+								paramDeclaration = expVisitor.getDeclaration();
+								if(null != paramDeclaration){
+									decList.add(new ReferenceInflucencedDetail(paramDeclaration, DeclarationInfluencingDetail.PARAMETER));
+								}
+							}
+							
 						}
 						
 						buildRelation(callerMember, methodWrapper, invocation, ProgramReference.METHOD_INVOCATION, 
@@ -275,7 +284,28 @@ public class ClassStructureBuilder {
 						/**
 						 * check the parameter usage, e.g., where the "p" in "a.m(p)" is declared.
 						 */
+						VariableDeclarationWrapper paramDeclaration = null;
 						for(Object obj: creation.arguments()){
+							if(obj instanceof Name){
+								Name name = (Name)obj;
+								paramDeclaration = extractVariableDeclarationWrpper(name);
+								
+								if(null != paramDeclaration){
+									decList.add(new ReferenceInflucencedDetail(paramDeclaration, DeclarationInfluencingDetail.PARAMETER));
+								}
+							}
+							else{
+								Expression paramExpression = (Expression)obj;
+								ExpressionVisitor expVisitor = new ExpressionVisitor();
+								paramExpression.accept(expVisitor);
+								paramDeclaration = expVisitor.getDeclaration();
+								if(null != paramDeclaration){
+									decList.add(new ReferenceInflucencedDetail(paramDeclaration, DeclarationInfluencingDetail.PARAMETER));
+								}
+							}
+							
+						}
+						/*for(Object obj: creation.arguments()){
 							if(obj instanceof SimpleName){
 								SimpleName name = (SimpleName)obj;
 								VariableDeclarationWrapper paramDeclaration = extractVariableDeclarationWrpper(name);
@@ -287,7 +317,7 @@ public class ClassStructureBuilder {
 								
 							}
 							
-						}
+						}*/
 						
 						
 						buildRelation(callerMember, methodWrapper, creation, ProgramReference.METHOD_INVOCATION, 
@@ -314,6 +344,11 @@ public class ClassStructureBuilder {
 	
 	private void buildRelation(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode node, 
 			int referenceType, ArrayList<ReferenceInflucencedDetail> decList){
+		
+		if(referer.toString().contains("writePage")){
+			System.currentTimeMillis();
+		}
+		
 		ProgramReference reference = new ProgramReference(referer, referee, node, referenceType, decList);
 		referer.addProgramReferee(reference);
 		referee.addProgramReferer(reference);

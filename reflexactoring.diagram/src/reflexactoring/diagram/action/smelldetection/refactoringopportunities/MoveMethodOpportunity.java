@@ -148,6 +148,8 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			}
 		}
 		
+		System.currentTimeMillis();
+		
 		/**
 		 * change the parameters of method
 		 */

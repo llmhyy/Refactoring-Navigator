@@ -140,6 +140,8 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 					FindMethodDeclarationVisitor findMemberVisitor = new FindMethodDeclarationVisitor(((MethodWrapper) member).getName(), ((MethodWrapper) member).getParameters());
 					cu.accept(findMemberVisitor);
 
+					System.currentTimeMillis();
+					
 					if(findMemberVisitor.result == null){
 						return false;
 					}
@@ -593,7 +595,13 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			CompilationUnit parentCompilationUnit = RefactoringOppUtil.parse(parentUnit);
 			parentCompilationUnit.recordModifications();
 			
-			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
+			IType childType = javaProject.findType(memberList.get(0).getUnitWrapper().getFullQualifiedName());
+			ICompilationUnit childUnit = childType.getCompilationUnit();
+			CompilationUnit childCompilationUnit = RefactoringOppUtil.parse(childUnit);
+			FindMethodDeclarationVisitor findMemberVisitor = new FindMethodDeclarationVisitor(((MethodWrapper) memberList.get(0)).getName(), ((MethodWrapper) memberList.get(0)).getParameters());
+			childCompilationUnit.accept(findMemberVisitor);
+			
+			MethodDeclaration mdOfMemberToPull = findMemberVisitor.result;								
 			MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(parentCompilationUnit.getAST(), mdOfMemberToPull);
 			
 			((TypeDeclaration) parentCompilationUnit.types().get(0)).bodyDeclarations().add(md);
@@ -680,7 +688,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @param memberList
 	 * @param newMemberName
 	 */
-	protected static boolean createConcreteMethodInParent(
+	protected boolean createConcreteMethodInParent(
 			ICompilationUnitWrapper parent,
 			ArrayList<UnitMemberWrapper> memberList, String newMemberName) {
 		//ICompilationUnit parentUnit = parent.getCompilationUnit();
@@ -697,7 +705,13 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			CompilationUnit parentCompilationUnit = RefactoringOppUtil.parse(parentUnit);
 			parentCompilationUnit.recordModifications();
 			
-			MethodDeclaration mdOfMemberToPull = (MethodDeclaration) memberList.get(0).getJavaElement();								
+			IType childType = javaProject.findType(memberList.get(0).getUnitWrapper().getFullQualifiedName());
+			ICompilationUnit childUnit = childType.getCompilationUnit();
+			CompilationUnit childCompilationUnit = RefactoringOppUtil.parse(childUnit);
+			FindMethodDeclarationVisitor findMemberVisitor = new FindMethodDeclarationVisitor(((MethodWrapper) memberList.get(0)).getName(), ((MethodWrapper) memberList.get(0)).getParameters());
+			childCompilationUnit.accept(findMemberVisitor);
+			
+			MethodDeclaration mdOfMemberToPull = findMemberVisitor.result;								
 			MethodDeclaration md = (MethodDeclaration) ASTNode.copySubtree(parentCompilationUnit.getAST(), mdOfMemberToPull);
 			
 			((TypeDeclaration) parentCompilationUnit.types().get(0)).bodyDeclarations().add(md);
@@ -797,7 +811,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 * @param memberList
 	 * @param newMemberName
 	 */
-	protected static boolean createConcreteFieldInParent(
+	protected boolean createConcreteFieldInParent(
 			ICompilationUnitWrapper parent,
 			ArrayList<UnitMemberWrapper> memberList, String newMemberName) {
 		//ICompilationUnit parentUnit = parent.getCompilationUnit();
@@ -814,7 +828,13 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			CompilationUnit parentCompilationUnit = RefactoringOppUtil.parse(parentUnit);
 			parentCompilationUnit.recordModifications();
 			
-			FieldDeclaration fdOfMemberToPull = (FieldDeclaration) memberList.get(0).getJavaElement();	
+			IType childType = javaProject.findType(memberList.get(0).getUnitWrapper().getFullQualifiedName());
+			ICompilationUnit childUnit = childType.getCompilationUnit();
+			CompilationUnit childCompilationUnit = RefactoringOppUtil.parse(childUnit);
+			FindFieldDeclarationVisitor findMemberVisitor = new FindFieldDeclarationVisitor(((FieldWrapper) memberList.get(0)).getName());
+			childCompilationUnit.accept(findMemberVisitor);
+			
+			FieldDeclaration fdOfMemberToPull = findMemberVisitor.result;	
 			FieldDeclaration fd = (FieldDeclaration) ASTNode.copySubtree(parentCompilationUnit.getAST(), fdOfMemberToPull);
 			boolean hasModifier = false;
 			for(Object o : fd.modifiers()){
@@ -1118,10 +1138,29 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 						ProgramReference influencedReference = detail.getReference();
 						
 						//for current pulled method's reference, if casted, remove current casting
-						if(reference.equals(influencedReference)){
+						if(reference == influencedReference){
 							
 							if(influencedReference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
+								
+								
 								MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();	
+								
+								IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+								try {
+									project.open(null);
+									IJavaProject javaProject = JavaCore.create(project);
+									IType iType = javaProject.findType(influencedReference.getReferer().getUnitWrapper().getFullQualifiedName());
+									CompilationUnit cu = RefactoringOppUtil.parse(iType.getCompilationUnit());
+									
+									ASTNode node = findCorrespondingNode(cu, invocation);
+									while(!(node instanceof MethodInvocation)){
+										node = node.getParent();
+									}
+									
+									invocation = (MethodInvocation)node;
+								} catch (CoreException e) {
+									e.printStackTrace();
+								}
 								
 								//for current pulled method's reference, if casted, remove current casting
 								if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
@@ -1148,6 +1187,19 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 							else if(influencedReference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Name){
 								Name name = (Name) influencedReference.getASTNode();
 								
+								IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+								try {
+									project.open(null);
+									IJavaProject javaProject = JavaCore.create(project);
+									IType iType = javaProject.findType(influencedReference.getReferer().getUnitWrapper().getFullQualifiedName());
+									CompilationUnit cu = RefactoringOppUtil.parse(iType.getCompilationUnit());
+									
+									name = (Name) findCorrespondingNode(cu, name);
+									
+								} catch (CoreException e) {
+									e.printStackTrace();
+								}
+								
 								addNodeInfoToMap(modificationMap, name, true, null);
 							}
 												
@@ -1160,7 +1212,24 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 								
 								if(influencedReference.getReferenceType() == ProgramReference.METHOD_INVOCATION && influencedReference.getASTNode() instanceof MethodInvocation){
 									MethodInvocation invocation = (MethodInvocation) influencedReference.getASTNode();
-																		
+									
+									IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+									try {
+										project.open(null);
+										IJavaProject javaProject = JavaCore.create(project);
+										IType iType = javaProject.findType(influencedReference.getReferer().getUnitWrapper().getFullQualifiedName());
+										CompilationUnit cu = RefactoringOppUtil.parse(iType.getCompilationUnit());
+										
+										ASTNode node = findCorrespondingNode(cu, invocation);
+										while(!(node instanceof MethodInvocation)){
+											node = node.getParent();
+										}
+										
+										invocation = (MethodInvocation)node;
+									} catch (CoreException e) {
+										e.printStackTrace();
+									}
+									
 									if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
 
 										addNodeInfoToMap(modificationMap, invocation.getExpression(), false, currentVariableType.toString());
@@ -1182,6 +1251,19 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 								}
 								else if(influencedReference.getReferenceType() == ProgramReference.FIELD_ACCESS && influencedReference.getASTNode() instanceof Name){
 									Name name = (Name) influencedReference.getASTNode();
+									
+									IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+									try {
+										project.open(null);
+										IJavaProject javaProject = JavaCore.create(project);
+										IType iType = javaProject.findType(influencedReference.getReferer().getUnitWrapper().getFullQualifiedName());
+										CompilationUnit cu = RefactoringOppUtil.parse(iType.getCompilationUnit());
+										
+										name = (Name) findCorrespondingNode(cu, name);
+										
+									} catch (CoreException e) {
+										e.printStackTrace();
+									}
 									
 									addNodeInfoToMap(modificationMap, name, false, currentVariableType.toString());
 									
@@ -1236,12 +1318,15 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 				//for current pulled method's reference, if casted, remove current casting
 				if(nodeInfo.isToBePulled){
 					if(node instanceof ParenthesizedExpression && ((ParenthesizedExpression) node).getExpression() instanceof CastExpression
-							&& ((CastExpression) ((ParenthesizedExpression) node).getExpression()).getExpression() instanceof ParenthesizedExpression){
+							//&& ((CastExpression) ((ParenthesizedExpression) node).getExpression()).getExpression() instanceof ParenthesizedExpression
+							){
 						ParenthesizedExpression pa2Expression = (ParenthesizedExpression) node;
 						
 						CastExpression castExpression= (CastExpression) pa2Expression.getExpression();
-						ParenthesizedExpression paExpression = (ParenthesizedExpression) castExpression.getExpression();
-						Expression expression = paExpression.getExpression();
+//						ParenthesizedExpression paExpression = (ParenthesizedExpression) castExpression.getExpression();
+//						Expression expression = paExpression.getExpression();
+						
+						Expression expression = castExpression.getExpression();
 						
 						rewrite.replace(node, expression, null);
 					}
