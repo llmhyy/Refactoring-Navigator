@@ -135,26 +135,25 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 					if(sourceType == null){
 						return false;
 					}
-					IMethod[] methods = sourceType.findMethods((IMethod) ((MethodWrapper) member).getJavaMember());	
-					if(methods == null || methods.length != 1){
+					ICompilationUnit unit = sourceType.getCompilationUnit();
+					CompilationUnit cu = RefactoringOppUtil.parse(unit);
+					FindMethodDeclarationVisitor findMemberVisitor = new FindMethodDeclarationVisitor(((MethodWrapper) member).getName(), ((MethodWrapper) member).getParameters());
+					cu.accept(findMemberVisitor);
+
+					if(findMemberVisitor.result == null){
 						return false;
 					}
 				}else{
-					IField field = (IField) ((FieldWrapper) member).getJavaMember();
 					IType sourceType = javaProject.findType(member.getUnitWrapper().getFullQualifiedName());
 					if(sourceType == null){
 						return false;
 					}
-					IField[] fields = sourceType.getFields();
-					boolean fieldExist = false;
-					for(IField f : fields){
-						if(f.getFlags() == field.getFlags() && f.getElementName().equals(field.getElementName())
-								&& f.getElementType() == field.getElementType()){
-							fieldExist = true;
-							break;
-						}
-					}
-					if(!fieldExist){
+					ICompilationUnit unit = sourceType.getCompilationUnit();
+					CompilationUnit cu = RefactoringOppUtil.parse(unit);
+					FindFieldDeclarationVisitor findMemberVisitor = new FindFieldDeclarationVisitor(((FieldWrapper) member).getName());
+					cu.accept(findMemberVisitor);
+
+					if(findMemberVisitor.result == null){
 						return false;
 					}
 				}
@@ -509,7 +508,65 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			return true;
 		}
 	}
+	
+	public class FindMethodDeclarationVisitor extends ASTVisitor {
 
+		private String methodName;
+		ArrayList<String> paramList;
+		MethodDeclaration result;
+
+		/**
+		 * @param methodName
+		 */
+		public FindMethodDeclarationVisitor(String methodName, ArrayList<String> paramList) {
+			super();
+			this.methodName = methodName;
+			this.paramList = paramList;
+		}
+		
+		public boolean visit(MethodDeclaration md){
+			boolean hasSameParam = true;
+			for(Object o : md.parameters()){
+				SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
+				String pName = ((SimpleType) svd.getType()).getName().toString();
+				if(!pName.equals(paramList.get(md.parameters().indexOf(o)))){
+					hasSameParam = false;
+					break;
+				}
+			}
+			if(md.getName().toString().equals(methodName) && hasSameParam){
+				result = md;
+				return false;
+			}
+			
+			return true;
+		}
+	}
+
+	public class FindFieldDeclarationVisitor extends ASTVisitor {
+
+		private String fieldName;
+		FieldDeclaration result;
+
+		/**
+		 * @param fieldName
+		 */
+		public FindFieldDeclarationVisitor(String fieldName) {
+			super();
+			this.fieldName = fieldName;
+		}
+		
+		public boolean visit(FieldDeclaration fd){
+			if(((VariableDeclarationFragment) fd.fragments().get(0)).getName().toString().equals(fieldName)){
+				result = fd;
+				return false;
+			}
+			
+			return true;
+		}
+	}
+	
+	
 	/**
 	 * @param parent
 	 * @param memberList
