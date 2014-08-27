@@ -76,7 +76,7 @@ public class RecommendSettingPage extends PreferencePage implements
 		Label climpIterationNumberLabel = new Label(composite, SWT.NONE);
 		climpIterationNumberLabel.setText("Climb Iteration Number");
 		climbIterationNumberText = new Text(composite, SWT.BORDER);
-		climbIterationNumberText.setText(ReflexactoringUtil.getMappingIterationNumber());
+		climbIterationNumberText.setText(ReflexactoringUtil.getClimbIterationNumber());
 		GridData climpIterationNumberData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		climpIterationNumberData.horizontalSpan = 2;
 		climbIterationNumberText.setLayoutData(climpIterationNumberData);
