@@ -203,7 +203,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		
 		ArrayList<ModuleWrapper> moduleListWithNoDesc = new ArrayList<>();
 		for(ModuleWrapper module : moduleList){
-			if(module.getDescription() == null || module.getDescription().equals("")){
+			if(module.getDescription() == null || module.getDescription().trim().equals("")){
 				moduleListWithNoDesc.add(module);
 			}
 		}

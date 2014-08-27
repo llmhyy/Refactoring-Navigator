@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -240,9 +241,9 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public boolean hasCalleeCompilationUnit(ICompilationUnitWrapper unit, int type){
-		for(ICompilationUnitWrapper calleeUnit: this.calleeCompilationUnitList.keySet()){
-			ReferencingDetail detail = this.calleeCompilationUnitList.get(calleeUnit);
-			if(calleeUnit.equals(unit) && detail.getMap().containsKey(type)){
+		for(Entry<ICompilationUnitWrapper, ReferencingDetail> calleeUnitEntry: this.calleeCompilationUnitList.entrySet()){
+			//ReferencingDetail detail = this.calleeCompilationUnitList.get(calleeUnit);
+			if(calleeUnitEntry.getKey().equals(unit) && calleeUnitEntry.getValue().getMap().containsKey(type)){
 				return true;
 			}
 		}
@@ -435,10 +436,12 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	public HashMap<GraphNode, ReferencingDetail> getCalleeList(int type) {
 		//return convertToList(calleeCompilationUnitList);
 		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
-		for(ICompilationUnitWrapper unit: this.calleeCompilationUnitList.keySet()){
-			ReferencingDetail detail = this.calleeCompilationUnitList.get(unit);
+		
+		for(Entry<ICompilationUnitWrapper,ReferencingDetail> unitEntry: this.calleeCompilationUnitList.entrySet()){
+			ReferencingDetail detail = unitEntry.getValue();
+			
 			if(detail.getMap().containsKey(type)){
-				map.put(unit, detail);				
+				map.put(unitEntry.getKey(), detail);				
 			}
 		}
 		return map;
@@ -514,7 +517,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	public void putReferringDetail(
 			ICompilationUnitWrapper refereeCompilationUnit, ASTNode node) {
 		ArrayList<ASTNode> nodeList = this.referingDetails.get(refereeCompilationUnit);
-		if(nodeList == null){
+		if(nodeList == null || node == null){
 			nodeList = new ArrayList<>();
 		}
 		if(!nodeList.contains(node)){

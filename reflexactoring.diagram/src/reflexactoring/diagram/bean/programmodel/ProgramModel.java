@@ -6,6 +6,7 @@ package reflexactoring.diagram.bean.programmodel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -426,9 +427,9 @@ public class ProgramModel{
 			 * clone callee list
 			 */
 			HashMap<ICompilationUnitWrapper, ReferencingDetail> oldCalleeList = oldUnit.getCalleeCompilationUnitList();
-			for(ICompilationUnitWrapper oldCallee: oldCalleeList.keySet()){
-				int index = oldModel.getICompilationUnitIndex(oldCallee);
-				ReferencingDetail detail = oldCalleeList.get(oldCallee).clone();
+			for(Entry<ICompilationUnitWrapper, ReferencingDetail> oldCalleeEntry: oldCalleeList.entrySet()){
+				int index = oldModel.getICompilationUnitIndex(oldCalleeEntry.getKey());
+				ReferencingDetail detail = oldCalleeEntry.getValue().clone();
 				ICompilationUnitWrapper clonedCallee = clonedModel.getScopeCompilationUnitList().get(index);
 				//clonedUnit.addCallee(clonedCallee);
 				clonedUnit.getCalleeCompilationUnitList().put(clonedCallee, detail);

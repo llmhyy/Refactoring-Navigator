@@ -401,6 +401,11 @@ public class RefactoringSuggestionsView extends ViewPart {
 		buffer.append("<b>]</b>");
 		buffer.append("</li>");	
 		buffer.append("<li>");
+		buffer.append("<b>[</b> <a href=\"Approve\">Approve</a> ");
+		buffer.append("<a href=\"UndoApprove\">Undo</a> ");
+		buffer.append("<b>]</b>");
+		buffer.append("</li>");
+		buffer.append("<li>");
 		buffer.append("<b>[</b> <a href=\"Exec\">Apply</a> ");
 		buffer.append("<a href=\"Undo\">Undo</a> ");
 		buffer.append("<b>]</b>");
@@ -506,6 +511,27 @@ public class RefactoringSuggestionsView extends ViewPart {
 						e1.printStackTrace();
 					}
 				}
+				else if(e.getHref().equals("Approve")){																				
+					//do approved now
+					if(!Settings.approvedOpps.contains(opportunity)){
+						Settings.approvedOpps.add(opportunity);
+					}
+					ViewUpdater updater = new ViewUpdater();
+					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
+				}
+				else if(e.getHref().equals("UndoApprove")){
+					//undo approved now
+					Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();
+					while(iterator.hasNext()){
+						RefactoringOpportunity opp = iterator.next();
+						if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
+								&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
+							iterator.remove();
+						}
+					}
+					ViewUpdater updater = new ViewUpdater();
+					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);					
+				}
 				else if(e.getHref().equals("Exec")){	
 					if(!opportunity.checkLegal()){
 						MessageDialog.openError(null, "Check Legal Error", "It's not legal to do this apply now.");
@@ -519,13 +545,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 						view.setCurrentElement(element);
 						view.setUndo(false);
 						view.refreshSuggestionsOnUI(suggestions);
-						
-						//do approved now
-						if(!Settings.approvedOpps.contains(opportunity)){
-							Settings.approvedOpps.add(opportunity);
-						}
-						ViewUpdater updater = new ViewUpdater();
-						updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
 						
 						//update model
 						Settings.scope = element.getConsequenceModel();
@@ -544,18 +563,6 @@ public class RefactoringSuggestionsView extends ViewPart {
 						view.setCurrentElement(element);
 						view.setUndo(true);
 						view.refreshSuggestionsOnUI(suggestions);
-						
-						//undo approved now
-						Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();
-						while(iterator.hasNext()){
-							RefactoringOpportunity opp = iterator.next();
-							if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
-									&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
-								iterator.remove();
-							}
-						}						
-						ViewUpdater updater = new ViewUpdater();
-						updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
 						
 						//update model
 						if(element.getPosition() != 0){
