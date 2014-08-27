@@ -47,7 +47,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	@Override
 	public ArrayList<RefactoringOpportunity> detectOpportunities(ProgramModel model) {
 		ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList = detectCounterMembers(model);
-		System.currentTimeMillis();
+	    System.currentTimeMillis();
 		ArrayList<RefactoringOpportunity> opportunities = 
 				detectPullingUpOpportunities(model, refactoringPlaceList, getModuleList());
 		
