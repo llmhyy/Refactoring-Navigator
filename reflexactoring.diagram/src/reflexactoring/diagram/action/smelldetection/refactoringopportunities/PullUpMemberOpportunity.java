@@ -1042,10 +1042,21 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 	 */
 	protected boolean renameMembers(ArrayList<UnitMemberWrapper> memberList,
 			String newMemberName) {
-		for(UnitMemberWrapper memberWrapper : memberList){	
-			try {
+		try {
+			IProject project = ReflexactoringUtil.getSpecificJavaProjectInWorkspace();
+			project.open(null);
+			IJavaProject javaProject = JavaCore.create(project);
+		
+			for(UnitMemberWrapper memberWrapper : memberList){	
 				if(memberWrapper instanceof MethodWrapper){
-					IMethod methodToRename = (IMethod) memberWrapper.getJavaMember();
+	
+					IType sourceType = javaProject.findType(memberWrapper.getUnitWrapper().getFullQualifiedName());
+					ICompilationUnit unit = sourceType.getCompilationUnit();
+					CompilationUnit cu = RefactoringOppUtil.parse(unit);
+					FindMethodDeclarationVisitor findMemberVisitor = new FindMethodDeclarationVisitor(((MethodWrapper) memberWrapper).getName(), ((MethodWrapper) memberWrapper).getParameters());
+					cu.accept(findMemberVisitor);
+	
+					IMethod methodToRename = (IMethod) findMemberVisitor.result.resolveBinding().getJavaElement();
 					
 					if(!methodToRename.getElementName().equals(newMemberName)){
 						
@@ -1054,7 +1065,13 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 						
 					}
 				}else{
-					IField fieldToRename = (IField) memberWrapper.getJavaMember();
+					IType sourceType = javaProject.findType(memberWrapper.getUnitWrapper().getFullQualifiedName());
+					ICompilationUnit unit = sourceType.getCompilationUnit();
+					CompilationUnit cu = RefactoringOppUtil.parse(unit);
+					FindFieldDeclarationVisitor findMemberVisitor = new FindFieldDeclarationVisitor(((FieldWrapper) memberWrapper).getName());
+					cu.accept(findMemberVisitor);
+					
+					IField fieldToRename = (IField) ((VariableDeclarationFragment)findMemberVisitor.result.fragments().get(0)).resolveBinding().getJavaElement();
 					
 					if(!fieldToRename.getElementName().equals(newMemberName)){
 						
@@ -1062,18 +1079,18 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 						support.perform(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), PlatformUI.getWorkbench().getActiveWorkbenchWindow());
 						
 					}
-				}
-			} catch (CoreException e1) {
-				e1.printStackTrace();
-				return false;
-			} catch (InvocationTargetException e1) {
-				e1.printStackTrace();
-				return false;
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-				return false;
-			}				
-		}
+				}					
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+			return false;
+		} catch (InvocationTargetException e1) {
+			e1.printStackTrace();
+			return false;
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+			return false;
+		}		
 		return true;
 	}
 	
