@@ -200,14 +200,29 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		
 		for(UnitMemberWrapper oldMem: toBePulledMemberList){
 			UnitMemberWrapper newToBePulledMember = newModel.findMember(oldMem);
-			if(newToBePulledMember instanceof MethodWrapper){
-				((MethodWrapper)newToBePulledMember).setOverridedMethod((MethodWrapper)newMember);
-			}
 			
 			handleReferersOfToBePulledMember(newToBePulledMember, newMember, superUnit, newModel);
 			
 			if(!isPullSignature){
 				handleRefereesOfToBePulledMember(newToBePulledMember, newMember);
+				
+				/**
+				 * handle overriding relations, that is, if a method overrides the oldMem, then it need overrides
+				 * the new member in super type
+				 */
+				for(UnitMemberWrapper member: newModel.getScopeMemberList()){
+					if(member instanceof MethodWrapper){
+						MethodWrapper overridedMethod = ((MethodWrapper)member).getOverridedMethod();
+						if(overridedMethod.equals(oldMem)){
+							((MethodWrapper)member).setOverridedMethod((MethodWrapper) newMember);
+						}
+					}
+				}
+			}
+			else{
+				if(newToBePulledMember instanceof MethodWrapper){
+					((MethodWrapper)newToBePulledMember).setOverridedMethod((MethodWrapper)newMember);
+				}
 			}
 			
 		}
