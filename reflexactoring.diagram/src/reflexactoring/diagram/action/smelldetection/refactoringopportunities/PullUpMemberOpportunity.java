@@ -220,6 +220,10 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 				}
 			}
 			else{
+				/**
+				 * if we are just to pull abstract method, the original methods should override the new abstract
+				 * method.
+				 */
 				if(newToBePulledMember instanceof MethodWrapper){
 					((MethodWrapper)newToBePulledMember).setOverridedMethod((MethodWrapper)newMember);
 				}
