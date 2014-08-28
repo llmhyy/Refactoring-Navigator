@@ -235,32 +235,31 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 		return null;
 	}
 
-	/**
-	 * @return
-	 */
-	public boolean isOverrideSuperMember() {
+	
+	public UnitMemberWrapper findMemberWithSameSignatureInSuperTypes() {
 		for(GraphNode node: this.getUnitWrapper().getParentList()){
 			ICompilationUnitWrapper superUnit = (ICompilationUnitWrapper)node;
-			if(isOverrideSuperMember(this, superUnit)){
-				return true;
+			UnitMemberWrapper superMember = findMemberWithSameSignatureInSuperType(this, superUnit);
+			if(null != superMember){
+				return superMember;
 			}
 		}
-		return false;
+		return null;
 	}
 	
-	private boolean isOverrideSuperMember(UnitMemberWrapper member, ICompilationUnitWrapper superUnit){
+	private UnitMemberWrapper findMemberWithSameSignatureInSuperType(UnitMemberWrapper member, ICompilationUnitWrapper superUnit){
 		for(UnitMemberWrapper superMember: superUnit.getMembers()){
 			if(this.hasSameSignatureWith(superMember)){
-				return true;
+				return superMember;
 			}
 		}
 		
 		for(GraphNode node: superUnit.getParentList()){
 			ICompilationUnitWrapper parentUnit = (ICompilationUnitWrapper)node;
-			return isOverrideSuperMember(member, parentUnit);		
+			return findMemberWithSameSignatureInSuperType(member, parentUnit);		
 		}
 		
-		return false;
+		return null;
 	}
 	
 	/**

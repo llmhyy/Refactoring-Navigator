@@ -243,7 +243,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			MethodWrapper newDeletegateMethod = new MethodWrapper(method.getName(), 
 					method.getReturnType(), method.getParameters(), 
 					method.isConstructor(), newSourceUnit, method.getTermFrequency(), 
-					method.getDescription(), null, false, ModifierWrapper.PUBLIC);
+					method.getDescription(), null, null, false, ModifierWrapper.PUBLIC);
 			newSourceUnit.getMembers().add(newDeletegateMethod);
 			newModel.getScopeMemberList().add(newDeletegateMethod);
 

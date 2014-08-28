@@ -80,12 +80,12 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 					System.currentTimeMillis();
 				}
 				
-				if(!member.isOverrideSuperMember() && !member.isItsInvocationInfluencedByParameter() /*&& isNotCausingCompilationError(member)*/){
+				if(!member.isItsInvocationInfluencedByParameter() /*&& isNotCausingCompilationError(member)*/){
 					/**
 					 * constructor is not considered counter here.
 					 */
 					if(member instanceof MethodWrapper){
-						if(((MethodWrapper)member).isConstructor()){
+						if(((MethodWrapper)member).isConstructor() || ((MethodWrapper)member).getOverridedMethod() != null){
 							continue;
 						}
 					}
@@ -179,11 +179,14 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 				System.currentTimeMillis();
 			}
 			
-			if(!otherMember.isOverrideSuperMember()  
-					&& !isWithCounterCallingRelation(counterMemberList, otherMember) 
+			if(!isWithCounterCallingRelation(counterMemberList, otherMember) 
 					&& !otherMember.isItsInvocationInfluencedByParameter()
 					/*&& isNotCausingCompilationError(otherMember)*/){
-				
+				if(otherMember instanceof MethodWrapper){
+					if(((MethodWrapper)otherMember).isOverrideSuperMember()){
+						continue;
+					}
+				}
 				
 				if(member.hasSameSignatureWith(otherMember)){
 					return otherMember;

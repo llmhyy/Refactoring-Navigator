@@ -78,7 +78,7 @@ public class ExtractUtilityClassOpportunity extends RefactoringOpportunity{
 		 */
 		String methodName = "utilityMethod" + NameGernationCounter.retrieveNumber();
 		MethodWrapper utilityMethod = new MethodWrapper(methodName, "void", new ArrayList<String>(), false, 
-				utilityClass, null, "utility", null, false, ModifierWrapper.PUBLIC);
+				utilityClass, null, "utility", null, null, false, ModifierWrapper.PUBLIC);
 		newModel.getScopeMemberList().add(utilityMethod);
 		/**
 		 * build declaring relation between utility class and utility method

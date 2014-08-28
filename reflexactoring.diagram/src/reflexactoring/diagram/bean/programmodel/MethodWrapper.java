@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.Type;
@@ -31,10 +32,11 @@ public class MethodWrapper extends UnitMemberWrapper {
 	private ArrayList<String> parameters;
 	private boolean isConstructor;
 	private String returnType;
+	private MethodWrapper overridedMethod;
 	
 	public MethodWrapper(String name, String returnType, ArrayList<String> parameters, boolean isConstructor, 
 			ICompilationUnitWrapper unitWrapper, HashMap<String, Integer> termFrequency, String description, 
-			MethodDeclaration method, boolean isAbstract, String modifier){
+			MethodDeclaration method, MethodWrapper overridedMethod, boolean isAbstract, String modifier){
 		super(unitWrapper);
 		this.name = name;
 		this.setReturnType(returnType);
@@ -43,6 +45,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 		this.termFrequency = termFrequency;
 		this.description = description;
 		this.method = method;
+		this.overridedMethod = overridedMethod;
 		this.isAbstract = isAbstract;
 		this.modifier = modifier;
 	}
@@ -59,6 +62,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 		
 		int modifierFlag = method.getModifiers();
 		this.modifier = ModifierWrapper.parseSecurityModifer(modifierFlag);
+		this.isAbstract = Modifier.isAbstract(modifierFlag);
 		
 		//String content = new TokenExtractor(unitWrapper).extractTokens(method);
 		//content = content + generateTitle();
@@ -483,6 +487,13 @@ public class MethodWrapper extends UnitMemberWrapper {
 				!isAssignFieldInUnit();
 	}
 	
+	/**
+	 * @return
+	 */
+	public boolean isOverrideSuperMember() {
+		return this.overridedMethod != null;
+	}
+
 	public boolean needDelegation(){
 		for(ProgramReference ref: this.getRefererPointList()){
 			UnitMemberWrapper member = ref.getReferer();
@@ -512,5 +523,19 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public void setJavaElement(ASTNode node) {
 		this.method = (MethodDeclaration) node;
 		
+	}
+
+	/**
+	 * @return the overridedMethod
+	 */
+	public MethodWrapper getOverridedMethod() {
+		return overridedMethod;
+	}
+
+	/**
+	 * @param overridedMethod the overridedMethod to set
+	 */
+	public void setOverridedMethod(MethodWrapper overridedMethod) {
+		this.overridedMethod = overridedMethod;
 	}
 }

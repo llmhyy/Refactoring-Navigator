@@ -431,6 +431,15 @@ public class ClassStructureBuilder {
 			if (member instanceof MethodWrapper) {
 				MethodWrapper methodWrapper = (MethodWrapper) member;
 				methodWrapper.getMethod().accept(new MemberRelationVisitor(member, members));
+				
+				if(methodWrapper.toString().equals("MapQuestion.setAnswer")){
+					System.currentTimeMillis();
+				}
+				
+				UnitMemberWrapper superMember = methodWrapper.findMemberWithSameSignatureInSuperTypes();
+				if(superMember != null){
+					methodWrapper.setOverridedMethod((MethodWrapper)superMember);
+				}
 			} else if (member instanceof FieldWrapper) {
 				((FieldWrapper) member).getField().accept(new MemberRelationVisitor(member, members));
 			}

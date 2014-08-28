@@ -10,8 +10,6 @@ import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
@@ -457,11 +455,12 @@ public class ProgramModel{
 						clonedMemberUnit, oldMember.getTermFrequency(), oldMember.getDescription(), 
 						((FieldWrapper) oldMember).getField(), oldMember.isAbstract(), oldMember.getModifier());
 			}else if(oldMember instanceof MethodWrapper){
-				MethodWrapper methodWrapper = (MethodWrapper)oldMember;
-				clonedMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), 
-						methodWrapper.cloneParameters(), methodWrapper.isConstructor(), 
-						clonedMemberUnit, methodWrapper.getTermFrequency(), methodWrapper.getDescription(),
-						methodWrapper.getMethod(), methodWrapper.isAbstract(), methodWrapper.getModifier());
+				MethodWrapper oldMethodWrapper = (MethodWrapper)oldMember;
+				
+				clonedMember = new MethodWrapper(oldMethodWrapper.getName(), oldMethodWrapper.getReturnType(), 
+						oldMethodWrapper.cloneParameters(), oldMethodWrapper.isConstructor(), 
+						clonedMemberUnit, oldMethodWrapper.getTermFrequency(), oldMethodWrapper.getDescription(),
+						oldMethodWrapper.getMethod(), null, oldMethodWrapper.isAbstract(), oldMethodWrapper.getModifier());
 			}	
 			/*if(member.getJavaElement() != null){
 				if(member instanceof FieldWrapper){
@@ -496,6 +495,24 @@ public class ProgramModel{
 				}
 				UnitMemberWrapper clonedMember = clonedModel.getScopeMemberList().get(index);
 				clonedUnit.addMember(clonedMember);
+			}
+		}
+		
+		/**
+		 * cloning overriding information
+		 */
+		for(UnitMemberWrapper oldMember: oldModel.getScopeMemberList()){
+			if(oldMember instanceof MethodWrapper){
+				MethodWrapper oldMethod = (MethodWrapper)oldMember;
+				MethodWrapper oldOverridedMethod = oldMethod.getOverridedMethod();
+				
+				if(oldOverridedMethod != null){
+					MethodWrapper newMethod = clonedModel.findMethod(oldMethod.getUnitWrapper().getFullQualifiedName(), 
+							oldMethod.getName(), oldMethod.getParameters());
+					MethodWrapper newOverridedMethod = clonedModel.findMethod(oldOverridedMethod.getUnitWrapper().getFullQualifiedName(), 
+							oldOverridedMethod.getName(), oldOverridedMethod.getParameters());
+					newMethod.setOverridedMethod(newOverridedMethod);
+				}
 			}
 		}
 		

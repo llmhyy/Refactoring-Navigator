@@ -185,7 +185,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			MethodWrapper methodWrapper = (MethodWrapper)oldMember;
 			newMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), 
 					methodWrapper.getParameters(), methodWrapper.isConstructor(), superUnit, null, 
-					methodWrapper.getDescription(), null, isPullSignature, ModifierWrapper.PUBLIC);			
+					methodWrapper.getDescription(), null, null, isPullSignature, ModifierWrapper.PUBLIC);			
 		}
 		else if(oldMember instanceof FieldWrapper){
 			FieldWrapper fieldWrapper = (FieldWrapper)oldMember;
@@ -200,6 +200,10 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		
 		for(UnitMemberWrapper oldMem: toBePulledMemberList){
 			UnitMemberWrapper newToBePulledMember = newModel.findMember(oldMem);
+			if(newToBePulledMember instanceof MethodWrapper){
+				((MethodWrapper)newToBePulledMember).setOverridedMethod((MethodWrapper)newMember);
+			}
+			
 			handleReferersOfToBePulledMember(newToBePulledMember, newMember, superUnit, newModel);
 			
 			if(!isPullSignature){
