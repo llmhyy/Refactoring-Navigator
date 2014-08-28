@@ -533,24 +533,35 @@ public class RefactoringSuggestionsView extends ViewPart {
 					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);					
 				}
 				else if(e.getHref().equals("Exec")){	
-					if(!opportunity.checkLegal()){
-						MessageDialog.openError(null, "Check Legal Error", "It's not legal to do this apply now.");
-					}else if(opportunity.apply(element.getPosition(), sequence)){					
-						//set the element composite gray
-						element.setApply(true);	
-						
-						//refresh the suggestions view
-						RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
-								getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
-						view.setCurrentElement(element);
-						view.setUndo(false);
-						view.refreshSuggestionsOnUI(suggestions);
-						
-						//update model
-						Settings.scope = element.getConsequenceModel();
-						
-						MessageDialog.openInformation(null, "Apply Done", "Apply is finished, you can continue refactoring now.");
-					}											
+					if(element.isApply()){
+						MessageDialog.openError(null, "Applied Before", "You have already apply this suggestion.");
+					}else{
+						if(!opportunity.checkLegal()){
+							MessageDialog.openError(null, "Check Legal Error", "It's not legal to do this apply now.");
+						}else if(opportunity.apply(element.getPosition(), sequence)){					
+							//set the element composite gray
+							element.setApply(true);	
+							
+							//refresh the suggestions view
+							RefactoringSuggestionsView view = (RefactoringSuggestionsView)PlatformUI.getWorkbench().
+									getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.REFACTORING_SUGGESTIONS);
+							view.setCurrentElement(element);
+							view.setUndo(false);
+							view.refreshSuggestionsOnUI(suggestions);
+							
+							//update model
+							Settings.scope = element.getConsequenceModel();
+							
+							//do approved now
+							if(!Settings.approvedOpps.contains(opportunity)){
+								Settings.approvedOpps.add(opportunity);
+							}
+							ViewUpdater updater = new ViewUpdater();
+							updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
+							
+							MessageDialog.openInformation(null, "Apply Done", "Apply has finished, you can continue refactoring now.");
+						}	
+					}
 				}
 				else if(e.getHref().equals("Undo")){
 					if(opportunity.undoApply()){
@@ -568,6 +579,18 @@ public class RefactoringSuggestionsView extends ViewPart {
 						if(element.getPosition() != 0){
 							Settings.scope = sequence.get(element.getPosition()-1).getConsequenceModel();							
 						}
+						
+						//undo approved now
+						Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();
+						while(iterator.hasNext()){
+							RefactoringOpportunity opp = iterator.next();
+							if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
+									&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
+								iterator.remove();
+							}
+						}
+						ViewUpdater updater = new ViewUpdater();
+						updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);	
 					}						
 				}
 			}
