@@ -1578,7 +1578,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 				UnitMemberWrapper oldMemberInModel;
 				if(memberWrapper instanceof MethodWrapper){
 					oldMemberInModel = model.findMethod(memberWrapper.getUnitWrapper().getFullQualifiedName(),
-													toBeReplacedMemberNameList.get(j), ((MethodWrapper)memberWrapper).getParameterTypes());
+													toBeReplacedMemberNameList.get(j), ((MethodWrapper)memberWrapper).getParameters());
 				}else{
 					oldMemberInModel = model.findField(memberWrapper.getUnitWrapper().getFullQualifiedName(), toBeReplacedMemberNameList.get(j));
 				}
