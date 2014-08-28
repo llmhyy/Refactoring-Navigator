@@ -156,10 +156,10 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 							viewUpdater.updateView(ReflexactoringPerspective.HEURISTIC_MAPPING_VIEW, Settings.heuristicModuleUnitFixList, false);
 							//viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPPING_FIX_BY_CLASS_VIEW, Settings.heuristicModuleUnitMemberFixList, false);
 							//viewUpdater.updateView(ReflexactoringPerspective.MODULE_MEMBER_FORBIDDEN_VIEW, Settings.heuristicModuleMemberStopMapList, false);
-							viewUpdater.updateView(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW, Settings.heuristicModuleUnitStopMapList, false);
-							viewUpdater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, false);
-							viewUpdater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, false);
-							viewUpdater.updateView(ReflexactoringPerspective.CREATION_CONSTRAINT_CONFIDENCE_VIEW, Settings.creationConfidenceTable, false);
+							//viewUpdater.updateView(ReflexactoringPerspective.MODULE_UNIT_FORBIDDEN_VIEW, Settings.heuristicModuleUnitStopMapList, false);
+							//viewUpdater.updateView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW, Settings.dependencyConfidenceTable, false);
+							//viewUpdater.updateView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW, Settings.extendConfidenceTable, false);
+							//viewUpdater.updateView(ReflexactoringPerspective.CREATION_CONSTRAINT_CONFIDENCE_VIEW, Settings.creationConfidenceTable, false);
 							//viewUpdater.updateView(ReflexactoringPerspective.MEMBER_MAPING_FIX_VIEW, Settings.heuristicModuleMemberPartFixList, false);
 							//viewUpdater.updateView(ReflexactoringPerspective.REFACTORING_SUGGESTION, new ArrayList<Suggestion>(), false);
 							

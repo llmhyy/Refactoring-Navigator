@@ -43,18 +43,18 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		DependencyConstraintConfidenceView dependencyConfidenceView = (DependencyConstraintConfidenceView) PlatformUI.getWorkbench().
 				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW);
 		ReflexactoringUtil.getModuleDependencyConfidenceTable();
-		dependencyConfidenceView.refreshUI(Settings.dependencyConfidenceTable);
+		//dependencyConfidenceView.refreshUI(Settings.dependencyConfidenceTable);
 		
 		
 		ExtendConstraintConfidenceView extendConfidenceView = (ExtendConstraintConfidenceView) PlatformUI.getWorkbench().
 				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.EXTEND_CONSTRAINT_CONFIDENCE_VIEW);
 		ReflexactoringUtil.getModuleExtendConfidenceTable();
-		extendConfidenceView.refreshUI(Settings.extendConfidenceTable);
+		//extendConfidenceView.refreshUI(Settings.extendConfidenceTable);
 		
 		CreationConstraintConfidenceView creationConfidenceView = (CreationConstraintConfidenceView) PlatformUI.getWorkbench().
 				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.CREATION_CONSTRAINT_CONFIDENCE_VIEW);
 		ReflexactoringUtil.getModuleCreationConfidenceTable();
-		creationConfidenceView.refreshUI(Settings.creationConfidenceTable);
+		//creationConfidenceView.refreshUI(Settings.creationConfidenceTable);
 		
 		ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 		String message = checkValidity(moduleList);
