@@ -213,7 +213,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 				for(UnitMemberWrapper member: newModel.getScopeMemberList()){
 					if(member instanceof MethodWrapper){
 						MethodWrapper overridedMethod = ((MethodWrapper)member).getOverridedMethod();
-						if(overridedMethod.equals(oldMem)){
+						if(oldMem.equals(overridedMethod)){
 							((MethodWrapper)member).setOverridedMethod((MethodWrapper) newMember);
 						}
 					}
