@@ -86,10 +86,23 @@ public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOppo
 
 	@Override
 	public ArrayList<String> getRefactoringDetails() {
-		// TODO Auto-generated method stub
-		ArrayList<String> details = new ArrayList<>();
-		details.add(toString());
-		return details;
+		ArrayList<String> refactoringDetails = new ArrayList<>();
+		
+		String step1 = "Pull the method " + toBePulledMemberList.get(0).getName() + " in subclasses to interface" + this.targetUnit.getName();
+		refactoringDetails.add(step1);
+		
+		String step2 = "Those methods refer to ";
+		StringBuffer buffer2 = new StringBuffer();
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			buffer2.append(member.toString()+ ",");
+		}
+		String memberString = buffer2.toString();
+		memberString = memberString.substring(0, memberString.length()-1);
+		step2 += memberString;
+		step2 += " now refer to the " + toBePulledMemberList.get(0).getName() + " in " + this.targetUnit.getName(); 
+		refactoringDetails.add(step2);
+		
+		return refactoringDetails;
 	}
 
 	@Override

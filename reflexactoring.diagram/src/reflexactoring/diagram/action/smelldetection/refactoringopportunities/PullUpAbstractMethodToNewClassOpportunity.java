@@ -78,10 +78,36 @@ public class PullUpAbstractMethodToNewClassOpportunity extends PullUpMemberOppor
 
 	@Override
 	public ArrayList<String> getRefactoringDetails() {
-		// TODO Auto-generated method stub
-		ArrayList<String> details = new ArrayList<>();
-		details.add(toString());
-		return details;
+		ArrayList<String> refactoringDetails = new ArrayList<>();
+		String step1 = "Create a interface for ";
+		StringBuffer buffer1 = new StringBuffer();
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			buffer1.append(member.getUnitWrapper().getSimpleName() + ",");
+		}
+		String str = buffer1.toString();
+		str = str.substring(0, str.length()-1);
+		step1 += str;
+		
+		refactoringDetails.add(step1);
+		
+		String step2 = "Pull abstract method " + toBePulledMemberList.get(0).getName() + " in subclasses to interface" + targetUnit.getName();
+		refactoringDetails.add(step2);
+		
+		String step3 = "Those methods refer to ";
+		StringBuffer buffer2 = new StringBuffer();
+		for(UnitMemberWrapper member: toBePulledMemberList){
+			buffer2.append(member.toString()+ ",");
+		}
+		String memberString = buffer2.toString();
+		memberString = memberString.substring(0, memberString.length()-1);
+		step3 += memberString;
+		step3 += " now refer to the " + toBePulledMemberList.get(0).getName() + " in "  + targetUnit.getName(); 
+		refactoringDetails.add(step3);
+		
+		String step4 = "Move the interface " + this.targetUnit.getName() + " to module " + this.targetUnit.getMappingModule().getName();
+		refactoringDetails.add(step4);
+		
+		return refactoringDetails;
 	}
 
 	@Override
