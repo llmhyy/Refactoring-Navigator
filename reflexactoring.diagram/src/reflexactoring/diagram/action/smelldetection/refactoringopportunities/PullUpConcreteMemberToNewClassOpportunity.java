@@ -75,10 +75,10 @@ public class PullUpConcreteMemberToNewClassOpportunity  extends PullUpMemberOppo
 		/**
 		 * remove relevant clone set
 		 */
-		ArrayList<CloneSet> setList = newModel.findCloneSet(toBePulledMemberList);
-		for(CloneSet set: setList){
-			newModel.getCloneSets().remove(set);			
-		}
+//		ArrayList<CloneSet> setList = newModel.findCloneSet(toBePulledMemberList);
+//		for(CloneSet set: setList){
+//			newModel.getCloneSets().remove(set);			
+//		}
 		
 		/**
 		 * create a new class

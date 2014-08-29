@@ -174,7 +174,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 			job.schedule();
 			
 			
-			Settings.scope.setCloneSets(null);
+//			Settings.scope.setCloneSets(null);
 			Settings.isCompliationUnitChanged = true;
 			Settings.isNeedClearCache = true;
 			Settings.isScopeRefreshed = true;

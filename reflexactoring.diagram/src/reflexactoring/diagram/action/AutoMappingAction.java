@@ -4,26 +4,14 @@ import java.util.ArrayList;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import reflexactoring.diagram.action.recommend.ClassRecommendAction;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToNewInterfaceOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarityTable;
-import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
-import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
-import reflexactoring.diagram.refactoring.test.ExtractUtilityClassOperatorTest;
-import reflexactoring.diagram.refactoring.test.MoveMethodOperatorTest;
-import reflexactoring.diagram.refactoring.test.PullUpMethodInInterfaceOperatorTest;
-import reflexactoring.diagram.refactoring.test.PullUpMethodNewSuperclassOperatorTest;
-import reflexactoring.diagram.refactoring.test.PullUpMethodSuperclassOperatorTest;
 import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;

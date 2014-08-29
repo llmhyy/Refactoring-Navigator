@@ -66,6 +66,7 @@ public class PullUpAbstractMethodToNewClassOpportunity extends PullUpMemberOppor
 		ICompilationUnitWrapper newClass = createNewUnit(newModel, false);
 		createNewMemberInSuperUnit(newModel, newClass, true);
 		
+		this.targetUnit = newClass;
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
 		return newModel;

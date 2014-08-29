@@ -57,7 +57,7 @@ public class ProgramModel{
 	private ArrayList<ICompilationUnitWrapper> scopeCompilationUnitList = new ArrayList<>();
 	private UnitMemberWrapperList scopeMemberList = new UnitMemberWrapperList();
 	private ArrayList<ProgramReference> referenceList = new ArrayList<>();
-	private ArrayList<CloneSet> cloneSets;
+//	private ArrayList<CloneSet> cloneSets;
 	private ArrayList<VariableDeclarationWrapper> declarationList = new ArrayList<>();
 	/**
 	 * extracting class and long method are only detected for one time.
@@ -170,8 +170,8 @@ public class ProgramModel{
 		
 		cloneTheRelationBetweenDeclarationListAndReferenceList(newModel, this);
 		
-		ArrayList<CloneSet> cloneSets = cloneCloneSets(newModel, this);
-		newModel.setCloneSets(cloneSets);
+		//ArrayList<CloneSet> cloneSets = cloneCloneSets(newModel, this);
+		//newModel.setCloneSets(cloneSets);
 		
 		//long t7 = System.currentTimeMillis();
 		//System.out.println("Clone Sets Cloned: " + (t5-t4));
@@ -277,46 +277,46 @@ public class ProgramModel{
 	 * @param programModel
 	 * @return
 	 */
-	private ArrayList<CloneSet> cloneCloneSets(ProgramModel newModel, ProgramModel oldModel) {
-		ArrayList<CloneSet> cloneSets = new ArrayList<>();
-		if(oldModel.getCloneSets() == null){
-			return cloneSets;
-		}
-		
-		for(CloneSet oldSet: oldModel.getCloneSets()){
-			CloneSet newSet = new CloneSet(oldSet.getId());
-			ArrayList<CloneInstance> newInstanceList = new ArrayList<>();
-			
-			for(CloneInstance oldInstance: oldSet.getInstances()){
-				CloneInstance newInstance = new CloneInstance(newSet, oldInstance.getFileName(), 
-						oldInstance.getStartLineNumber(), oldInstance.getEndLineNumber());
-				
-				int memberIndex = oldModel.getUnitMemberIndex(oldInstance.getMember());
-				if(memberIndex == -1){
-					System.out.println(oldInstance.getMember());
-				}
-				UnitMemberWrapper newMember = newModel.getScopeMemberList().get(memberIndex);
-				newInstance.setMember(newMember);
-				
-				ArrayList<ProgramReference> newCoveringReferenceList = new ArrayList<>();
-				for(ProgramReference oldReference: oldInstance.getCoveringReferenceList()){
-					int referenceIndex = oldModel.getProgramReferenceIndexByAddress(oldReference);
-					ProgramReference newReference = newModel.getReferenceList().get(referenceIndex);
-					
-					newCoveringReferenceList.add(newReference);
-				}
-				newInstance.setCoveringReferenceList(newCoveringReferenceList);
-				
-				newInstanceList.add(newInstance);
-			}
-			
-			newSet.setInstances(newInstanceList);
-			cloneSets.add(newSet);
-		}
-		
-		
-		return cloneSets;
-	}
+//	private ArrayList<CloneSet> cloneCloneSets(ProgramModel newModel, ProgramModel oldModel) {
+//		ArrayList<CloneSet> cloneSets = new ArrayList<>();
+//		if(oldModel.getCloneSets() == null){
+//			return cloneSets;
+//		}
+//		
+//		for(CloneSet oldSet: oldModel.getCloneSets()){
+//			CloneSet newSet = new CloneSet(oldSet.getId());
+//			ArrayList<CloneInstance> newInstanceList = new ArrayList<>();
+//			
+//			for(CloneInstance oldInstance: oldSet.getInstances()){
+//				CloneInstance newInstance = new CloneInstance(newSet, oldInstance.getFileName(), 
+//						oldInstance.getStartLineNumber(), oldInstance.getEndLineNumber());
+//				
+//				int memberIndex = oldModel.getUnitMemberIndex(oldInstance.getMember());
+//				if(memberIndex == -1){
+//					System.out.println(oldInstance.getMember());
+//				}
+//				UnitMemberWrapper newMember = newModel.getScopeMemberList().get(memberIndex);
+//				newInstance.setMember(newMember);
+//				
+//				ArrayList<ProgramReference> newCoveringReferenceList = new ArrayList<>();
+//				for(ProgramReference oldReference: oldInstance.getCoveringReferenceList()){
+//					int referenceIndex = oldModel.getProgramReferenceIndexByAddress(oldReference);
+//					ProgramReference newReference = newModel.getReferenceList().get(referenceIndex);
+//					
+//					newCoveringReferenceList.add(newReference);
+//				}
+//				newInstance.setCoveringReferenceList(newCoveringReferenceList);
+//				
+//				newInstanceList.add(newInstance);
+//			}
+//			
+//			newSet.setInstances(newInstanceList);
+//			cloneSets.add(newSet);
+//		}
+//		
+//		
+//		return cloneSets;
+//	}
 
 	/**
 	 * This method is invoked with the following precondition:
@@ -615,51 +615,51 @@ public class ProgramModel{
 		return -1;
 	}
 	
-	public CloneInstance findCloneInstance(CloneInstance instance){
-		for(CloneSet set: this.cloneSets){
-			for(CloneInstance ins: set.getInstances()){
-				if(ins.equals(instance)){
-					return ins;
-				}
-			}
-		}
-		
-		return null;
-	}
-	
-	public CloneSet findCloneSet(String id){
-		for(CloneSet set: this.cloneSets){
-			if(set.getId().equals(id)){
-				return set;
-			}
-		}
-		
-		return null;
-	}
-	
-	public CloneSet findCloneSet(CloneInstance instance){
-		CloneInstance ins = findCloneInstance(instance);
-		if(ins != null){
-			return ins.getSet();
-		}
-		
-		return null;
-	}
-	
-	public ArrayList<CloneSet> findCloneSet(ArrayList<UnitMemberWrapper> refactoringPalce){
-		ArrayList<CloneSet> setList = new ArrayList<>();
-		for(CloneSet set: this.cloneSets){
-			for(CloneInstance ins: set.getInstances()){
-				for(UnitMemberWrapper member: refactoringPalce){
-					if(ins.getMember().equals(member) && !setList.contains(set)){
-						setList.add(set);
-					}					
-				}
-			}
-		}
-		
-		return setList;
-	}
+//	public CloneInstance findCloneInstance(CloneInstance instance){
+//		for(CloneSet set: this.cloneSets){
+//			for(CloneInstance ins: set.getInstances()){
+//				if(ins.equals(instance)){
+//					return ins;
+//				}
+//			}
+//		}
+//		
+//		return null;
+//	}
+//	
+//	public CloneSet findCloneSet(String id){
+//		for(CloneSet set: this.cloneSets){
+//			if(set.getId().equals(id)){
+//				return set;
+//			}
+//		}
+//		
+//		return null;
+//	}
+//	
+//	public CloneSet findCloneSet(CloneInstance instance){
+//		CloneInstance ins = findCloneInstance(instance);
+//		if(ins != null){
+//			return ins.getSet();
+//		}
+//		
+//		return null;
+//	}
+//	
+//	public ArrayList<CloneSet> findCloneSet(ArrayList<UnitMemberWrapper> refactoringPalce){
+//		ArrayList<CloneSet> setList = new ArrayList<>();
+//		for(CloneSet set: this.cloneSets){
+//			for(CloneInstance ins: set.getInstances()){
+//				for(UnitMemberWrapper member: refactoringPalce){
+//					if(ins.getMember().equals(member) && !setList.contains(set)){
+//						setList.add(set);
+//					}					
+//				}
+//			}
+//		}
+//		
+//		return setList;
+//	}
 	
 	public void updateUnitCallingRelationByMemberRelations(){
 		/**
@@ -883,19 +883,19 @@ public class ProgramModel{
 		this.referenceList = referenceList;
 	}
 
-	/**
-	 * @return the cloneSets
-	 */
-	public ArrayList<CloneSet> getCloneSets() {
-		return cloneSets;
-	}
-
-	/**
-	 * @param cloneSets the cloneSets to set
-	 */
-	public void setCloneSets(ArrayList<CloneSet> cloneSets) {
-		this.cloneSets = cloneSets;
-	}
+//	/**
+//	 * @return the cloneSets
+//	 */
+//	public ArrayList<CloneSet> getCloneSets() {
+//		return cloneSets;
+//	}
+//
+//	/**
+//	 * @param cloneSets the cloneSets to set
+//	 */
+//	public void setCloneSets(ArrayList<CloneSet> cloneSets) {
+//		this.cloneSets = cloneSets;
+//	}
 
 	/**
 	 * Given a unit, find other unit in this model
@@ -954,9 +954,9 @@ public class ProgramModel{
 	
 	public void detectClone(){
 		
-		if(this.cloneSets != null){
-			return;
-		}
+//		if(this.cloneSets != null){
+//			return;
+//		}
 		
 		ArrayList<JCCDFile> fileList = new ArrayList<JCCDFile>();
 		HashMap<String, ICompilationUnitWrapper> map = new HashMap<>();
@@ -992,7 +992,7 @@ public class ProgramModel{
 		
 		ArrayList<CloneSet> cloneSets = convertToCloneSets(simGroups, map);
 		
-		this.cloneSets = cloneSets;
+//		this.cloneSets = cloneSets;
 	}
 
 	/**

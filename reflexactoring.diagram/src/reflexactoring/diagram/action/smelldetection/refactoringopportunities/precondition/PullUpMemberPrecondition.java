@@ -246,7 +246,8 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			ICompilationUnitWrapper commonAncestor = findCommonAncestor(refactoringPlace);
 			boolean isWithoutAnySuperclass = isWithoutAnySuperclass(refactoringPlace);
 			boolean isRelyOnOtherMemberInDeclaringClass = isRelyOnOtherMemberInDeclaringClass(refactoringPlace);
-			boolean isWithSimilarBody = isWithSimilarBody(model, refactoringPlace);
+			//boolean isWithSimilarBody = isWithSimilarBody(model, refactoringPlace);
+			boolean isWithSameBody = isWithSameBody(refactoringPlace);
 			UnitMemberWrapper member = refactoringPlace.get(0);
 			
 			boolean isSuitableForPullingIntoNewUnit = isAValidatePullUpInTermsOfReference(refactoringPlace, null);
@@ -254,7 +255,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			
 			//System.currentTimeMillis();
 			
-			if((isWithSimilarBody || (member instanceof FieldWrapper)) && !isRelyOnOtherMemberInDeclaringClass &&
+			if((isWithSameBody || (member instanceof FieldWrapper)) && !isRelyOnOtherMemberInDeclaringClass &&
 					/**
 					 * either all the members or none of the members share(s) a common ancestor class.
 					 */
@@ -477,52 +478,70 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		return true;
 	}
 
-	/**
-	 * @param refactoringPlace
-	 * @return
-	 */
-	protected boolean isWithSimilarBody(ProgramModel model, ArrayList<UnitMemberWrapper> refactoringPlace) {
-		for(CloneSet set: model.getCloneSets()){
-			boolean isAllCloneInstanceSufficientlyOccupyMemberBody = true;
-			for(CloneInstance instance: set.getInstances()){
-				if(!isCloneInstanceSufficientlyOccupyOneOfTheMember(instance, refactoringPlace)){
-					isAllCloneInstanceSufficientlyOccupyMemberBody = false;
-					break;
-				}
-			}
+	protected boolean isWithSameBody(ArrayList<UnitMemberWrapper> refactoringPlace){
+		UnitMemberWrapper firstMember = refactoringPlace.get(0);
+		if(firstMember instanceof MethodWrapper){
+			MethodWrapper firstMethod = (MethodWrapper)firstMember;
+			String methodBody = firstMethod.getMethod().getBody().toString();
 			
-			if(isAllCloneInstanceSufficientlyOccupyMemberBody){
-				return true;
+			for(int i=0; i<refactoringPlace.size(); i++){
+				MethodWrapper method = (MethodWrapper)refactoringPlace.get(i);
+				String body = method.getMethod().getBody().toString();
+				if(!methodBody.equals(body)){
+					return false;
+				}
 			}
 		}
 		
-		return false;
+		return true;
 	}
 	
-	protected boolean isCloneInstanceSufficientlyOccupyOneOfTheMember(CloneInstance instance, 
-			ArrayList<UnitMemberWrapper> refactoringPlace){
-		for(UnitMemberWrapper member: refactoringPlace){
-			if(instance.getMember().equals(member)){
-				CompilationUnit cu = member.getUnitWrapper().getJavaUnit();
-				if(cu != null){
-					int startPosition = member.getJavaElement().getStartPosition();
-					int endPosition = startPosition + member.getJavaElement().getLength();
-
-					int cloneCoverLength = instance.getLength();
-					int memberLength = cu.getLineNumber(endPosition) - cu.getLineNumber(startPosition);
-					
-					if(cloneCoverLength > 0.8*memberLength){
-						return true;
-					}
-				}
-				else{
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
+//	/**
+//	 * @param refactoringPlace
+//	 * @return
+//	 */
+//	protected boolean isWithSimilarBody(ProgramModel model, ArrayList<UnitMemberWrapper> refactoringPlace) {
+//		for(CloneSet set: model.getCloneSets()){
+//			boolean isAllCloneInstanceSufficientlyOccupyMemberBody = true;
+//			for(CloneInstance instance: set.getInstances()){
+//				if(!isCloneInstanceSufficientlyOccupyOneOfTheMember(instance, refactoringPlace)){
+//					isAllCloneInstanceSufficientlyOccupyMemberBody = false;
+//					break;
+//				}
+//			}
+//			
+//			if(isAllCloneInstanceSufficientlyOccupyMemberBody){
+//				return true;
+//			}
+//		}
+//		
+//		return false;
+//	}
+//	
+//	protected boolean isCloneInstanceSufficientlyOccupyOneOfTheMember(CloneInstance instance, 
+//			ArrayList<UnitMemberWrapper> refactoringPlace){
+//		for(UnitMemberWrapper member: refactoringPlace){
+//			if(instance.getMember().equals(member)){
+//				CompilationUnit cu = member.getUnitWrapper().getJavaUnit();
+//				if(cu != null){
+//					int startPosition = member.getJavaElement().getStartPosition();
+//					int endPosition = startPosition + member.getJavaElement().getLength();
+//
+//					int cloneCoverLength = instance.getLength();
+//					int memberLength = cu.getLineNumber(endPosition) - cu.getLineNumber(startPosition);
+//					
+//					if(cloneCoverLength > 0.8*memberLength){
+//						return true;
+//					}
+//				}
+//				else{
+//					return true;
+//				}
+//			}
+//		}
+//		
+//		return false;
+//	}
 	
 	/**
 	 * If a member to be pulled up relies on other member in its declaring class, this member cannot be pulled

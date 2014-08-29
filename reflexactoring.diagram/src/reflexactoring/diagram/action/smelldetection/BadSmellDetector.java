@@ -33,7 +33,7 @@ public class BadSmellDetector {
 	public ArrayList<RefactoringOpportunity> detect(ProgramModel model){
 		ArrayList<RefactoringOpportunity> opporuntities = new ArrayList<>();
 		
-		model.detectClone();
+		//model.detectClone();
 		model.detectExtractClassOpportunties(moduleList);
 		
 		for(RefactoringPrecondition precondition: preconditionList){

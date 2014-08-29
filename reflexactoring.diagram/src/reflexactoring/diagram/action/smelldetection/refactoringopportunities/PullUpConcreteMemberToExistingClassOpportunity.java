@@ -83,10 +83,10 @@ public class PullUpConcreteMemberToExistingClassOpportunity extends PullUpMember
 		/**
 		 * remove relevant clone set
 		 */
-		ArrayList<CloneSet> setList = newModel.findCloneSet(toBePulledMemberList);
-		for(CloneSet set: setList){
-			newModel.getCloneSets().remove(set);			
-		}
+//		ArrayList<CloneSet> setList = newModel.findCloneSet(toBePulledMemberList);
+//		for(CloneSet set: setList){
+//			newModel.getCloneSets().remove(set);			
+//		}
 		
 		/**
 		 * create a new method in the parent class and change reference
