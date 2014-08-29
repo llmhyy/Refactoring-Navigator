@@ -38,7 +38,7 @@ public class AdvancedFitnessEvaluator extends DefaultFitnessEvaluator {
 		
 		System.currentTimeMillis();
 		
-		double lexicalSimilarity = computeLexicalSimilarity(gene);
+		double lexicalSimilarity = 0/*computeLexicalSimilarity(gene)*/;
 		return Double.valueOf(ReflexactoringUtil.getAlpha())*lexicalSimilarity
 				- structureDependencyViolation - structureInheritanceViolation - structureCreationViolation;
 	}

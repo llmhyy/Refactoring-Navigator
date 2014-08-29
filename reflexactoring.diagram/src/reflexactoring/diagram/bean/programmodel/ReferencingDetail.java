@@ -3,6 +3,7 @@
  */
 package reflexactoring.diagram.bean.programmodel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -18,6 +19,8 @@ public class ReferencingDetail {
 	public static int NEW = 1;
 	public static int REFER = 2;
 	public static int UNKNOWN = 3;
+	
+	private ArrayList<ProgramReference> detailReferenceList = new ArrayList<>();
 	
 	/**
 	 * Indicating which type has been referenced by how many times.
@@ -47,7 +50,11 @@ public class ReferencingDetail {
 		return buffer.toString();
 	}
 	
-	public void addOneReference(int type){
+	public void addOneReference(int type, ProgramReference reference){
+		if(reference != null){
+			detailReferenceList.add(reference);			
+		}
+		
 		if(this.map.keySet().contains(type)){
 			int value = this.map.get(type);
 			value++;
@@ -77,6 +84,20 @@ public class ReferencingDetail {
 	 */
 	public void setMap(HashMap<Integer, Integer> map) {
 		this.map = map;
+	}
+
+	/**
+	 * @return the detailReferenceList
+	 */
+	public ArrayList<ProgramReference> getDetailReferenceList() {
+		return detailReferenceList;
+	}
+
+	/**
+	 * @param detailReferenceList the detailReferenceList to set
+	 */
+	public void setDetailReferenceList(ArrayList<ProgramReference> detailReferenceList) {
+		this.detailReferenceList = detailReferenceList;
 	}
 	
 	

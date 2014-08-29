@@ -110,7 +110,7 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 			detail = new ReferencingDetail();
 		}
 		
-		detail.addOneReference(type);
+		detail.addOneReference(type, null);
 		this.calleeModuleList.put(calleeWrapper, detail);
 	}
 	
@@ -120,7 +120,7 @@ public class ModuleWrapper extends Document implements SuggestionObject, GraphNo
 			detail = new ReferencingDetail();
 		}
 		
-		detail.addOneReference(type);
+		detail.addOneReference(type, null);
 		this.callerModuleList.put(callerWrapper, detail);
 	}
 	

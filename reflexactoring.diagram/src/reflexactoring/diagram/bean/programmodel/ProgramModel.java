@@ -699,8 +699,8 @@ public class ProgramModel{
 			 * relation has already indicated the dependency relation. 
 			 */
 			if(!refererUnit.equals(refereeUnit) && !refererUnit.getAllAncestors().contains(refereeUnit)){
-				refererUnit.addCallee(refereeUnit, referencingType);
-				refereeUnit.addCaller(refererUnit, referencingType);
+				refererUnit.addCallee(refereeUnit, referencingType, reference);
+				refereeUnit.addCaller(refererUnit, referencingType, reference);
 				
 				refererUnit.putReferringDetail(refereeUnit, reference.getASTNode());
 			}

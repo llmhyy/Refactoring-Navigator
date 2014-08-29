@@ -21,7 +21,6 @@ import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
 import reflexactoring.diagram.action.smelldetection.PenaltyAndRewardCalulator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -53,7 +52,7 @@ public class SearchRefactoringSolutionAcion implements
 				
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getClimbIterationNumber()) && oppList.size() != 0; i++){				
 					
-					if(i==3){
+					if(i==6){
 						System.currentTimeMillis();
 					}
 					
@@ -62,8 +61,8 @@ public class SearchRefactoringSolutionAcion implements
 					long t2 = System.currentTimeMillis();
 					System.out.println(t2-t1);
 					
-					if(sequence.isAnImprovement(element) ||
-							new PenaltyAndRewardCalulator().isConformToUserFeedback(element.getOpportunity())){
+					if(sequence.isAnImprovement(element) /*||
+							new PenaltyAndRewardCalulator().isConformToUserFeedback(element.getOpportunity())*/){
 						element.setPosition(i);
 						sequence.addElement(element);
 						model = element.getConsequenceModel();
@@ -113,8 +112,8 @@ public class SearchRefactoringSolutionAcion implements
 	private RefactoringSequenceElement findBestOpportunity(
 			ArrayList<RefactoringOpportunity> oppList, ProgramModel model, ArrayList<ModuleWrapper> moduleList) {
 		AdvanceEvaluatorAdapter evaluator = new AdvanceEvaluatorAdapter();
-		Double fitnessValue = null;
-		Double feedbackValue = null;
+		Double bestfitnessValue = null;
+		Double bestFeedbackValue = null;
 		RefactoringOpportunity bestOpp = null;
 		ProgramModel consequenceModel = null;
 		ArrayList<Violation> violationList = null;
@@ -130,7 +129,7 @@ public class SearchRefactoringSolutionAcion implements
 			if(Settings.forbiddenOpps.contains(opp)){
 				continue;
 			}
-			//long t1 = System.currentTimeMillis();
+			long t1 = System.currentTimeMillis();
 			
 			ProgramModel testModel = opp.simulate(model);
 			
@@ -141,14 +140,14 @@ public class SearchRefactoringSolutionAcion implements
 				opp.simulate(model);
 			}*/
 			
-			double value = evaluator.computeFitness(testModel, moduleList);
+			double fitnessValue = evaluator.computeFitness(testModel, moduleList);
 			
 			//long t3 = System.currentTimeMillis();
 			//System.out.println("Fitness Time: " + (t3-t2));
 			/**
 			 * Merging user's feedback.
 			 */
-			double feedbackValue0 = new PenaltyAndRewardCalulator().calculate(value, opp);
+			double feedbackValue = new PenaltyAndRewardCalulator().calculate(fitnessValue, opp);
 			
 			//long t4 = System.currentTimeMillis();
 			//System.out.println("Penalty Caluation Used Time: " + (t4-t3));
@@ -159,18 +158,18 @@ public class SearchRefactoringSolutionAcion implements
 			/*RefactoringSequenceElement element = new RefactoringSequenceElement(opp, testModel, value, evaluator.getViolationList());
 			candidateList.add(element);*/
 			
-			if(feedbackValue == null){
-				feedbackValue = feedbackValue0;
-				fitnessValue = value;
+			if(bestFeedbackValue == null){
+				bestFeedbackValue = feedbackValue;
+				bestfitnessValue = fitnessValue;
 				bestOpp = opp;
 				consequenceModel = testModel;
 				violationList = evaluator.getViolationList();
 				
 			}
 			else{
-				if(feedbackValue0 > feedbackValue){
-					feedbackValue = feedbackValue0;
-					fitnessValue = value;
+				if(feedbackValue > bestFeedbackValue){
+					bestFeedbackValue = feedbackValue;
+					bestfitnessValue = fitnessValue;
 					bestOpp = opp;
 					consequenceModel = testModel;
 					violationList = evaluator.getViolationList();
@@ -178,7 +177,7 @@ public class SearchRefactoringSolutionAcion implements
 			}
 		}
 		
-		return new RefactoringSequenceElement(bestOpp, consequenceModel, fitnessValue, violationList);
+		return new RefactoringSequenceElement(bestOpp, consequenceModel, bestfitnessValue, violationList);
 	}
 	
 	/*private RefactoringSequenceElement breakTie(ArrayList<RefactoringSequenceElement> candidateList, double bestValue){

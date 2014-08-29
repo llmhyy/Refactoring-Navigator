@@ -372,28 +372,28 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		}
 	}
 	
-	public void addCaller(ICompilationUnitWrapper unit, int referenceType){
+	public void addCaller(ICompilationUnitWrapper unit, int referenceType, ProgramReference reference){
 		if(!this.callerCompilationUnitList.keySet().contains(unit)){
 			ReferencingDetail detail = new ReferencingDetail();
-			detail.addOneReference(referenceType);
+			detail.addOneReference(referenceType, reference);
 			this.callerCompilationUnitList.put(unit, detail);
 		}
 		else{
 			ReferencingDetail detail = this.callerCompilationUnitList.get(unit);
-			detail.addOneReference(referenceType);
+			detail.addOneReference(referenceType, reference);
 			this.callerCompilationUnitList.put(unit, detail);
 		}
 	}
 	
-	public void addCallee(ICompilationUnitWrapper unit, int referenceType){
+	public void addCallee(ICompilationUnitWrapper unit, int referenceType, ProgramReference reference){
 		if(!this.calleeCompilationUnitList.keySet().contains(unit)){
 			ReferencingDetail detail = new ReferencingDetail();
-			detail.addOneReference(referenceType);
+			detail.addOneReference(referenceType, reference);
 			this.calleeCompilationUnitList.put(unit, detail);
 		}
 		else{
 			ReferencingDetail detail = this.calleeCompilationUnitList.get(unit);
-			detail.addOneReference(referenceType);
+			detail.addOneReference(referenceType, reference);
 			this.calleeCompilationUnitList.put(unit, detail);
 		}
 	}

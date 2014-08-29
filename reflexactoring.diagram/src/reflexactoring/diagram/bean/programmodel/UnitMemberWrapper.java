@@ -124,7 +124,7 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 		HashMap<GraphNode, ReferencingDetail> map = new HashMap<>();
 		for(ProgramReference reference: this.refererPointList){
 			ReferencingDetail detail = new ReferencingDetail();
-			detail.addOneReference(ReferencingDetail.ALL);
+			detail.addOneReference(ReferencingDetail.ALL, reference);
 			map.put(reference.getReferer(), detail);
 		}
 		
@@ -138,7 +138,7 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 		for(ProgramReference reference: this.refereePointList){
 			if(reference.getReferee() instanceof UnitMemberWrapper){
 				ReferencingDetail detail = new ReferencingDetail();
-				detail.addOneReference(ReferencingDetail.ALL);
+				detail.addOneReference(ReferencingDetail.ALL, reference);
 				map.put((UnitMemberWrapper)reference.getReferee(), detail);				
 			}
 		}

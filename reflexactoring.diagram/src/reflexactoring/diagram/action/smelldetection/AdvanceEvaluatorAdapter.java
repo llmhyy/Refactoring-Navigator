@@ -43,7 +43,7 @@ public class AdvanceEvaluatorAdapter {
 		
 		this.violationList = gene.getViolationList();
 		
-		double fitness = (1-CBO) + (1-LCOM) + structureAndLexicalFitness;
+		double fitness = /*(1-CBO) + (1-LCOM) +*/ structureAndLexicalFitness;
 		return fitness;
 	}
 
