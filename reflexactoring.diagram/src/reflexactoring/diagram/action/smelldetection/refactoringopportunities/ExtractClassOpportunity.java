@@ -301,8 +301,11 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 					 * change the parameters of method
 					 */
 					MethodWrapper objMethod = (MethodWrapper)member;
-					ArrayList<String> newParameters = RefactoringOppUtil.extractParameters(newSourceUnit, newTargetUnit, objMethod, newModel);
-					objMethod.getParameters().addAll(newParameters);
+					ArrayList<ProgramReference> referenceList = RefactoringOppUtil.
+							findTheReferingCalleeMemberInSourceUnit(newSourceUnit, newTargetUnit, objMethod, newModel);
+					if(referenceList.size() > 0){
+						objMethod.getParameters().add(newSourceUnit.getName());			
+					}
 					objMethod.removeParameter(newTargetUnit);
 				}
 				/**

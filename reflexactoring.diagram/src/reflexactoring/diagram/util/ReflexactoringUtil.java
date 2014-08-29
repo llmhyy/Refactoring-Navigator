@@ -4,7 +4,6 @@
 package reflexactoring.diagram.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -423,6 +422,13 @@ public class ReflexactoringUtil {
 			UserInputMerger merger = new UserInputMerger();
 			merger.mergeDependencyConfidenceTable();
 		}
+	}
+	
+	public static String lowercaseFirstCharacterOfString(String str){
+		String head = str.toCharArray()[0] + "";
+		head = head.toLowerCase();
+		String name = head + str.substring(1, str.length());
+		return name;
 	}
 	
 	public static void getModuleExtendConfidenceTable(){

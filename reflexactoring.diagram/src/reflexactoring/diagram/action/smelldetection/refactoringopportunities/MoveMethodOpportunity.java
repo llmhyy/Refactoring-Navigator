@@ -27,6 +27,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.ui.PlatformUI;
 
+import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
@@ -129,11 +130,16 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		/**
 		 * change the parameters of method
 		 */
-		ArrayList<String> newParameters = RefactoringOppUtil.extractParameters(originalUnit, tarUnit, objMethod, newModel);
-		objMethod.getParameters().addAll(newParameters);
+		ArrayList<ProgramReference> referenceList = RefactoringOppUtil.
+				findTheReferingCalleeMemberInSourceUnit(originalUnit, tarUnit, objMethod, newModel);
+		if(referenceList.size() > 0){
+			objMethod.getParameters().add(originalUnit.getName());			
+		}
 		objMethod.removeParameter(tarUnit);
 		
-		VariableDeclarationWrapper variableDeclaration = changeTheReferenceInMovedMethod(newModel, objMethod, tarUnit);
+		modifyTheReferenceOfSourceUnit(originalUnit, objMethod, referenceList, newModel);
+		
+		VariableDeclarationWrapper variableDeclaration = modifyTheReferenceOfTargetUnit(newModel, objMethod, tarUnit);
 		
 		changeTheReferenceInClientCode(newModel, objMethod, tarUnit, originalUnit, variableDeclaration);
 		
@@ -145,6 +151,29 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		return newModel;
 	}
 	
+	
+	
+	/**
+	 * @param originalUnit
+	 * @param calleeMemberList
+	 */
+	private void modifyTheReferenceOfSourceUnit(ICompilationUnitWrapper originalUnit, MethodWrapper objMethod,
+			ArrayList<ProgramReference> referenceList, ProgramModel newModel) {
+		String variableName = ReflexactoringUtil.lowercaseFirstCharacterOfString(originalUnit.getName());
+		String key = originalUnit.getFullQualifiedName() + "." + objMethod.getName() + ".(parameter)" + NameGernationCounter.retrieveNumber();
+		VariableDeclarationWrapper dec = new VariableDeclarationWrapper(originalUnit, variableName, null, key, false, true);
+		
+		for(ProgramReference ref: referenceList){
+			DeclarationInfluencingDetail decDetail = new DeclarationInfluencingDetail(ref, DeclarationInfluencingDetail.ACCESS_OBJECT);
+			dec.getInfluencedReferenceList().add(decDetail);
+			
+			ReferenceInflucencedDetail refDetail = new ReferenceInflucencedDetail(dec, DeclarationInfluencingDetail.ACCESS_OBJECT);
+			ref.getVariableDeclarationList().add(refDetail);
+		}
+		
+		newModel.getDeclarationList().add(dec);
+	}
+
 	/**
 	 * Given that
 	 * A a;
@@ -159,9 +188,13 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	 * @param tarUnit
 	 * @return
 	 */
-	public VariableDeclarationWrapper changeTheReferenceInMovedMethod(
+	public VariableDeclarationWrapper modifyTheReferenceOfTargetUnit(
 			ProgramModel newModel, MethodWrapper objMethod,
 			ICompilationUnitWrapper tarUnit) {
+		
+		
+		
+		
 		VariableDeclarationWrapper variableDeclaration = findRootCauseVariableDeclarationForMovingThisMethod(objMethod, tarUnit);
 		ArrayList<ProgramReference> refereeList = 
 				findInflucencedReferenceInObjectMethodWithAccessObjectType(objMethod, variableDeclaration);

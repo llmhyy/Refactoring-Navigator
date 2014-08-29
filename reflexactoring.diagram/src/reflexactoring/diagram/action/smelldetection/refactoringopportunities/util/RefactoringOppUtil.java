@@ -41,78 +41,44 @@ public class RefactoringOppUtil {
 	/**
 	 * This method can also modify the program model by building a new reference of parameter-access type when 
 	 * we find some new parameters need to be added to this method.
-	 * @param originalUnit
+	 * @param sourceUnit
 	 * @param objMethod
 	 * @param newModel
 	 * @return
 	 */
-	public static ArrayList<String> extractParameters(ICompilationUnitWrapper originalUnit, ICompilationUnitWrapper targetUnit, MethodWrapper objMethod, ProgramModel newModel){
-		ArrayList<FieldWrapper> calleeMemberList = new ArrayList<>();
-		boolean isMethodInvolved = false;
+	public static ArrayList<ProgramReference> findTheReferingCalleeMemberInSourceUnit(ICompilationUnitWrapper sourceUnit, ICompilationUnitWrapper targetUnit, MethodWrapper objMethod, ProgramModel newModel){
+		ArrayList<ProgramReference> calleeReferenceList = new ArrayList<>();
+		
 		for(ProgramReference reference: objMethod.getRefereePointList()){
 			LowLevelGraphNode calleeNode = reference.getReferee();
 			if(calleeNode instanceof UnitMemberWrapper){
 				UnitMemberWrapper calleeMember = (UnitMemberWrapper)calleeNode;
-				if(originalUnit.getMembers().contains(calleeMember)){
+				if(calleeMember.getUnitWrapper().equals(sourceUnit)){
 					if(calleeMember instanceof MethodWrapper){
-						isMethodInvolved = true;	
+						calleeReferenceList.add(reference);						
 					}
 					else if(calleeMember instanceof FieldWrapper){
-						if(!calleeMemberList.contains(calleeMember)){
-							ICompilationUnitWrapper fieldType = ((FieldWrapper)calleeMember).getFieldType();
-							if(!targetUnit.equals(fieldType)){
-								calleeMemberList.add((FieldWrapper)calleeMember);								
-							}
+						FieldWrapper fieldWrapper = (FieldWrapper)calleeMember;
+						if(!fieldWrapper.getFieldType().equals(targetUnit)){
+							calleeReferenceList.add(reference);		
 						}
 					}
-				}				
+				}
 			}
-			
 		}
 		
-		ArrayList<String> parameters = new ArrayList<>();
-		if(isMethodInvolved){
+		if(calleeReferenceList.size() > 0){
 			/**
 			 * modify program model
 			 */
-			ProgramReference reference = new ProgramReference(objMethod, originalUnit, objMethod.getJavaElement(), 
+			ProgramReference reference = new ProgramReference(objMethod, sourceUnit, objMethod.getJavaElement(), 
 					ProgramReference.PARAMETER_ACCESS, new ArrayList<ReferenceInflucencedDetail>());
 			objMethod.addProgramReferee(reference);
-			originalUnit.addProgramReferer(reference);
+			sourceUnit.addProgramReferer(reference);
 			newModel.getReferenceList().add(reference);
-			
-			/**
-			 * change the signature
-			 */
-			String parameter = originalUnit.getName();
-			parameters.add(parameter);
-			return parameters;
-		}
-		else{
-			for(FieldWrapper calleeMember: calleeMemberList){
-				ICompilationUnitWrapper accessType = null;
-				for(ProgramReference ref: calleeMember.getRefereePointList()){
-					if(ref.getReferenceType() == ProgramReference.TYPE_DECLARATION){
-						accessType = (ICompilationUnitWrapper) ref.getReferee();
-					}
-				}
-				
-				if(accessType != null){
-					ProgramReference reference = new ProgramReference(objMethod, accessType, objMethod.getJavaElement(), 
-							ProgramReference.PARAMETER_ACCESS, new ArrayList<ReferenceInflucencedDetail>());
-					objMethod.addProgramReferee(reference);
-					accessType.addProgramReferer(reference);
-					newModel.getReferenceList().add(reference);
-				}
-				
-				
-				String parameter = calleeMember.getType();
-				parameters.add(parameter);	
-			}			
 		}
 		
-		
-		return parameters;
+		return calleeReferenceList;
 	}
 	
 
