@@ -220,13 +220,24 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 		this.refereePointList = refereePointList;
 	}
 	
-	
-	
 	public ProgramReference removeReferer(ProgramReference reference){
 		Iterator<ProgramReference> refIter = this.refererPointList.iterator();
 		while(refIter.hasNext()){
 			ProgramReference programReference = refIter.next();
-			if(programReference.equals(reference)){
+			if(programReference == reference){
+				refIter.remove();
+				return programReference;
+			}
+		}
+		
+		return null;
+	}
+	
+	public ProgramReference removeReferee(ProgramReference reference){
+		Iterator<ProgramReference> refIter = this.refereePointList.iterator();
+		while(refIter.hasNext()){
+			ProgramReference programReference = refIter.next();
+			if(programReference == reference){
 				refIter.remove();
 				return programReference;
 			}

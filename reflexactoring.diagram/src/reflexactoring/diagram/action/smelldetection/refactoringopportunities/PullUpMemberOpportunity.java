@@ -266,7 +266,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 				if(refDecDetail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
 					VariableDeclarationWrapper dec = refDecDetail.getDeclaration();
 					
-					dec.setUnitWrapper(superUnit);
+					dec.setVariableType(superUnit);
 					
 					if(dec.isField()){
 						UnitMemberWrapper referer = reference.getReferer();
@@ -279,7 +279,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 								ICompilationUnitWrapper referedUnit = (ICompilationUnitWrapper) ref.getReferee();
 								if(subClasses.contains(referedUnit)){
 									ref.setReferee(superUnit);
-									dec.setUnitWrapper(superUnit);
+									dec.setVariableType(superUnit);
 								}
 								
 								break;

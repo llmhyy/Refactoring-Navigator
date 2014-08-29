@@ -366,7 +366,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 			for(ProgramReference reference: pulledMember.getRefererPointList()){
 				for(ReferenceInflucencedDetail detail: reference.getVariableDeclarationList()){
 					if(detail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
-						ICompilationUnitWrapper declaredType = detail.getDeclaration().getUnitWrapper();
+						ICompilationUnitWrapper declaredType = detail.getDeclaration().getVariableType();
 						ICompilationUnitWrapper existingSubclass = pulledMember.getUnitWrapper();
 						if(existingSubclass.getAllAncestors().contains(declaredType)){
 							if(targetUnit == null || !targetUnit.equals(declaredType)){

@@ -4,6 +4,7 @@
 package reflexactoring.diagram.bean.programmodel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -55,6 +56,28 @@ public class ProgramReference {
 		else if(referee instanceof FieldWrapper){
 			this.referenceType = ProgramReference.FIELD_ACCESS;
 		}
+	}
+	
+	public void removeDominantDeclaration(VariableDeclarationWrapper dec, int influenceType){
+		Iterator<ReferenceInflucencedDetail> iter = this.variableDeclarationList.iterator();
+		while(iter.hasNext()){
+			ReferenceInflucencedDetail refDetail = iter.next();
+			if(refDetail.getDeclaration().equals(dec) && refDetail.getType() == influenceType){
+				iter.remove();
+				break;
+			}
+		}
+	}
+	
+	public ArrayList<VariableDeclarationWrapper> findVariableDeclaratoins(int influenceType){
+		ArrayList<VariableDeclarationWrapper> decList = new ArrayList<>();
+		for(ReferenceInflucencedDetail refDetail: variableDeclarationList){
+			if(refDetail.getType() == influenceType){
+				decList.add(refDetail.getDeclaration());
+			}
+		}
+		
+		return decList;
 	}
 	
 	public ProgramReference(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode originalASTNode, 

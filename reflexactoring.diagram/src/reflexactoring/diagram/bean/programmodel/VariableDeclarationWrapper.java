@@ -4,6 +4,7 @@
 package reflexactoring.diagram.bean.programmodel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
@@ -12,11 +13,12 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
  *
  */
 public class VariableDeclarationWrapper {
-	private ICompilationUnitWrapper unitWrapper;
+	private ICompilationUnitWrapper variableType;
 	private String variableName;
 	private String key;
 	private boolean isField;
 	private boolean isParameter;
+	//private FieldWrapper correspondingField;
 	
 	private ArrayList<DeclarationInfluencingDetail> influencedReferenceList = new ArrayList<>();
 	
@@ -30,24 +32,43 @@ public class VariableDeclarationWrapper {
 	public VariableDeclarationWrapper(ICompilationUnitWrapper unitWrapper,
 			String variableName, VariableDeclaration astNode) {
 		super();
-		this.unitWrapper = unitWrapper;
+		this.variableType = unitWrapper;
 		this.variableName = variableName;
 		this.originalASTNode = astNode;
 		this.isField = astNode.resolveBinding().isField();
 		this.setParameter(astNode.resolveBinding().isParameter());
 		this.setKey(astNode.resolveBinding().getKey());
+		
+		/*if(isField){
+			String qualifiedName = astNode.resolveBinding().getDeclaringClass().getQualifiedName();
+			FieldWrapper field = Settings.scope.findField(qualifiedName, variableName);
+			setCorrespondingField(field);
+			field.setVariableDeclaration(this);
+		}*/
 	}
 	
 	public VariableDeclarationWrapper(ICompilationUnitWrapper unitWrapper,
 			String variableName, VariableDeclaration astNode, String key, 
 			boolean isField, boolean isParameter) {
 		super();
-		this.unitWrapper = unitWrapper;
+		this.variableType = unitWrapper;
 		this.variableName = variableName;
 		this.originalASTNode = astNode;
 		this.isField = isField;
+		//this.correspondingField = correspodingField;
 		this.setParameter(isParameter);
 		this.setKey(key);
+	}
+	
+	public void removeReference(ProgramReference reference, int type){
+		Iterator<DeclarationInfluencingDetail> iter = this.influencedReferenceList.iterator();
+		while(iter.hasNext()){
+			DeclarationInfluencingDetail detail = iter.next();
+			if(detail.getReference() == reference && detail.getType() == type){
+				iter.remove();
+				break;
+			}
+		}
 	}
 	
 	@Override 
@@ -67,21 +88,21 @@ public class VariableDeclarationWrapper {
 	
 	@Override
 	public String toString(){
-		return unitWrapper.getName() + " " + variableName;
+		return variableType.getName() + " " + variableName;
 	}
 
 	/**
 	 * @return the unitWrapper
 	 */
-	public ICompilationUnitWrapper getUnitWrapper() {
-		return unitWrapper;
+	public ICompilationUnitWrapper getVariableType() {
+		return variableType;
 	}
 
 	/**
 	 * @param unitWrapper the unitWrapper to set
 	 */
-	public void setUnitWrapper(ICompilationUnitWrapper unitWrapper) {
-		this.unitWrapper = unitWrapper;
+	public void setVariableType(ICompilationUnitWrapper unitWrapper) {
+		this.variableType = unitWrapper;
 	}
 
 	/**
@@ -166,6 +187,26 @@ public class VariableDeclarationWrapper {
 	 */
 	public void setParameter(boolean isParameter) {
 		this.isParameter = isParameter;
+	}
+
+	/**
+	 * Note that, if a program reference with type of FIELD_ACCESS is influenced by
+	 * a variable declaration, the referee of this program reference MUST be this field
+	 * corresponding to such a variable declaration.
+	 * 
+	 * @param model
+	 * @return
+	 */
+	public FieldWrapper findCorrespondingFieldWrapper() {
+		for(DeclarationInfluencingDetail detail: this.influencedReferenceList){
+			ProgramReference reference = detail.getReference();
+			if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS){
+				FieldWrapper field = (FieldWrapper) reference.getReferee();
+				return field;
+			}
+		}
+		
+		return null;
 	}
 	
 	

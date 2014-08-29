@@ -224,7 +224,7 @@ public class ProgramModel{
 		
 		ArrayList<VariableDeclarationWrapper> decList = new ArrayList<>();
 		for(VariableDeclarationWrapper oldDec: oldModel.getDeclarationList()){
-			ICompilationUnitWrapper oldUnit = oldDec.getUnitWrapper();
+			ICompilationUnitWrapper oldUnit = oldDec.getVariableType();
 			String oldVariableName = oldDec.getVariableName();
 			String oldKey = oldDec.getKey();
 			VariableDeclaration oldASTNode = oldDec.getAstNode();
@@ -451,9 +451,10 @@ public class ProgramModel{
 
 			UnitMemberWrapper clonedMember = null;	
 			if(oldMember instanceof FieldWrapper){
-				clonedMember = new FieldWrapper(oldMember.getName(), ((FieldWrapper) oldMember).getType(), 
-						clonedMemberUnit, oldMember.getTermFrequency(), oldMember.getDescription(), 
-						((FieldWrapper) oldMember).getField(), oldMember.isAbstract(), oldMember.getModifier());
+				FieldWrapper oldField = (FieldWrapper)oldMember;
+				clonedMember = new FieldWrapper(oldField.getName(), oldField.getType(), 
+						clonedMemberUnit, oldField.getTermFrequency(), oldField.getDescription(), 
+						oldField.getField(), oldField.isAbstract(), oldField.getModifier());
 			}else if(oldMember instanceof MethodWrapper){
 				MethodWrapper oldMethodWrapper = (MethodWrapper)oldMember;
 				

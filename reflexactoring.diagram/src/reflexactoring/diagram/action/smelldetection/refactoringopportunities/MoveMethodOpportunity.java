@@ -13,8 +13,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
@@ -26,9 +24,6 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.ltk.core.refactoring.CreateChangeOperation;
-import org.eclipse.ltk.core.refactoring.PerformChangeOperation;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.ui.PlatformUI;
 
@@ -36,6 +31,7 @@ import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
@@ -127,35 +123,19 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		originalUnit.getMembers().remove(objMethod);
 		objMethod.setUnitWrapper(tarUnit);
 		tarUnit.addMember(objMethod);
-
-		for(ProgramReference reference: objMethod.getRefereePointList()){
-			if(reference.getReferenceType() == ProgramReference.FIELD_ACCESS){
-				FieldWrapper fieldWrapper = (FieldWrapper)reference.getReferee();
-				ICompilationUnitWrapper fieldType = fieldWrapper.getFieldType();
-				if(fieldType != null && fieldType.equals(tarUnit)){
-					
-					for(ProgramReference ref: objMethod.getRefererPointList()){
-						UnitMemberWrapper member = ref.getReferer();
-						
-						ProgramReference pr = new ProgramReference(member, fieldWrapper, null, 
-								ProgramReference.FIELD_ACCESS, ref.getVariableDeclarationList());
-						member.addProgramReferee(pr);
-						fieldWrapper.addProgramReferer(pr);
-						newModel.getReferenceList().add(pr);
-					}
-					
-				}
-			}
-		}
 		
 		System.currentTimeMillis();
 		
 		/**
 		 * change the parameters of method
 		 */
-		ArrayList<String> newParameters = RefactoringOppUtil.extractParameters(originalUnit, objMethod, newModel);
+		ArrayList<String> newParameters = RefactoringOppUtil.extractParameters(originalUnit, tarUnit, objMethod, newModel);
 		objMethod.getParameters().addAll(newParameters);
 		objMethod.removeParameter(tarUnit);
+		
+		VariableDeclarationWrapper variableDeclaration = changeTheReferenceInMovedMethod(newModel, objMethod, tarUnit);
+		
+		changeTheReferenceInClientCode(newModel, objMethod, tarUnit, variableDeclaration);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
@@ -164,7 +144,256 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		return newModel;
 	}
+
+	/**
+	 * Given that
+	 * A a;
+	 * m(){
+	 * 	a.m1();
+	 * }
+	 * 
+	 * the field access relation from m() to field a should be removed after m() is moved to A.
+	 * 
+	 * @param newModel
+	 * @param objMethod
+	 * @param tarUnit
+	 * @return
+	 */
+	private VariableDeclarationWrapper changeTheReferenceInMovedMethod(
+			ProgramModel newModel, MethodWrapper objMethod,
+			ICompilationUnitWrapper tarUnit) {
+		VariableDeclarationWrapper variableDeclaration = findRootCauseVariableDeclarationForMovingThisMethod(objMethod, tarUnit);
+		ArrayList<ProgramReference> refereeList = 
+				findInflucencedReferenceInObjectMethodWithAccessObjectType(objMethod, variableDeclaration);
+		removeTheInfluenceRelationBetweenReferenceAndDelcaration(variableDeclaration, refereeList);
+		if(variableDeclaration.isField()){
+			removeCorrespondingFieldAccessProgramReference(newModel, objMethod, variableDeclaration);
+		}
+		
+		//System.currentTimeMillis();
+		
+		return variableDeclaration;
+	}
+
+	/**
+	 * Given that
+	 * A a;
+	 * m(){
+	 * 	a.m1();
+	 * }
+	 * 
+	 * the field access relation from m() to field a should be removed after m() is moved to A.
+	 * 
+	 * @param objMethod
+	 * @param variableDeclaration
+	 */
+	private void removeCorrespondingFieldAccessProgramReference(
+			ProgramModel model, MethodWrapper objMethod,
+			VariableDeclarationWrapper variableDeclaration) {
+		FieldWrapper field = variableDeclaration.findCorrespondingFieldWrapper();
+		
+		Iterator<ProgramReference> prIter = model.getReferenceList().iterator();
+		while(prIter.hasNext()){
+			ProgramReference pr = prIter.next();
+			if(pr.getReferer().equals(objMethod) && pr.getReferee().equals(field)){
+				objMethod.removeReferee(pr);
+				field.removeReferer(pr);
+				prIter.remove();
+			}
+		}
+		
+		System.currentTimeMillis();
+		
+	}
+
+	/**
+	 * 
+	 */
+	private void removeTheInfluenceRelationBetweenReferenceAndDelcaration(VariableDeclarationWrapper variableDeclaration, 
+			ArrayList<ProgramReference> refereeList) {
+		for(ProgramReference referee: refereeList){
+			referee.removeDominantDeclaration(variableDeclaration, DeclarationInfluencingDetail.ACCESS_OBJECT);
+			variableDeclaration.removeReference(referee, DeclarationInfluencingDetail.ACCESS_OBJECT);
+		}
+	}
 	
+	
+
+	/**
+	 * This method will find all the variable declaration with the type of target unit and return the one which
+	 * is invoked the most times.
+	 * 
+	 * For example, given the following code, this method will return the variable declaration "A a2" as the root
+	 * cause for moving this method to type A.
+	 * A a1;
+	 * A a2;
+	 * 
+	 * m(){
+	 *  a1.m1();
+	 *  a2.m2();
+	 *  a2.m3();
+	 * }
+	 * 
+	 * 
+	 * @param tarUnit
+	 * @return
+	 */
+	private VariableDeclarationWrapper findRootCauseVariableDeclarationForMovingThisMethod(MethodWrapper objMethod,
+			ICompilationUnitWrapper tarUnit) {
+		/**
+		 * find all the variable declaration with type tarUnit
+		 */
+		HashMap<VariableDeclarationWrapper, Integer> map = new HashMap<>();
+		for(ProgramReference reference: objMethod.getRefereePointList()){
+			LowLevelGraphNode node = reference.getReferee();
+			if(node instanceof UnitMemberWrapper){
+				UnitMemberWrapper member = (UnitMemberWrapper)node;
+				if(member.getUnitWrapper().equals(tarUnit)){
+					
+					ArrayList<VariableDeclarationWrapper> list 
+						= reference.findVariableDeclaratoins(DeclarationInfluencingDetail.ACCESS_OBJECT);
+					if(list.size() != 0){
+						VariableDeclarationWrapper vdw = list.get(0);
+						Integer value = map.get(vdw);
+						if(value == null){
+							map.put(vdw, 1);
+						}
+						else{
+							value++;
+							map.put(vdw, value);
+						}
+					}
+				}
+			}
+		}
+		
+		/**
+		 * choose the one invoked most times.
+		 */
+		VariableDeclarationWrapper vdw = null;
+		int value = 0;
+		for(VariableDeclarationWrapper dec: map.keySet()){
+			if(vdw == null){
+				vdw = dec;
+				value = map.get(dec);
+			}
+			else{
+				if(map.get(dec) > value){
+					vdw = dec;
+					value = map.get(dec);
+				}
+			}
+		}
+		
+		return vdw;
+	}
+
+	/**
+	 * @param newModel
+	 * @param objMethod
+	 * @param tarUnit
+	 * @param variableDeclaration
+	 */
+	private void changeTheReferenceInClientCode(ProgramModel newModel, MethodWrapper objMethod, ICompilationUnitWrapper tarUnit,
+			VariableDeclarationWrapper variableDeclaration) {
+		for(ProgramReference reference: objMethod.getRefererPointList()){
+			UnitMemberWrapper callerMember = reference.getReferer();
+			if(variableDeclaration.isField()){
+				/**
+				 * the caller is inside the source unit
+				 */
+				if(callerMember.getUnitWrapper().equals(sourceUnit)){
+					variableDeclaration.getInfluencedReferenceList().
+						add(new DeclarationInfluencingDetail(reference, DeclarationInfluencingDetail.ACCESS_OBJECT));
+					reference.getVariableDeclarationList().
+						add(new ReferenceInflucencedDetail(variableDeclaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
+				}
+				/**
+				 * the caller is inside a client unit
+				 */
+				else{
+					FieldWrapper fieldWrapper = variableDeclaration.findCorrespondingFieldWrapper();
+					ProgramReference newRef = new ProgramReference(callerMember, fieldWrapper, null, ProgramReference.FIELD_ACCESS);
+					callerMember.addProgramReferee(newRef);
+					fieldWrapper.addProgramReferer(newRef);
+					newModel.getReferenceList().add(newRef);
+				}
+			}
+			else if(variableDeclaration.isParameter()){
+				modifyRefererBasedOnParameterModification(reference, tarUnit);
+			}
+		}
+	}
+	
+	/**
+	 * In the referer of this method, change the parameter to access_object.
+	 */
+	private void modifyRefererBasedOnParameterModification(ProgramReference reference,
+			ICompilationUnitWrapper targetUnit) {
+		double bestSim = 0;
+		ReferenceInflucencedDetail refDetail0 = null;
+		DeclarationInfluencingDetail decDetail0 = null;
+		
+		for(ReferenceInflucencedDetail refDetail: reference.getVariableDeclarationList()){
+			if(refDetail.getType() == DeclarationInfluencingDetail.PARAMETER){
+				ICompilationUnitWrapper paramType = refDetail.getDeclaration().getVariableType();
+				
+				double sim = paramType.computeSimilarityWith(targetUnit);
+				if(sim >= bestSim){
+					bestSim = sim;
+					refDetail0 = refDetail;
+					
+					for(DeclarationInfluencingDetail decDetail: refDetail.getDeclaration().getInfluencedReferenceList()){
+						if(decDetail.getReference() == reference){
+							decDetail0 = decDetail;
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		if(refDetail0 != null){
+			refDetail0.setType(DeclarationInfluencingDetail.ACCESS_OBJECT);
+			decDetail0.setType(DeclarationInfluencingDetail.ACCESS_OBJECT);					
+		}
+	}
+	
+	/**
+	 * Find all the method invocation and field access in object method, which are called in terms of access-object
+	 * with the type of target unit.
+	 * 
+	 * A a; => A is the target unit
+	 * 
+	 * in a method:
+	 * m([A a]){
+	 *   a.k;
+	 *   a.foo();
+	 *   b.goo();
+	 * }
+	 * 
+	 * Given a variable declaration (A a) and a object method (m()), this method will return the program reference such
+	 * as "a.k" and "a.foo()".
+	 * @param objMethod
+	 * @param variableDeclaration
+	 * @return
+	 */
+	private ArrayList<ProgramReference> findInflucencedReferenceInObjectMethodWithAccessObjectType(
+			MethodWrapper objMethod, VariableDeclarationWrapper variableDeclaration) {
+		ArrayList<ProgramReference> refList = new ArrayList<>();
+		for(DeclarationInfluencingDetail decDetail: variableDeclaration.getInfluencedReferenceList()){
+			if(decDetail.getType() == DeclarationInfluencingDetail.ACCESS_OBJECT){
+				ProgramReference reference = decDetail.getReference();
+				if(reference.getReferer().equals(objMethod)){
+					refList.add(reference);
+				}
+						
+			}
+		}
+		
+		return refList;
+	}
+
 	@Override
 	public double computeSimilarityWith(RefactoringOpportunity opp){
 		if(opp instanceof MoveMethodOpportunity){

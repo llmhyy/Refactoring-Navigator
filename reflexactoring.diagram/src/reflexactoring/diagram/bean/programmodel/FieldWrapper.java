@@ -24,6 +24,7 @@ public class FieldWrapper extends UnitMemberWrapper{
 	private FieldDeclaration field;
 	private String name;
 	private String type;
+	//private VariableDeclarationWrapper variableDeclaration;
 	
 	public FieldWrapper(String name, String type, ICompilationUnitWrapper unitWrapper, 
 			HashMap<String, Integer> termFrequency, String description, FieldDeclaration field, 
@@ -36,8 +37,9 @@ public class FieldWrapper extends UnitMemberWrapper{
 		this.field = field;
 		this.modifier = modifier;
 		this.isAbstract = isAbstract;
+		//this.variableDeclaration = variableDeclaration;
 	}
-	
+
 	public FieldWrapper(FieldDeclaration field, ICompilationUnitWrapper unitWrapper){
 		super(unitWrapper);
 		this.setField(field);
@@ -217,8 +219,4 @@ public class FieldWrapper extends UnitMemberWrapper{
 	public void setJavaElement(ASTNode node) {
 		this.field = (FieldDeclaration) node;		
 	}
-
-	
-
-	
 }

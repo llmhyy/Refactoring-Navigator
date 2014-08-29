@@ -36,7 +36,15 @@ public class RefactoringOppUtil {
 		return newList;
 	}
 	
-	public static ArrayList<String> extractParameters(ICompilationUnitWrapper originalUnit, MethodWrapper objMethod, ProgramModel newModel){
+	/**
+	 * This method can also modify the program model by building a new reference of parameter-access type when 
+	 * we find some new parameters need to be added to this method.
+	 * @param originalUnit
+	 * @param objMethod
+	 * @param newModel
+	 * @return
+	 */
+	public static ArrayList<String> extractParameters(ICompilationUnitWrapper originalUnit, ICompilationUnitWrapper targetUnit, MethodWrapper objMethod, ProgramModel newModel){
 		ArrayList<FieldWrapper> calleeMemberList = new ArrayList<>();
 		boolean isMethodInvolved = false;
 		for(ProgramReference reference: objMethod.getRefereePointList()){
@@ -45,10 +53,10 @@ public class RefactoringOppUtil {
 				UnitMemberWrapper calleeMember = (UnitMemberWrapper)calleeNode;
 				if(originalUnit.getMembers().contains(calleeMember)){
 					if(calleeMember instanceof MethodWrapper){
-						isMethodInvolved = true;
+						isMethodInvolved = true;	
 					}
 					else if(calleeMember instanceof FieldWrapper){
-						if(!calleeMemberList.contains(calleeMember)){
+						if(!calleeMemberList.contains(calleeMember) && !((FieldWrapper)calleeMember).getFieldType().equals(targetUnit)){
 							calleeMemberList.add((FieldWrapper)calleeMember);
 						}
 					}
