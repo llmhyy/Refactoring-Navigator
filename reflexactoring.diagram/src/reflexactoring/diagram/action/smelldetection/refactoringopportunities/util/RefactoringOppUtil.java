@@ -27,6 +27,8 @@ import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
  */
 public class RefactoringOppUtil {
 	
+	
+	
 	public static ArrayList<UnitMemberWrapper> copyAList(ArrayList<UnitMemberWrapper> list){
 		ArrayList<UnitMemberWrapper> newList = new ArrayList<>();
 		for(UnitMemberWrapper m: list){
@@ -56,8 +58,11 @@ public class RefactoringOppUtil {
 						isMethodInvolved = true;	
 					}
 					else if(calleeMember instanceof FieldWrapper){
-						if(!calleeMemberList.contains(calleeMember) && !((FieldWrapper)calleeMember).getFieldType().equals(targetUnit)){
-							calleeMemberList.add((FieldWrapper)calleeMember);
+						if(!calleeMemberList.contains(calleeMember)){
+							ICompilationUnitWrapper fieldType = ((FieldWrapper)calleeMember).getFieldType();
+							if(!targetUnit.equals(fieldType)){
+								calleeMemberList.add((FieldWrapper)calleeMember);								
+							}
 						}
 					}
 				}				

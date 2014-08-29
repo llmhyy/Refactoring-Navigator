@@ -135,7 +135,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		VariableDeclarationWrapper variableDeclaration = changeTheReferenceInMovedMethod(newModel, objMethod, tarUnit);
 		
-		changeTheReferenceInClientCode(newModel, objMethod, tarUnit, variableDeclaration);
+		changeTheReferenceInClientCode(newModel, objMethod, tarUnit, originalUnit, variableDeclaration);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
@@ -144,7 +144,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		return newModel;
 	}
-
+	
 	/**
 	 * Given that
 	 * A a;
@@ -159,7 +159,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	 * @param tarUnit
 	 * @return
 	 */
-	private VariableDeclarationWrapper changeTheReferenceInMovedMethod(
+	public VariableDeclarationWrapper changeTheReferenceInMovedMethod(
 			ProgramModel newModel, MethodWrapper objMethod,
 			ICompilationUnitWrapper tarUnit) {
 		VariableDeclarationWrapper variableDeclaration = findRootCauseVariableDeclarationForMovingThisMethod(objMethod, tarUnit);
@@ -294,8 +294,8 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	 * @param tarUnit
 	 * @param variableDeclaration
 	 */
-	private void changeTheReferenceInClientCode(ProgramModel newModel, MethodWrapper objMethod, ICompilationUnitWrapper tarUnit,
-			VariableDeclarationWrapper variableDeclaration) {
+	public void changeTheReferenceInClientCode(ProgramModel newModel, MethodWrapper objMethod, ICompilationUnitWrapper tarUnit,
+			ICompilationUnitWrapper sourceUnit,	VariableDeclarationWrapper variableDeclaration) {
 		for(ProgramReference reference: objMethod.getRefererPointList()){
 			UnitMemberWrapper callerMember = reference.getReferer();
 			if(variableDeclaration.isField()){
@@ -393,6 +393,8 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		return refList;
 	}
+
+	
 
 	@Override
 	public double computeSimilarityWith(RefactoringOpportunity opp){
