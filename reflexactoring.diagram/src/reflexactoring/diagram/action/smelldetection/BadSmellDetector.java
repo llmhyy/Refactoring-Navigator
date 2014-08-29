@@ -43,6 +43,8 @@ public class BadSmellDetector {
 		
 		opporuntities.addAll(model.getOneShotOpportnityList());
 		
+		System.currentTimeMillis();
+		
 		return opporuntities;
 	}
 }

@@ -53,7 +53,7 @@ public class SearchRefactoringSolutionAcion implements
 				
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getClimbIterationNumber()) && oppList.size() != 0; i++){				
 					
-					if(i==5){
+					if(i==3){
 						System.currentTimeMillis();
 					}
 					

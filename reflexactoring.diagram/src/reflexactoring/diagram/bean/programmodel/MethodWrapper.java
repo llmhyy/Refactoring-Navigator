@@ -424,7 +424,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 				if(calleeMember instanceof FieldWrapper && this.getUnitWrapper().getMembers().contains(calleeMember)){
 					ASTNode node = reference.getASTNode();
 					if(null == node){
-						return true;
+						return false;
 					}
 					else{
 						boolean isAssignment = false;

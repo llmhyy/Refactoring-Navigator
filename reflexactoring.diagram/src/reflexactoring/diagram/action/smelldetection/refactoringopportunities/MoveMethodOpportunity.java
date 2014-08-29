@@ -342,15 +342,13 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 						add(new ReferenceInflucencedDetail(variableDeclaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
 				}
 				/**
-				 * the caller is inside a client unit
+				 * no matter the caller is inside or outside the source unit, a new reference to the field is necessary.
 				 */
-				else{
-					FieldWrapper fieldWrapper = variableDeclaration.findCorrespondingFieldWrapper();
-					ProgramReference newRef = new ProgramReference(callerMember, fieldWrapper, null, ProgramReference.FIELD_ACCESS);
-					callerMember.addProgramReferee(newRef);
-					fieldWrapper.addProgramReferer(newRef);
-					newModel.getReferenceList().add(newRef);
-				}
+				FieldWrapper fieldWrapper = variableDeclaration.findCorrespondingFieldWrapper();
+				ProgramReference newRef = new ProgramReference(callerMember, fieldWrapper, null, ProgramReference.FIELD_ACCESS);
+				callerMember.addProgramReferee(newRef);
+				fieldWrapper.addProgramReferer(newRef);
+				newModel.getReferenceList().add(newRef);
 			}
 			else if(variableDeclaration.isParameter()){
 				modifyRefererBasedOnParameterModification(reference, tarUnit);
@@ -658,10 +656,14 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			for(UnitMemberWrapper member: model.getScopeMemberList()){
 				if(member instanceof MethodWrapper){
 					MethodWrapper method = (MethodWrapper)member;
+					if(method.toString().contains("updateTableView")){
+						System.currentTimeMillis();
+					}
 					if(method.isLegalMethodToBeMoved()){
 						for(ICompilationUnitWrapper targetUnit: model.getScopeCompilationUnitList()){
 							
-							if(method.toString().contains("saveItem") && targetUnit.toString().contains("Item")){
+							if(method.toString().contains("updateTableView") && targetUnit.toString().contains("Table")){
+								System.currentTimeMillis();
 								System.currentTimeMillis();
 							}
 							
