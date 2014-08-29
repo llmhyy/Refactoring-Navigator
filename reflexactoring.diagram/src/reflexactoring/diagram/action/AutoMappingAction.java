@@ -75,7 +75,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		
 		ModuleUnitsSimilarityView similarityView = (ModuleUnitsSimilarityView)PlatformUI.getWorkbench().
 				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.MODULE_TYPE_SIMILARITY_VIEW);
-		similarityView.refreshUI(Settings.similarityTable);
+		//similarityView.refreshUI(Settings.similarityTable);
 		
 		
 		

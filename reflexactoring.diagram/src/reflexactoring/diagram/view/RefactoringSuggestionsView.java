@@ -130,7 +130,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 		
 		//TODO
 		Label text = new Label(parent, SWT.WRAP | SWT.TOP);
-		text.setText("Refactoring Suggestions");
+		text.setText("Refactoring Suggestion");
 		text.setFont(new Font(Display.getCurrent(), "Arial", 14, SWT.BOLD));
 		text.setForeground(DARK_BLUE);
 		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -139,7 +139,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		for (RefactoringSequence sequence : suggestions) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
-			item.setText ("Suggestion " + (suggestions.indexOf(sequence) + 1));
+			item.setText("Suggestion");
 			
 			final ScrolledComposite scrollComposite = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
 			scrollComposite.setLayout(gridLayout);

@@ -81,6 +81,8 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	private String newFieldName;
 	private String targetUnitName;
 	
+	private ModuleWrapper mappingModule;
+	
 	/**
 	 * @param toBeExtractedMembers
 	 */
@@ -162,6 +164,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		System.currentTimeMillis();
 
 		calculateBestMappingModule(newModel, newTargetUnit);
+		this.mappingModule = newTargetUnit.getMappingModule();
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
@@ -353,6 +356,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	public ArrayList<String> getRefactoringDetails() {
 		ArrayList<String> details = new ArrayList<>();
 		details.add(this.toString());
+		details.add("Moving this class to module " + getMappingModule());
 		return details;
 	}
 
@@ -592,6 +596,22 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	 */
 	public void setNewFieldName(String newFieldName) {
 		this.newFieldName = newFieldName;
+	}
+
+
+
+	/**
+	 * @return the mappingModule
+	 */
+	public ModuleWrapper getMappingModule() {
+		return mappingModule;
+	}
+
+	/**
+	 * @param mappingModule the mappingModule to set
+	 */
+	public void setMappingModule(ModuleWrapper mappingModule) {
+		this.mappingModule = mappingModule;
 	}
 
 

@@ -28,6 +28,25 @@ public class ReferencingDetail {
 		
 	}
 	
+	@Override
+	public String toString(){
+		StringBuffer buffer = new StringBuffer();
+		for(Integer key: map.keySet()){
+			Integer value = map.get(key);
+			if(key == ReferencingDetail.NEW){
+				buffer.append("initialize ");
+				
+			}
+			else if(key == ReferencingDetail.REFER){
+				buffer.append("call ");
+			}
+			buffer.append(value);
+			buffer.append(" times");
+			buffer.append("\n");
+		}
+		return buffer.toString();
+	}
+	
 	public void addOneReference(int type){
 		if(this.map.keySet().contains(type)){
 			int value = this.map.get(type);

@@ -22,6 +22,7 @@ import reflexactoring.diagram.action.smelldetection.PenaltyAndRewardCalulator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
@@ -122,7 +123,7 @@ public class SearchRefactoringSolutionAcion implements
 		
 		for(RefactoringOpportunity opp: oppList){
 			
-			if(opp instanceof ExtractClassOpportunity){
+			if(opp instanceof MoveMethodOpportunity){
 				System.currentTimeMillis();
 			}
 			

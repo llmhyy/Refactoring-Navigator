@@ -74,8 +74,8 @@ public class ModuleTypeContainerCompartmentEditPart extends
 			Point offset = getOrigin(parent);
 
 			int count = 1;
-			int x = 10;
-			int y = 10;
+			int x = 0;
+			int y = 0;
 			while (fIterator.hasNext()) {
 				IFigure figure = fIterator.next();
 				Rectangle bounds = (Rectangle) getConstraint(figure);
@@ -110,10 +110,10 @@ public class ModuleTypeContainerCompartmentEditPart extends
 				this.constraints.put(figure, bounds.translate(offset));
 
 				if (count % 3 == 0) {
-					x = 10;
-					y = y + bounds.height + 20;
+					x = 0;
+					y = y + bounds.height + 5;
 				} else {
-					x = x + bounds.width + 20;
+					x = x + bounds.width + 5;
 				}
 				count++;
 			}
