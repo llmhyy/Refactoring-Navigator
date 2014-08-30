@@ -482,12 +482,20 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 		UnitMemberWrapper firstMember = refactoringPlace.get(0);
 		if(firstMember instanceof MethodWrapper){
 			MethodWrapper firstMethod = (MethodWrapper)firstMember;
-			String methodBody = firstMethod.getMethod().getBody().toString();
+			String methodBody = "";
+			if(firstMethod.getMethod() != null && firstMethod.getMethod().getBody() != null){
+				methodBody = firstMethod.getMethod().getBody().toString();
+			}
 			
-			for(int i=0; i<refactoringPlace.size(); i++){
+			
+			for(int i=1; i<refactoringPlace.size(); i++){
 				MethodWrapper method = (MethodWrapper)refactoringPlace.get(i);
-				String body = method.getMethod().getBody().toString();
-				if(!methodBody.equals(body)){
+				String otherBody = "";
+				if(method.getMethod() != null && method.getMethod().getBody() != null){
+					otherBody = method.getMethod().getBody().toString();
+				}
+				
+				if(!otherBody.equals(methodBody)){
 					return false;
 				}
 			}
