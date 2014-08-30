@@ -55,7 +55,6 @@ import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElem
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.bean.ModuleWrapper;
-import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
@@ -111,6 +110,32 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			}
 		}
 		return buffer.toString();
+	}
+	
+	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof ExtractClassOpportunity){
+			ExtractClassOpportunity thatOpp = (ExtractClassOpportunity)obj;
+			if(thatOpp.isHavingSameMemberList(toBeExtractedMembers)){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private boolean isHavingSameMemberList(ArrayList<UnitMemberWrapper> memberList){
+		if(memberList.size() == toBeExtractedMembers.size()){
+			for(UnitMemberWrapper thatMember: memberList){
+				if(!canFindAnEqualMemberInList(toBeExtractedMembers, thatMember)){
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	@Override

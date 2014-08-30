@@ -61,8 +61,11 @@ public class SearchRefactoringSolutionAcion implements
 					long t2 = System.currentTimeMillis();
 					System.out.println(t2-t1);
 					
+					PenaltyAndRewardCalulator calculator = new PenaltyAndRewardCalulator();
 					if(sequence.isAnImprovement(element) ||
-							new PenaltyAndRewardCalulator().isConformToUserFeedback(element.getOpportunity())){
+							(calculator.isConformToUserFeedback(element.getOpportunity()) &&
+							 !sequence.contains(element))
+							){
 						element.setPosition(i);
 						sequence.addElement(element);
 						model = element.getConsequenceModel();
@@ -133,7 +136,7 @@ public class SearchRefactoringSolutionAcion implements
 			
 			ProgramModel testModel = opp.simulate(model);
 			
-			long t2 = System.currentTimeMillis();
+			//long t2 = System.currentTimeMillis();
 			//System.out.println("Simluated Model Time: " + (t2-t1));
 			/*if(t2-t1 > 20){
 				System.currentTimeMillis(); 

@@ -17,7 +17,6 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.popup.RenameMembersDialog;
-import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;

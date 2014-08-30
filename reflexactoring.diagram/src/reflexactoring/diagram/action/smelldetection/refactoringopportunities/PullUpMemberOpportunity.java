@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -391,16 +389,6 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			}
 			
 			return true;
-		}
-		
-		return false;
-	}
-	
-	private boolean canFindAnEqualMemberInList(ArrayList<UnitMemberWrapper> list, UnitMemberWrapper member){
-		for(UnitMemberWrapper memberInList: list){
-			if(memberInList.equals(member)){
-				return true;
-			}
 		}
 		
 		return false;
