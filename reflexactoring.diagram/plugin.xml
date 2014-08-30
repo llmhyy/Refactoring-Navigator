@@ -194,6 +194,11 @@
                id="reflexactoring.diagram.action.showAllTypeDependencies"
                label="Show All Type Dependencies">
          </action>
+         <action
+               class="reflexactoring.diagram.action.popup.FixMappingAction"
+               id="reflexactoring.diagram.action.fixMapping"
+               label="Fix Mapping">
+         </action>
       </objectContribution>
       <objectContribution
             adaptable="false"
