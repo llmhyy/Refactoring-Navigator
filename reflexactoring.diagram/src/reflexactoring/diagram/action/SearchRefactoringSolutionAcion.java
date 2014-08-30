@@ -39,7 +39,9 @@ public class SearchRefactoringSolutionAcion implements
 		Job job = new Job("Searching for refactoring solutions"){
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				//monitor.beginTask("Searching Solution...", iterNum.intValue());
+				int totalWork = Double.valueOf(ReflexactoringUtil.getClimbIterationNumber()).intValue();
+				monitor.beginTask("Searching Solution...", totalWork);
+				
 				final ArrayList<RefactoringSequence> suggestionList = new ArrayList<>();
 				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 				ProgramModel model = Settings.scope;
@@ -51,6 +53,8 @@ public class SearchRefactoringSolutionAcion implements
 				System.currentTimeMillis();
 				
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getClimbIterationNumber()) && oppList.size() != 0; i++){				
+					
+					monitor.worked(1);
 					
 					if(i==2){
 						System.currentTimeMillis();
