@@ -174,7 +174,7 @@ public class RefactoringOppUtil {
 					}
 					else if(calleeMember instanceof FieldWrapper){
 						FieldWrapper fieldWrapper = (FieldWrapper)calleeMember;
-						if(!fieldWrapper.getFieldType().equals(targetUnit)){
+						if(!targetUnit.equals(fieldWrapper.getFieldType())){
 							calleeReferenceList.add(reference);		
 						}
 					}

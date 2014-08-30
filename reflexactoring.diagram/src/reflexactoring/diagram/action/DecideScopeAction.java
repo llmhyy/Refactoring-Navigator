@@ -4,20 +4,12 @@
 package reflexactoring.diagram.action;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 
-import org.eclipse.core.internal.resources.Project;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -27,7 +19,6 @@ import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jdt.internal.core.PackageFragmentRoot;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -41,20 +32,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 
-import reflexactoring.Activator;
-import reflexactoring.diagram.action.recommend.Suggestion;
-import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToNewInterfaceOpportunity;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
-import reflexactoring.diagram.bean.programmodel.ProgramModel;
-import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
-import reflexactoring.diagram.bean.programmodel.UnitMemberWrapperList;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
-import reflexactoring.diagram.preferences.ProjectInfoPage;
 import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
-import reflexactoring.diagram.view.HeuristicMappingView;
 import reflexactoring.diagram.view.ViewUpdater;
 
 /**

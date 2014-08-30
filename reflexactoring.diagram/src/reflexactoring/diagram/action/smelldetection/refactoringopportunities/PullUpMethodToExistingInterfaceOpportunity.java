@@ -42,6 +42,18 @@ public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOppo
 	}
 	
 	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof PullUpMethodToExistingInterfaceOpportunity){
+			PullUpMethodToExistingInterfaceOpportunity thatOpp = (PullUpMethodToExistingInterfaceOpportunity)obj;
+			if(thatOpp.isHavingSameMemberList(toBePulledMemberList)){
+				return true;
+			}
+		}
+		
+		return false;
+	} 
+	
+	@Override
 	public double computeSimilarityWith(RefactoringOpportunity opp){
 		if(opp instanceof PullUpMethodToExistingInterfaceOpportunity){
 			PullUpMethodToExistingInterfaceOpportunity thatOpp = (PullUpMethodToExistingInterfaceOpportunity)opp;

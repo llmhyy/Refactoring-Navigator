@@ -39,7 +39,9 @@ public class SearchRefactoringSolutionAcion implements
 		Job job = new Job("Searching for refactoring solutions"){
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				//monitor.beginTask("Searching Solution...", iterNum.intValue());
+				int totalWork = Double.valueOf(ReflexactoringUtil.getClimbIterationNumber()).intValue();
+				monitor.beginTask("Searching Solution...", totalWork);
+				
 				final ArrayList<RefactoringSequence> suggestionList = new ArrayList<>();
 				ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 				ProgramModel model = Settings.scope;
@@ -52,6 +54,8 @@ public class SearchRefactoringSolutionAcion implements
 				
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getClimbIterationNumber()) && oppList.size() != 0; i++){				
 					
+					monitor.worked(1);
+					
 					if(i==2){
 						System.currentTimeMillis();
 					}
@@ -61,8 +65,11 @@ public class SearchRefactoringSolutionAcion implements
 					long t2 = System.currentTimeMillis();
 					System.out.println(t2-t1);
 					
+					PenaltyAndRewardCalulator calculator = new PenaltyAndRewardCalulator();
 					if(sequence.isAnImprovement(element) ||
-							new PenaltyAndRewardCalulator().isConformToUserFeedback(element.getOpportunity())){
+							(calculator.isConformToUserFeedback(element.getOpportunity()) &&
+							 !sequence.contains(element))
+							){
 						element.setPosition(i);
 						sequence.addElement(element);
 						model = element.getConsequenceModel();
@@ -133,7 +140,7 @@ public class SearchRefactoringSolutionAcion implements
 			
 			ProgramModel testModel = opp.simulate(model);
 			
-			long t2 = System.currentTimeMillis();
+			//long t2 = System.currentTimeMillis();
 			//System.out.println("Simluated Model Time: " + (t2-t1));
 			/*if(t2-t1 > 20){
 				System.currentTimeMillis(); 

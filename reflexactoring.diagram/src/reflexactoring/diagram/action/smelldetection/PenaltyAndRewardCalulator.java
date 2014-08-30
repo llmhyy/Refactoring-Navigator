@@ -43,6 +43,15 @@ public class PenaltyAndRewardCalulator {
 		return false;
 	}
 	
+	public boolean isInBlackList(RefactoringOpportunity calculatingOpp){
+		for(RefactoringOpportunity opp: Settings.forbiddenOpps){
+			if(opp.equals(calculatingOpp)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private int countSimilarOppNum(RefactoringOpportunity calculatingOpp, ArrayList<RefactoringOpportunity> oppList){
 		int count = 0;
 		for(RefactoringOpportunity opp: oppList){

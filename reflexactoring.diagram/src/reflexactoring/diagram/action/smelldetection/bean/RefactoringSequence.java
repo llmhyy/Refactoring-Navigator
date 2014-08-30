@@ -24,7 +24,7 @@ public class RefactoringSequence extends ArrayList<RefactoringSequenceElement>{
 	
 	public RefactoringSequence(ProgramModel originModel, ArrayList<ModuleWrapper> moduleList){
 		AdvanceEvaluatorAdapter evaluator = new AdvanceEvaluatorAdapter();
-		this.originModel = originModel;
+		this.setOriginModel(originModel);
 		this.currentFitnessValue = evaluator.computeFitness(originModel, moduleList);
 	}
 	
@@ -64,6 +64,20 @@ public class RefactoringSequence extends ArrayList<RefactoringSequenceElement>{
 			return true;
 		}
 		return currentFitnessValue < element.getFitnessValue();
+	}
+
+	/**
+	 * @return the originModel
+	 */
+	public ProgramModel getOriginModel() {
+		return originModel;
+	}
+
+	/**
+	 * @param originModel the originModel to set
+	 */
+	public void setOriginModel(ProgramModel originModel) {
+		this.originModel = originModel;
 	}
 
 }

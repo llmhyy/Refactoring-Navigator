@@ -36,6 +36,18 @@ public class PullUpAbstractMethodToNewClassOpportunity extends PullUpMemberOppor
 	}
 	
 	@Override
+	public boolean equals(Object obj){
+		if(obj instanceof PullUpAbstractMethodToNewClassOpportunity){
+			PullUpAbstractMethodToNewClassOpportunity thatOpp = (PullUpAbstractMethodToNewClassOpportunity)obj;
+			if(thatOpp.isHavingSameMemberList(toBePulledMemberList)){
+				return true;
+			}
+		}
+		
+		return false;
+	} 
+	
+	@Override
 	public double computeSimilarityWith(RefactoringOpportunity opp){
 		if(opp instanceof PullUpAbstractMethodToNewClassOpportunity){
 			PullUpAbstractMethodToNewClassOpportunity thatOpp = (PullUpAbstractMethodToNewClassOpportunity)opp;
