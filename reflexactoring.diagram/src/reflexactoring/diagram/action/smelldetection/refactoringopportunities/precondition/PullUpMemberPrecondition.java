@@ -6,16 +6,12 @@ package reflexactoring.diagram.action.smelldetection.refactoringopportunities.pr
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.eclipse.jdt.core.dom.CompilationUnit;
-
-import reflexactoring.diagram.action.smelldetection.bean.CloneInstance;
-import reflexactoring.diagram.action.smelldetection.bean.CloneSet;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToExistingClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpAbstractMethodToNewClassOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToExistingInterfaceOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpConcreteMemberToNewClassOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToNewInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpConcreteMemberToExistingClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpConcreteMemberToNewClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToExistingInterfaceOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.PullUpMethodToNewInterfaceOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -328,7 +324,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 					for(GraphNode child: interf.getChildList()){
 						if(child instanceof ICompilationUnitWrapper){
 							ICompilationUnitWrapper childUnit = (ICompilationUnitWrapper)child;
-							if(!list.contains(childUnit)){
+							if(!list.contains(childUnit) && !childUnit.isAbstract()){
 								return false;
 							}
 						}
@@ -344,7 +340,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 				for(GraphNode child: commonAncestor.getChildList()){
 					if(child instanceof ICompilationUnitWrapper){
 						ICompilationUnitWrapper childUnit = (ICompilationUnitWrapper)child;
-						if(!list.contains(childUnit)){
+						if(!list.contains(childUnit) && !childUnit.isAbstract()){
 							return false;
 						}
 					}
