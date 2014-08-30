@@ -141,6 +141,25 @@ public class ReflexactoringUtil {
 	public static void setSuggestionNumber(String suggestionNumber){
 		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.SUGGESTION_NUMBER, suggestionNumber);
 	}
+
+	public static String getRewardRate() {
+		String rewardRate = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.REWARD_RATE);
+		return (rewardRate == null || rewardRate.length() == 0)? String.valueOf(Settings.rewardRate) : rewardRate;
+	}
+	
+	public static void setRewardRate(String rewardRate){
+		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.REWARD_RATE, rewardRate);
+	}
+
+	public static String getPenaltyRate() {
+		String penaltyRate = Activator.getDefault().getPreferenceStore().getString(RecommendSettingPage.PENALTY_RATE);
+		return (penaltyRate == null || penaltyRate.length() == 0)? String.valueOf(Settings.penaltyRate) : penaltyRate;
+	}
+	
+	public static void setPenaltyRate(String penaltyRate){
+		Activator.getDefault().getPreferenceStore().putValue(RecommendSettingPage.PENALTY_RATE, penaltyRate);
+	}
+	
 	public static String getDictPath(){
 		if(Activator.getDefault() == null){
 			return "C:\\Program Files (x86)\\WordNet\\2.1\\dict";

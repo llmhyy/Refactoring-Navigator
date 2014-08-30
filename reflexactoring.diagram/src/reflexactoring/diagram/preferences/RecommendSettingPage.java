@@ -26,6 +26,8 @@ public class RecommendSettingPage extends PreferencePage implements
 	public static final String ALPHA = "alpha";
 	public static final String BETA = "beta";
 	public static final String SUGGESTION_NUMBER = "suggestionNumber";
+	public static final String REWARD_RATE = "awardRate";
+	public static final String PENALTY_RATE = "penaltyRate";
 	
 	
 	private Text mappingIterationNumberText;
@@ -35,6 +37,8 @@ public class RecommendSettingPage extends PreferencePage implements
 	private Text alphaText;
 	private Text betaText;
 	private Text suggestionNumberText;
+	private Text rewardRateText;
+	private Text penaltyRateText;
 	
 	public RecommendSettingPage() {
 		// TODO Auto-generated constructor stub
@@ -121,6 +125,22 @@ public class RecommendSettingPage extends PreferencePage implements
 		suggestionNumberData.horizontalSpan = 2;
 		suggestionNumberText.setLayoutData(suggestionNumberData);
 		
+		Label rewardRateLabel = new Label(composite, SWT.NONE);
+		rewardRateLabel.setText("Reward Rate");
+		rewardRateText = new Text(composite, SWT.BORDER);
+		rewardRateText.setText(ReflexactoringUtil.getRewardRate());
+		GridData rewardRateData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		rewardRateData.horizontalSpan = 2;
+		rewardRateText.setLayoutData(rewardRateData);
+		
+		Label penaltyRateLabel = new Label(composite, SWT.NONE);
+		penaltyRateLabel.setText("Penalty Rate");
+		penaltyRateText = new Text(composite, SWT.BORDER);
+		penaltyRateText.setText(ReflexactoringUtil.getPenaltyRate());
+		GridData penaltyRateData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		penaltyRateData.horizontalSpan = 2;
+		penaltyRateText.setLayoutData(penaltyRateData);
+		
 		return composite;
 		
 	}
@@ -144,6 +164,8 @@ public class RecommendSettingPage extends PreferencePage implements
 		preferences.put(ALPHA, this.alphaText.getText());
 		preferences.put(BETA, this.betaText.getText());
 		preferences.put(SUGGESTION_NUMBER, this.suggestionNumberText.getText());
+		preferences.put(REWARD_RATE, this.rewardRateText.getText());
+		preferences.put(PENALTY_RATE, this.penaltyRateText.getText());
 		
 		ReflexactoringUtil.setMappingIterationNumber(this.mappingIterationNumberText.getText());
 		ReflexactoringUtil.setClimbIterationNumber(this.climbIterationNumberText.getText());
@@ -152,6 +174,8 @@ public class RecommendSettingPage extends PreferencePage implements
 		ReflexactoringUtil.setAlpha(this.alphaText.getText());
 		ReflexactoringUtil.setBeta(this.betaText.getText());
 		ReflexactoringUtil.setSuggestionNumber(this.suggestionNumberText.getText());
+		ReflexactoringUtil.setRewardRate(this.rewardRateText.getText());
+		ReflexactoringUtil.setPenaltyRate(this.penaltyRateText.getText());
 		
 		return true;
 	}

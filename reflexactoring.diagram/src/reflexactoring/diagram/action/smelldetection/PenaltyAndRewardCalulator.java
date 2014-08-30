@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 
 /**
@@ -19,12 +20,12 @@ public class PenaltyAndRewardCalulator {
 		int approvedCount = countSimilarOppNum(calculatingOpp, Settings.approvedOpps);
 		
 		if(fitness > 0){
-			fitness = fitness * Math.pow(1-Settings.penaltyRate, forbiddenCount) * 
-					Math.pow(1+Settings.rewardRate, approvedCount);
+			fitness = fitness * Math.pow(1-Double.valueOf(ReflexactoringUtil.getPenaltyRate()), forbiddenCount) * 
+					Math.pow(1+Double.valueOf(ReflexactoringUtil.getRewardRate()), approvedCount);
 		}
 		else {
-			fitness = fitness * Math.pow(1+Settings.penaltyRate, forbiddenCount) * 
-					Math.pow(1-Settings.rewardRate, approvedCount);
+			fitness = fitness * Math.pow(1+Double.valueOf(ReflexactoringUtil.getPenaltyRate()), forbiddenCount) * 
+					Math.pow(1-Double.valueOf(ReflexactoringUtil.getRewardRate()), approvedCount);
 		}
 		
 		return fitness;
