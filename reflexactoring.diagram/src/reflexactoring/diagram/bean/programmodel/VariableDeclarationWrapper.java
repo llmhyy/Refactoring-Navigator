@@ -192,7 +192,10 @@ public class VariableDeclarationWrapper {
 	/**
 	 * Note that, if a program reference with type of FIELD_ACCESS is influenced by
 	 * a variable declaration, the referee of this program reference MUST be this field
-	 * corresponding to such a variable declaration.
+	 * corresponding to such a variable declaration. 
+	 * 
+	 * This method possibly wrong in that a field is accessed directly, e.g., a.b is 
+	 * influenced by 'A a'. In this case, b rather than a could be returned. FIXME
 	 * 
 	 * @param model
 	 * @return

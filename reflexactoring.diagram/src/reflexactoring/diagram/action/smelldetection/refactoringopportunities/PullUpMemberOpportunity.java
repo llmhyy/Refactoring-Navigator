@@ -258,8 +258,12 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			reference.setReferee(newMember);
 			newMember.addProgramReferer(reference);
 			/**
+			 * The variable declaration of subclass need to be replaced by its superclass.
+			 * 
 			 * find the variable declaration defining the access object of the method invocation and field access, 
 			 * change its type declaration from subclass to superclass.
+			 * 
+			 * 
 			 */
 			for(ReferenceInflucencedDetail refDecDetail: reference.getVariableDeclarationList()){	
 				
@@ -269,10 +273,11 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 					dec.setVariableType(superUnit);
 					
 					if(dec.isField()){
-						UnitMemberWrapper referer = reference.getReferer();
-						ICompilationUnitWrapper declaringClass = referer.getUnitWrapper();
-						String fieldName = dec.getVariableName();
-						FieldWrapper fieldWrapper = newModel.findField(declaringClass.getFullQualifiedName(), fieldName);
+						//UnitMemberWrapper referer = reference.getReferer();
+						//ICompilationUnitWrapper declaringClass = referer.getUnitWrapper();
+						//String fieldName = dec.getVariableName();
+						//FieldWrapper fieldWrapper = newModel.findField(declaringClass.getFullQualifiedName(), fieldName);
+						FieldWrapper fieldWrapper = dec.findCorrespondingFieldWrapper();
 						
 						for(ProgramReference ref: fieldWrapper.getRefereePointList()){
 							if(ref.getReferenceType() == ProgramReference.TYPE_DECLARATION){
