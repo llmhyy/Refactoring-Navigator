@@ -51,6 +51,7 @@ import reflexactoring.diagram.util.Settings;
 public class MoveMethodOpportunity extends RefactoringOpportunity {
 
 	private UnitMemberWrapper objectMethod;
+	private MethodWrapper oldObjectMethod;
 	private ICompilationUnitWrapper targetUnit;
 	private ICompilationUnitWrapper sourceUnit;
 
@@ -58,6 +59,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	
 	public MoveMethodOpportunity(UnitMemberWrapper objectMethod, ICompilationUnitWrapper targetUnit){
 		this.objectMethod = objectMethod;
+		this.oldObjectMethod = (MethodWrapper) objectMethod;
 		this.targetUnit = targetUnit;
 	}
 	
@@ -77,7 +79,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	public boolean equals(Object obj){
 		if(obj instanceof MoveMethodOpportunity){
 			MoveMethodOpportunity thatOpp = (MoveMethodOpportunity)obj;
-			if(thatOpp.getObjectMethod().equals(getObjectMethod()) &&
+			if(thatOpp.getOldObjectMethod().equals(getOldObjectMethod()) &&
 					thatOpp.getTargetUnit().equals(getTargetUnit())){
 				return true;
 			}
@@ -89,7 +91,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	@Override
 	public ProgramModel simulate(ProgramModel model) {
 		ProgramModel newModel = model.clone();
-		
+		//this.oldObjectMethod = (MethodWrapper) this.objectMethod;
 		/**
 		 * TODO, if the re-implementation of extracting class is done, the following code could
 		 * be removed.
@@ -145,7 +147,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
-		//this.objectMethod = objMethod;
+		this.objectMethod = objMethod;
 		this.targetUnit = tarUnit;
 		
 		return newModel;
@@ -702,5 +704,19 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			MethodWrapper oldMethodInModel = model.findMethod(fullQualifiedTypeName, toBeReplacedMethodName, toBeReplacedMethodParam);
 			oldMethodInModel.setName(newMethodName);
 		}
+	}
+
+	/**
+	 * @return the oldObjectMethod
+	 */
+	public MethodWrapper getOldObjectMethod() {
+		return oldObjectMethod;
+	}
+
+	/**
+	 * @param oldObjectMethod the oldObjectMethod to set
+	 */
+	public void setOldObjectMethod(MethodWrapper oldObjectMethod) {
+		this.oldObjectMethod = oldObjectMethod;
 	}
 }
