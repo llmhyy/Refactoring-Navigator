@@ -145,7 +145,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
-		this.objectMethod = objMethod;
+		//this.objectMethod = objMethod;
 		this.targetUnit = tarUnit;
 		
 		return newModel;
