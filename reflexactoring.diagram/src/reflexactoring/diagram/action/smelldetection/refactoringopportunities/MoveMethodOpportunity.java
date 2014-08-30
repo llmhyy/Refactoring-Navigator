@@ -141,7 +141,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		VariableDeclarationWrapper variableDeclaration = modifyTheReferenceOfTargetUnit(newModel, objMethod, tarUnit);
 		
-		changeTheReferenceInClientCode(newModel, objMethod, tarUnit, originalUnit, variableDeclaration);
+		RefactoringOppUtil.changeTheReferenceInClientCode(newModel, objMethod, tarUnit, originalUnit, variableDeclaration, null);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
@@ -154,6 +154,16 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	
 	
 	/**
+	 * If the moved method has a new parameter such as (S s), S is the source unit
+	 * m(){
+	 *   m1();
+	 * }
+	 * 
+	 * if m1 is declared in S, then the code need to be changed into:
+	 * m(S s){
+	 * 	s.m1();
+	 * }
+	 * 
 	 * @param originalUnit
 	 * @param calleeMemberList
 	 */
@@ -176,12 +186,16 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 
 	/**
 	 * Given that
-	 * A a;
+	 * T t;
 	 * m(){
-	 * 	a.m1();
+	 * 	t.m1();
 	 * }
 	 * 
-	 * the field access relation from m() to field a should be removed after m() is moved to A.
+	 * the field access relation from m() to field t should be removed after m() is moved to T, so that:
+	 * 
+	 * m(){
+	 * 	m1();
+	 * }
 	 * 
 	 * @param newModel
 	 * @param objMethod
@@ -191,13 +205,21 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	public VariableDeclarationWrapper modifyTheReferenceOfTargetUnit(
 			ProgramModel newModel, MethodWrapper objMethod,
 			ICompilationUnitWrapper tarUnit) {
-		
-		
-		
-		
+		/**
+		 * find the declaration T t (T is the target unit)
+		 */
 		VariableDeclarationWrapper variableDeclaration = findRootCauseVariableDeclarationForMovingThisMethod(objMethod, tarUnit);
+		
+		if(variableDeclaration == null){
+			//System.currentTimeMillis();
+		}
+		
+		/**
+		 * find all the reference influenced by t.
+		 */
 		ArrayList<ProgramReference> refereeList = 
 				findInflucencedReferenceInObjectMethodWithAccessObjectType(objMethod, variableDeclaration);
+		
 		removeTheInfluenceRelationBetweenReferenceAndDelcaration(variableDeclaration, refereeList);
 		if(variableDeclaration.isField()){
 			removeCorrespondingFieldAccessProgramReference(newModel, objMethod, variableDeclaration);
@@ -321,74 +343,6 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		return vdw;
 	}
 
-	/**
-	 * @param newModel
-	 * @param objMethod
-	 * @param tarUnit
-	 * @param variableDeclaration
-	 */
-	public void changeTheReferenceInClientCode(ProgramModel newModel, MethodWrapper objMethod, ICompilationUnitWrapper tarUnit,
-			ICompilationUnitWrapper sourceUnit,	VariableDeclarationWrapper variableDeclaration) {
-		for(ProgramReference reference: objMethod.getRefererPointList()){
-			UnitMemberWrapper callerMember = reference.getReferer();
-			if(variableDeclaration.isField()){
-				/**
-				 * the caller is inside the source unit
-				 */
-				if(callerMember.getUnitWrapper().equals(sourceUnit)){
-					variableDeclaration.getInfluencedReferenceList().
-						add(new DeclarationInfluencingDetail(reference, DeclarationInfluencingDetail.ACCESS_OBJECT));
-					reference.getVariableDeclarationList().
-						add(new ReferenceInflucencedDetail(variableDeclaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
-				}
-				/**
-				 * no matter the caller is inside or outside the source unit, a new reference to the field is necessary.
-				 */
-				FieldWrapper fieldWrapper = variableDeclaration.findCorrespondingFieldWrapper();
-				ProgramReference newRef = new ProgramReference(callerMember, fieldWrapper, null, ProgramReference.FIELD_ACCESS);
-				callerMember.addProgramReferee(newRef);
-				fieldWrapper.addProgramReferer(newRef);
-				newModel.getReferenceList().add(newRef);
-			}
-			else if(variableDeclaration.isParameter()){
-				modifyRefererBasedOnParameterModification(reference, tarUnit);
-			}
-		}
-	}
-	
-	/**
-	 * In the referer of this method, change the parameter to access_object.
-	 */
-	private void modifyRefererBasedOnParameterModification(ProgramReference reference,
-			ICompilationUnitWrapper targetUnit) {
-		double bestSim = 0;
-		ReferenceInflucencedDetail refDetail0 = null;
-		DeclarationInfluencingDetail decDetail0 = null;
-		
-		for(ReferenceInflucencedDetail refDetail: reference.getVariableDeclarationList()){
-			if(refDetail.getType() == DeclarationInfluencingDetail.PARAMETER){
-				ICompilationUnitWrapper paramType = refDetail.getDeclaration().getVariableType();
-				
-				double sim = paramType.computeSimilarityWith(targetUnit);
-				if(sim >= bestSim){
-					bestSim = sim;
-					refDetail0 = refDetail;
-					
-					for(DeclarationInfluencingDetail decDetail: refDetail.getDeclaration().getInfluencedReferenceList()){
-						if(decDetail.getReference() == reference){
-							decDetail0 = decDetail;
-							break;
-						}
-					}
-				}
-			}
-		}
-		
-		if(refDetail0 != null){
-			refDetail0.setType(DeclarationInfluencingDetail.ACCESS_OBJECT);
-			decDetail0.setType(DeclarationInfluencingDetail.ACCESS_OBJECT);					
-		}
-	}
 	
 	/**
 	 * Find all the method invocation and field access in object method, which are called in terms of access-object

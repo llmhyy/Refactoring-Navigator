@@ -21,7 +21,7 @@ import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
 import reflexactoring.diagram.action.smelldetection.PenaltyAndRewardCalulator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
@@ -122,14 +122,14 @@ public class SearchRefactoringSolutionAcion implements
 		
 		for(RefactoringOpportunity opp: oppList){
 			
-			if(opp instanceof MoveMethodOpportunity){
+			if(opp instanceof ExtractClassOpportunity){
 				System.currentTimeMillis();
 			}
 			
 			if(Settings.forbiddenOpps.contains(opp)){
 				continue;
 			}
-			long t1 = System.currentTimeMillis();
+			//long t1 = System.currentTimeMillis();
 			
 			ProgramModel testModel = opp.simulate(model);
 			

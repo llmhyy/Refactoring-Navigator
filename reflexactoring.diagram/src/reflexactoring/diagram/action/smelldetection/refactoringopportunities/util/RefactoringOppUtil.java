@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.SimpleName;
 
 import reflexactoring.diagram.bean.LowLevelGraphNode;
+import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.bean.programmodel.MethodWrapper;
@@ -20,6 +21,7 @@ import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.ReferenceInflucencedDetail;
 import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
+import reflexactoring.diagram.bean.programmodel.VariableDeclarationWrapper;
 
 /**
  * @author linyun
@@ -27,7 +29,120 @@ import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
  */
 public class RefactoringOppUtil {
 	
+	/**
+	 * Check all conditions including client unit, source unit and target unit.
+	 * variableDeclaration is the variable declaration influencing the moved method, for example,
+	 * 
+	 * T t;
+	 * m_moved([T t]){
+	 *  ...
+	 * }
+	 * 
+	 * @param newModel
+	 * @param objMember
+	 * @param tarUnit
+	 * @param variableDeclaration
+	 */
+	public static void changeTheReferenceInClientCode(ProgramModel newModel, UnitMemberWrapper objMember, ICompilationUnitWrapper tarUnit,
+			ICompilationUnitWrapper sourceUnit,	VariableDeclarationWrapper variableDeclaration, FieldWrapper correspField) {
+		for(ProgramReference reference: objMember.getRefererPointList()){
+			UnitMemberWrapper callerMember = reference.getReferer();
+			ICompilationUnitWrapper callerUnit = callerMember.getUnitWrapper();
+			if(variableDeclaration.isField()){
+				/**
+				 * The caller is in source unit or client unit, a new reference to the field is necessary.
+				 */
+				if(!callerUnit.equals(tarUnit)){
+					FieldWrapper fieldWrapper = (correspField != null) ? correspField : variableDeclaration.findCorrespondingFieldWrapper();
+					ProgramReference newRef = new ProgramReference(callerMember, fieldWrapper, null, ProgramReference.FIELD_ACCESS);
+					callerMember.addProgramReferee(newRef);
+					fieldWrapper.addProgramReferer(newRef);
+					newModel.getReferenceList().add(newRef);
+					
+					/**
+					 * the caller is inside the source unit
+					 */
+					if(callerUnit.equals(sourceUnit)){
+						/**
+						 * This declaration influence the reference (with access_object type) from caller to the object member.
+						 */
+						variableDeclaration.getInfluencedReferenceList().
+							add(new DeclarationInfluencingDetail(reference, DeclarationInfluencingDetail.ACCESS_OBJECT));
+						reference.getVariableDeclarationList().
+							add(new ReferenceInflucencedDetail(variableDeclaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
+						
+						/**
+						 * This declaration influence the reference (with access_object type) from caller to field declaration.
+						 */
+						variableDeclaration.getInfluencedReferenceList().
+							add(new DeclarationInfluencingDetail(newRef, DeclarationInfluencingDetail.ACCESS_OBJECT));
+						newRef.getVariableDeclarationList().
+							add(new ReferenceInflucencedDetail(variableDeclaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
+					}
+				}
+				/**
+				 * The caller is in target unit, for example, 
+				 * S s;
+				 * m_t(){
+				 *  s.m_moved()
+				 * }
+				 * 
+				 * the code need to be changed into:
+				 * S s;
+				 * m_t(){
+				 *  m_moved()
+				 * }
+				 */
+				else{
+					ArrayList<VariableDeclarationWrapper> list 
+						= reference.findVariableDeclaratoins(DeclarationInfluencingDetail.ACCESS_OBJECT);
+					if(list.size() != 0){
+						VariableDeclarationWrapper dec = list.get(0);
+						dec.removeReference(reference, DeclarationInfluencingDetail.ACCESS_OBJECT);
+						reference.removeDominantDeclaration(dec, DeclarationInfluencingDetail.ACCESS_OBJECT);
+					}
+				}
+				
+			}
+			else if(variableDeclaration.isParameter()){
+				modifyRefererBasedOnParameterModification(reference, tarUnit);			
+			}
+		}
+	}
 	
+	/**
+	 * In the referer of this method, change the parameter to access_object.
+	 */
+	private static void modifyRefererBasedOnParameterModification(ProgramReference reference,
+			ICompilationUnitWrapper targetUnit) {
+		double bestSim = 0;
+		ReferenceInflucencedDetail refDetail0 = null;
+		DeclarationInfluencingDetail decDetail0 = null;
+		
+		for(ReferenceInflucencedDetail refDetail: reference.getVariableDeclarationList()){
+			if(refDetail.getType() == DeclarationInfluencingDetail.PARAMETER){
+				ICompilationUnitWrapper paramType = refDetail.getDeclaration().getVariableType();
+				
+				double sim = paramType.computeSimilarityWith(targetUnit);
+				if(sim >= bestSim){
+					bestSim = sim;
+					refDetail0 = refDetail;
+					
+					for(DeclarationInfluencingDetail decDetail: refDetail.getDeclaration().getInfluencedReferenceList()){
+						if(decDetail.getReference() == reference){
+							decDetail0 = decDetail;
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		if(refDetail0 != null){
+			refDetail0.setType(DeclarationInfluencingDetail.ACCESS_OBJECT);
+			decDetail0.setType(DeclarationInfluencingDetail.ACCESS_OBJECT);					
+		}
+	}
 	
 	public static ArrayList<UnitMemberWrapper> copyAList(ArrayList<UnitMemberWrapper> list){
 		ArrayList<UnitMemberWrapper> newList = new ArrayList<>();

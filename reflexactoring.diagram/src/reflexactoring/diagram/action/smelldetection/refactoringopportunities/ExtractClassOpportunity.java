@@ -147,6 +147,14 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		this.newFieldName = newField.getName();
 		
 		/**
+		 * create the relation indicating field has the type of newly created class
+		 */
+		ProgramReference ref = new ProgramReference(newField, newTargetUnit, null, ProgramReference.TYPE_DECLARATION, new ArrayList<ReferenceInflucencedDetail>());
+		newField.addProgramReferee(ref);
+		newTargetUnit.addProgramReferer(ref);
+		newModel.getReferenceList().add(ref);
+		
+		/**
 		 * create type relation
 		 */
 		ProgramReference programReference = new ProgramReference(newField, newTargetUnit, null, 
@@ -204,16 +212,18 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 				null, newSourceUnit.getFullQualifiedName()+"."+newField.getName()+"(field)", true, false);
 		newModel.getDeclarationList().add(variableDeclaration);
 		
+		System.currentTimeMillis();
+		
 		/**
-		 * all the referer to the extracted members may refer to them by accessing object
+		 * all the referer to the extracted members may refer to newly created field by accessing object
 		 */
 		for(UnitMemberWrapper newToBeExtractedMember: extractMembers){
-			for(ProgramReference reference: newToBeExtractedMember.getRefererPointList()){
+			/*for(ProgramReference reference: newToBeExtractedMember.getRefererPointList()){
 				UnitMemberWrapper referer = reference.getReferer();
 				
 				if(!referer.getUnitWrapper().equals(newTargetUnit)){
 					ProgramReference ref = new ProgramReference(referer, newField, null, ProgramReference.FIELD_ACCESS);
-				referer.addProgramReferee(ref);
+					referer.addProgramReferee(ref);
 					newField.addProgramReferer(ref);
 					newModel.getReferenceList().add(ref);
 					
@@ -224,7 +234,10 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 					
 				}
 				
-			}
+			}*/
+			
+			RefactoringOppUtil.changeTheReferenceInClientCode(newModel, newToBeExtractedMember, 
+					newTargetUnit, newSourceUnit, variableDeclaration, newField);
 		}
 	}
 
