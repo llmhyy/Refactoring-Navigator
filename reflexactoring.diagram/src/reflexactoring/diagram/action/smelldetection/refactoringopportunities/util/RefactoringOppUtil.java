@@ -101,6 +101,8 @@ public class RefactoringOppUtil {
 						dec.removeReference(reference, DeclarationInfluencingDetail.ACCESS_OBJECT);
 						reference.removeDominantDeclaration(dec, DeclarationInfluencingDetail.ACCESS_OBJECT);
 					}
+					
+					//System.currentTimeMillis();
 				}
 				
 			}

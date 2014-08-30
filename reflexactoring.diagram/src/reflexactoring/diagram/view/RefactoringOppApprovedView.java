@@ -1,6 +1,7 @@
 package reflexactoring.diagram.view;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -24,6 +25,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
+import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
 import reflexactoring.diagram.util.Settings;
 
 public class RefactoringOppApprovedView extends ViewPart {
@@ -101,10 +103,10 @@ public class RefactoringOppApprovedView extends ViewPart {
 		tableViewer.getControl().setLayoutData(gridData);
 		
 		//Add context menu for DELETE action
-		Menu pop = new Menu(parent.getShell(), SWT.POP_UP);
-		MenuItem item = new MenuItem(pop, SWT.PUSH);
-		item.setText("Delete");
-		item.addSelectionListener(new SelectionListener() {
+		Menu deletePop = new Menu(parent.getShell(), SWT.POP_UP);
+		MenuItem deleteOneItem = new MenuItem(deletePop, SWT.PUSH);
+		deleteOneItem.setText("Delete");
+		deleteOneItem.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				Object o = e.getSource();
 				if (o instanceof MenuItem) {
@@ -127,7 +129,25 @@ public class RefactoringOppApprovedView extends ViewPart {
 				
 			} 
 		}); 
-		tableViewer.getTable().setMenu(pop); 
+		MenuItem deleteAllItem = new MenuItem(deletePop, SWT.PUSH);
+		deleteAllItem.setText("Delete All");
+		deleteAllItem.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				Object o = e.getSource();
+				if (o instanceof MenuItem) {
+					Settings.approvedOpps.clear();
+					tableViewer.setInput(Settings.approvedOpps);
+					tableViewer.refresh();
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			} 
+		}); 
+		tableViewer.getTable().setMenu(deletePop); 
 		
 	}
 
