@@ -230,7 +230,8 @@ public class RefactoringSuggestionsView extends ViewPart {
 						if(currentHeight == 0){
 							currentHeight = prerequisiteComposite.computeSize(parent.getBounds().width, SWT.DEFAULT).y + 20;
 						}
-						if(sequence.indexOf(element) < currentElementIndex){
+						//if(sequence.indexOf(element) < currentElementIndex){
+						if(sequence.indexOf(element) < currentElementIndex - 1){
 							currentHeight += elementComposite.computeSize(parent.getBounds().width - 10, SWT.DEFAULT).y + 10;
 						}
 					}else{
