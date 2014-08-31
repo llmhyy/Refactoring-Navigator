@@ -3,7 +3,6 @@ package reflexactoring.diagram.view;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -55,7 +54,6 @@ import reflexactoring.diagram.action.recommend.action.RefactoringAction;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.SuggestionObject;
@@ -490,11 +488,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 					try {
 						ArrayList<CompilationUnit> cuList = new ArrayList<>();
 						
-						for(ASTNode node0: element.getOpportunity().getHints()){
-							ICompilationUnit icu = (ICompilationUnit) ((CompilationUnit) node0.getRoot()).getJavaElement();
-							CompilationUnit unit = RefactoringOppUtil.parse(icu);
-							ASTNode node = RefactoringOppUtil.findCorrespondingNode(unit, node0);
-							
+						for(ASTNode node: element.getOpportunity().getHints()){
 							ASTNode parent = node.getParent();
 							while(parent.getParent() != null){
 								parent = parent.getParent();

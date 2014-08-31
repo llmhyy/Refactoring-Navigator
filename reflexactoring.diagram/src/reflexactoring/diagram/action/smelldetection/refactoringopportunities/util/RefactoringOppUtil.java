@@ -7,15 +7,10 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.programmodel.DeclarationInfluencingDetail;
@@ -226,48 +221,5 @@ public class RefactoringOppUtil {
 			}
 		}
 		return name;
-	}
-
-	/**
-	 * find the corresponding node of old nodeInfo in the new compilationUnit
-	 * 
-	 * @param compilationUnit
-	 * @param node
-	 * @return
-	 */
-	public static ASTNode findCorrespondingNode(CompilationUnit compilationUnit,
-			ASTNode node) {
-		CompilationUnit oldCU = (CompilationUnit) node.getRoot();
-		ASTNode oldDeclaringNode = node;
-		while(!(oldDeclaringNode instanceof MethodDeclaration || oldDeclaringNode instanceof FieldDeclaration) 
-				&& oldDeclaringNode != null){
-			oldDeclaringNode = oldDeclaringNode.getParent();
-		}
-		
-		if(oldDeclaringNode == null){
-			System.err.println("some ast node is declared in neither method or field ");
-			return null;
-		}
-		
-		int methodLineNum = oldCU.getLineNumber(oldDeclaringNode.getStartPosition());
-		int nodeLineNum = oldCU.getLineNumber(node.getStartPosition());
-		int lineDiff = nodeLineNum - methodLineNum;
-		int spaceDiff = node.getStartPosition() - oldCU.getPosition(nodeLineNum, 0);
-	
-		ASTNode newDeclaringNode = null;
-		if(oldDeclaringNode instanceof MethodDeclaration){
-			newDeclaringNode = compilationUnit.findDeclaringNode(((MethodDeclaration)oldDeclaringNode).resolveBinding().getKey());
-		}
-		else if(oldDeclaringNode instanceof FieldDeclaration){
-			FieldDeclaration fd = (FieldDeclaration)oldDeclaringNode;
-			VariableDeclarationFragment fragment = (VariableDeclarationFragment) fd.fragments().get(0);
-			newDeclaringNode = compilationUnit.findDeclaringNode(fragment.resolveBinding().getKey());
-		}
-		
-		int lineNum = compilationUnit.getLineNumber(newDeclaringNode.getStartPosition()) + lineDiff;
-		int startPosition = compilationUnit.getPosition(lineNum, 0) + spaceDiff;
-		
-		ASTNode newNode = NodeFinder.perform(compilationUnit, startPosition, 0);
-		return newNode;
 	}
 }
