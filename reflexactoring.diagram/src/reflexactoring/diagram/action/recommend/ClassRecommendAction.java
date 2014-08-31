@@ -24,7 +24,7 @@ public class ClassRecommendAction implements
 	
 	@Override
 	public void run(IAction action) {
-		RecordParameters.typeSuggestion++;
+		//RecordParameters.typeSuggestion++;
 		
 		Settings.isNeedClearCache = true;
 		final RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().

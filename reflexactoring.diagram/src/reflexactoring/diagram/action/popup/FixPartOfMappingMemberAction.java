@@ -48,7 +48,7 @@ public class FixPartOfMappingMemberAction extends AbstractActionDelegate impleme
 		Object selEditPart = selection.getFirstElement();
 		
 		if(selEditPart instanceof Class2EditPart){
-			RecordParameters.fixPartMember++;
+			//RecordParameters.fixPartMember++;
 			
 			Class2EditPart editPart = (Class2EditPart)selEditPart;
 			Type type = (Type) editPart.resolveSemanticElement();

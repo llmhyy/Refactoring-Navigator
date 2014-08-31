@@ -26,6 +26,7 @@ import reflexactoring.diagram.action.smelldetection.refactoringopportunities.Ref
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.ReflexactoringUtil;
 import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.RefactoringSuggestionsView;
@@ -35,6 +36,7 @@ public class SearchRefactoringSolutionAcion implements
 	
 	@Override
 	public void run(IAction action) {
+		RecordParameters.proceedTime++;
 		
 		Job job = new Job("Searching for refactoring solutions"){
 			@Override

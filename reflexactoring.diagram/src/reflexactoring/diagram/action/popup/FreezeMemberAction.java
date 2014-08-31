@@ -27,7 +27,7 @@ public class FreezeMemberAction extends AbstractActionDelegate implements IObjec
 		Object selEditPart = selection.getFirstElement();
 		
 		if (selEditPart instanceof ModuleEditPart){
-			RecordParameters.freezeTime++;
+			//RecordParameters.freezeTime++;
 			
 			ModuleEditPart part = (ModuleEditPart)selEditPart;
 			Module module = (Module) part.resolveSemanticElement();

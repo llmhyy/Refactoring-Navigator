@@ -418,6 +418,8 @@ public class RefactoringSuggestionsView extends ViewPart {
 			public void linkActivated(HyperlinkEvent e) {
 				RefactoringOpportunity opportunity = (RefactoringOpportunity) formText.getData();
 				if(e.getHref().equals("Forbid")){
+					RecordParameters.rejectTime++;
+					
 					if(!Settings.forbiddenOpps.contains(opportunity)){
 						Settings.forbiddenOpps.add(opportunity);
 					}
@@ -432,6 +434,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 					t.setBackground(colors.getColor("gray"));
 					t.setForeground(colors.getColor("white"));
 				}else if(e.getHref().equals("Allow")){
+					RecordParameters.undoRejectTime++;
 					
 					Iterator<RefactoringOpportunity> iterator = Settings.forbiddenOpps.iterator();
 					while(iterator.hasNext()){
@@ -453,11 +456,15 @@ public class RefactoringSuggestionsView extends ViewPart {
 					t.setBackground(colors.getColor("white"));
 				}
 				else if(e.getHref().equals("Simulate")){
+					RecordParameters.simulateTime++;
+					
 					ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 					ProgramModel model = element.getConsequenceModel();
 					new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
 				}
 				else if(e.getHref().equals("UndoSimulate")){
+					RecordParameters.undoSimulateTime++;
+					
 					ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 					ProgramModel model;
 					if(element.getPosition() == 0){
@@ -470,6 +477,8 @@ public class RefactoringSuggestionsView extends ViewPart {
 					new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
 				}
 				else if(e.getHref().equals("Hint")){
+					RecordParameters.checkHintTime++;
+					
 					ReferenceDetailMap map = new ReferenceDetailMap(null, null, element.getOpportunity().getHints());
 					ViewUpdater updater = new ViewUpdater();
 					updater.updateView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW, map, true);
@@ -511,7 +520,9 @@ public class RefactoringSuggestionsView extends ViewPart {
 						e1.printStackTrace();
 					}
 				}
-				else if(e.getHref().equals("Approve")){																				
+				else if(e.getHref().equals("Approve")){				
+					RecordParameters.approveTime++;
+					
 					//do approved now
 					if(!Settings.approvedOpps.contains(opportunity)){
 						Settings.approvedOpps.add(opportunity);
@@ -520,6 +531,8 @@ public class RefactoringSuggestionsView extends ViewPart {
 					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
 				}
 				else if(e.getHref().equals("UndoApprove")){
+					RecordParameters.undoApproveTime++;
+					
 					//undo approved now
 					Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();
 					while(iterator.hasNext()){
@@ -538,7 +551,9 @@ public class RefactoringSuggestionsView extends ViewPart {
 					}else{
 						if(!opportunity.checkLegal()){
 							MessageDialog.openError(null, "Check Legal Error", "It's not legal to do this apply now.");
-						}else if(opportunity.apply(element.getPosition(), sequence)){					
+						}else if(opportunity.apply(element.getPosition(), sequence)){			
+							RecordParameters.applyTime++;
+							
 							//set the element composite gray
 							element.setApply(true);	
 							
@@ -565,6 +580,8 @@ public class RefactoringSuggestionsView extends ViewPart {
 				}
 				else if(e.getHref().equals("Undo")){
 					if(opportunity.undoApply()){
+						RecordParameters.undoApplyTime++;
+						
 						//set the element composite back
 						element.setApply(false);
 						

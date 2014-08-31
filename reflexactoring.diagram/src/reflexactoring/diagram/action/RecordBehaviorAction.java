@@ -23,15 +23,22 @@ public class RecordBehaviorAction implements IWorkbenchWindowActionDelegate {
 		IFile file = project.getFile("/record_data" + (++RecordParameters.recordTime));
 		String content = "Behavior Record: \n" + 
 				"Scope Decision Time: " + RecordParameters.scopeDecisionTime + "\n" +
-				"Map Time: " + RecordParameters.mapTime + "\n" +
-				"Type Suggestion: " + RecordParameters.typeSuggestion + "\n" +
-				"Member Suggestion: " + RecordParameters.memberSuggestion + "\n" +
+				"Proceed Time: " + RecordParameters.proceedTime + "\n" +
+//				"Type Suggestion: " + RecordParameters.typeSuggestion + "\n" +
+//				"Member Suggestion: " + RecordParameters.memberSuggestion + "\n" +v
+				"Check Hint Time: " + RecordParameters.checkHintTime + "\n" +
 				"Reject Time: " + RecordParameters.rejectTime + "\n" +
+				"Undo Reject Time: " + RecordParameters.undoRejectTime + "\n" +
+				"Approve Time: " + RecordParameters.approveTime + "\n" +
+				"Undo Approve Time: " + RecordParameters.undoApproveTime + "\n" +
 				"Apply Time: " + RecordParameters.applyTime + "\n" +
-				"Reference Check: " + RecordParameters.referenceCheck + "\n" +
-				"Freeze Time: " + RecordParameters.freezeTime + "\n" +
-				"Fix All Member: " + RecordParameters.fixAllMember + "\n" +
-				"Fix Part Member: " + RecordParameters.fixPartMember;
+				"Undo Apply Time: " + RecordParameters.undoApplyTime + "\n" +
+				"Simulate Time: " + RecordParameters.simulateTime + "\n" +
+				"Undo Simulate Time: " + RecordParameters.undoSimulateTime + "\n" +
+				"Reference Check: " + RecordParameters.referenceCheck + "\n" ;
+//				"Freeze Time: " + RecordParameters.freezeTime + "\n" +
+//				"Fix All Member: " + RecordParameters.fixAllMember + "\n" +
+//				"Fix Part Member: " + RecordParameters.fixPartMember;
 		
 		InputStream source = new ByteArrayInputStream(content.getBytes());
 		try {

@@ -26,7 +26,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 	
 	@Override
 	public void run(IAction action) {
-		RecordParameters.mapTime++;
+		RecordParameters.proceedTime++;
 		
 		DependencyConstraintConfidenceView dependencyConfidenceView = (DependencyConstraintConfidenceView) PlatformUI.getWorkbench().
 				getActiveWorkbenchWindow().getActivePage().findView(ReflexactoringPerspective.DEPENDENCY_CONSTRAINT_CONFIDENCE_VIEW);
