@@ -3,6 +3,8 @@
  */
 package reflexactoring.diagram.util;
 
+import java.util.ArrayList;
+
 /**
  * @author linyun
  *
@@ -23,6 +25,7 @@ public class RecordParameters {
 	public static int simulateTime = 0;
 	public static int undoSimulateTime = 0;
 	public static int referenceCheck = 0;
+	public static ArrayList<String> manualMaps = new ArrayList<String>();
 	
 //	public static int freezeTime = 0;
 //	public static int fixAllMember = 0;
@@ -43,6 +46,7 @@ public class RecordParameters {
 		simulateTime = 0;
 		undoSimulateTime = 0;
 		referenceCheck = 0;
+		manualMaps = new ArrayList<String>();
 		
 //		freezeTime = 0;
 //		fixAllMember = 0;

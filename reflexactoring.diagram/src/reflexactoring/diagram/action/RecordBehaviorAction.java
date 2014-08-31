@@ -40,6 +40,11 @@ public class RecordBehaviorAction implements IWorkbenchWindowActionDelegate {
 //				"Fix All Member: " + RecordParameters.fixAllMember + "\n" +
 //				"Fix Part Member: " + RecordParameters.fixPartMember;
 		
+		content += "Manul Maps: \n";
+		for(String map : RecordParameters.manualMaps){
+			content += map + "\n";
+		}
+		
 		InputStream source = new ByteArrayInputStream(content.getBytes());
 		try {
 			file.create(source, false, null);

@@ -8,6 +8,7 @@ import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
 import reflexactoring.diagram.perspective.ReflexactoringPerspective;
+import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.util.Settings;
 import reflexactoring.diagram.view.ViewUpdater;
 
@@ -18,6 +19,10 @@ public class FixMappingAction extends AbstractActionDelegate implements IObjectA
 
 	@Override
 	protected void doRun(IProgressMonitor progressMonitor) {
+		for(HeuristicModuleUnitMap map : Settings.heuristicModuleUnitFixList){
+			RecordParameters.manualMaps.add("Unit: " + map.getUnit() + " , Module: " + map.getModule());
+		}
+		
 		for(ICompilationUnitWrapper unit : Settings.scope.getScopeCompilationUnitList()){
 			ModuleWrapper module = unit.getMappingModule();
 			
