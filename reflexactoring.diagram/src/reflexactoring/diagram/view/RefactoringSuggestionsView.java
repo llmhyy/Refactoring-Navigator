@@ -401,11 +401,11 @@ public class RefactoringSuggestionsView extends ViewPart {
 		buffer.append("<a href=\"Allow\">Undo</a> ");
 		buffer.append("<b>]</b>");
 		buffer.append("</li>");	
-		buffer.append("<li>");
-		buffer.append("<b>[</b> <a href=\"Approve\">Approve</a> ");
-		buffer.append("<a href=\"UndoApprove\">Undo</a> ");
-		buffer.append("<b>]</b>");
-		buffer.append("</li>");
+//		buffer.append("<li>");
+//		buffer.append("<b>[</b> <a href=\"Approve\">Approve</a> ");
+//		buffer.append("<a href=\"UndoApprove\">Undo</a> ");
+//		buffer.append("<b>]</b>");
+//		buffer.append("</li>");
 		buffer.append("<li>");
 		buffer.append("<b>[</b> <a href=\"Exec\">Apply</a> ");
 		buffer.append("<a href=\"Undo\">Undo</a> ");
@@ -521,31 +521,31 @@ public class RefactoringSuggestionsView extends ViewPart {
 						e1.printStackTrace();
 					}
 				}
-				else if(e.getHref().equals("Approve")){				
-					RecordParameters.approveTime++;
-					
-					//do approved now
-					if(!Settings.approvedOpps.contains(opportunity)){
-						Settings.approvedOpps.add(opportunity);
-					}
-					ViewUpdater updater = new ViewUpdater();
-					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
-				}
-				else if(e.getHref().equals("UndoApprove")){
-					RecordParameters.undoApproveTime++;
-					
-					//undo approved now
-					Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();
-					while(iterator.hasNext()){
-						RefactoringOpportunity opp = iterator.next();
-						if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
-								&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
-							iterator.remove();
-						}
-					}
-					ViewUpdater updater = new ViewUpdater();
-					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);					
-				}
+//				else if(e.getHref().equals("Approve")){				
+//					RecordParameters.approveTime++;
+//					
+//					//do approved now
+//					if(!Settings.approvedOpps.contains(opportunity)){
+//						Settings.approvedOpps.add(opportunity);
+//					}
+//					ViewUpdater updater = new ViewUpdater();
+//					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);
+//				}
+//				else if(e.getHref().equals("UndoApprove")){
+//					RecordParameters.undoApproveTime++;
+//					
+//					//undo approved now
+//					Iterator<RefactoringOpportunity> iterator = Settings.approvedOpps.iterator();
+//					while(iterator.hasNext()){
+//						RefactoringOpportunity opp = iterator.next();
+//						if(opp.getRefactoringDescription().equals(opportunity.getRefactoringDescription()) 
+//								&& opp.getRefactoringName().equals(opportunity.getRefactoringName())){
+//							iterator.remove();
+//						}
+//					}
+//					ViewUpdater updater = new ViewUpdater();
+//					updater.updateView(ReflexactoringPerspective.APPROVED_REFACTORING_OPP_VIEW, Settings.approvedOpps, true);					
+//				}
 				else if(e.getHref().equals("Exec")){	
 					if(element.isApply()){
 						MessageDialog.openError(null, "Applied Before", "You have already apply this suggestion.");

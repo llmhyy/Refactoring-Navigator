@@ -18,8 +18,8 @@ public class RecordParameters {
 	public static int checkHintTime = 0;
 	public static int rejectTime = 0;
 	public static int undoRejectTime = 0;
-	public static int approveTime = 0;
-	public static int undoApproveTime = 0;
+//	public static int approveTime = 0;
+//	public static int undoApproveTime = 0;
 	public static int applyTime = 0;
 	public static int undoApplyTime = 0;
 	public static int simulateTime = 0;
@@ -39,8 +39,8 @@ public class RecordParameters {
 		checkHintTime = 0;
 		rejectTime = 0;
 		undoRejectTime = 0;
-		approveTime = 0;
-		undoApproveTime = 0;
+//		approveTime = 0;
+//		undoApproveTime = 0;
 		applyTime = 0;
 		undoApplyTime = 0;
 		simulateTime = 0;

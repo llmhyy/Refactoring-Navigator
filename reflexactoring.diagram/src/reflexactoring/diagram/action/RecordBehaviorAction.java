@@ -29,8 +29,8 @@ public class RecordBehaviorAction implements IWorkbenchWindowActionDelegate {
 				"Check Hint Time: " + RecordParameters.checkHintTime + "\n" +
 				"Reject Time: " + RecordParameters.rejectTime + "\n" +
 				"Undo Reject Time: " + RecordParameters.undoRejectTime + "\n" +
-				"Approve Time: " + RecordParameters.approveTime + "\n" +
-				"Undo Approve Time: " + RecordParameters.undoApproveTime + "\n" +
+//				"Approve Time: " + RecordParameters.approveTime + "\n" +
+//				"Undo Approve Time: " + RecordParameters.undoApproveTime + "\n" +
 				"Apply Time: " + RecordParameters.applyTime + "\n" +
 				"Undo Apply Time: " + RecordParameters.undoApplyTime + "\n" +
 				"Simulate Time: " + RecordParameters.simulateTime + "\n" +
@@ -40,7 +40,7 @@ public class RecordBehaviorAction implements IWorkbenchWindowActionDelegate {
 //				"Fix All Member: " + RecordParameters.fixAllMember + "\n" +
 //				"Fix Part Member: " + RecordParameters.fixPartMember;
 		
-		content += "Manul Maps: \n";
+		content += "Manual Maps: \n";
 		for(String map : RecordParameters.manualMaps){
 			content += map + "\n";
 		}
