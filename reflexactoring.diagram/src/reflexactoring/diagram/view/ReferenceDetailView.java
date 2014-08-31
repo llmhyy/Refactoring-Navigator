@@ -31,6 +31,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import reflexactoring.diagram.action.popup.ReferenceDetailMap;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
 import reflexactoring.diagram.util.RecordParameters;
 import reflexactoring.diagram.view.annotation.ReferenceAnnotation;
 
@@ -237,12 +238,18 @@ public class ReferenceDetailView extends ViewPart {
 				return "The references:" /*+ map.getCallerUnit().getSimpleName()*/;
 			}
 			else if(element instanceof ASTNode){
-				ASTNode node = (ASTNode)element;
+				ASTNode node0 = (ASTNode)element;
 				
 				//ICompilationUnitWrapper callerUnitWrapper = this.map.getCallerUnit();
 				//CompilationUnit unit = callerUnitWrapper.getJavaUnit();
-				CompilationUnit unit = (CompilationUnit)node.getRoot();
+				CompilationUnit unit = (CompilationUnit)node0.getRoot();
 				ICompilationUnit iunit = (ICompilationUnit)unit.getJavaElement();
+				unit = RefactoringOppUtil.parse(iunit);
+				ASTNode node = RefactoringOppUtil.findCorrespondingNode(unit, node0);
+				if(node == null){
+					node = node0;
+					unit = (CompilationUnit) node0.getRoot();
+				}
 				
 				String source;
 				try {

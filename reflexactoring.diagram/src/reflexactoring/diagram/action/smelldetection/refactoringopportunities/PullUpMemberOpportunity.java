@@ -33,7 +33,6 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.ReturnStatement;
@@ -1168,7 +1167,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 									IType iType = javaProject.findType(influencedReference.getReferer().getUnitWrapper().getFullQualifiedName());
 									CompilationUnit cu = RefactoringOppUtil.parse(iType.getCompilationUnit());
 									
-									ASTNode node = findCorrespondingNode(cu, invocation);
+									ASTNode node = RefactoringOppUtil.findCorrespondingNode(cu, invocation);
 									while(!(node instanceof MethodInvocation)){
 										node = node.getParent();
 									}
@@ -1210,7 +1209,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 									IType iType = javaProject.findType(influencedReference.getReferer().getUnitWrapper().getFullQualifiedName());
 									CompilationUnit cu = RefactoringOppUtil.parse(iType.getCompilationUnit());
 									
-									name = (Name) findCorrespondingNode(cu, name);
+									name = (Name) RefactoringOppUtil.findCorrespondingNode(cu, name);
 									
 								} catch (CoreException e) {
 									e.printStackTrace();
@@ -1236,7 +1235,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 										IType iType = javaProject.findType(influencedReference.getReferer().getUnitWrapper().getFullQualifiedName());
 										CompilationUnit cu = RefactoringOppUtil.parse(iType.getCompilationUnit());
 										
-										ASTNode node = findCorrespondingNode(cu, invocation);
+										ASTNode node = RefactoringOppUtil.findCorrespondingNode(cu, invocation);
 										while(!(node instanceof MethodInvocation)){
 											node = node.getParent();
 										}
@@ -1275,7 +1274,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 										IType iType = javaProject.findType(influencedReference.getReferer().getUnitWrapper().getFullQualifiedName());
 										CompilationUnit cu = RefactoringOppUtil.parse(iType.getCompilationUnit());
 										
-										name = (Name) findCorrespondingNode(cu, name);
+										name = (Name) RefactoringOppUtil.findCorrespondingNode(cu, name);
 										
 									} catch (CoreException e) {
 										e.printStackTrace();
@@ -1328,7 +1327,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			
 			for(ASTNodeInfo nodeInfo : nodeInfoList){	
 				
-				ASTNode node = findCorrespondingNode(compilationUnit, nodeInfo.node);
+				ASTNode node = RefactoringOppUtil.findCorrespondingNode(compilationUnit, nodeInfo.node);
 				if(node == null) return false;
 
 				//for current pulled method's reference, if casted, remove current casting
@@ -1415,51 +1414,6 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			return false;
 		}
 		return true;
-	}
-	
-
-
-	/**
-	 * find the corresponding node of old nodeInfo in the new compilationUnit
-	 * 
-	 * @param compilationUnit
-	 * @param node
-	 * @return
-	 */
-	private static ASTNode findCorrespondingNode(CompilationUnit compilationUnit,
-			ASTNode node) {
-		CompilationUnit oldCU = (CompilationUnit) node.getRoot();
-		ASTNode oldDeclaringNode = node;
-		while(!(oldDeclaringNode instanceof MethodDeclaration || oldDeclaringNode instanceof FieldDeclaration) 
-				&& oldDeclaringNode != null){
-			oldDeclaringNode = oldDeclaringNode.getParent();
-		}
-		
-		if(oldDeclaringNode == null){
-			System.err.println("some ast node is declared in neither method or field ");
-			return null;
-		}
-		
-		int methodLineNum = oldCU.getLineNumber(oldDeclaringNode.getStartPosition());
-		int nodeLineNum = oldCU.getLineNumber(node.getStartPosition());
-		int lineDiff = nodeLineNum - methodLineNum;
-		int spaceDiff = node.getStartPosition() - oldCU.getPosition(nodeLineNum, 0);
-
-		ASTNode newDeclaringNode = null;
-		if(oldDeclaringNode instanceof MethodDeclaration){
-			newDeclaringNode = compilationUnit.findDeclaringNode(((MethodDeclaration)oldDeclaringNode).resolveBinding().getKey());
-		}
-		else if(oldDeclaringNode instanceof FieldDeclaration){
-			FieldDeclaration fd = (FieldDeclaration)oldDeclaringNode;
-			VariableDeclarationFragment fragment = (VariableDeclarationFragment) fd.fragments().get(0);
-			newDeclaringNode = compilationUnit.findDeclaringNode(fragment.resolveBinding().getKey());
-		}
-		
-		int lineNum = compilationUnit.getLineNumber(newDeclaringNode.getStartPosition()) + lineDiff;
-		int startPosition = compilationUnit.getPosition(lineNum, 0) + spaceDiff;
-		
-		ASTNode newNode = NodeFinder.perform(compilationUnit, startPosition, 0);
-		return newNode;
 	}
 	
 	/**
