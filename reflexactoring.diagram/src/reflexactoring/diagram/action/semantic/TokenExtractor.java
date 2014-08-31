@@ -46,7 +46,7 @@ public class TokenExtractor {
 				for (String token : tokens) {
 					if (token.length() > 1) {
 						token = token.toLowerCase();
-						token = WordNetDict.getInstance().getStem(token);
+						//token = WordNetDict.getInstance().getStem(token);
 						buffer.append(token + " ");
 					}
 				}

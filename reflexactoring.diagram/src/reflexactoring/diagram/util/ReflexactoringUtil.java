@@ -29,7 +29,6 @@ import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.diagram.action.UserInputMerger;
 import reflexactoring.diagram.action.recommend.suboptimal.Rules;
-import reflexactoring.diagram.action.semantic.WordNetDict;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.heuristics.ModuleCreationConfidence;
@@ -295,7 +294,7 @@ public class ReflexactoringUtil {
 		String[] descList = description.split(" ");
 		StringBuffer buffer = new StringBuffer();
 		for(String desc: descList){
-			buffer.append(WordNetDict.getInstance().getStem(desc)+" ");
+			buffer.append(desc+" ");
 		}
 		
 		String stemString = buffer.toString();
