@@ -1,23 +1,15 @@
 package reflexactoring.diagram.edit.parts;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Connection;
-import org.eclipse.draw2d.Ellipse;
-import org.eclipse.draw2d.PolygonDecoration;
+import org.eclipse.draw2d.PolylineDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
-import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.ConnectionNodeEditPart;
-import org.eclipse.gmf.runtime.diagram.ui.editparts.ITreeBranchEditPart;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
-import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.notation.View;
 import org.eclipse.swt.graphics.Color;
 
 import reflexactoring.ModuleCreation;
-import reflexactoring.ModuleExtend;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
-import reflexactoring.diagram.edit.parts.ModuleExtendEditPart.ModuleExtendFigure;
 import reflexactoring.diagram.edit.policies.ModuleCreationItemSemanticEditPolicy;
 
 /**
@@ -99,7 +91,7 @@ public class ModuleCreationEditPart extends ModuleLinkEditPart {
 		 * @not generated
 		 */
 		private RotatableDecoration createTargetDecoration() {
-			PolygonDecoration df = new PolygonDecoration();
+			/*PolygonDecoration df = new PolygonDecoration();
 			df.setFill(true);
 			df.setLineWidth(2);
 			df.setForegroundColor(DF_FORE);
@@ -113,6 +105,10 @@ public class ModuleCreationEditPart extends ModuleLinkEditPart {
 			pl.addPoint(getMapMode().DPtoLP(0), getMapMode().DPtoLP(0));
 			df.setTemplate(pl);
 			df.setScale(getMapMode().DPtoLP(5), getMapMode().DPtoLP(3));
+			return df;*/
+						
+			PolylineDecoration df = new PolylineDecoration();
+			df.setLineWidth(2);
 			return df;
 		}
 

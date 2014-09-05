@@ -1,11 +1,14 @@
 package reflexactoring.diagram.edit.parts;
 
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Connection;
-import org.eclipse.draw2d.PolylineDecoration;
+import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.RotatableDecoration;
+import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.gmf.runtime.diagram.ui.editpolicies.EditPolicyRoles;
 import org.eclipse.gmf.runtime.notation.View;
+import org.eclipse.swt.graphics.Color;
 
 import reflexactoring.ModuleDependency;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
@@ -89,9 +92,48 @@ public class ModuleDependencyEditPart extends ModuleLinkEditPart{
 		 * @not generated
 		 */
 		private RotatableDecoration createTargetDecoration() {
-			PolylineDecoration df = new PolylineDecoration();
+			/*PolylineDecoration df = new PolylineDecoration();
 			df.setLineWidth(2);
+			return df;*/
+			
+			PolygonDecoration df = new PolygonDecoration();
+			df.setFill(true);
+			df.setLineWidth(2);
+			df.setForegroundColor(new Color(null, 0, 0, 0));
+			df.setBackgroundColor(ColorConstants.white);
+			PointList pl = new PointList();
+			pl.addPoint(getMapMode().DPtoLP(-2), getMapMode().DPtoLP(2));
+			pl.addPoint(getMapMode().DPtoLP(-2), getMapMode().DPtoLP(-2));
+			pl.addPoint(getMapMode().DPtoLP(0), getMapMode().DPtoLP(0));
+			df.setTemplate(pl);
+			df.setScale(getMapMode().DPtoLP(9), getMapMode().DPtoLP(2));
+			df.setBackgroundColor(ColorConstants.black);
+			
 			return df;
+		}
+		
+		@Override
+		public void setOriginStyle() {
+			super.setOriginStyle();
+			this.getTargetDecoration().setBackgroundColor(THIS_FORE);
+		}
+
+		@Override
+		public void setConformanceStyle() {
+			super.setConformanceStyle();
+			this.getTargetDecoration().setBackgroundColor(COMFORMANCE);
+		}
+
+		@Override
+		public void setAbsenceStyle() {
+			super.setAbsenceStyle();
+			this.getTargetDecoration().setBackgroundColor(ABSENCE);
+		}
+
+		@Override
+		public void setDivergneceStyle() {
+			super.setDivergneceStyle();
+			this.getTargetDecoration().setBackgroundColor(DIVERGENCE);
 		}
 	}
 
