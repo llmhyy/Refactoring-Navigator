@@ -4,7 +4,9 @@
 package reflexactoring.diagram.action.smelldetection.bean;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import cern.jet.random.Beta;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -26,6 +28,41 @@ public class RefactoringSequence extends ArrayList<RefactoringSequenceElement>{
 		AdvanceEvaluatorAdapter evaluator = new AdvanceEvaluatorAdapter();
 		this.setOriginModel(originModel);
 		this.currentFitnessValue = evaluator.computeFitness(originModel, moduleList);
+	}
+	
+	public void trim(){
+		int index = findTheBestElement();
+		
+		Iterator<RefactoringSequenceElement> iterator = this.iterator();
+		int i=0;
+		while(iterator.hasNext()){
+			iterator.next();
+			if(i > index){
+				iterator.remove();
+			}
+			
+			i++;
+		}
+	}
+	
+	public int findTheBestElement(){
+		int bestIndex = 0;
+		Double bestFitness = null;
+		for(int i=0; i<this.size(); i++){
+			double fitness = this.get(i).getFitnessValue();
+			if(bestFitness == null){
+				bestIndex = i;
+				bestFitness = fitness;
+			}
+			else{
+				if(fitness >= bestFitness){
+					bestIndex = i;
+					bestFitness = fitness;
+				}
+			}
+		}
+		
+		return bestIndex;
 	}
 	
 	/**
@@ -79,5 +116,4 @@ public class RefactoringSequence extends ArrayList<RefactoringSequenceElement>{
 	public void setOriginModel(ProgramModel originModel) {
 		this.originModel = originModel;
 	}
-
 }

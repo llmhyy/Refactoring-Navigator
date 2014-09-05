@@ -114,6 +114,11 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		}
 		
 		MethodWrapper objMethod = (MethodWrapper)newModel.findMember(this.objectMethod);
+		
+		if(objMethod == null){
+			System.currentTimeMillis();			
+		}
+		
 		ICompilationUnitWrapper tarUnit = newModel.findUnit(this.targetUnit.getFullQualifiedName());
 		
 		/**
