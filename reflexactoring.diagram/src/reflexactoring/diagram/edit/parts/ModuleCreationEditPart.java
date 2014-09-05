@@ -109,6 +109,7 @@ public class ModuleCreationEditPart extends ModuleLinkEditPart {
 						
 			PolylineDecoration df = new PolylineDecoration();
 			df.setLineWidth(2);
+			df.setScale(10, 5);
 			return df;
 		}
 
