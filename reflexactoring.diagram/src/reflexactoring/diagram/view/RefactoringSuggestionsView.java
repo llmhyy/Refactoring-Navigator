@@ -393,8 +393,8 @@ public class RefactoringSuggestionsView extends ViewPart {
 		buffer.append("<li>");
 		buffer.append("<b>[</b>");
 		buffer.append(" <a href=\"Simulate\">Preview</a> ");	
-		buffer.append("<a href=\"UndoSimulate\">Undo</a> ");
-		buffer.append("<b>]</b> You can also <a href=\"Hint\">Check Hint</a>");
+		//buffer.append("<a href=\"UndoSimulate\">Undo</a> ");
+		buffer.append("<b>]</b> You can also <a href=\"Hint\">Check Code</a>");
 		buffer.append("</li>");	
 		buffer.append("<li>");
 		buffer.append("<b>[</b> <a href=\"Forbid\">Reject</a> ");
@@ -407,7 +407,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 //		buffer.append("<b>]</b>");
 //		buffer.append("</li>");
 		buffer.append("<li>");
-		buffer.append("<b>[</b> <a href=\"Exec\">Apply</a> ");
+		buffer.append("<b>[</b> <a href=\"Exec\">Accept</a> ");
 		buffer.append("<a href=\"Undo\">Undo</a> ");
 		buffer.append("<b>]</b>");
 		buffer.append("</li>");
