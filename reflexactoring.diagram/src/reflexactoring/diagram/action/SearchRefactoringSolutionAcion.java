@@ -57,39 +57,31 @@ public class SearchRefactoringSolutionAcion implements
 				for(int i=0; i<Double.valueOf(ReflexactoringUtil.getClimbIterationNumber()) && oppList.size() != 0; i++){				
 					
 					monitor.worked(1);
+					
 					if(i==2){
 						System.currentTimeMillis();
 					}
 					
-					while(true){
-						long t1 = System.currentTimeMillis();
-						RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
-						long t2 = System.currentTimeMillis();
-						System.out.println(t2-t1);
-						
-						//PenaltyAndRewardCalulator calculator = new PenaltyAndRewardCalulator();
-						if(sequence.isAnImprovement(element) /*||
-								(calculator.isConformToUserFeedback(element.getOpportunity()) &&
-										!sequence.contains(element))*/){
-							element.setPosition(i);
-							sequence.addElement(element);
-							model = element.getConsequenceModel();
-							oppList = smellDetector.detect(model);
-						}
-						else{
-							element.setPosition(i);
-							sequence.addElement(element);
-							model = element.getConsequenceModel();
-							oppList = smellDetector.detect(model);
-							
-							System.out.println("break in iteration " + i);
-							break;
-						}
-					}
+					long t1 = System.currentTimeMillis();
+					RefactoringSequenceElement element = findBestOpportunity(oppList, model, moduleList);
+					long t2 = System.currentTimeMillis();
+					System.out.println(t2-t1);
 					
+					PenaltyAndRewardCalulator calculator = new PenaltyAndRewardCalulator();
+					if(sequence.isAnImprovement(element) ||
+							(calculator.isConformToUserFeedback(element.getOpportunity()) &&
+							 !sequence.contains(element))
+							){
+						element.setPosition(i);
+						sequence.addElement(element);
+						model = element.getConsequenceModel();
+						oppList = smellDetector.detect(model);
+					}
+					else{
+						System.out.println("break in iteration " + i);
+						break;
+					}
 				}
-				
-				sequence.trim();
 				
 				/**
 				 * prepare prerequisite
