@@ -58,7 +58,7 @@ public class SearchRefactoringSolutionAcion implements
 					
 					monitor.worked(1);
 					
-					if(i==2){
+					if(i==4){
 						System.currentTimeMillis();
 					}
 					

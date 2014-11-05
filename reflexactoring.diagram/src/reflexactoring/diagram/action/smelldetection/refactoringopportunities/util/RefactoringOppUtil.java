@@ -63,7 +63,7 @@ public class RefactoringOppUtil {
 					callerMember.addProgramReferee(newRef);
 					fieldWrapper.addProgramReferer(newRef);
 					newModel.getReferenceList().add(newRef);
-					
+					//System.currentTimeMillis();
 					/**
 					 * the caller is inside the source unit
 					 */
