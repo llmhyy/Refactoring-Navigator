@@ -482,7 +482,12 @@ public class RefactoringSuggestionsView extends ViewPart {
 					
 					ReferenceDetailMap map = new ReferenceDetailMap(null, null, element.getOpportunity().getHints());
 					ViewUpdater updater = new ViewUpdater();
-					updater.updateView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW, map, true);
+					try{
+						updater.updateView(ReflexactoringPerspective.REFERENCE_DETAIL_VIEW, map, true);						
+					}
+					catch(Exception e0){
+						e0.printStackTrace();
+					}
 					
 					ITextEditor sourceEditor;
 					try {

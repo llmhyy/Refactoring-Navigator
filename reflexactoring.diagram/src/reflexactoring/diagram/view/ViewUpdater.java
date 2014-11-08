@@ -10,7 +10,6 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.popup.ReferenceDetailMap;
 import reflexactoring.diagram.action.recommend.Suggestion;
-import reflexactoring.diagram.action.recommend.SuggestionMove;
 import reflexactoring.diagram.bean.heuristics.ModuleCreationConfidenceTable;
 import reflexactoring.diagram.bean.heuristics.ModuleDependencyConfidenceTable;
 import reflexactoring.diagram.bean.heuristics.ModuleExtendConfidenceTable;
@@ -78,7 +77,7 @@ public class ViewUpdater {
 					getActivePage().findView(viewId);
 			view.getViewer().setLabelProvider(view.new DetailLabelProvider((ReferenceDetailMap) inputData));
 			view.getViewer().setInput(inputData);
-			view.getViewer().refresh();
+			view.getViewer().refresh();		
 		}
 		else if(viewId.equals(ReflexactoringPerspective.REFACTORING_SUGGESTION)){
 			RefactoringSuggestionView view = (RefactoringSuggestionView)PlatformUI.getWorkbench().getActiveWorkbenchWindow().

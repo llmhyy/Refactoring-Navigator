@@ -266,7 +266,7 @@ public class ReferenceDetailView extends ViewPart {
 					}
 					
 					return "In line " + lineNumber + " of " + iunit.getElementName() + ": " + content;
-				} catch (JavaModelException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				
