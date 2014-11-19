@@ -224,15 +224,17 @@ public class ClassStructureBuilder {
 			
 			IBinding binding = name.resolveBinding();
 			ASTNode node = callerMember.getUnitWrapper().getJavaUnit().findDeclaringNode(binding);
-			VariableDeclaration vd = (VariableDeclaration)node;
-			
-			ITypeBinding typeBinding = name.resolveTypeBinding();
-			if(typeBinding != null){
-				String fullQualifiedName = typeBinding.getQualifiedName();
-				ICompilationUnitWrapper declaringWrapper = Settings.scope.findUnit(fullQualifiedName);
-				if(declaringWrapper != null){
-					declaration = new VariableDeclarationWrapper(declaringWrapper, name.getFullyQualifiedName(), vd);
-				}
+			if(node instanceof VariableDeclaration){
+				VariableDeclaration vd = (VariableDeclaration)node;
+				
+				ITypeBinding typeBinding = name.resolveTypeBinding();
+				if(typeBinding != null){
+					String fullQualifiedName = typeBinding.getQualifiedName();
+					ICompilationUnitWrapper declaringWrapper = Settings.scope.findUnit(fullQualifiedName);
+					if(declaringWrapper != null){
+						declaration = new VariableDeclarationWrapper(declaringWrapper, name.getFullyQualifiedName(), vd);
+					}
+				}				
 			}
 			
 			return declaration;
@@ -272,15 +274,21 @@ public class ClassStructureBuilder {
 								fragment = (VariableDeclarationFragment) cu.findDeclaringNode(name.resolveBinding().getKey());
 							}
 						}
+						else{
+							//may be throw new exception
+						}
 						
-						ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(
-								creation.getType().resolveBinding().getQualifiedName());
+						if(fragment != null){
+							ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit(
+									creation.getType().resolveBinding().getQualifiedName());
+							
+							VariableDeclarationWrapper declaration = 
+									new VariableDeclarationWrapper(unitWrapper, fragment.getName().getIdentifier(), fragment);
+							
+							//decList.put(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT);
+							decList.add(new ReferenceInflucencedDetail(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
+						}
 						
-						VariableDeclarationWrapper declaration = 
-								new VariableDeclarationWrapper(unitWrapper, fragment.getName().getIdentifier(), fragment);
-						
-						//decList.put(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT);
-						decList.add(new ReferenceInflucencedDetail(declaration, DeclarationInfluencingDetail.ACCESS_OBJECT));
 						/**
 						 * check the parameter usage, e.g., where the "p" in "a.m(p)" is declared.
 						 */
