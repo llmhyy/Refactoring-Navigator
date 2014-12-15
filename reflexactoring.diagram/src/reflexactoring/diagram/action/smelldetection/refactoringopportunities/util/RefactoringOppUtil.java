@@ -36,7 +36,7 @@ public class RefactoringOppUtil {
 	
 	/**
 	 * Check all conditions including client unit, source unit and target unit.
-	 * variableDeclaration is the variable declaration influencing the moved method, for example,
+	 * {@code variableDeclaration} is the variable declaration influencing the moved method, for example,
 	 * 
 	 * T t;
 	 * m_moved([T t]){

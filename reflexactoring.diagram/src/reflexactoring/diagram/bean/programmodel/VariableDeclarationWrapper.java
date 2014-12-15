@@ -20,9 +20,12 @@ public class VariableDeclarationWrapper {
 	private boolean isParameter;
 	//private FieldWrapper correspondingField;
 	
+	//the program reference influenced by this variable declaration
 	private ArrayList<DeclarationInfluencingDetail> influencedReferenceList = new ArrayList<>();
 	
 	private VariableDeclaration originalASTNode;
+	
+	private FieldWrapper tempFieldWrapper;
 
 	/**
 	 * @param unitWrapper
@@ -36,8 +39,8 @@ public class VariableDeclarationWrapper {
 		this.variableName = variableName;
 		this.originalASTNode = astNode;
 		this.isField = astNode.resolveBinding().isField();
-		this.setParameter(astNode.resolveBinding().isParameter());
-		this.setKey(astNode.resolveBinding().getKey());
+		this.isParameter = astNode.resolveBinding().isParameter();
+		this.key = astNode.resolveBinding().getKey();
 		
 		/*if(isField){
 			String qualifiedName = astNode.resolveBinding().getDeclaringClass().getQualifiedName();
@@ -56,8 +59,8 @@ public class VariableDeclarationWrapper {
 		this.originalASTNode = astNode;
 		this.isField = isField;
 		//this.correspondingField = correspodingField;
-		this.setParameter(isParameter);
-		this.setKey(key);
+		this.isParameter = isParameter;
+		this.key = key;
 	}
 	
 	public void removeReference(ProgramReference reference, int type){
@@ -113,24 +116,10 @@ public class VariableDeclarationWrapper {
 	}
 
 	/**
-	 * @param variableName the variableName to set
-	 */
-	public void setVariableName(String variableName) {
-		this.variableName = variableName;
-	}
-
-	/**
 	 * @return the astNode
 	 */
 	public VariableDeclaration getAstNode() {
 		return originalASTNode;
-	}
-
-	/**
-	 * @param astNode the astNode to set
-	 */
-	public void setAstNode(VariableDeclaration astNode) {
-		this.originalASTNode = astNode;
 	}
 
 	/**
@@ -141,24 +130,10 @@ public class VariableDeclarationWrapper {
 	}
 
 	/**
-	 * @param key the key to set
-	 */
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	/**
 	 * @return the influencedReferenceList
 	 */
 	public ArrayList<DeclarationInfluencingDetail> getInfluencedReferenceList() {
 		return influencedReferenceList;
-	}
-
-	/**
-	 * @param influencedReferenceList the influencedReferenceList to set
-	 */
-	public void setInfluencedReferenceList(ArrayList<DeclarationInfluencingDetail> influencedReferenceList) {
-		this.influencedReferenceList = influencedReferenceList;
 	}
 
 	/**
@@ -169,24 +144,10 @@ public class VariableDeclarationWrapper {
 	}
 
 	/**
-	 * @param isField the isField to set
-	 */
-	public void setField(boolean isField) {
-		this.isField = isField;
-	}
-
-	/**
 	 * @return the isParameter
 	 */
 	public boolean isParameter() {
 		return isParameter;
-	}
-
-	/**
-	 * @param isParameter the isParameter to set
-	 */
-	public void setParameter(boolean isParameter) {
-		this.isParameter = isParameter;
 	}
 
 	/**
@@ -210,6 +171,20 @@ public class VariableDeclarationWrapper {
 		}
 		
 		return null;
+	}
+
+	/**
+	 * @return the tempFieldWrapper
+	 */
+	public FieldWrapper getTempFieldWrapper() {
+		return tempFieldWrapper;
+	}
+
+	/**
+	 * @param tempFieldWrapper the tempFieldWrapper to set
+	 */
+	public void setTempFieldWrapper(FieldWrapper tempFieldWrapper) {
+		this.tempFieldWrapper = tempFieldWrapper;
 	}
 	
 	

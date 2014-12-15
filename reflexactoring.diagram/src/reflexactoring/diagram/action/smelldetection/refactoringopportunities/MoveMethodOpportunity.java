@@ -147,8 +147,9 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		modifyTheReferenceOfSourceUnit(originalUnit, objMethod, referenceList, newModel);
 		
 		VariableDeclarationWrapper variableDeclaration = modifyTheReferenceOfTargetUnit(newModel, objMethod, tarUnit);
+		FieldWrapper corrField = (variableDeclaration.isField()) ? variableDeclaration.getTempFieldWrapper() : null;
 		
-		RefactoringOppUtil.changeTheReferenceInClientCode(newModel, objMethod, tarUnit, originalUnit, variableDeclaration, null);
+		RefactoringOppUtil.changeTheReferenceInClientCode(newModel, objMethod, tarUnit, originalUnit, variableDeclaration, corrField);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
@@ -161,7 +162,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 	
 	
 	/**
-	 * If the moved method has a new parameter such as (S s), S is the source unit
+	 * Let S be the source unit, and the original code is as follows:
 	 * m(){
 	 *   m1();
 	 * }
@@ -221,8 +222,13 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			//System.currentTimeMillis();
 		}
 		
+		if(variableDeclaration.isField()){
+			FieldWrapper field = variableDeclaration.findCorrespondingFieldWrapper();
+			variableDeclaration.setTempFieldWrapper(field);
+		}
+		
 		/**
-		 * find all the reference influenced by t.
+		 * find all the program reference influenced by t.
 		 */
 		ArrayList<ProgramReference> refereeList = 
 				findInflucencedReferenceInObjectMethodWithAccessObjectType(objMethod, variableDeclaration);

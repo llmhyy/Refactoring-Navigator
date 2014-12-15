@@ -40,6 +40,7 @@ public class ProgramReference {
 	private LowLevelGraphNode referee;
 	private int referenceType;
 	
+	//the variable declaration influencing this program reference
 	private ArrayList<ReferenceInflucencedDetail> variableDeclarationList = new ArrayList<>();
 	
 	public ProgramReference(UnitMemberWrapper referer, LowLevelGraphNode referee, ASTNode originalASTNode, 
