@@ -194,12 +194,13 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 
 		buildVariableDeclarationRelations(newModel, extractMembers, newTargetUnit, newSourceUnit, newField);
 		
-		System.currentTimeMillis();
-
-		calculateBestMappingModule(newModel, newTargetUnit);
-		this.mappingModule = newTargetUnit.getMappingModule();
-		
+		//System.currentTimeMillis();
 		newModel.updateUnitCallingRelationByMemberRelations();
+
+		ModuleWrapper bestModule = calculateBestMappingModule(newModel, newTargetUnit);
+		newTargetUnit.setMappingModule(bestModule);
+		this.mappingModule = bestModule;
+		
 		
 		/**
 		 * remove some exclusive opportunities
