@@ -114,7 +114,8 @@ public abstract class RefactoringOpportunity {
 			newUnit.setMappingModule(m);
 			
 			//long t3 = System.currentTimeMillis();
-			double f = new AdvanceEvaluatorAdapter().computeFitness(model, moduleList);
+			AdvanceEvaluatorAdapter adapter = new AdvanceEvaluatorAdapter();
+			double f = adapter.computeFitness(model, moduleList);
 			//long t4 = System.currentTimeMillis();
 			//System.out.println("Calculating fitness: " + (t4-t3));
 			

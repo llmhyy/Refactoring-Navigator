@@ -147,10 +147,10 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		modifyTheReferenceOfSourceUnit(originalUnit, objMethod, referenceList, newModel);
 		
 		VariableDeclarationWrapper variableDeclaration = modifyTheReferenceOfTargetUnit(newModel, objMethod, tarUnit);
-		FieldWrapper corrField = (variableDeclaration.isField()) ? variableDeclaration.getTempFieldWrapper() : null;
-		
-		RefactoringOppUtil.changeTheReferenceInClientCode(newModel, objMethod, tarUnit, originalUnit, variableDeclaration, corrField);
-		
+		if(variableDeclaration != null){
+			FieldWrapper corrField = (variableDeclaration.isField()) ? variableDeclaration.getTempFieldWrapper() : null;
+			RefactoringOppUtil.changeTheReferenceInClientCode(newModel, objMethod, tarUnit, originalUnit, variableDeclaration, corrField);			
+		}
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
 		this.objectMethod = objMethod;
@@ -218,27 +218,24 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		 */
 		VariableDeclarationWrapper variableDeclaration = findRootCauseVariableDeclarationForMovingThisMethod(objMethod, tarUnit);
 		
-		if(variableDeclaration == null){
+		if(variableDeclaration != null){
 			//System.currentTimeMillis();
+			if(variableDeclaration.isField()){
+				FieldWrapper field = variableDeclaration.findCorrespondingFieldWrapper();
+				variableDeclaration.setTempFieldWrapper(field);
+			}
+			
+			/**
+			 * find all the program reference influenced by t.
+			 */
+			ArrayList<ProgramReference> refereeList = 
+					findInflucencedReferenceInObjectMethodWithAccessObjectType(objMethod, variableDeclaration);
+			
+			removeTheInfluenceRelationBetweenReferenceAndDelcaration(variableDeclaration, refereeList);
+			if(variableDeclaration.isField()){
+				removeCorrespondingFieldAccessProgramReference(newModel, objMethod, variableDeclaration);
+			}
 		}
-		
-		if(variableDeclaration.isField()){
-			FieldWrapper field = variableDeclaration.findCorrespondingFieldWrapper();
-			variableDeclaration.setTempFieldWrapper(field);
-		}
-		
-		/**
-		 * find all the program reference influenced by t.
-		 */
-		ArrayList<ProgramReference> refereeList = 
-				findInflucencedReferenceInObjectMethodWithAccessObjectType(objMethod, variableDeclaration);
-		
-		removeTheInfluenceRelationBetweenReferenceAndDelcaration(variableDeclaration, refereeList);
-		if(variableDeclaration.isField()){
-			removeCorrespondingFieldAccessProgramReference(newModel, objMethod, variableDeclaration);
-		}
-		
-		//System.currentTimeMillis();
 		
 		return variableDeclaration;
 	}
