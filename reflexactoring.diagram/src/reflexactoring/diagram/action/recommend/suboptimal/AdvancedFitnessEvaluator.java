@@ -35,12 +35,13 @@ public class AdvancedFitnessEvaluator extends DefaultFitnessEvaluator {
 		double structureDependencyViolation = computeStructureDependencyViolation(gene);
 		double structureInheritanceViolation = computeStructureInheritanceViolation(gene);
 		double structureCreationViolation = computeStructureCreationViolation(gene);
+		double structureEmptyModuleViolation = computeEmptyModuleViolation(gene);
 		
 		System.currentTimeMillis();
 		
 		double lexicalSimilarity = 0/*computeLexicalSimilarity(gene)*/;
 		return Double.valueOf(ReflexactoringUtil.getAlpha())*lexicalSimilarity
-				- structureDependencyViolation - structureInheritanceViolation - structureCreationViolation;
+				- structureDependencyViolation - structureInheritanceViolation - structureCreationViolation - structureEmptyModuleViolation;
 	}
 
 }

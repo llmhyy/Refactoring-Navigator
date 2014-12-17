@@ -55,6 +55,29 @@ public abstract class DefaultFitnessEvaluator implements FitnessEvaluator {
 
 	public abstract double computeFitness(Genotype gene);
 	
+	protected double computeEmptyModuleViolation(Genotype gene){
+		int moduleNum = highLevelNodeCreationMatrix.length;
+		int emptyModuleNum = 0;
+		
+		for(int i=0; i<moduleNum; i++){
+			int count = 0;
+			for(int j=0; j<gene.getLength(); j++){
+				if(gene.getDNA()[j] == i){
+					count++;
+				}
+			}
+			
+			if(count == 0){
+				Violation violation = new Violation(i, i, Violation.EMPTY_MODULE);
+				violationList.add(violation);
+				
+				emptyModuleNum++;
+			}
+		}
+		
+		return emptyModuleNum*Settings.emptyModulePenalty;
+	}
+	
 	protected double computeStructureDependencyViolation(Genotype gene){
 		double result = 0;
 		

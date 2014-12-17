@@ -6,9 +6,6 @@ package reflexactoring.diagram.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.jdt.core.ICompilationUnit;
-
-import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractClassOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.DependencyWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
@@ -16,7 +13,6 @@ import reflexactoring.diagram.bean.efficiency.UnitPair;
 import reflexactoring.diagram.bean.heuristics.HeuristicModuleMemberStopMapList;
 import reflexactoring.diagram.bean.heuristics.HeuristicModulePartFixMemberMapList;
 import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitFixMemberMapList;
-import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMap;
 import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitMapList;
 import reflexactoring.diagram.bean.heuristics.HeuristicModuleUnitStopMapList;
 import reflexactoring.diagram.bean.heuristics.ModuleCreationConfidenceTable;
@@ -139,6 +135,8 @@ public class Settings {
 	public static int climbIterationNum = 20;
 	public static int populationSize = 100;
 	public static int suggestionNum = 3;
+	
+	public static double emptyModulePenalty = 10;
 	
 	//=============================================================
 	/**

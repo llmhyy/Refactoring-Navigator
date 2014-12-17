@@ -194,7 +194,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 
 		buildVariableDeclarationRelations(newModel, extractMembers, newTargetUnit, newSourceUnit, newField);
 		
-		//System.currentTimeMillis();
+		System.currentTimeMillis();
 		newModel.updateUnitCallingRelationByMemberRelations();
 
 		ModuleWrapper bestModule = calculateBestMappingModule(newModel, newTargetUnit);
@@ -656,7 +656,57 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		this.mappingModule = mappingModule;
 	}
 
-
+	private ExtractClassOpportunity constructHeuristicExtractClassOpp(int id){
+		ArrayList<UnitMemberWrapper> toBeExtractedMemberList = new ArrayList<>();
+		ICompilationUnitWrapper unitWrapper = Settings.scope.findUnit("gui.BusMonitor");
+		if(unitWrapper == null){
+			return null;
+		}
+		
+		ArrayList<String> params0 = new ArrayList<>();
+		params0.add("int");
+		params0.add("int");
+		params0.add("int");
+		params0.add("int");
+		MethodWrapper method0 = Settings.scope.findMethod("gui.BusMonitor", "updateViews", params0);
+		toBeExtractedMemberList.add(method0);;
+		
+		ArrayList<String> params1 = new ArrayList<>();
+		params1.add("MapView");
+		params1.add("int");
+		params1.add("int");
+		params1.add("int");
+		params1.add("int");
+		MethodWrapper method1 = Settings.scope.findMethod("gui.BusMonitor", "updateMapView", params1);
+		toBeExtractedMemberList.add(method1);
+		
+		ArrayList<String> params2 = new ArrayList<>();
+		params2.add("TableView");
+		params2.add("int");
+		params2.add("int");
+		params2.add("int");
+		params2.add("int");
+		MethodWrapper method2 = Settings.scope.findMethod("gui.BusMonitor", "updateTableView", params2);
+		toBeExtractedMemberList.add(method2);
+		
+		ArrayList<String> params3 = new ArrayList<>();
+		params3.add("CurveView");
+		params3.add("int");
+		params3.add("int");
+		params3.add("int");
+		params3.add("int");
+		MethodWrapper method3 = Settings.scope.findMethod("gui.BusMonitor", "updateCurveView", params3);
+		toBeExtractedMemberList.add(method3);
+		
+		if(toBeExtractedMemberList.contains(null)){
+			return null;
+		}
+		
+		ExtractClassOpportunity opp = new ExtractClassOpportunity(toBeExtractedMemberList, null, moduleList, unitWrapper);
+		opp.setId(id);
+		
+		return opp;
+	}
 
 	public class Precondition extends RefactoringPrecondition{
 
@@ -713,6 +763,11 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 					oppList.add(opp);
 				}
 				id++;
+			}
+			
+			ExtractClassOpportunity heuristicOpp = constructHeuristicExtractClassOpp(id);
+			if(heuristicOpp !=  null){
+				oppList.add(heuristicOpp);
 			}
 			
 			return oppList;

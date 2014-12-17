@@ -34,6 +34,10 @@ public class Violation {
 	 * a creation exist in low level model but not in high level model.
 	 */
 	public final static int CREATION_DIVERGENCE = 6;
+	/**
+	 * 
+	 */
+	public final static int EMPTY_MODULE = 7;
 	
 	private int sourceModuleIndex;
 	private int destModuleIndex;
@@ -51,7 +55,31 @@ public class Violation {
 	}
 	
 	public String toString(){
-		return sourceModuleIndex + "->" + destModuleIndex + "(" + type + ")";
+		String typeName  = "";
+		switch(type){
+		case DEPENDENCY_ABSENCE: 
+			typeName = "dependency absence";
+			break;
+		case DEPENDENCY_DIVERGENCE: 
+			typeName = "dependency divergence";
+			break;
+		case INHERITANCE_ABSENCE: 
+			typeName = "inheritance absence";
+			break;
+		case INHERITANCE_DIVERGENCE: 
+			typeName = "inheritance divergence";
+			break;
+		case CREATION_ABSENCE: 
+			typeName = "creation absence";
+			break;
+		case CREATION_DIVERGENCE: 
+			typeName = "creation divergence";
+			break;
+		case EMPTY_MODULE: 
+			typeName = "empty module";
+			break;
+		}
+		return sourceModuleIndex + "->" + destModuleIndex + "(" + typeName + ")";
 	}
 	
 	/**
