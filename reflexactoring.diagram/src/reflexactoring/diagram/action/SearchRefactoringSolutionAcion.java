@@ -83,6 +83,11 @@ public class SearchRefactoringSolutionAcion implements
 					}
 				}
 				
+				if(sequence.size() > 0){
+					RefactoringSequenceElement element = sequence.get(sequence.size()-1); 
+					System.out.println("The final fitness value is: " + element.getFitnessValue());					
+				}
+				
 				/**
 				 * prepare prerequisite
 				 */
