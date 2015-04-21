@@ -62,9 +62,9 @@ public class AdvanceEvaluatorAdapter {
 	private int[] constructDNA(ProgramModel model,
 			ArrayList<ModuleWrapper> moduleList) {
 		
-		int[] DNA = new int[model.getScopeCompilationUnitList().size()];
+		int[] DNA = new int[model.getOutmostTypesInScope().size()];
 		for(int i=0; i<DNA.length; i++){
-			ModuleWrapper module = model.getScopeCompilationUnitList().get(i).getMappingModule();
+			ModuleWrapper module = model.getOutmostTypesInScope().get(i).getMappingModule();
 			int index = ReflexactoringUtil.getModuleIndex(moduleList, module);
 			DNA[i] = index;
 		}

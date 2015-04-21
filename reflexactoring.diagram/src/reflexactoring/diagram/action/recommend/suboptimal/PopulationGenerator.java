@@ -146,7 +146,7 @@ public class PopulationGenerator {
 						
 						String lowLevelModelName;
 						if(isForTypePopulation){
-							lowLevelModelName = Settings.scope.getScopeCompilationUnitList().get(j).getName();
+							lowLevelModelName = Settings.scope.getOutmostTypesInScope().get(j).getName();
 						}
 						else{
 							lowLevelModelName = Settings.scope.getScopeMemberList().get(j).getName();

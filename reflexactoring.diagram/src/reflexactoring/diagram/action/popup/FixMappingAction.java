@@ -23,7 +23,7 @@ public class FixMappingAction extends AbstractActionDelegate implements IObjectA
 			RecordParameters.manualMaps.add("Unit: " + map.getUnit() + " , Module: " + map.getModule());
 		}
 		
-		for(ICompilationUnitWrapper unit : Settings.scope.getScopeCompilationUnitList()){
+		for(ICompilationUnitWrapper unit : Settings.scope.getOutmostTypesInScope()){
 			ModuleWrapper module = unit.getMappingModule();
 			
 			HeuristicModuleUnitMap map = new HeuristicModuleUnitMap(module, unit);

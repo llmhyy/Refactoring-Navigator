@@ -16,7 +16,7 @@ public class MoveMethodOperatorTest {
 	public ProgramModel test(ProgramModel model){
 		
 		MethodWrapper objectMethod = (MethodWrapper)model.getScopeMemberList().get(26);
-		ICompilationUnitWrapper targetUnit = model.getScopeCompilationUnitList().get(0);
+		ICompilationUnitWrapper targetUnit = model.getOutmostTypesInScope().get(0);
 		
 		MoveMethodOpportunity opp = new MoveMethodOpportunity(objectMethod, targetUnit);
 	

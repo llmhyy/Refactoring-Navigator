@@ -98,7 +98,7 @@ public class MappingDialog extends TitleAreaDialog {
 		
 		unitCombo = new Combo(group, SWT.BORDER | SWT.READ_ONLY);
 		unitCombo.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
-		for(ICompilationUnitWrapper type: Settings.scope.getScopeCompilationUnitList()){
+		for(ICompilationUnitWrapper type: Settings.scope.getOutmostTypesInScope()){
 			//ICompilationUnitWrapper type = new ICompilationUnitWrapper(unit);
 			
 			if(Settings.heuristicModuleUnitFixList.findHeuristicMapping(type) == null){

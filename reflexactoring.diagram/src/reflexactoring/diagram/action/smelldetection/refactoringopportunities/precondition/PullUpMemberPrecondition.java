@@ -63,7 +63,7 @@ public class PullUpMemberPrecondition extends RefactoringPrecondition{
 	protected ArrayList<ArrayList<UnitMemberWrapper>> detectCounterMembers(ProgramModel model) {
 		ArrayList<ArrayList<UnitMemberWrapper>> refactoringPlaceList = new ArrayList<>();
 		ArrayList<UnitMemberWrapper> markedMemberList = new ArrayList<>();
-		for(ICompilationUnitWrapper unit: model.getScopeCompilationUnitList()){
+		for(ICompilationUnitWrapper unit: model.getOutmostTypesInScope()){
 			if(unit.isInterface())continue;
 			
 			ArrayList<ICompilationUnitWrapper> otherUnits = model.findOtherUnits(unit);

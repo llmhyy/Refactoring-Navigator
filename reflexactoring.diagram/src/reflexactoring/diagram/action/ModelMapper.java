@@ -34,7 +34,7 @@ public class ModelMapper {
 		//clearMappingRelation(moduleList, compilationUnitList);
 		
 		ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(overallSimilarityTable, 
-				moduleList, Settings.scope.getScopeCompilationUnitList());
+				moduleList, Settings.scope.getOutmostTypesInScope());
 		Settings.similarityTable = table;
 		
 		for(ICompilationUnitWrapper unit: compilationUnitList){

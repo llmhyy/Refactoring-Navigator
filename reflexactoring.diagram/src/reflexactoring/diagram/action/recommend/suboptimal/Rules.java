@@ -82,8 +82,8 @@ public class Rules {
 		/**
 		 * for frozen modules.
 		 */
-		for(int i=0; i<Settings.scope.getScopeCompilationUnitList().size(); i++){
-			ICompilationUnitWrapper unit = Settings.scope.getScopeCompilationUnitList().get(i);
+		for(int i=0; i<Settings.scope.getOutmostTypesInScope().size(); i++){
+			ICompilationUnitWrapper unit = Settings.scope.getOutmostTypesInScope().get(i);
 			int unitIndex = Settings.scope.getICompilationUnitIndex(unit);
 			
 			ModuleWrapper module = unit.getMappingModule();

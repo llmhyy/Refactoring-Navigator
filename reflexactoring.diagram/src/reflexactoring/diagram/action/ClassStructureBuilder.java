@@ -403,9 +403,9 @@ public class ClassStructureBuilder {
 			IProgressMonitor monitor, int scale) {
 		Settings.scope.setScopeCompilationUnitList(compilationUnitList);
 
-		buildExtendingAndImplementingRelations(Settings.scope.getScopeCompilationUnitList());
+		buildExtendingAndImplementingRelations(Settings.scope.getAllTheTypesInScope());
 
-		ArrayList<UnitMemberWrapper> memberList = buildUnitMemberContainmentRelation(Settings.scope.getScopeCompilationUnitList());
+		ArrayList<UnitMemberWrapper> memberList = buildUnitMemberContainmentRelation(Settings.scope.getAllTheTypesInScope());
 
 		/**
 		 * build caller/callee relation for member list

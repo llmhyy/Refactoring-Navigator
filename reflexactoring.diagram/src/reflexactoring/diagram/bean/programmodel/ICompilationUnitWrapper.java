@@ -63,6 +63,11 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	private ArrayList<ICompilationUnitWrapper> ancestors;
 	private ArrayList<ICompilationUnitWrapper> descendants;
 	
+	private TypeDeclaration typeDeclaration;
+	
+	private ArrayList<ICompilationUnitWrapper> innerClassList = new ArrayList<>();
+	private ICompilationUnitWrapper outerClass;
+	
 	/**
 	 * stands for the unit members referring this unit member
 	 */
@@ -117,6 +122,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		 * when searching/simulating for a proper refactoring solution)
 		 */
 		TypeDeclaration typeDeclar = (TypeDeclaration) this.javaUnit.types().get(0);
+		setTypeDeclaration(typeDeclar);
 		this.isInterface = typeDeclar.isInterface();
 		
 		int modiferFlag = typeDeclar.getModifiers();
@@ -142,6 +148,10 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		
 		this.setDescription(content);
 		this.extractTermFrequency(content);
+	}
+	
+	public boolean isInnerClass(){
+		return this.outerClass != null;
 	}
 	
 	public boolean isInterface(){
@@ -735,5 +745,47 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 */
 	public void setAbstract(boolean isAbstract) {
 		this.isAbstract = isAbstract;
+	}
+
+	/**
+	 * @return the innerClassList
+	 */
+	public ArrayList<ICompilationUnitWrapper> getInnerClassList() {
+		return innerClassList;
+	}
+
+	/**
+	 * @param innerClassList the innerClassList to set
+	 */
+	public void setInnerClassList(ArrayList<ICompilationUnitWrapper> innerClassList) {
+		this.innerClassList = innerClassList;
+	}
+
+	/**
+	 * @return the outerClass
+	 */
+	public ICompilationUnitWrapper getOuterClass() {
+		return outerClass;
+	}
+
+	/**
+	 * @param outerClass the outerClass to set
+	 */
+	public void setOuterClass(ICompilationUnitWrapper outerClass) {
+		this.outerClass = outerClass;
+	}
+
+	/**
+	 * @return the typeDeclaration
+	 */
+	public TypeDeclaration getTypeDeclaration() {
+		return typeDeclaration;
+	}
+
+	/**
+	 * @param typeDeclaration the typeDeclaration to set
+	 */
+	public void setTypeDeclaration(TypeDeclaration typeDeclaration) {
+		this.typeDeclaration = typeDeclaration;
 	}
 }

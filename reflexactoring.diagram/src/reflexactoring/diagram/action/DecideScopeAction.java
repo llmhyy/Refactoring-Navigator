@@ -59,7 +59,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 				throws InvocationTargetException, InterruptedException {
 			int scale = 50;
 			monitor.beginTask("build structural information", 4*totalWork*scale);
-			new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
+			new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getAllTheTypesInScope(), monitor, scale);
 			//new UnitMemberExtractor().extract(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
 		}
 		
@@ -98,7 +98,7 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 					int totalWork = totalWorks;
 					int scale = 50;
 					monitor.beginTask("preserve the refactoring scope", totalWork*scale);
-					Settings.scope.getScopeCompilationUnitList().clear();
+					Settings.scope.getAllTheTypesInScope().clear();
 					Object[] selectedObjects = scopeDialog.getResult();
 					previousSelections = selectedObjects;
 					for(int i=0; i<selectedObjects.length; i++){
@@ -107,12 +107,12 @@ public class DecideScopeAction implements IWorkbenchWindowActionDelegate {
 							monitor.worked(scale);
 							
 							ICompilationUnit unit = (ICompilationUnit)selectedObjects[i];
-							Settings.scope.getScopeCompilationUnitList().add(new ICompilationUnitWrapper(unit));
+							Settings.scope.getAllTheTypesInScope().add(new ICompilationUnitWrapper(unit));
 						}
 						//Settings.scopeCompilationUnitList.add(selectedObjects[i]);
 					}
 					monitor.beginTask("build class structural information", 2*totalWork*scale);
-					new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getScopeCompilationUnitList(), monitor, scale);
+					new ClassStructureBuilder().buildStructuralDependency(Settings.scope.getAllTheTypesInScope(), monitor, scale);
 					
 					//new BadSmellDetector().detect(Settings.scope);
 					//monitor.beginTask("build method/field structure inforamtion", 2*totalWork*scale);

@@ -53,7 +53,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		
 		ModelMapper mapper = new ModelMapper();
 		
-		mapper.generateMappingRelationWithGA(moduleList, Settings.scope.getScopeCompilationUnitList());
+		mapper.generateMappingRelationWithGA(moduleList, Settings.scope.getOutmostTypesInScope());
 		
 		/*double[][] similarityTable = mapper.generateMappingRelation(moduleList, Settings.scope.getScopeCompilationUnitList());
 
@@ -81,7 +81,7 @@ public class AutoMappingAction implements IWorkbenchWindowActionDelegate {
 		//ProgramModel model = new MoveMethodOperatorTest().test(Settings.scope);
 		//model = new PullUpMethodNewSuperclassOperatorTest().test(model);
 		
-		new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
+		new DiagramUpdater().generateReflexionModel(moduleList, model.getOutmostTypesInScope());
 		//new DiagramUpdater().generateReflexionModel(moduleList, Settings.scope.getScopeCompilationUnitList());
 		
 		/**

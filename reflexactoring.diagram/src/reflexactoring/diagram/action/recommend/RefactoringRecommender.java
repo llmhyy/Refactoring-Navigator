@@ -82,7 +82,7 @@ public class RefactoringRecommender {
 		/**
 		 * need to gain the dependencies amongst modules
 		 */
-		final String msg = checkPossible(moduleList, Settings.scope.getScopeCompilationUnitList());
+		final String msg = checkPossible(moduleList, Settings.scope.getOutmostTypesInScope());
 		
 		if(!msg.equals("OK")){
 			Display.getDefault().asyncExec(new Runnable() {
@@ -100,7 +100,7 @@ public class RefactoringRecommender {
 		 * Now, the the pre-check has been finished, we start GA for refactoring suggestions.
 		 * The first genotype in population should be the best genotype.
 		 */
-		Genotype bestGene = achieveOptimalGene(moduleList, Settings.scope.getScopeCompilationUnitList());
+		Genotype bestGene = achieveOptimalGene(moduleList, Settings.scope.getOutmostTypesInScope());
 		Suggestion suggestion = generateClassLevelSuggestion(bestGene, moduleList);
 		
 		ArrayList<Suggestion> suggestions = generateSuggestions(bestGene, suggestion, moduleList);
@@ -266,7 +266,7 @@ public class RefactoringRecommender {
 		int[] initialSolution = gene.getOriginalDNA();
 		
 		Suggester suggester = new Suggester();
-		Suggestion suggestion = suggester.generateSuggestion(Settings.scope.getScopeCompilationUnitList(), moduleList, 
+		Suggestion suggestion = suggester.generateSuggestion(Settings.scope.getOutmostTypesInScope(), moduleList, 
 				bestSolution, initialSolution);
 		
 		return suggestion;
@@ -299,7 +299,7 @@ public class RefactoringRecommender {
 	
 	private ArrayList<ICompilationUnitWrapper> checkUnmappedCompilationUnits(){
 		ArrayList<ICompilationUnitWrapper> list = new ArrayList<>();
-		for(ICompilationUnitWrapper unit: Settings.scope.getScopeCompilationUnitList()){
+		for(ICompilationUnitWrapper unit: Settings.scope.getOutmostTypesInScope()){
 			if(unit.getMappingModule() == null){
 				list.add(unit);
 			}

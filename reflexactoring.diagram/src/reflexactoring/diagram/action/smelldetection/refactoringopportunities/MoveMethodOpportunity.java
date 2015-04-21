@@ -624,7 +624,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 						System.currentTimeMillis();
 					}
 					if(method.isLegalMethodToBeMoved()){
-						for(ICompilationUnitWrapper targetUnit: model.getScopeCompilationUnitList()){
+						for(ICompilationUnitWrapper targetUnit: model.getOutmostTypesInScope()){
 							
 							if(method.toString().contains("updateTableView") && targetUnit.toString().contains("Table")){
 								System.currentTimeMillis();

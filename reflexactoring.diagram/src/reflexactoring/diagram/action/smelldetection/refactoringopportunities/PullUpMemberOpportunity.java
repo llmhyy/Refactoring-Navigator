@@ -343,7 +343,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 		ICompilationUnitWrapper newUnit = new ICompilationUnitWrapper(subClassUnit.getMappingModule(), 
 				isInterface, simpleName, subClassUnit.getPackageName(), new HashMap<String, Integer>(), "abstract", true, ModifierWrapper.PUBLIC);
 		
-		newModel.getScopeCompilationUnitList().add(newUnit);
+		newModel.getAllTheTypesInScope().add(newUnit);
 		
 		for(UnitMemberWrapper member: toBePulledMemberList){
 			UnitMemberWrapper newMember = newModel.findMember(member);

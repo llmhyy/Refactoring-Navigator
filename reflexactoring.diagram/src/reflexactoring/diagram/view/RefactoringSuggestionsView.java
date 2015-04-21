@@ -461,7 +461,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 					
 					ArrayList<ModuleWrapper> moduleList = ReflexactoringUtil.getModuleList(Settings.diagramPath);
 					ProgramModel model = element.getConsequenceModel();
-					new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
+					new DiagramUpdater().generateReflexionModel(moduleList, model.getOutmostTypesInScope());
 				}
 				else if(e.getHref().equals("UndoSimulate")){
 					RecordParameters.undoSimulateTime++;
@@ -475,7 +475,7 @@ public class RefactoringSuggestionsView extends ViewPart {
 						model = sequence.get(element.getPosition()-1).getConsequenceModel();
 					}
 					
-					new DiagramUpdater().generateReflexionModel(moduleList, model.getScopeCompilationUnitList());
+					new DiagramUpdater().generateReflexionModel(moduleList, model.getOutmostTypesInScope());
 				}
 				else if(e.getHref().equals("Hint")){
 					RecordParameters.checkHintTime++;

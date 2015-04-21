@@ -230,7 +230,7 @@ public class ProgramModel{
 			VariableDeclaration oldASTNode = oldDec.getAstNode();
 			
 			int unitIndex = oldModel.getICompilationUnitIndex(oldUnit);
-			ICompilationUnitWrapper newUnit = clonedModel.getScopeCompilationUnitList().get(unitIndex);
+			ICompilationUnitWrapper newUnit = clonedModel.getAllTheTypesInScope().get(unitIndex);
 			
 			VariableDeclarationWrapper clonedDec = new VariableDeclarationWrapper(newUnit, oldVariableName, 
 					oldASTNode, oldKey, oldDec.isField(), oldDec.isParameter());
@@ -366,8 +366,8 @@ public class ProgramModel{
 	}
 	
 	private void cloneUnitRelations(ProgramModel clonedModel, ProgramModel oldModel){
-		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.getScopeCompilationUnitList();
-		ArrayList<ICompilationUnitWrapper> oldUnits = oldModel.getScopeCompilationUnitList();
+		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.getAllTheTypesInScope();
+		ArrayList<ICompilationUnitWrapper> oldUnits = oldModel.getAllTheTypesInScope();
 		for(int i=0; i<oldUnits.size(); i++){
 			ICompilationUnitWrapper oldUnit = oldUnits.get(i);
 			ICompilationUnitWrapper clonedUnit = clonedUnits.get(i);
@@ -377,7 +377,7 @@ public class ProgramModel{
 			ICompilationUnitWrapper superClass = oldUnit.getSuperClass();
 			if(null != superClass){
 				int index = oldModel.getICompilationUnitIndex(superClass);
-				ICompilationUnitWrapper clonedSuperclass = clonedModel.getScopeCompilationUnitList().get(index);
+				ICompilationUnitWrapper clonedSuperclass = clonedModel.getAllTheTypesInScope().get(index);
 				clonedUnit.setSuperClass(clonedSuperclass);
 			}
 			
@@ -387,7 +387,7 @@ public class ProgramModel{
 			ArrayList<ICompilationUnitWrapper> interfaceList = oldUnit.getSuperInterfaceList();
 			for(ICompilationUnitWrapper interf: interfaceList){
 				int index = oldModel.getICompilationUnitIndex(interf);
-				ICompilationUnitWrapper clonedInterface = clonedModel.getScopeCompilationUnitList().get(index);
+				ICompilationUnitWrapper clonedInterface = clonedModel.getAllTheTypesInScope().get(index);
 				clonedUnit.addSuperInterface(clonedInterface);
 			}
 			
@@ -397,7 +397,7 @@ public class ProgramModel{
 			ArrayList<ICompilationUnitWrapper> parentList = (ArrayList<ICompilationUnitWrapper>) oldUnit.getParentList();
 			for(ICompilationUnitWrapper parent: parentList){
 				int index = oldModel.getICompilationUnitIndex(parent);
-				ICompilationUnitWrapper clonedParent = clonedModel.getScopeCompilationUnitList().get(index);
+				ICompilationUnitWrapper clonedParent = clonedModel.getAllTheTypesInScope().get(index);
 				clonedUnit.addParent(clonedParent);
 			}
 			
@@ -407,7 +407,7 @@ public class ProgramModel{
 			ArrayList<ICompilationUnitWrapper> childList = (ArrayList<ICompilationUnitWrapper>) oldUnit.getChildList();
 			for(ICompilationUnitWrapper child: childList){
 				int index = oldModel.getICompilationUnitIndex(child);
-				ICompilationUnitWrapper clonedChild = clonedModel.getScopeCompilationUnitList().get(index);
+				ICompilationUnitWrapper clonedChild = clonedModel.getAllTheTypesInScope().get(index);
 				clonedUnit.addChild(clonedChild);
 			}
 			/**
@@ -417,7 +417,7 @@ public class ProgramModel{
 			for(ICompilationUnitWrapper oldCaller: oldCallerList.keySet()){
 				int index = oldModel.getICompilationUnitIndex(oldCaller);
 				ReferencingDetail detail = oldCallerList.get(oldCaller).clone();
-				ICompilationUnitWrapper clonedCaller = clonedModel.getScopeCompilationUnitList().get(index);
+				ICompilationUnitWrapper clonedCaller = clonedModel.getAllTheTypesInScope().get(index);
 				//clonedUnit.addCaller(clonedCaller);
 				clonedUnit.getCallerCompilationUnitList().put(clonedCaller, detail);
 			}
@@ -428,7 +428,7 @@ public class ProgramModel{
 			for(Entry<ICompilationUnitWrapper, ReferencingDetail> oldCalleeEntry: oldCalleeList.entrySet()){
 				int index = oldModel.getICompilationUnitIndex(oldCalleeEntry.getKey());
 				ReferencingDetail detail = oldCalleeEntry.getValue().clone();
-				ICompilationUnitWrapper clonedCallee = clonedModel.getScopeCompilationUnitList().get(index);
+				ICompilationUnitWrapper clonedCallee = clonedModel.getAllTheTypesInScope().get(index);
 				//clonedUnit.addCallee(clonedCallee);
 				clonedUnit.getCalleeCompilationUnitList().put(clonedCallee, detail);
 			}
@@ -447,7 +447,7 @@ public class ProgramModel{
 			 */
 			ICompilationUnitWrapper memberUnit = oldMember.getUnitWrapper();
 			int index = oldModel.getICompilationUnitIndex(memberUnit);
-			ICompilationUnitWrapper clonedMemberUnit = clonedModel.getScopeCompilationUnitList().get(index);						
+			ICompilationUnitWrapper clonedMemberUnit = clonedModel.getAllTheTypesInScope().get(index);						
 
 			UnitMemberWrapper clonedMember = null;	
 			if(oldMember instanceof FieldWrapper){
@@ -479,8 +479,8 @@ public class ProgramModel{
 	}
 	
 	private void cloneMemberRelations(ProgramModel clonedModel, ProgramModel oldModel){
-		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.getScopeCompilationUnitList();
-		ArrayList<ICompilationUnitWrapper> oldUnits = oldModel.getScopeCompilationUnitList();
+		ArrayList<ICompilationUnitWrapper> clonedUnits = clonedModel.getAllTheTypesInScope();
+		ArrayList<ICompilationUnitWrapper> oldUnits = oldModel.getAllTheTypesInScope();
 		for(int i=0; i<oldUnits.size(); i++){
 			ICompilationUnitWrapper oldUnit = oldUnits.get(i);
 			ICompilationUnitWrapper clonedUnit = clonedUnits.get(i);
@@ -708,9 +708,24 @@ public class ProgramModel{
 	}
 	
 	/**
+	 * this method returns the out-most types, excluding inner classes in the scope 
 	 * @return the scopeCompilationUnitList
 	 */
-	public ArrayList<ICompilationUnitWrapper> getScopeCompilationUnitList() {
+	public ArrayList<ICompilationUnitWrapper> getOutmostTypesInScope() {
+		ArrayList<ICompilationUnitWrapper> unitList = new ArrayList<>();
+		for(ICompilationUnitWrapper unit: getAllTheTypesInScope()){
+			if(!unit.isInnerClass()){
+				unitList.add(unit);
+			}
+		}
+		return unitList;
+	}
+	
+	/**
+	 * this method returns all the types, including inner classes in the scope.
+	 * @return
+	 */
+	public ArrayList<ICompilationUnitWrapper> getAllTheTypesInScope(){
 		return scopeCompilationUnitList;
 	}
 	
@@ -961,7 +976,7 @@ public class ProgramModel{
 		ArrayList<JCCDFile> fileList = new ArrayList<JCCDFile>();
 		HashMap<String, ICompilationUnitWrapper> map = new HashMap<>();
 		
-		for(ICompilationUnitWrapper unit: getScopeCompilationUnitList()){
+		for(ICompilationUnitWrapper unit: getOutmostTypesInScope()){
 			IResource resource = unit.getCompilationUnit().getResource();			
 			fileList.add(new JCCDFile(resource.getRawLocation().toFile()));
 			

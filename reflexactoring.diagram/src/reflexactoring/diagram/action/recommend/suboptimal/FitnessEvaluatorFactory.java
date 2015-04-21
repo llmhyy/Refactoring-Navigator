@@ -29,11 +29,11 @@ public class FitnessEvaluatorFactory {
 		double[][] highLevelNodeCreationMatrix = RecommendUtil.extractGraph(moduleList, 
 				GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
 		
-		double[][] lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
+		double[][] lowLevelNodeDependencyMatrix = RecommendUtil.extractGraph(model.getOutmostTypesInScope(), 
 				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);
-		double[][] lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
+		double[][] lowLevelNodeInheritanceMatrix = RecommendUtil.extractGraph(model.getOutmostTypesInScope(), 
 				GraphRelationType.GRAPH_INHERITANCE, ReferencingDetail.ALL);
-		double[][] lowLevelNodeCreationMatrix = RecommendUtil.extractGraph(model.getScopeCompilationUnitList(), 
+		double[][] lowLevelNodeCreationMatrix = RecommendUtil.extractGraph(model.getOutmostTypesInScope(), 
 				GraphRelationType.GRAPH_CREATION, ReferencingDetail.NEW);
 		
 		switch(type){

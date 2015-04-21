@@ -67,8 +67,8 @@ public class MoveMemberAction extends MoveAction {
 					ICompilationUnitWrapper target = new JavaClassCreator().createClass();
 					if(target != null){	
 						target.setMappingModule(targetModule);
-						if(!Settings.scope.getScopeCompilationUnitList().contains(target)){
-							Settings.scope.getScopeCompilationUnitList().add(target);	
+						if(!Settings.scope.getOutmostTypesInScope().contains(target)){
+							Settings.scope.getOutmostTypesInScope().add(target);	
 						}
 						dialog.close();
 						dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), targetModule);
@@ -135,8 +135,8 @@ public class MoveMemberAction extends MoveAction {
 				ICompilationUnitWrapper target = new JavaClassCreator().createClass();
 				if(target != null){
 					target.setMappingModule(targetModule);
-					if(!Settings.scope.getScopeCompilationUnitList().contains(target)){
-						Settings.scope.getScopeCompilationUnitList().add(target);	
+					if(!Settings.scope.getOutmostTypesInScope().contains(target)){
+						Settings.scope.getOutmostTypesInScope().add(target);	
 					}
 					
 					this.dialog = new SelectTargetUnitDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), targetModule);

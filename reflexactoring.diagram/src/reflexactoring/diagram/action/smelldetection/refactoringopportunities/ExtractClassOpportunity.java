@@ -158,7 +158,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		 */
 		ICompilationUnitWrapper newTargetUnit = new ICompilationUnitWrapper(null, false, "ExtractedClass"+NameGernationCounter.retrieveNumber(), 
 				extractMembers.get(0).getUnitWrapper().getPackageName(), new HashMap<String, Integer>(), "", false, ModifierWrapper.PUBLIC);
-		newModel.getScopeCompilationUnitList().add(newTargetUnit);
+		newModel.getAllTheTypesInScope().add(newTargetUnit);
 		this.targetUnitName = newTargetUnit.getFullQualifiedName();
 		
 		/**
@@ -790,7 +790,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			
 			final Set<String> classNamesToBeExamined = new LinkedHashSet<String>();
 			
-			for(ICompilationUnitWrapper unit: Settings.scope.getScopeCompilationUnitList()){
+			for(ICompilationUnitWrapper unit: Settings.scope.getOutmostTypesInScope()){
 				classObjectsToBeExamined.addAll(systemObject.getClassObjects(unit.getCompilationUnit()));
 			}
 			for(ClassObject classObject : classObjectsToBeExamined) {
