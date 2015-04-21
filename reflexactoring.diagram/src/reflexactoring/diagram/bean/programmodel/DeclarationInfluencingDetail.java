@@ -4,6 +4,15 @@
 package reflexactoring.diagram.bean.programmodel;
 
 /**
+ * Given a variable declaration, this class shows the program reference influenced by such 
+ * declaration. For example, given statement "A a;", a program reference influenced by it
+ * may be "a.m1()", "a.attr1", etc.
+ * 
+ * Each relation between a declaration and a program reference has several types, i.e., 
+ * access_obj, parameter, and other. access_obj means some unit member is called through
+ * object access, e.g., a.m1(); parameter means some unit member is involved in the invocation
+ * through parameter transition, e.g., m1(a);
+ * 
  * @author linyun
  *
  */
