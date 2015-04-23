@@ -5,6 +5,8 @@ package reflexactoring.diagram.action.smelldetection;
 
 import java.util.ArrayList;
 
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractClassOpportunity.Precondition;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.PullUpMemberPrecondition;
@@ -27,14 +29,14 @@ public class BadSmellDetector {
 		preconditionList.add(new PullUpMemberPrecondition(moduleList));	
 		//preconditionList.add(new ExtractUtilityClassOpportunity(null,null).new Precondition(moduleList));
 		preconditionList.add(new MoveMethodOpportunity(null, null).new Precodition());
-		//preconditionList.add(new ExtractClassOpportunity(null, null, moduleList).new Precondition());
+		preconditionList.add(new ExtractClassOpportunity(null, null, moduleList, null).new Precondition());
 	}
 	
 	public ArrayList<RefactoringOpportunity> detect(ProgramModel model){
 		ArrayList<RefactoringOpportunity> opporuntities = new ArrayList<>();
 		
 		//model.detectClone();
-		model.detectExtractClassOpportunties(moduleList);
+		//model.detectExtractClassOpportunties(moduleList);
 		
 		for(RefactoringPrecondition precondition: preconditionList){
 			ArrayList<RefactoringOpportunity> oppList = precondition.detectOpportunities(model);

@@ -284,7 +284,12 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public String getFullQualifiedName(){
-		return getPackageName() + "." + getSimpleName();
+		if(isInnerClass()){
+			return getOuterClass().getFullQualifiedName() + "." + getSimpleName();
+		}
+		else{
+			return getPackageName() + "." + getSimpleName();			
+		}
 	}
 	
 	public int hashCode(){
