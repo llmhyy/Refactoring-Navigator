@@ -122,6 +122,18 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		 * when searching/simulating for a proper refactoring solution)
 		 */
 		TypeDeclaration typeDeclar = (TypeDeclaration) this.javaUnit.types().get(0);
+		extractTypeInformation(typeDeclar);
+	}
+	
+	public ICompilationUnitWrapper(TypeDeclaration typeDeclar){
+		extractTypeInformation(typeDeclar);
+		this.javaUnit = (CompilationUnit) typeDeclar.getRoot();
+	}
+
+	/**
+	 * @param typeDeclar
+	 */
+	private void extractTypeInformation(TypeDeclaration typeDeclar) {
 		setTypeDeclaration(typeDeclar);
 		this.isInterface = typeDeclar.isInterface();
 		
@@ -129,15 +141,9 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		this.modifier = ModifierWrapper.parseSecurityModifer(modiferFlag);
 		this.isAbstract = Modifier.isAbstract(modiferFlag);
 		
-		this.packageName = "";
-		try {
-			this.packageName = this.compilationUnit.getPackageDeclarations()[0].getElementName();
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-		String uniqueName = this.compilationUnit.getElementName();
-		uniqueName = uniqueName.substring(0, uniqueName.indexOf(".java"));
-		this.simpleName = uniqueName;
+		CompilationUnit unit = (CompilationUnit) typeDeclar.getRoot();
+		this.packageName = unit.getPackage().getName().getFullyQualifiedName();
+		this.simpleName = typeDeclar.getName().getIdentifier();
 		
 		/**
 		 * Extract some keywords used for lexical similarity

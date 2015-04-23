@@ -410,6 +410,27 @@ public class ProgramModel{
 				ICompilationUnitWrapper clonedChild = clonedModel.getAllTheTypesInScope().get(index);
 				clonedUnit.addChild(clonedChild);
 			}
+			
+			/**
+			 * clone inner class relation
+			 */
+			ArrayList<ICompilationUnitWrapper> oldInnerClassList = oldUnit.getInnerClassList();
+			for(ICompilationUnitWrapper oldInnerClass: oldInnerClassList){
+				int index = oldModel.getICompilationUnitIndex(oldInnerClass);
+				ICompilationUnitWrapper clonedInnerClass = clonedModel.getAllTheTypesInScope().get(index);
+				clonedUnit.getInnerClassList().add(clonedInnerClass);
+			}
+			
+			/**
+			 * clone outer class relation
+			 */
+			ICompilationUnitWrapper oldOuterClass = oldUnit.getOuterClass();
+			if(null != oldOuterClass){
+				int index = oldModel.getICompilationUnitIndex(oldOuterClass);
+				ICompilationUnitWrapper clonedOuterClass = clonedModel.getAllTheTypesInScope().get(index);
+				clonedUnit.setOuterClass(clonedOuterClass);
+			}
+			
 			/**
 			 * clone caller list
 			 */
@@ -421,6 +442,7 @@ public class ProgramModel{
 				//clonedUnit.addCaller(clonedCaller);
 				clonedUnit.getCallerCompilationUnitList().put(clonedCaller, detail);
 			}
+			
 			/**
 			 * clone callee list
 			 */
@@ -661,6 +683,9 @@ public class ProgramModel{
 //		return setList;
 //	}
 	
+	/**
+	 * build caller/callee relation for compilation unit list
+	 */
 	public void updateUnitCallingRelationByMemberRelations(){
 		/**
 		 * clear original call relations between compilation unit.
@@ -701,6 +726,15 @@ public class ProgramModel{
 			if(!refererUnit.equals(refereeUnit) && !refererUnit.getAllAncestors().contains(refereeUnit)){
 				refererUnit.addCallee(refereeUnit, referencingType, reference);
 				refereeUnit.addCaller(refererUnit, referencingType, reference);
+				
+				/**
+				 * check whether referee unit is an inner class, if true, its outer class should also be considered.
+				 */
+				ICompilationUnitWrapper outerRefereeClass = refereeUnit.getOuterClass();
+				if(outerRefereeClass != null){
+					refererUnit.addCallee(outerRefereeClass, referencingType, reference);
+					outerRefereeClass.addCaller(refererUnit, referencingType, reference);
+				}
 				
 				refererUnit.putReferringDetail(refereeUnit, reference.getASTNode());
 			}

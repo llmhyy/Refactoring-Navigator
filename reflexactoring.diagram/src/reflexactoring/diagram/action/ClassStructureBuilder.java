@@ -401,6 +401,9 @@ public class ClassStructureBuilder {
 	public void buildStructuralDependency(
 			final ArrayList<ICompilationUnitWrapper> compilationUnitList,
 			IProgressMonitor monitor, int scale) {
+		
+		ArrayList<ICompilationUnitWrapper> innerClassList = parseInnerClass(compilationUnitList);
+		compilationUnitList.addAll(innerClassList);
 		Settings.scope.setScopeCompilationUnitList(compilationUnitList);
 
 		buildExtendingAndImplementingRelations(Settings.scope.getAllTheTypesInScope());
@@ -422,6 +425,26 @@ public class ClassStructureBuilder {
 		Settings.scope.updateUnitCallingRelationByMemberRelations();
 		
 		System.currentTimeMillis();
+	}
+
+	/**
+	 * @param outerClassList
+	 * @return
+	 */
+	private ArrayList<ICompilationUnitWrapper> parseInnerClass(
+			ArrayList<ICompilationUnitWrapper> outerClassList) {
+		ArrayList<ICompilationUnitWrapper> innerClassList = new ArrayList<>();
+		for(ICompilationUnitWrapper outerClass: outerClassList){
+			TypeDeclaration td = (TypeDeclaration) outerClass.getJavaUnit().types().get(0);
+			for(TypeDeclaration innerType: td.getTypes()){
+				ICompilationUnitWrapper innerClassWrapper = new ICompilationUnitWrapper(innerType);
+				outerClass.getInnerClassList().add(innerClassWrapper);
+				innerClassWrapper.setOuterClass(outerClass);
+				
+				innerClassList.add(innerClassWrapper);
+			}
+		}
+		return innerClassList;
 	}
 
 	/**
@@ -461,8 +484,15 @@ public class ClassStructureBuilder {
 		final ArrayList<UnitMemberWrapper> memberList = new ArrayList<>();
 
 		for (final ICompilationUnitWrapper unitWrapper : compilationUnitList) {
-			CompilationUnit unit = unitWrapper.getJavaUnit();
+			final TypeDeclaration unit = unitWrapper.getTypeDeclaration();
 			unit.accept(new ASTVisitor() {
+				public boolean visit(TypeDeclaration td){
+					if(unit != td){
+						return false;
+					}
+					return true;
+				}
+				
 				public boolean visit(FieldDeclaration fd) {
 					FieldWrapper fieldWrapper = new FieldWrapper(fd,
 							unitWrapper);
@@ -533,10 +563,8 @@ public class ClassStructureBuilder {
 				if (!refererUnit.equals(refereeUnit)) {
 					System.currentTimeMillis();
 
-					TypeDeclaration refererType = (TypeDeclaration) refererUnit
-							.getJavaUnit().types().get(0);
-					TypeDeclaration refereeType = (TypeDeclaration) refereeUnit
-							.getJavaUnit().types().get(0);
+					TypeDeclaration refererType = refererUnit.getTypeDeclaration();
+					TypeDeclaration refereeType = refereeUnit.getTypeDeclaration();
 
 					ITypeBinding superType = refererType.resolveBinding()
 							.getSuperclass();
