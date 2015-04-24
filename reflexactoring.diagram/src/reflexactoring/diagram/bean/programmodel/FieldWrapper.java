@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
+import datamining.cluster.IClusterElement;
 import reflexactoring.diagram.action.semantic.TokenExtractor;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.util.DefaultComparator;

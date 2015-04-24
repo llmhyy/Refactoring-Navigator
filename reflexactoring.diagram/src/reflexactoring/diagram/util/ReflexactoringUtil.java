@@ -29,6 +29,7 @@ import reflexactoring.ModuleLink;
 import reflexactoring.Reflexactoring;
 import reflexactoring.diagram.action.UserInputMerger;
 import reflexactoring.diagram.action.recommend.suboptimal.Rules;
+import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.ModuleLinkWrapper;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.heuristics.ModuleCreationConfidence;
@@ -40,8 +41,10 @@ import reflexactoring.diagram.bean.heuristics.ModuleExtendConfidenceTable;
 import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarity;
 import reflexactoring.diagram.bean.heuristics.ModuleUnitsSimilarityTable;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
+import reflexactoring.diagram.bean.programmodel.ProgramReference;
 import reflexactoring.diagram.bean.programmodel.ReferencingDetail;
 import reflexactoring.diagram.bean.programmodel.SimilarityComputable;
+import reflexactoring.diagram.bean.programmodel.UnitMemberWrapper;
 import reflexactoring.diagram.preferences.ProjectInfoPage;
 import reflexactoring.diagram.preferences.RecommendSettingPage;
 
@@ -752,5 +755,32 @@ public class ReflexactoringUtil {
 		}
 		
 		return 2*sum/(set1.size()+set2.size());
+	}
+	
+	public static int computeDependenciesBetweenMembers(UnitMemberWrapper mem1, UnitMemberWrapper mem2){
+		int count = 0;
+		/**
+		 * check whether the element is called by this class
+		 */
+		for(ProgramReference reference: mem1.getRefereePointList()){
+			LowLevelGraphNode refereeNode = reference.getReferee();
+			if(refereeNode instanceof UnitMemberWrapper){
+				UnitMemberWrapper refereeMember = (UnitMemberWrapper)refereeNode;
+				if(refereeMember.equals(mem2)){
+					count++;
+				}
+			}
+		}
+		/**
+		 * check whether some member in this class is called
+		 */
+		for(ProgramReference reference: mem1.getRefererPointList()){
+			UnitMemberWrapper refererMember = reference.getReferer();
+			if(refererMember.equals(mem2)){
+				count++;
+			}
+		}
+		
+		return count;
 	}
 }

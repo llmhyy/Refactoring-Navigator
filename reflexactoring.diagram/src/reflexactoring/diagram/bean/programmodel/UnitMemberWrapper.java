@@ -18,11 +18,13 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 
+import datamining.cluster.IClusterElement;
 import reflexactoring.diagram.bean.Document;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.LowLevelSuggestionObject;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.util.JavaCodeUtil;
+import reflexactoring.diagram.util.ReflexactoringUtil;
 
 /**
  * @author linyun
@@ -316,6 +318,28 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public double computeClusteringDistance(IClusterElement element) {
+		int count = 0;
+		if(element instanceof UnitMemberWrapper){
+			UnitMemberWrapper member = (UnitMemberWrapper)element;
+			count = ReflexactoringUtil.computeDependenciesBetweenMembers(this, member);
+		}
+		else if(element instanceof ICompilationUnitWrapper){
+			ICompilationUnitWrapper innerClass = (ICompilationUnitWrapper)element;
+			for(UnitMemberWrapper member: innerClass.getMembers()){
+				count += ReflexactoringUtil.computeDependenciesBetweenMembers(member, this); 
+			}
+		}
+		
+		if(count == 0){
+			return 10000;
+		}
+		else{
+			return 1.0/count;
+		}
 	}
 	
 	public abstract boolean hasSameSignatureWith(UnitMemberWrapper member);

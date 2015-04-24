@@ -24,6 +24,7 @@ import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 
+import datamining.cluster.IClusterElement;
 import reflexactoring.diagram.bean.Document;
 import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.LowLevelSuggestionObject;
@@ -798,5 +799,31 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	 */
 	public void setTypeDeclaration(TypeDeclaration typeDeclaration) {
 		this.typeDeclaration = typeDeclaration;
+	}
+
+	@Override
+	public double computeClusteringDistance(IClusterElement element) {
+		int count = 0;
+		if(element instanceof UnitMemberWrapper){
+			UnitMemberWrapper member = (UnitMemberWrapper)element;
+			for(UnitMemberWrapper containedMember: this.getMembers()){
+				count += ReflexactoringUtil.computeDependenciesBetweenMembers(member, containedMember);
+			}			
+		}
+		else if(element instanceof ICompilationUnitWrapper){
+			ICompilationUnitWrapper innerClass = (ICompilationUnitWrapper)element;
+			for(UnitMemberWrapper mem1: innerClass.getMembers()){
+				for(UnitMemberWrapper mem2: this.getMembers()){
+					count += ReflexactoringUtil.computeDependenciesBetweenMembers(mem1, mem2);
+				}
+			}
+		}
+		
+		if(count == 0){
+			return 10000;
+		}
+		else{
+			return 1.0/count;
+		}
 	}
 }
