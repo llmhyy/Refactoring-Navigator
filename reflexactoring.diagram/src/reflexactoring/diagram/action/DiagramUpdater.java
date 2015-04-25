@@ -331,7 +331,7 @@ public class DiagramUpdater {
 		 */
 		for(ICompilationUnitWrapper callerWrapper: compilationUnitWrapperList){
 			for(ICompilationUnitWrapper calleeWrapper: callerWrapper.getCalleeCompilationUnitList().keySet()){
-				if(callerWrapper != calleeWrapper){
+				if(callerWrapper != calleeWrapper && !calleeWrapper.isInnerClass() && !callerWrapper.isInnerClass()){
 					generateRelationsBetweenUnits(diagramRoot, callerWrapper, calleeWrapper, ReflexactoringElementTypes.TypeDependency_4003);	
 				}
 			}
