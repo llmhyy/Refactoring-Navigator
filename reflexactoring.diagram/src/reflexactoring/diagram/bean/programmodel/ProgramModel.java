@@ -175,8 +175,9 @@ public class ProgramModel{
 		
 		//long t7 = System.currentTimeMillis();
 		//System.out.println("Clone Sets Cloned: " + (t5-t4));
-		ArrayList<RefactoringOpportunity> oneShotOpps = cloneOneShotRefactoringOpportunties(newModel, this);
-		newModel.setOneShotOpportnityList(oneShotOpps);
+		
+		//ArrayList<RefactoringOpportunity> oneShotOpps = cloneOneShotRefactoringOpportunties(newModel, this);
+		//newModel.setOneShotOpportnityList(oneShotOpps);
 		
 		
 		//System.out.println("Total Cloned: " + (t2-t1));
@@ -247,19 +248,22 @@ public class ProgramModel{
 		for(RefactoringOpportunity oldOpp: oldModel.getOneShotOpportnityList()){
 			if(oldOpp instanceof ExtractClassOpportunity){
 				ExtractClassOpportunity oldExtractOpp = (ExtractClassOpportunity)oldOpp;
-				ArrayList<UnitMemberWrapper> newExtractMembers = new ArrayList<>();
+				ArrayList<LowLevelGraphNode> newExtractMembers = new ArrayList<>();
 				
-				for(UnitMemberWrapper oldExtractMember: oldExtractOpp.getToBeExtractedMembers()){
-					UnitMemberWrapper newExtractMember = newModel.findMember(oldExtractMember);
-					if(newExtractMember == null){
-						System.err.println("model inconsistency: " + oldExtractMember.getName() + "cannot be found when cloning new model");
-						System.currentTimeMillis();
+				for(LowLevelGraphNode oldExtractMember: oldExtractOpp.getToBeExtractedMembers()){
+					if(oldExtractMember instanceof UnitMemberWrapper){
+						
+						UnitMemberWrapper newExtractMember = newModel.findMember((UnitMemberWrapper)oldExtractMember);
+						if(newExtractMember == null){
+							System.err.println("model inconsistency: " + oldExtractMember.getName() + "cannot be found when cloning new model");
+							System.currentTimeMillis();
+						}
+						
+						newExtractMembers.add(newExtractMember);
 					}
-					
-					newExtractMembers.add(newExtractMember);
 				}
 				
-				ICompilationUnitWrapper newSourceUnit = newExtractMembers.get(0).getUnitWrapper();
+				ICompilationUnitWrapper newSourceUnit = ((UnitMemberWrapper)newExtractMembers.get(0)).getUnitWrapper();
 				ExtractClassOpportunity newExtractOpp = new ExtractClassOpportunity(newExtractMembers, 
 						oldExtractOpp.getRefactoring(), oldExtractOpp.getModuleList(), newSourceUnit);
 				
@@ -981,7 +985,7 @@ public class ProgramModel{
 				if(opp instanceof ExtractClassOpportunity){
 					ExtractClassOpportunity ecOpp = (ExtractClassOpportunity)opp;
 					
-					for(UnitMemberWrapper memberInExtractedList: ecOpp.getToBeExtractedMembers()){
+					for(LowLevelGraphNode memberInExtractedList: ecOpp.getToBeExtractedMembers()){
 						UnitMemberWrapper memberInThisModel = null; 
 						String unitName = ecOpp.getSourceUnit().getFullQualifiedName();
 						if(memberInExtractedList instanceof FieldWrapper){

@@ -49,11 +49,15 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import datamining.cluster.IClusterElement;
+import datamining.cluster.hierarchical.HierarchicalCluster;
+import datamining.cluster.hierarchical.HierarchicalClustering;
 import reflexactoring.diagram.action.smelldetection.NameGernationCounter;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.precondition.RefactoringPrecondition;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.util.RefactoringOppUtil;
+import reflexactoring.diagram.bean.LowLevelGraphNode;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.FieldWrapper;
 import reflexactoring.diagram.bean.programmodel.ICompilationUnitWrapper;
@@ -74,7 +78,7 @@ import reflexactoring.diagram.util.Settings;
 public class ExtractClassOpportunity extends RefactoringOpportunity {
 
 	private int id;
-	private ArrayList<UnitMemberWrapper> toBeExtractedMembers = new ArrayList<>();
+	private ArrayList<LowLevelGraphNode> toBeExtractedMembers = new ArrayList<>();
 	private ExtractClassCandidateRefactoring refactoring;
 	private ICompilationUnitWrapper sourceUnit;
 	private String newFieldName;
@@ -86,7 +90,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	 * @param toBeExtractedMembers
 	 */
 	public ExtractClassOpportunity(
-			ArrayList<UnitMemberWrapper> toBeExtractedMembers, ExtractClassCandidateRefactoring refactoring, 
+			ArrayList<LowLevelGraphNode> toBeExtractedMembers, ExtractClassCandidateRefactoring refactoring, 
 			ArrayList<ModuleWrapper> moduleList, ICompilationUnitWrapper sourceUnit) {
 		super();
 		this.toBeExtractedMembers = toBeExtractedMembers;
@@ -99,9 +103,17 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	public String toString(){
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("extract the following members in " );
-		buffer.append(toBeExtractedMembers.get(0).getUnitWrapper().getName());
+		if(toBeExtractedMembers.get(0) instanceof UnitMemberWrapper){
+			UnitMemberWrapper member = (UnitMemberWrapper)toBeExtractedMembers.get(0);
+			buffer.append(member.getUnitWrapper().getName());
+		}
+		else{
+			ICompilationUnitWrapper innerClass = (ICompilationUnitWrapper)toBeExtractedMembers.get(0);
+			buffer.append(innerClass.getOuterClass().getName());
+		}
+		
 		buffer.append(" : ");
-		for(UnitMemberWrapper member: toBeExtractedMembers){
+		for(LowLevelGraphNode member: toBeExtractedMembers){
 			if(member instanceof MethodWrapper){
 				buffer.append(member.getName() + "(), ");
 			}
@@ -124,10 +136,10 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		return false;
 	}
 	
-	private boolean isHavingSameMemberList(ArrayList<UnitMemberWrapper> memberList){
+	private boolean isHavingSameMemberList(ArrayList<LowLevelGraphNode> memberList){
 		if(memberList.size() == toBeExtractedMembers.size()){
-			for(UnitMemberWrapper thatMember: memberList){
-				if(!canFindAnEqualMemberInList(toBeExtractedMembers, thatMember)){
+			for(LowLevelGraphNode thatMember: memberList){
+				if(!canFindAnEqualNodeInList(toBeExtractedMembers, thatMember)){
 					return false;
 				}
 			}
@@ -138,87 +150,164 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		return false;
 	}
 	
-	@Override
-	public ProgramModel simulate(ProgramModel model) {
-		ProgramModel newModel = model.clone();
-		/**
-		 * replace those to-be-extracted members with new ones.
-		 */
-		ArrayList<UnitMemberWrapper> extractMembers = new ArrayList<>();
-		for(UnitMemberWrapper member: toBeExtractedMembers){
-			UnitMemberWrapper newMem = newModel.findMember(member);
-			extractMembers.add(newMem);
-		}
-		
-		ArrayList<UnitMemberWrapper> delegateMethods = identifyDelegatingMethods(extractMembers);
-		
-		//toBeExtractedMembers = extractMembers;
-		/**
-		 * create a new class named "ExtractClass**"
-		 */
-		ICompilationUnitWrapper newTargetUnit = new ICompilationUnitWrapper(null, false, "ExtractedClass"+NameGernationCounter.retrieveNumber(), 
-				extractMembers.get(0).getUnitWrapper().getPackageName(), new HashMap<String, Integer>(), "", false, ModifierWrapper.PUBLIC);
-		newModel.getAllTheTypesInScope().add(newTargetUnit);
-		this.targetUnitName = newTargetUnit.getFullQualifiedName();
-		
-		/**
-		 * create a new field in source class
-		 */
-		ICompilationUnitWrapper newSourceUnit = newModel.findUnit(this.sourceUnit.getFullQualifiedName());
-		FieldWrapper newField = new FieldWrapper("extractedClass"+NameGernationCounter.retrieveNumber(), newTargetUnit.getName(), 
-				newSourceUnit, null, "", null, false, ModifierWrapper.PUBLIC);
-		newSourceUnit.getMembers().add(newField);
-		newModel.getScopeMemberList().add(newField);
-		this.newFieldName = newField.getName();
-		
-		/**
-		 * create the relation indicating field has the type of newly created class
-		 */
-		ProgramReference ref = new ProgramReference(newField, newTargetUnit, null, ProgramReference.TYPE_DECLARATION, new ArrayList<ReferenceInflucencedDetail>());
-		newField.addProgramReferee(ref);
-		newTargetUnit.addProgramReferer(ref);
-		newModel.getReferenceList().add(ref);
-		
-		/**
-		 * create type relation
-		 */
-		ProgramReference programReference = new ProgramReference(newField, newTargetUnit, null, 
-				ProgramReference.NEW_DEFAULT_CONSTRUCTOR, new ArrayList<ReferenceInflucencedDetail>());
-		newField.addProgramReferee(programReference);
-		newTargetUnit.addProgramReferer(programReference);
-		newModel.getReferenceList().add(programReference);
-		
-		moveExtractMembersToTargetUnit(extractMembers, newModel, newTargetUnit, newSourceUnit); 
-		
-		createDelegatingMethods(newModel, delegateMethods, newTargetUnit, newSourceUnit);
-
-		buildVariableDeclarationRelations(newModel, extractMembers, newTargetUnit, newSourceUnit, newField);
-		
-		System.currentTimeMillis();
-		newModel.updateUnitCallingRelationByMemberRelations();
-
-		ModuleWrapper bestModule = calculateBestMappingModule(newModel, newTargetUnit);
-		newTargetUnit.setMappingModule(bestModule);
-		this.mappingModule = bestModule;
-		
-		
-		/**
-		 * remove some exclusive opportunities
-		 */
-		Iterator<RefactoringOpportunity> oppIter = newModel.getOneShotOpportnityList().iterator();
-		while(oppIter.hasNext()){
-			RefactoringOpportunity opp = oppIter.next();
-			if(opp instanceof ExtractClassOpportunity){
-				ExtractClassOpportunity extractClassOpp = (ExtractClassOpportunity)opp;
-				
-				if(extractClassOpp.getId() == this.getId()){
-					oppIter.remove();
-				}
+	private boolean canFindAnEqualNodeInList(ArrayList<LowLevelGraphNode> list, LowLevelGraphNode member){
+		for(LowLevelGraphNode memberInList: list){
+			if(memberInList.equals(member)){
+				return true;
 			}
 		}
 		
+		return false;
+	}
+	
+	@Override
+	public ProgramModel simulate(ProgramModel model) {
+		ProgramModel newModel = model.clone();
+		//TODO
+//		/**
+//		 * replace those to-be-extracted members with new ones.
+//		 */
+//		ArrayList<UnitMemberWrapper> extractMembers = new ArrayList<>();
+//		for(UnitMemberWrapper member: toBeExtractedMembers){
+//			UnitMemberWrapper newMem = newModel.findMember(member);
+//			extractMembers.add(newMem);
+//		}
+//		
+//		ArrayList<UnitMemberWrapper> delegateMethods = identifyDelegatingMethods(extractMembers);
+//		
+//		//toBeExtractedMembers = extractMembers;
+//		/**
+//		 * create a new class named "ExtractClass**"
+//		 */
+//		ICompilationUnitWrapper newTargetUnit = new ICompilationUnitWrapper(null, false, "ExtractedClass"+NameGernationCounter.retrieveNumber(), 
+//				extractMembers.get(0).getUnitWrapper().getPackageName(), new HashMap<String, Integer>(), "", false, ModifierWrapper.PUBLIC);
+//		newModel.getAllTheTypesInScope().add(newTargetUnit);
+//		this.targetUnitName = newTargetUnit.getFullQualifiedName();
+//		
+//		/**
+//		 * create a new field in source class
+//		 */
+//		ICompilationUnitWrapper newSourceUnit = newModel.findUnit(this.sourceUnit.getFullQualifiedName());
+//		FieldWrapper newField = new FieldWrapper("extractedClass"+NameGernationCounter.retrieveNumber(), newTargetUnit.getName(), 
+//				newSourceUnit, null, "", null, false, ModifierWrapper.PUBLIC);
+//		newSourceUnit.getMembers().add(newField);
+//		newModel.getScopeMemberList().add(newField);
+//		this.newFieldName = newField.getName();
+//		
+//		/**
+//		 * create the relation indicating field has the type of newly created class
+//		 */
+//		ProgramReference ref = new ProgramReference(newField, newTargetUnit, null, ProgramReference.TYPE_DECLARATION, new ArrayList<ReferenceInflucencedDetail>());
+//		newField.addProgramReferee(ref);
+//		newTargetUnit.addProgramReferer(ref);
+//		newModel.getReferenceList().add(ref);
+//		
+//		/**
+//		 * create type relation
+//		 */
+//		ProgramReference programReference = new ProgramReference(newField, newTargetUnit, null, 
+//				ProgramReference.NEW_DEFAULT_CONSTRUCTOR, new ArrayList<ReferenceInflucencedDetail>());
+//		newField.addProgramReferee(programReference);
+//		newTargetUnit.addProgramReferer(programReference);
+//		newModel.getReferenceList().add(programReference);
+//		
+//		moveExtractMembersToTargetUnit(extractMembers, newModel, newTargetUnit, newSourceUnit); 
+//		
+//		createDelegatingMethods(newModel, delegateMethods, newTargetUnit, newSourceUnit);
+//
+//		buildVariableDeclarationRelations(newModel, extractMembers, newTargetUnit, newSourceUnit, newField);
+//		
+//		System.currentTimeMillis();
+//		newModel.updateUnitCallingRelationByMemberRelations();
+//
+//		ModuleWrapper bestModule = calculateBestMappingModule(newModel, newTargetUnit);
+//		newTargetUnit.setMappingModule(bestModule);
+//		this.mappingModule = bestModule;
+		
 		return newModel;
 	}
+	
+//	@Override
+//	public ProgramModel simulate(ProgramModel model) {
+//		ProgramModel newModel = model.clone();
+//		/**
+//		 * replace those to-be-extracted members with new ones.
+//		 */
+//		ArrayList<UnitMemberWrapper> extractMembers = new ArrayList<>();
+//		for(UnitMemberWrapper member: toBeExtractedMembers){
+//			UnitMemberWrapper newMem = newModel.findMember(member);
+//			extractMembers.add(newMem);
+//		}
+//		
+//		ArrayList<UnitMemberWrapper> delegateMethods = identifyDelegatingMethods(extractMembers);
+//		
+//		//toBeExtractedMembers = extractMembers;
+//		/**
+//		 * create a new class named "ExtractClass**"
+//		 */
+//		ICompilationUnitWrapper newTargetUnit = new ICompilationUnitWrapper(null, false, "ExtractedClass"+NameGernationCounter.retrieveNumber(), 
+//				extractMembers.get(0).getUnitWrapper().getPackageName(), new HashMap<String, Integer>(), "", false, ModifierWrapper.PUBLIC);
+//		newModel.getAllTheTypesInScope().add(newTargetUnit);
+//		this.targetUnitName = newTargetUnit.getFullQualifiedName();
+//		
+//		/**
+//		 * create a new field in source class
+//		 */
+//		ICompilationUnitWrapper newSourceUnit = newModel.findUnit(this.sourceUnit.getFullQualifiedName());
+//		FieldWrapper newField = new FieldWrapper("extractedClass"+NameGernationCounter.retrieveNumber(), newTargetUnit.getName(), 
+//				newSourceUnit, null, "", null, false, ModifierWrapper.PUBLIC);
+//		newSourceUnit.getMembers().add(newField);
+//		newModel.getScopeMemberList().add(newField);
+//		this.newFieldName = newField.getName();
+//		
+//		/**
+//		 * create the relation indicating field has the type of newly created class
+//		 */
+//		ProgramReference ref = new ProgramReference(newField, newTargetUnit, null, ProgramReference.TYPE_DECLARATION, new ArrayList<ReferenceInflucencedDetail>());
+//		newField.addProgramReferee(ref);
+//		newTargetUnit.addProgramReferer(ref);
+//		newModel.getReferenceList().add(ref);
+//		
+//		/**
+//		 * create type relation
+//		 */
+//		ProgramReference programReference = new ProgramReference(newField, newTargetUnit, null, 
+//				ProgramReference.NEW_DEFAULT_CONSTRUCTOR, new ArrayList<ReferenceInflucencedDetail>());
+//		newField.addProgramReferee(programReference);
+//		newTargetUnit.addProgramReferer(programReference);
+//		newModel.getReferenceList().add(programReference);
+//		
+//		moveExtractMembersToTargetUnit(extractMembers, newModel, newTargetUnit, newSourceUnit); 
+//		
+//		createDelegatingMethods(newModel, delegateMethods, newTargetUnit, newSourceUnit);
+//
+//		buildVariableDeclarationRelations(newModel, extractMembers, newTargetUnit, newSourceUnit, newField);
+//		
+//		System.currentTimeMillis();
+//		newModel.updateUnitCallingRelationByMemberRelations();
+//
+//		ModuleWrapper bestModule = calculateBestMappingModule(newModel, newTargetUnit);
+//		newTargetUnit.setMappingModule(bestModule);
+//		this.mappingModule = bestModule;
+//		
+//		
+//		/**
+//		 * remove some exclusive opportunities
+//		 */
+//		Iterator<RefactoringOpportunity> oppIter = newModel.getOneShotOpportnityList().iterator();
+//		while(oppIter.hasNext()){
+//			RefactoringOpportunity opp = oppIter.next();
+//			if(opp instanceof ExtractClassOpportunity){
+//				ExtractClassOpportunity extractClassOpp = (ExtractClassOpportunity)opp;
+//				
+//				if(extractClassOpp.getId() == this.getId()){
+//					oppIter.remove();
+//				}
+//			}
+//		}
+//		
+//		return newModel;
+//	}
 
 	/**
 	 * @param newModel
@@ -377,7 +466,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	/**
 	 * @return the toBeExtractedMembers
 	 */
-	public ArrayList<UnitMemberWrapper> getToBeExtractedMembers() {
+	public ArrayList<LowLevelGraphNode> getToBeExtractedMembers() {
 		return toBeExtractedMembers;
 	}
 
@@ -385,7 +474,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	 * @param toBeExtractedMembers the toBeExtractedMembers to set
 	 */
 	public void setToBeExtractedMembers(
-			ArrayList<UnitMemberWrapper> toBeExtractedMembers) {
+			ArrayList<LowLevelGraphNode> toBeExtractedMembers) {
 		this.toBeExtractedMembers = toBeExtractedMembers;
 	}
 
@@ -405,7 +494,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	@Override
 	public ArrayList<ASTNode> getHints() {
 		ArrayList<ASTNode> nodeList = new ArrayList<>();
-		for(UnitMemberWrapper member: toBeExtractedMembers){
+		for(LowLevelGraphNode member: toBeExtractedMembers){
 			nodeList.add(member.getJavaElement());
 		}
 		return nodeList;
@@ -415,8 +504,20 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	public double computeSimilarityWith(RefactoringOpportunity opp) {
 		if(opp instanceof ExtractClassOpportunity){
 			ExtractClassOpportunity thatOpp = (ExtractClassOpportunity)opp;
+			ArrayList<UnitMemberWrapper> thisList = new ArrayList<>();
+			ArrayList<UnitMemberWrapper> thatList = new ArrayList<>();
+			for(LowLevelGraphNode node: getToBeExtractedMembers()){
+				if(node instanceof UnitMemberWrapper){
+					thisList.add((UnitMemberWrapper)node);
+				}
+			}
+			for(LowLevelGraphNode node: thatOpp.getToBeExtractedMembers()){
+				if(node instanceof UnitMemberWrapper){
+					thatList.add((UnitMemberWrapper)node);
+				}
+			}
 			
-			double sim = ReflexactoringUtil.computeSetSimilarity(getToBeExtractedMembers(), thatOpp.getToBeExtractedMembers());
+			double sim = ReflexactoringUtil.computeSetSimilarity(thisList, thatList);
 			
 			return sim;
 			/*double simSum = 0;
@@ -538,7 +639,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			}			
 
 			//check whether to be exracted member exists or not
-			for(UnitMemberWrapper member : toBeExtractedMembers){
+			for(LowLevelGraphNode member : toBeExtractedMembers){
 				if(member instanceof MethodWrapper){				
 					IMethod[] methods = sourceType.findMethods((IMethod) ((MethodWrapper) member).getJavaMember());	
 					if(methods == null || methods.length != 1){
@@ -661,10 +762,171 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		@Override
 		public ArrayList<RefactoringOpportunity> detectOpportunities(
 				ProgramModel model) {
-			//TODO
-			return null;
+			ArrayList<RefactoringOpportunity> extractClassOppList = new ArrayList<>();
+			for(ICompilationUnitWrapper sourceUnit: model.getOutmostTypesInScope()){
+				ArrayList<IClusterElement> list = new ArrayList<>();
+				list.addAll(sourceUnit.getMembers());
+				list.addAll(sourceUnit.getInnerClassList());
+				
+				HierarchicalClustering clustering = new HierarchicalClustering(list, HierarchicalClustering.singleLinkage, 0);
+				HierarchicalCluster cluster = clustering.buildDendrogram();
+				
+				ArrayList<HierarchicalCluster> possibleDivisions = identifyUsefulClusters(cluster);
+				
+				for(HierarchicalCluster cl: possibleDivisions){
+					ArrayList<LowLevelGraphNode> memberList = new ArrayList<>();
+					for(IClusterElement element: cl.getElements()){
+						if(element instanceof UnitMemberWrapper){
+							memberList.add((UnitMemberWrapper)element);
+						}
+						else if(element instanceof ICompilationUnitWrapper){
+							memberList.add((ICompilationUnitWrapper)element);
+						}
+					}
+					
+					ExtractClassOpportunity opp = new ExtractClassOpportunity(memberList, null, moduleList, sourceUnit);
+					extractClassOppList.add(opp);
+				}
+				
+			}
+			
+			return extractClassOppList;
 		}
 		
+		/**
+		 * traverse the hierarchical tree to collect cluster according to certain criteria.
+		 * @param cluster
+		 * @return
+		 */
+		private ArrayList<HierarchicalCluster> identifyUsefulClusters(HierarchicalCluster cluster) {
+			ArrayList<HierarchicalCluster> clusterList = new ArrayList<>();
+			for(HierarchicalCluster hc: cluster.getChildren()){
+				collectUsefulClusters(hc, clusterList);
+			}
+			
+			return clusterList;
+		}
+
+		/**
+		 * @param hc
+		 * @param clusterList
+		 */
+		private void collectUsefulClusters(HierarchicalCluster hc,
+				ArrayList<HierarchicalCluster> clusterList) {
+			
+			if(isValid(hc)){
+				clusterList.add(hc);
+			}
+			
+			if(hc.getChildren().size() > 1){
+				for(HierarchicalCluster cluster: hc.getChildren()){
+					collectUsefulClusters(cluster, clusterList);
+				}				
+			}
+		}
+		
+
+		/**
+		 * @param cluster
+		 * @return
+		 */
+		private boolean isValid(HierarchicalCluster cluster) {
+			boolean flag1 = cluster.size() >= 2 && cluster.size() <= 4;
+			//boolean flag2 = isAllMethodNonAbstract(cluster);
+			boolean flag3 = isContainPrivateFieldUsedByElementsNotInCluster(cluster);
+			boolean flag4 = isContainOverridingMethod(cluster);
+			boolean flag5 = isContainMethodCallingSuperMember(cluster);
+			
+			return flag1 /*&& flag2*/ && !flag3 && !flag4 && !flag5;
+		}
+
+		/**
+		 * @param cluster
+		 * @return
+		 */
+		private boolean isContainMethodCallingSuperMember(
+				HierarchicalCluster cluster) {
+			for(IClusterElement element: cluster.getElements()){
+				if(element instanceof MethodWrapper){
+					MethodWrapper method = (MethodWrapper)element;
+					
+					ICompilationUnitWrapper superClass = method.getUnitWrapper().getSuperClass();
+					if(superClass != null){
+						for(ProgramReference reference: method.getRefereePointList()){
+							LowLevelGraphNode node = reference.getReferee();
+							if(node instanceof UnitMemberWrapper){
+								if(superClass.getMembers().contains(node)){
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * @param cluster
+		 * @return
+		 */
+		private boolean isContainOverridingMethod(HierarchicalCluster cluster) {
+			for(IClusterElement element: cluster.getElements()){
+				if(element instanceof MethodWrapper){
+					MethodWrapper method = (MethodWrapper)element;
+					if(method.getOverridedMethod() != null){
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * @param cluster
+		 * @return
+		 */
+		private boolean isContainPrivateFieldUsedByElementsNotInCluster(HierarchicalCluster cluster) {
+			for(IClusterElement element: cluster.getElements()){
+				if(element instanceof FieldWrapper){
+					FieldWrapper field = (FieldWrapper)element;
+					if(field.getModifier().equals(ModifierWrapper.PRIVATE)){
+						for(ProgramReference reference: field.getRefererPointList()){
+							UnitMemberWrapper member = reference.getReferer();
+							
+							if(!isClusterContain(cluster, member)){
+								return true;
+							}
+							
+						}
+					}
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * @param member
+		 * @return
+		 */
+		private boolean isClusterContain(HierarchicalCluster cluster, UnitMemberWrapper member) {
+			for(IClusterElement element: cluster.getElements()){
+				if(element instanceof UnitMemberWrapper){
+					UnitMemberWrapper umw = (UnitMemberWrapper)element;
+					if(umw.equals(member)){
+						return true;
+					}
+				}
+				else if(element instanceof ICompilationUnitWrapper){
+					ICompilationUnitWrapper innerClass = (ICompilationUnitWrapper)element;
+					if(innerClass.getMembers().contains(member)){
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		public ArrayList<RefactoringOpportunity> detectOpportunities_bak(
 				ProgramModel model) {
 			ArrayList<RefactoringOpportunity> oppList = new ArrayList<>();
@@ -711,10 +973,10 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 					ICompilationUnitWrapper sourceUnit = toBeExtractedMemberList.get(0).getUnitWrapper();
 					
 					
-					ExtractClassOpportunity opp = new ExtractClassOpportunity(toBeExtractedMemberList, refactoring, 
-							moduleList, sourceUnit);
-					opp.setId(id);
-					oppList.add(opp);
+//					ExtractClassOpportunity opp = new ExtractClassOpportunity(toBeExtractedMemberList, refactoring, 
+//							moduleList, sourceUnit);
+//					opp.setId(id);
+//					oppList.add(opp);
 				}
 				id++;
 			}
@@ -835,10 +1097,11 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 				return null;
 			}
 			
-			ExtractClassOpportunity opp = new ExtractClassOpportunity(toBeExtractedMemberList, null, moduleList, unitWrapper);
-			opp.setId(id);
-			
-			return opp;
+//			ExtractClassOpportunity opp = new ExtractClassOpportunity(toBeExtractedMemberList, null, moduleList, unitWrapper);
+//			opp.setId(id);
+//			
+//			return opp;
+			return null;
 		}
 		
 	}

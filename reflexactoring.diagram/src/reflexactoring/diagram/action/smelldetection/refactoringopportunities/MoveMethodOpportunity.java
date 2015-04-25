@@ -98,20 +98,20 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		 * 
 		 * remove some exclusive opportunities,
 		 */
-		Iterator<RefactoringOpportunity> oppIter = newModel.getOneShotOpportnityList().iterator();
-		while(oppIter.hasNext()){
-			RefactoringOpportunity opp = oppIter.next();
-			if(opp instanceof ExtractClassOpportunity){
-				ExtractClassOpportunity extractClassOpp = (ExtractClassOpportunity)opp;
-				
-				for(UnitMemberWrapper extractedMember: extractClassOpp.getToBeExtractedMembers()){
-					if(extractedMember.equals(this.objectMethod)){
-						oppIter.remove();
-						break;
-					}
-				}
-			}
-		}
+//		Iterator<RefactoringOpportunity> oppIter = newModel.getOneShotOpportnityList().iterator();
+//		while(oppIter.hasNext()){
+//			RefactoringOpportunity opp = oppIter.next();
+//			if(opp instanceof ExtractClassOpportunity){
+//				ExtractClassOpportunity extractClassOpp = (ExtractClassOpportunity)opp;
+//				
+//				for(UnitMemberWrapper extractedMember: extractClassOpp.getToBeExtractedMembers()){
+//					if(extractedMember.equals(this.objectMethod)){
+//						oppIter.remove();
+//						break;
+//					}
+//				}
+//			}
+//		}
 		
 		MethodWrapper objMethod = (MethodWrapper)newModel.findMember(this.objectMethod);
 		

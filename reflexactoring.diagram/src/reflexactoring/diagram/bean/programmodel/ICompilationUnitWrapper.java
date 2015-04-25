@@ -826,4 +826,9 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 			return 1.0/count;
 		}
 	}
+
+	@Override
+	public ASTNode getJavaElement() {
+		return getTypeDeclaration();
+	}
 }
