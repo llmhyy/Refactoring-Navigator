@@ -890,7 +890,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			for(IClusterElement element: cluster.getElements()){
 				if(element instanceof FieldWrapper){
 					FieldWrapper field = (FieldWrapper)element;
-					if(field.getModifier().equals(ModifierWrapper.PRIVATE)){
+					if(field.getVisbility().equals(ModifierWrapper.PRIVATE)){
 						for(ProgramReference reference: field.getRefererPointList()){
 							UnitMemberWrapper member = reference.getReferer();
 							

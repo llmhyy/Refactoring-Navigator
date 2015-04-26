@@ -480,14 +480,14 @@ public class ProgramModel{
 				FieldWrapper oldField = (FieldWrapper)oldMember;
 				clonedMember = new FieldWrapper(oldField.getName(), oldField.getType(), 
 						clonedMemberUnit, oldField.getTermFrequency(), oldField.getDescription(), 
-						oldField.getField(), oldField.isAbstract(), oldField.getModifier());
+						oldField.getField(), oldField.isAbstract(), oldField.isStatic(), oldField.getVisbility());
 			}else if(oldMember instanceof MethodWrapper){
 				MethodWrapper oldMethodWrapper = (MethodWrapper)oldMember;
 				
 				clonedMember = new MethodWrapper(oldMethodWrapper.getName(), oldMethodWrapper.getReturnType(), 
 						oldMethodWrapper.cloneParameters(), oldMethodWrapper.isConstructor(), 
 						clonedMemberUnit, oldMethodWrapper.getTermFrequency(), oldMethodWrapper.getDescription(),
-						oldMethodWrapper.getMethod(), null, oldMethodWrapper.isAbstract(), oldMethodWrapper.getModifier());
+						oldMethodWrapper.getMethod(), null, oldMethodWrapper.isAbstract(), oldMethodWrapper.getVisbility());
 			}	
 			/*if(member.getJavaElement() != null){
 				if(member instanceof FieldWrapper){

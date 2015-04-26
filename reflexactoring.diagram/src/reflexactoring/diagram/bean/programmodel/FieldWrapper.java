@@ -8,6 +8,7 @@ import java.util.HashMap;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 import datamining.cluster.IClusterElement;
@@ -29,15 +30,16 @@ public class FieldWrapper extends UnitMemberWrapper{
 	
 	public FieldWrapper(String name, String type, ICompilationUnitWrapper unitWrapper, 
 			HashMap<String, Integer> termFrequency, String description, FieldDeclaration field, 
-			boolean isAbstract, String modifier){
+			boolean isAbstract, boolean isStatic, String visibility){
 		super(unitWrapper);
 		this.type = type;
 		this.name = name;
 		this.termFrequency = termFrequency;
 		this.description = description;
 		this.field = field;
-		this.modifier = modifier;
+		this.visbility = visibility;
 		this.isAbstract = isAbstract;
+		this.isStatic = isStatic;
 		//this.variableDeclaration = variableDeclaration;
 	}
 
@@ -49,7 +51,10 @@ public class FieldWrapper extends UnitMemberWrapper{
 		this.type = field.getType().toString();
 		
 		int modifierFlag = field.getModifiers();
-		this.modifier = ModifierWrapper.parseSecurityModifer(modifierFlag);
+		this.visbility = ModifierWrapper.parseSecurityModifer(modifierFlag);
+		
+		this.isAbstract = Modifier.isAbstract(modifierFlag);
+		this.isStatic = Modifier.isStatic(modifierFlag);
 		
 		String content = new TokenExtractor(unitWrapper).extractTokens(field);
 		content = content + " " + generateTitle().toLowerCase();

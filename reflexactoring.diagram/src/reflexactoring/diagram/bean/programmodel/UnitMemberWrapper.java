@@ -32,8 +32,9 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  */
 public abstract class UnitMemberWrapper extends Document implements LowLevelSuggestionObject, LowLevelGraphNode, SimilarityComputable {
 	
-	protected String modifier;
+	protected String visbility;
 	protected boolean isAbstract;
+	protected boolean isStatic;
 	
 	protected ICompilationUnitWrapper unitWrapper;
 	/**
@@ -93,18 +94,12 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 		this.unitWrapper = unitWrapper;
 	}
 	
-	/**
-	 * @return the modifier
-	 */
-	public String getModifier() {
-		return modifier;
+	public String getVisbility() {
+		return visbility;
 	}
 
-	/**
-	 * @param modifier the modifier to set
-	 */
-	public void setModifier(String modifier) {
-		this.modifier = modifier;
+	public void setVisbility(String modifier) {
+		this.visbility = modifier;
 	}
 
 	/**
@@ -119,6 +114,20 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 	 */
 	public void setAbstract(boolean isAbstract) {
 		this.isAbstract = isAbstract;
+	}
+
+	/**
+	 * @return the isStatic
+	 */
+	public boolean isStatic() {
+		return isStatic;
+	}
+
+	/**
+	 * @param isStatic the isStatic to set
+	 */
+	public void setStatic(boolean isStatic) {
+		this.isStatic = isStatic;
 	}
 
 	@Override
