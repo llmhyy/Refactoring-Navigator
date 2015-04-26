@@ -134,22 +134,24 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 		
 		System.currentTimeMillis();
 		
-		/**
-		 * change the parameters of method
-		 */
-		ArrayList<ProgramReference> referenceList = RefactoringOppUtil.
-				findTheReferingCalleeMemberInSourceUnit(originalUnit, tarUnit, objMethod, newModel);
-		if(referenceList.size() > 0){
-			objMethod.getParameters().add(originalUnit.getName());			
-		}
-		objMethod.removeParameter(tarUnit);
-		
-		modifyTheReferenceOfSourceUnit(originalUnit, objMethod, referenceList, newModel);
-		
-		VariableDeclarationWrapper variableDeclaration = modifyTheReferenceOfTargetUnit(newModel, objMethod, tarUnit);
-		if(variableDeclaration != null){
-			FieldWrapper corrField = (variableDeclaration.isField()) ? variableDeclaration.getTempFieldWrapper() : null;
-			RefactoringOppUtil.changeTheReferenceInClientCode(newModel, objMethod, tarUnit, originalUnit, variableDeclaration, corrField);			
+		if(!objMethod.isStatic()){
+			/**
+			 * change the parameters of method
+			 */
+			ArrayList<ProgramReference> referenceList = RefactoringOppUtil.
+					findTheReferingCalleeMemberInSourceUnit(originalUnit, tarUnit, objMethod, newModel);
+			if(referenceList.size() > 0){
+				objMethod.getParameters().add(originalUnit.getName());			
+			}
+			objMethod.removeParameter(tarUnit);
+			
+			modifyTheReferenceOfSourceUnit(originalUnit, objMethod, referenceList, newModel);
+			
+			VariableDeclarationWrapper variableDeclaration = modifyTheReferenceOfTargetUnit(newModel, objMethod, tarUnit);
+			if(variableDeclaration != null){
+				FieldWrapper corrField = (variableDeclaration.isField()) ? variableDeclaration.getTempFieldWrapper() : null;
+				RefactoringOppUtil.changeTheReferenceInClientCode(newModel, objMethod, tarUnit, originalUnit, variableDeclaration, corrField);			
+			}			
 		}
 		newModel.updateUnitCallingRelationByMemberRelations();
 		
