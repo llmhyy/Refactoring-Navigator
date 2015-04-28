@@ -128,7 +128,10 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	public boolean equals(Object obj){
 		if(obj instanceof ExtractClassOpportunity){
 			ExtractClassOpportunity thatOpp = (ExtractClassOpportunity)obj;
-			if(thatOpp.isHavingSameMemberList(toBeExtractedMembers)){
+			if(thatOpp.isHavingSameMemberList(toBeExtractedMembers) 
+					&&
+					(thatOpp.getSourceUnit().getName().equals(this.getSourceUnit().getName()) || 
+							(thatOpp.getSourceUnit().getName().contains("ExtractedClass") && this.getSourceUnit().getName().contains("ExtractedClass")))){
 				return true;
 			}
 		}
@@ -151,8 +154,8 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 	}
 	
 	private boolean canFindAnEqualNodeInList(ArrayList<LowLevelGraphNode> list, LowLevelGraphNode member){
-		for(LowLevelGraphNode memberInList: list){
-			if(memberInList.equals(member)){
+		for(LowLevelGraphNode node: list){
+			if(node.getName().equals(member.getName())){
 				return true;
 			}
 		}
