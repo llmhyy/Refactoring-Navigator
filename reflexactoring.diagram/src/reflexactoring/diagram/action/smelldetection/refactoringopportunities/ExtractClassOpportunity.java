@@ -184,7 +184,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		}
 		
 		ArrayList<UnitMemberWrapper> delegateMethods = identifyDelegatingMethods(extractMembers);
-		
+		System.currentTimeMillis();
 		//toBeExtractedMembers = extractMembers;
 		/**
 		 * create a new class named "ExtractClass**"
@@ -478,12 +478,14 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 					 * change the parameters of method
 					 */
 					MethodWrapper objMethod = (MethodWrapper)member;
-					ArrayList<ProgramReference> referenceList = RefactoringOppUtil.
-							findTheReferingCalleeMemberInSourceUnit(newSourceUnit, newTargetUnit, objMethod, newModel);
-					if(referenceList.size() > 0){
-						objMethod.getParameters().add(newSourceUnit.getName());			
+					if(!objMethod.isStatic()){
+						ArrayList<ProgramReference> referenceList = RefactoringOppUtil.
+								findTheReferingCalleeMemberInSourceUnit(newSourceUnit, newTargetUnit, objMethod, newModel);
+						if(referenceList.size() > 0){
+							objMethod.getParameters().add(newSourceUnit.getName());			
+						}
+						objMethod.removeParameter(newTargetUnit);						
 					}
-					objMethod.removeParameter(newTargetUnit);
 				}
 				/**
 				 * add the new containing relation

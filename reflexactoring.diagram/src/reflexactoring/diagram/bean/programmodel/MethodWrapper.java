@@ -470,7 +470,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 	public boolean needDelegation(){
 		for(ProgramReference ref: this.getRefererPointList()){
 			UnitMemberWrapper member = ref.getReferer();
-			if(!member.getUnitWrapper().equals(this.getUnitWrapper())){
+			if(!this.isStatic() && !member.getUnitWrapper().equals(this.getUnitWrapper())){
 				return true;
 			}
 		}
