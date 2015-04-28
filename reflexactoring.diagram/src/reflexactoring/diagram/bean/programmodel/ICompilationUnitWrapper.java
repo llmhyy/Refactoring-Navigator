@@ -331,8 +331,8 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		
 		if(obj instanceof ICompilationUnitWrapper){
 			ICompilationUnitWrapper type = (ICompilationUnitWrapper)obj;
-			
-			if(type.getFullQualifiedName().contains("ExtractedClass") && this.getFullQualifiedName().contains("ExtractedClass")){
+			return type.getFullQualifiedName().equals(this.getFullQualifiedName());	
+			/*if(type.getFullQualifiedName().contains("ExtractedClass") && this.getFullQualifiedName().contains("ExtractedClass")){
 				String thisName = type.getFullQualifiedName();
 				String thatName = this.getFullQualifiedName();
 				
@@ -343,7 +343,7 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 			}
 			else{
 				return type.getFullQualifiedName().equals(this.getFullQualifiedName());				
-			}
+			}*/
 		}
 		
 		return false;
