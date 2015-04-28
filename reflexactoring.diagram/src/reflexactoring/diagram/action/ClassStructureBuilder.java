@@ -423,6 +423,7 @@ public class ClassStructureBuilder {
 		 * build caller/callee relation for compilation unit list
 		 */
 		Settings.scope.updateUnitCallingRelationByMemberRelations();
+		Settings.scope.updateUnitDescription();
 		
 		System.currentTimeMillis();
 	}

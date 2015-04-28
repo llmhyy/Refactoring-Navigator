@@ -83,6 +83,7 @@ public class PullUpMethodToNewInterfaceOpportunity extends PullUpMemberOpportuni
 		createNewMemberInSuperUnit(newModel, newInterfaceUnit, true);
 
 		newModel.updateUnitCallingRelationByMemberRelations();
+		newModel.updateUnitDescription();
 
 		/**
 		 * may calculate which module is proper to hold the newly created

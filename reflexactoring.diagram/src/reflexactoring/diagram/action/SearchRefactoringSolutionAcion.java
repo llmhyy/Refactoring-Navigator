@@ -15,6 +15,7 @@ import org.eclipse.ui.PlatformUI;
 
 import reflexactoring.diagram.action.recommend.RefactoringRecommender;
 import reflexactoring.diagram.action.recommend.SuggestionMove;
+import reflexactoring.diagram.action.recommend.action.MoveMemberAction;
 import reflexactoring.diagram.action.recommend.suboptimal.Violation;
 import reflexactoring.diagram.action.smelldetection.AdvanceEvaluatorAdapter;
 import reflexactoring.diagram.action.smelldetection.BadSmellDetector;
@@ -22,6 +23,7 @@ import reflexactoring.diagram.action.smelldetection.PenaltyAndRewardCalulator;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequence;
 import reflexactoring.diagram.action.smelldetection.bean.RefactoringSequenceElement;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.ExtractClassOpportunity;
+import reflexactoring.diagram.action.smelldetection.refactoringopportunities.MoveMethodOpportunity;
 import reflexactoring.diagram.action.smelldetection.refactoringopportunities.RefactoringOpportunity;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
@@ -58,7 +60,7 @@ public class SearchRefactoringSolutionAcion implements
 					
 					monitor.worked(1);
 					
-					if(i==4){
+					if(i==1){
 						System.currentTimeMillis();
 					}
 					
@@ -72,6 +74,12 @@ public class SearchRefactoringSolutionAcion implements
 							(calculator.isConformToUserFeedback(element.getOpportunity()) &&
 							 !sequence.contains(element))
 							){
+						
+						System.out.println("iteration " + i + ":");
+						System.out.println(element.getFitnessValue());
+						System.out.println(element.getViolationList());
+						System.out.println("====================");
+						
 						element.setPosition(i);
 						sequence.addElement(element);
 						model = element.getConsequenceModel();
@@ -138,6 +146,13 @@ public class SearchRefactoringSolutionAcion implements
 			
 			if(opp instanceof ExtractClassOpportunity){
 				System.currentTimeMillis();
+			}
+			
+			if(opp instanceof MoveMethodOpportunity){
+				MoveMethodOpportunity opp0 = (MoveMethodOpportunity)opp;
+				if(opp0.getObjectMethod().getName().contains("hasSuppressWarningsProposal") && opp0.getTargetUnit().getName().contains("Extract")){
+					System.currentTimeMillis();
+				}
 			}
 			
 			if(Settings.forbiddenOpps.contains(opp)){

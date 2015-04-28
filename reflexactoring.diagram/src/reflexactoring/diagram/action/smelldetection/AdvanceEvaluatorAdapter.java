@@ -20,6 +20,7 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
 public class AdvanceEvaluatorAdapter {
 	
 	private ArrayList<Violation> violationList = new ArrayList<>();
+	private double lexicalSim = 0;
 	
 	public double computeFitness(ProgramModel model, ArrayList<ModuleWrapper> moduleList){
 		
@@ -28,6 +29,8 @@ public class AdvanceEvaluatorAdapter {
 				FitnessEvaluator.ADVANCED_EVALUATOR);
 		//long t2 = System.currentTimeMillis();
 		//System.out.println("Extract model time: " + (t2-t1));
+		
+		System.currentTimeMillis();
 		
 		int[] DNA = constructDNA(model, moduleList);
 		
@@ -42,6 +45,7 @@ public class AdvanceEvaluatorAdapter {
 		double LCOM = model.computeNormalizedLCOMMetrics();
 		
 		this.violationList = gene.getViolationList();
+		this.lexicalSim = gene.getLexicalSim();
 		
 		double fitness = /*(1-CBO) + (1-LCOM) +*/ structureAndLexicalFitness;
 		return fitness;
@@ -72,5 +76,13 @@ public class AdvanceEvaluatorAdapter {
 		return DNA;
 		
 	}
+
+	/**
+	 * @return the lexicalSim
+	 */
+	public double getLexicalSim() {
+		return lexicalSim;
+	}
+	
 	
 }

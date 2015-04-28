@@ -87,6 +87,7 @@ public class PullUpMethodToExistingInterfaceOpportunity extends PullUpMemberOppo
 		createNewMemberInSuperUnit(newModel, newInterface, true);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
+		newModel.updateUnitDescription();
 		
 		return newModel;
 	}

@@ -154,6 +154,7 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			}			
 		}
 		newModel.updateUnitCallingRelationByMemberRelations();
+		newModel.updateUnitDescription();
 		
 		this.objectMethod = objMethod;
 		this.targetUnit = tarUnit;
@@ -622,19 +623,11 @@ public class MoveMethodOpportunity extends RefactoringOpportunity {
 			for(UnitMemberWrapper member: model.getScopeMemberList()){
 				if(member instanceof MethodWrapper){
 					MethodWrapper method = (MethodWrapper)member;
-					if(method.toString().contains("updateTableView")){
-						System.currentTimeMillis();
-					}
 					if(method.isLegalMethodToBeMoved()){
 						for(ICompilationUnitWrapper targetUnit: model.getOutmostTypesInScope()){
 							
-							if(method.toString().contains("updateTableView") && targetUnit.toString().contains("Table")){
-								System.currentTimeMillis();
-								System.currentTimeMillis();
-							}
-							
 							if(targetUnit.isLegalTargetClassToMoveMethodIn(method)){
-								if(isFeatureEnvy(targetUnit, method)){
+								if(isFeatureEnvy(targetUnit, method) || method.isStatic()){
 									MoveMethodOpportunity opp = new MoveMethodOpportunity(method, targetUnit);
 									oppList.add(opp);									
 								}

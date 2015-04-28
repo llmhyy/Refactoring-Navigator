@@ -87,6 +87,7 @@ public class PullUpAbstractMethodToExistingClassOpportunity extends
 		createNewMemberInSuperUnit(newModel, newClass, true);
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
+		newModel.updateUnitDescription();
 		
 		return newModel;
 	}

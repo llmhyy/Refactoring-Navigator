@@ -56,9 +56,13 @@ public class FieldWrapper extends UnitMemberWrapper{
 		this.isAbstract = Modifier.isAbstract(modifierFlag);
 		this.isStatic = Modifier.isStatic(modifierFlag);
 		
-		String content = new TokenExtractor(unitWrapper).extractTokens(field);
-		content = content + " " + generateTitle().toLowerCase();
+		//String content = new TokenExtractor(unitWrapper).extractTokens(field);
+		//content = content + " " + generateTitle().toLowerCase();
+		String content = generateTitle().toLowerCase();
+		this.setDescription(content);
 		this.extractTermFrequency(content);
+		
+		System.currentTimeMillis();
 	}
 	
 	@Override

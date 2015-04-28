@@ -182,7 +182,7 @@ public abstract class PullUpMemberOpportunity extends RefactoringOpportunity{
 			MethodWrapper methodWrapper = (MethodWrapper)oldMember;
 			newMember = new MethodWrapper(methodWrapper.getName(), methodWrapper.getReturnType(), 
 					methodWrapper.getParameters(), methodWrapper.isConstructor(), superUnit, null, 
-					methodWrapper.getDescription(), null, null, isPullSignature, ModifierWrapper.PUBLIC);			
+					methodWrapper.getDescription(), null, null, isPullSignature, oldMember.isStatic(), ModifierWrapper.PUBLIC);			
 		}
 		else if(oldMember instanceof FieldWrapper){
 			FieldWrapper fieldWrapper = (FieldWrapper)oldMember;

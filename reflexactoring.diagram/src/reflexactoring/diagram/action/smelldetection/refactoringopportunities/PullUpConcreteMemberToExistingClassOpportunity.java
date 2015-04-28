@@ -101,6 +101,7 @@ public class PullUpConcreteMemberToExistingClassOpportunity extends PullUpMember
 		}
 		
 		newModel.updateUnitCallingRelationByMemberRelations();
+		newModel.updateUnitDescription();
 		
 		this.targetUnit = newSuperclass;
 		

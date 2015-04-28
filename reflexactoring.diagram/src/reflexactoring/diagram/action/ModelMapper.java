@@ -29,8 +29,7 @@ public class ModelMapper {
 	
 	public void generateMappingRelationWithGA(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitList) {
-		double[][] overallSimilarityTable; 
-		overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);		
+		double[][] overallSimilarityTable = initializeOverallSimilarityTable(moduleList, compilationUnitList);		
 		//clearMappingRelation(moduleList, compilationUnitList);
 		
 		ModuleUnitsSimilarityTable table = ReflexactoringUtil.convertRawTableToModuleUnitsSimilarityTable(overallSimilarityTable, 
@@ -185,7 +184,7 @@ public class ModelMapper {
 	 * @param compilationUnitList
 	 * @return
 	 */
-	private double[][] initializeOverallSimilarityTable(ArrayList<ModuleWrapper> moduleList,
+	public static double[][] initializeOverallSimilarityTable(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitList){
 		double[][] semanticSimilarityTable = generateSemanticSimilarityTableWithBags(moduleList, compilationUnitList);
 		double[][] structuralSimilarityTable /*= generateStructuralSimilarityTable(semanticSimilarityTable, moduleList, compilationUnitList)*/;
@@ -209,7 +208,7 @@ public class ModelMapper {
 		return overallSimilarity;
 	}
 	
-	private double[][] generateSemanticSimilarityTableWithBags(ArrayList<ModuleWrapper> moduleList,
+	private static double[][] generateSemanticSimilarityTableWithBags(ArrayList<ModuleWrapper> moduleList,
 			ArrayList<ICompilationUnitWrapper> compilationUnitList){
 		double[][] similarityTable = new double[moduleList.size()][compilationUnitList.size()];
 		
@@ -219,7 +218,7 @@ public class ModelMapper {
 			for(int j=0; j<compilationUnitList.size(); j++){
 				ICompilationUnitWrapper unit = compilationUnitList.get(j);
 				
-				double similarity = unit.computeSimilarity(module);
+				double similarity = module.computeSimilarity(unit);
 				similarityTable[i][j] = similarity;
 			}
 		}

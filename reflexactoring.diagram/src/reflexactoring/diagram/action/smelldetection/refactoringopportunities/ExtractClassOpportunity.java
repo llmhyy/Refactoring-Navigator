@@ -240,6 +240,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		
 		//System.currentTimeMillis();
 		newModel.updateUnitCallingRelationByMemberRelations();
+		newModel.updateUnitDescription();
 
 		ModuleWrapper bestModule = calculateBestMappingModule(newModel, newTargetUnit);
 		newTargetUnit.setMappingModule(bestModule);
@@ -419,7 +420,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 			MethodWrapper newDeletegateMethod = new MethodWrapper(method.getName(), 
 					method.getReturnType(), method.getParameters(), 
 					method.isConstructor(), newSourceUnit, method.getTermFrequency(), 
-					method.getDescription(), null, null, false, ModifierWrapper.PUBLIC);
+					method.getDescription(), null, null, false, false, ModifierWrapper.PUBLIC);
 			newSourceUnit.getMembers().add(newDeletegateMethod);
 			newModel.getScopeMemberList().add(newDeletegateMethod);
 

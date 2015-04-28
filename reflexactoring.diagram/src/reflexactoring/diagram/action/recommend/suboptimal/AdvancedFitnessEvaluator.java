@@ -7,6 +7,8 @@ import reflexactoring.diagram.util.ReflexactoringUtil;
  *
  */
 public class AdvancedFitnessEvaluator extends DefaultFitnessEvaluator {
+	private double lexicalSim = 0;
+	
 	/**
 	 * @param similarityTable
 	 * @param highLevelNodeDependencyMatrix
@@ -39,9 +41,23 @@ public class AdvancedFitnessEvaluator extends DefaultFitnessEvaluator {
 		
 		System.currentTimeMillis();
 		
-		double lexicalSimilarity = 0/*computeLexicalSimilarity(gene)*/;
+		double lexicalSimilarity = /*0*/30*computeLexicalSimilarity(gene);
+		this.lexicalSim = lexicalSimilarity;
+		
 		return Double.valueOf(ReflexactoringUtil.getAlpha())*lexicalSimilarity
-				- structureDependencyViolation - structureInheritanceViolation - structureCreationViolation - structureEmptyModuleViolation;
+				- structureDependencyViolation 
+				- structureInheritanceViolation 
+				- structureCreationViolation 
+				- structureEmptyModuleViolation;
 	}
+
+	/**
+	 * @return the lexicalSim
+	 */
+	public double getLexicalSim() {
+		return lexicalSim;
+	}
+	
+	
 
 }

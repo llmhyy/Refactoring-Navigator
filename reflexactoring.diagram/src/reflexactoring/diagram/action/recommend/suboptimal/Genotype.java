@@ -19,6 +19,7 @@ public class Genotype {
 	private ArrayList<Violation> violationList;
 	
 	private FitnessEvaluator evaluator;
+	private double lexicalSim;
 	/**
 	 * @param DNA
 	 */
@@ -62,6 +63,9 @@ public class Genotype {
 		if(fitness == 0){
 			fitness = evaluator.computeFitness(this);
 			this.violationList = evaluator.getViolationList();
+			if(evaluator instanceof AdvancedFitnessEvaluator){
+				this.lexicalSim = ((AdvancedFitnessEvaluator)evaluator).getLexicalSim();
+			}
 		}
 		
 		return fitness;
@@ -120,4 +124,13 @@ public class Genotype {
 	public void setViolationList(ArrayList<Violation> violationList) {
 		this.violationList = violationList;
 	}
+
+	/**
+	 * @return the lexicalSim
+	 */
+	public double getLexicalSim() {
+		return lexicalSim;
+	}
+	
+	
 }

@@ -5,13 +5,12 @@ package reflexactoring.diagram.action.recommend.suboptimal;
 
 import java.util.ArrayList;
 
+import reflexactoring.diagram.action.ModelMapper;
 import reflexactoring.diagram.action.recommend.RecommendUtil;
 import reflexactoring.diagram.bean.ModuleWrapper;
 import reflexactoring.diagram.bean.programmodel.GraphRelationType;
 import reflexactoring.diagram.bean.programmodel.ProgramModel;
 import reflexactoring.diagram.bean.programmodel.ReferencingDetail;
-import reflexactoring.diagram.util.ReflexactoringUtil;
-import reflexactoring.diagram.util.Settings;
 
 /**
  * @author linyun
@@ -20,7 +19,10 @@ import reflexactoring.diagram.util.Settings;
 public class FitnessEvaluatorFactory {
 	
 	public static FitnessEvaluator createFitnessEvaluator(ProgramModel model, ArrayList<ModuleWrapper> moduleList, int type){
-		double[][] similarityTable = Settings.similarityTable.convertModuleUnitsSimilarityTableToRawTable();
+		
+		double[][] similarityTable = ModelMapper.initializeOverallSimilarityTable(moduleList, model.getOutmostTypesInScope());
+		//double[][] similarityTable = Settings.similarityTable.convertModuleUnitsSimilarityTableToRawTable();
+		System.currentTimeMillis();
 		
 		double[][] highLevelNodeDependencyMatrix = RecommendUtil.extractGraph(moduleList, 
 				GraphRelationType.GRAPH_DEPENDENCY, ReferencingDetail.REFER);

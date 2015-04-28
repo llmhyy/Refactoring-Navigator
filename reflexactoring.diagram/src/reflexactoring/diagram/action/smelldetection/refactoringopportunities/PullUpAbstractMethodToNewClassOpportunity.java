@@ -80,6 +80,7 @@ public class PullUpAbstractMethodToNewClassOpportunity extends PullUpMemberOppor
 		
 		this.targetUnit = newClass;
 		newModel.updateUnitCallingRelationByMemberRelations();
+		newModel.updateUnitDescription();
 		
 		return newModel;
 	}

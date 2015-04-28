@@ -487,7 +487,7 @@ public class ProgramModel{
 				clonedMember = new MethodWrapper(oldMethodWrapper.getName(), oldMethodWrapper.getReturnType(), 
 						oldMethodWrapper.cloneParameters(), oldMethodWrapper.isConstructor(), 
 						clonedMemberUnit, oldMethodWrapper.getTermFrequency(), oldMethodWrapper.getDescription(),
-						oldMethodWrapper.getMethod(), null, oldMethodWrapper.isAbstract(), oldMethodWrapper.getVisbility());
+						oldMethodWrapper.getMethod(), null, oldMethodWrapper.isAbstract(), oldMethodWrapper.isStatic(), oldMethodWrapper.getVisbility());
 			}	
 			/*if(member.getJavaElement() != null){
 				if(member instanceof FieldWrapper){
@@ -742,6 +742,14 @@ public class ProgramModel{
 				
 				refererUnit.putReferringDetail(refereeUnit, reference.getASTNode());
 			}
+		}
+	}
+	
+	public void updateUnitDescription(){
+		//System.out.println();
+		for(ICompilationUnitWrapper unit: this.scopeCompilationUnitList){
+			unit.updateDescription();
+			System.currentTimeMillis();
 		}
 	}
 	

@@ -36,7 +36,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 	
 	public MethodWrapper(String name, String returnType, ArrayList<String> parameters, boolean isConstructor, 
 			ICompilationUnitWrapper unitWrapper, HashMap<String, Integer> termFrequency, String description, 
-			MethodDeclaration method, MethodWrapper overridedMethod, boolean isAbstract, String visibility){
+			MethodDeclaration method, MethodWrapper overridedMethod, boolean isAbstract, boolean isStatic, String visibility){
 		super(unitWrapper);
 		this.name = name;
 		this.setReturnType(returnType);
@@ -48,6 +48,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 		this.overridedMethod = overridedMethod;
 		this.isAbstract = isAbstract;
 		this.visbility = visibility;
+		this.isStatic = isStatic;
 	}
 	
 	public MethodWrapper(MethodDeclaration method, ICompilationUnitWrapper unitWrapper){
@@ -68,6 +69,7 @@ public class MethodWrapper extends UnitMemberWrapper {
 		//String content = new TokenExtractor(unitWrapper).extractTokens(method);
 		//content = content + generateTitle();
 		String content = generateTitle().toLowerCase();
+		this.setDescription(content);
 		this.extractTermFrequency(content);
 		
 		System.currentTimeMillis();

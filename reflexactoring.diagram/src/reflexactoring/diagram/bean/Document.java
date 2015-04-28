@@ -27,15 +27,25 @@ public abstract class Document {
 	 * @return
 	 */
 	protected String generateTitle(){
+		
 		String title = getDocName();
 		String[] titleList = ReflexactoringUtil.mixedSplitting(title);
 		
 		StringBuffer buffer = new StringBuffer();
 		for(String titleKeyword: titleList){
-			for(int i=0; i<100; i++){
-				//titleKeyword = ReflexactoringUtil.performStemming(titleKeyword);
-				buffer.append(titleKeyword + " ");				
+			if(titleKeyword.toLowerCase().equals("to") ||
+					titleKeyword.toLowerCase().equals("extracted") ||
+					titleKeyword.toLowerCase().equals("get") ||
+					titleKeyword.toLowerCase().equals("set") ||
+					titleKeyword.toLowerCase().contains("class")){
+				continue;
 			}
+			
+			buffer.append(titleKeyword + " ");	
+//			for(int i=0; i<5; i++){
+//				//titleKeyword = ReflexactoringUtil.performStemming(titleKeyword);
+//				buffer.append(titleKeyword + " ");				
+//			}
 		}
 		
 		return buffer.toString();
@@ -48,6 +58,9 @@ public abstract class Document {
 	public void extractTermFrequency(String content){
 		//content = ReflexactoringUtil.performStemmingAndRemovingStopWord(content);
 		if(content == null) return;
+		if(content.contains("null")){
+			System.currentTimeMillis();
+		}
 		String[] list = content.split(" ");
 		for(String keyword: list){
 			Integer freq = termFrequency.get(keyword);
@@ -61,38 +74,52 @@ public abstract class Document {
 			termFrequency.put(keyword, freq);
 		}
 	}
-
+	
 	public double computeSimilarity(Document doc){
-		HashSet<String> union = new HashSet<>();
-		union.addAll(termFrequency.keySet());
-		union.addAll(doc.getTermFrequency().keySet());
-		
+		int sum = 0;
 		double numerator = 0;
-		double denominator = 0;
-		for(String key: union){
-			Integer thisFreq = this.termFrequency.get(key);
-			thisFreq = (thisFreq == null)? 0 : thisFreq;
-			
-			Integer thatFreq = doc.getTermFrequency().get(key);
-			thatFreq = (thatFreq == null)? 0 : thatFreq;
-			
-			if(thisFreq == 0 && thatFreq != 0){
-				denominator += thatFreq;
-			}
-			else if(thisFreq != 0 && thatFreq == 0){
-				denominator += thisFreq;
-			}
-			else{
-				double value = (thisFreq >= thatFreq)? thisFreq : thatFreq;
-				numerator += value;
-				denominator += value;
+		for(String key: doc.getTermFrequency().keySet()){
+			int num = doc.getTermFrequency().get(key);
+			sum += num;
+			if(this.termFrequency.containsKey(key)){
+				numerator += num; 
 			}
 		}
 		
-		double result = numerator/denominator;
-		return result;
-		
+		return numerator/sum;
 	}
+
+//	public double computeSimilarity(Document doc){
+//		HashSet<String> union = new HashSet<>();
+//		union.addAll(termFrequency.keySet());
+//		union.addAll(doc.getTermFrequency().keySet());
+//		
+//		double numerator = 0;
+//		double denominator = 0;
+//		for(String key: union){
+//			Integer thisFreq = this.termFrequency.get(key);
+//			thisFreq = (thisFreq == null)? 0 : thisFreq;
+//			
+//			Integer thatFreq = doc.getTermFrequency().get(key);
+//			thatFreq = (thatFreq == null)? 0 : thatFreq;
+//			
+//			if(thisFreq == 0 && thatFreq != 0){
+//				denominator += thatFreq;
+//			}
+//			else if(thisFreq != 0 && thatFreq == 0){
+//				denominator += thisFreq;
+//			}
+//			else{
+//				double value = (thisFreq >= thatFreq)? thisFreq : thatFreq;
+//				numerator += value;
+//				denominator += value;
+//			}
+//		}
+//		
+//		double result = numerator/denominator;
+//		return result;
+//		
+//	}
 	
 	/**
 	 * @return the termFrequency

@@ -91,8 +91,8 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		this.isInterface = isInterface;
 		this.simpleName = simpleName;
 		this.packageName = packageName;
-		this.termFrequency = termFrequency;
-		this.description = description;
+		//this.termFrequency = termFrequency;
+		//this.description = description;
 		this.isAbstract = isAbstract;
 		this.modifier = modifier;
 	}
@@ -153,8 +153,34 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 		//content = content + generateTitle();
 		String content = generateTitle().toLowerCase();
 		
+		
 		this.setDescription(content);
 		this.extractTermFrequency(content);
+	}
+	
+	/**
+	 * whenever some method is moved in or out, the topic of a compilation unit changes
+	 */
+	public void updateDescription() {
+		StringBuffer buffer = new StringBuffer();
+		String content = generateTitle().toLowerCase();
+		buffer.append(content);
+		
+		for(UnitMemberWrapper member: getMembers()){
+			String c = member.getDescription();
+			buffer.append(c);
+		}
+		
+		for(ICompilationUnitWrapper innerClass: getInnerClassList()){
+			String c = innerClass.generateTitle().toLowerCase();
+			buffer.append(c);
+		}
+		
+		String newContent = buffer.toString();
+		this.setDescription(newContent);
+		this.extractTermFrequency(newContent);
+		
+		//System.currentTimeMillis();
 	}
 	
 	public boolean isInnerClass(){
@@ -598,11 +624,19 @@ public class ICompilationUnitWrapper extends Document implements LowLevelSuggest
 	}
 	
 	public boolean isLegalTargetClassToMoveMethodIn(MethodWrapper method){
-		return !isInterface() &&
-				!this.getMembers().contains(method) &&
-				!alreadyHasAMethodWithSameSignature(method) &&
-				!alreadyHasAMethodInSuperTypeWithSameSingature(method) &&
-				(isTheSameTypeWithAFieldAccessedByTheMethod(method) || isAsAParameterOfTheMethod(method));
+		if(method.isStatic()){
+			return !isInterface() &&
+					!this.getMembers().contains(method) &&
+					!alreadyHasAMethodWithSameSignature(method) &&
+					!alreadyHasAMethodInSuperTypeWithSameSingature(method);
+		}
+		else{
+			return !isInterface() &&
+					!this.getMembers().contains(method) &&
+					!alreadyHasAMethodWithSameSignature(method) &&
+					!alreadyHasAMethodInSuperTypeWithSameSingature(method) &&
+					(isTheSameTypeWithAFieldAccessedByTheMethod(method) || isAsAParameterOfTheMethod(method));			
+		}
 				
 	}
 	
