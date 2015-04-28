@@ -41,10 +41,10 @@ public class AdvancedFitnessEvaluator extends DefaultFitnessEvaluator {
 		
 		System.currentTimeMillis();
 		
-		double lexicalSimilarity = /*0*/30*computeLexicalSimilarity(gene);
+		double lexicalSimilarity = /*0*/20*computeLexicalSimilarity(gene);
 		this.lexicalSim = lexicalSimilarity;
 		
-		return Double.valueOf(ReflexactoringUtil.getAlpha())*lexicalSimilarity
+		return /*Double.valueOf(ReflexactoringUtil.getAlpha())**/lexicalSimilarity
 				- structureDependencyViolation 
 				- structureInheritanceViolation 
 				- structureCreationViolation 
