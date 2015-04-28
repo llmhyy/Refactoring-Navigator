@@ -60,7 +60,7 @@ public class SearchRefactoringSolutionAcion implements
 					
 					monitor.worked(1);
 					
-					if(i==1){
+					if(i==2){
 						System.currentTimeMillis();
 					}
 					
@@ -131,8 +131,7 @@ public class SearchRefactoringSolutionAcion implements
 	 * @param model
 	 * @return
 	 */
-	private RefactoringSequenceElement findBestOpportunity(
-			ArrayList<RefactoringOpportunity> oppList, ProgramModel model, ArrayList<ModuleWrapper> moduleList) {
+	private RefactoringSequenceElement findBestOpportunity(ArrayList<RefactoringOpportunity> oppList, ProgramModel model, ArrayList<ModuleWrapper> moduleList) {
 		AdvanceEvaluatorAdapter evaluator = new AdvanceEvaluatorAdapter();
 		Double bestfitnessValue = null;
 		Double bestFeedbackValue = null;
@@ -143,6 +142,9 @@ public class SearchRefactoringSolutionAcion implements
 		//ArrayList<RefactoringSequenceElement> candidateList = new ArrayList<>();
 		
 		for(RefactoringOpportunity opp: oppList){
+			if(Settings.forbiddenOpps.contains(opp)){
+				continue;
+			}
 			
 			if(opp instanceof ExtractClassOpportunity){
 				System.currentTimeMillis();
@@ -150,14 +152,15 @@ public class SearchRefactoringSolutionAcion implements
 			
 			if(opp instanceof MoveMethodOpportunity){
 				MoveMethodOpportunity opp0 = (MoveMethodOpportunity)opp;
-				if(opp0.getObjectMethod().getName().contains("hasSuppressWarningsProposal") && opp0.getTargetUnit().getName().contains("Extract")){
+				if(opp0.getObjectMethod().getName().contains("moveBack") && opp0.getTargetUnit().getName().contains("Modifier")){
+					System.currentTimeMillis();
+				}
+				
+				if(opp0.getObjectMethod().getName().contains("addSuppress") && opp0.getTargetUnit().getName().contains("Extracted")){
 					System.currentTimeMillis();
 				}
 			}
 			
-			if(Settings.forbiddenOpps.contains(opp)){
-				continue;
-			}
 			//long t1 = System.currentTimeMillis();
 			
 			ProgramModel testModel = opp.simulate(model);
@@ -177,6 +180,7 @@ public class SearchRefactoringSolutionAcion implements
 			 * Merging user's feedback.
 			 */
 			double feedbackValue = new PenaltyAndRewardCalulator().calculate(fitnessValue, opp);
+			//double feedbackValue = fitnessValue;
 			
 			//long t4 = System.currentTimeMillis();
 			//System.out.println("Penalty Caluation Used Time: " + (t4-t3));
