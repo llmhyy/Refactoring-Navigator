@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.junit.Before;
@@ -51,6 +50,7 @@ public class TestHierarchicalClustering extends TestCase{
 		list = transfer(new int[]{1, 2, 3, 10, 11, 13, 16, 17, 99, 100});	
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Parameterized.Parameters
 	public static Collection primeNumbers() {
 	    return Arrays.asList(new Object[][] {
