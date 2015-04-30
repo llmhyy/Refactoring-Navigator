@@ -1,7 +1,7 @@
 /**
  * 
  */
-package datamining.test;
+package datamining.test.bean;
 
 import datamining.cluster.IClusterElement;
 

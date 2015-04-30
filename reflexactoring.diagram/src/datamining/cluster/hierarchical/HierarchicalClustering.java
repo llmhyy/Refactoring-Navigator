@@ -19,7 +19,7 @@ public class HierarchicalClustering {
 	
 	private ArrayList<IClusterElement> elements;
 	private int linkageType;
-	private int threshold;
+	private double threshold;
 	
 	/**
 	 * @param elements
@@ -27,13 +27,39 @@ public class HierarchicalClustering {
 	 * @param threshold
 	 */
 	public HierarchicalClustering(ArrayList<IClusterElement> elements,
-			int linkageType, int threshold) {
+			int linkageType, double threshold) {
 		super();
 		this.elements = elements;
 		this.linkageType = linkageType;
 		this.threshold = threshold;
 	}
 	
+	public ArrayList<HierarchicalCluster> produceClusters(){
+		ArrayList<HierarchicalCluster> clusterList = new ArrayList<>();
+		HierarchicalCluster root = buildDendrogram();
+		retrieveQulifiedClusters(root, clusterList);
+		
+		return clusterList;
+	}
+	
+	/**
+	 * @param root
+	 * @param clusterList
+	 * @param threshold
+	 */
+	private void retrieveQulifiedClusters(HierarchicalCluster parent,
+			ArrayList<HierarchicalCluster> clusterList) {
+		if(parent.getMergePointValue() > this.threshold){
+			for(HierarchicalCluster cluster: parent.getChildren()){
+				retrieveQulifiedClusters(cluster, clusterList);
+			}
+		}
+		else{
+			clusterList.add(parent);
+		}
+		
+	}
+
 	public HierarchicalCluster buildDendrogram(){
 		/**
 		 * initialize the clusters with single element
@@ -284,7 +310,7 @@ public class HierarchicalClustering {
 	/**
 	 * @return the threshold
 	 */
-	public int getThreshold() {
+	public double getThreshold() {
 		return threshold;
 	}
 	/**
