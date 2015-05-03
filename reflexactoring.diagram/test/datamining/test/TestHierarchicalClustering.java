@@ -52,7 +52,7 @@ public class TestHierarchicalClustering extends TestCase{
 	
 	@SuppressWarnings("rawtypes")
 	@Parameterized.Parameters
-	public static Collection primeNumbers() {
+	public static Collection testData() {
 	    return Arrays.asList(new Object[][] {
 	         { HierarchicalClustering.completeLinkage, 2.5, "[[1, 2, 3], [10, 11], [13], [16, 17], [99, 100]]"},
 	         { HierarchicalClustering.averageLinkage, 2.5, "[[1, 2, 3], [10, 11, 13], [16, 17], [99, 100]]"},
