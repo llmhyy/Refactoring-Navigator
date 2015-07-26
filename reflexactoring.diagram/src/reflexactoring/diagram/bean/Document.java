@@ -86,6 +86,9 @@ public abstract class Document {
 			}
 		}
 		
+		if(sum == 0){
+			return 0;
+		}
 		return numerator/sum;
 	}
 

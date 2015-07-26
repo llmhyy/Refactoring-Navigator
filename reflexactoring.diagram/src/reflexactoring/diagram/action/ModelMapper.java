@@ -205,6 +205,7 @@ public class ModelMapper {
 			}
 		}
 		
+		System.currentTimeMillis();
 		return overallSimilarity;
 	}
 	
