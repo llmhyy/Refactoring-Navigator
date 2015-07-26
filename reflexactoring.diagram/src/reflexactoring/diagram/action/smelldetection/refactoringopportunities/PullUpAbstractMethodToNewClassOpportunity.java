@@ -75,10 +75,17 @@ public class PullUpAbstractMethodToNewClassOpportunity extends PullUpMemberOppor
 		/**
 		 * create a new method in the parent class and change reference
 		 */
-		ICompilationUnitWrapper newClass = createNewUnit(newModel, false);
-		createNewMemberInSuperUnit(newModel, newClass, true);
+		ICompilationUnitWrapper newSuperClassUnit = createNewUnit(newModel, false);
+		createNewMemberInSuperUnit(newModel, newSuperClassUnit, true);
 		
-		this.targetUnit = newClass;
+		/**
+		 * may calculate which module is proper to hold the newly created super class
+		 */
+		ModuleWrapper bestMappingModule = calculateBestMappingModule(newModel, newSuperClassUnit);
+		newSuperClassUnit.setMappingModule(bestMappingModule);
+		
+		this.targetUnit = newSuperClassUnit;
+		
 		newModel.updateUnitCallingRelationByMemberRelations();
 		newModel.updateUnitDescription();
 		

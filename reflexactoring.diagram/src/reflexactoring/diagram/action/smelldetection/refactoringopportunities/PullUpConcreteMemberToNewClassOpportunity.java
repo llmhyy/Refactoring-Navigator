@@ -100,6 +100,8 @@ public class PullUpConcreteMemberToNewClassOpportunity  extends PullUpMemberOppo
 		newModel.updateUnitCallingRelationByMemberRelations();
 		newModel.updateUnitDescription();
 		
+		//System.currentTimeMillis();
+		
 		/**
 		 * may calculate which module is proper to hold the newly created super class
 		 */
