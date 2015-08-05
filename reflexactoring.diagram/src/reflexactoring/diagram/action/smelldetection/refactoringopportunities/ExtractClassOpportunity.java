@@ -840,6 +840,8 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 				
 				ArrayList<HierarchicalCluster> possibleDivisions = identifyUsefulClusters(cluster);
 				
+				System.currentTimeMillis();
+				
 				for(HierarchicalCluster cl: possibleDivisions){
 					ArrayList<LowLevelGraphNode> memberList = new ArrayList<>();
 					for(IClusterElement element: cl.getElements()){
@@ -898,7 +900,7 @@ public class ExtractClassOpportunity extends RefactoringOpportunity {
 		 * @return
 		 */
 		private boolean isValid(HierarchicalCluster cluster) {
-			boolean flag1 = cluster.size() >= 2 && cluster.size() <= 4;
+			boolean flag1 = cluster.size() >= 3 /*&& cluster.size() <= 10*/;
 			//boolean flag2 = isAllMethodNonAbstract(cluster);
 			boolean flag3 = isContainPrivateFieldUsedByElementsNotInCluster(cluster);
 			boolean flag4 = isContainOverridingMethod(cluster);

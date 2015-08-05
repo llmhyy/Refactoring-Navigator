@@ -56,8 +56,8 @@ public class ClassStructureBuilder {
 		private UnitMemberWrapperList members;
 		private UnitMemberWrapper callerMember;
 		
-		public MemberRelationVisitor(UnitMemberWrapper callerUnit, UnitMemberWrapperList members){
-			this.callerMember = callerUnit;
+		public MemberRelationVisitor(UnitMemberWrapper callerMember, UnitMemberWrapperList members){
+			this.callerMember = callerMember;
 			this.members = members;
 		}
 		
@@ -462,11 +462,12 @@ public class ClassStructureBuilder {
 		for (final UnitMemberWrapper member : members) {
 			if (member instanceof MethodWrapper) {
 				MethodWrapper methodWrapper = (MethodWrapper) member;
-				methodWrapper.getMethod().accept(new MemberRelationVisitor(member, members));
-				
-				if(methodWrapper.toString().equals("MapQuestion.setAnswer")){
+				if(methodWrapper.toString().equals("Main.createMenu")){
 					System.currentTimeMillis();
 				}
+				
+				methodWrapper.getMethod().accept(new MemberRelationVisitor(member, members));
+				
 				
 				UnitMemberWrapper superMember = methodWrapper.findMemberWithSameSignatureInSuperTypes();
 				if(superMember != null){

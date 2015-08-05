@@ -157,6 +157,24 @@ public abstract class UnitMemberWrapper extends Document implements LowLevelSugg
 		return map;
 	}
 	
+	public ArrayList<UnitMemberWrapper> getCallers(){
+		ArrayList<UnitMemberWrapper> callers = new ArrayList<>();
+		for(ProgramReference reference: this.refererPointList){
+			callers.add(reference.getReferer());
+		}
+		return callers;
+	}
+	
+	public ArrayList<UnitMemberWrapper> getCallees(){
+		ArrayList<UnitMemberWrapper> callees = new ArrayList<>();
+		for(ProgramReference reference: this.refereePointList){
+			if(reference.getReferee() instanceof UnitMemberWrapper){
+				callees.add((UnitMemberWrapper)reference.getReferee());				
+			}
+		}
+		return callees;
+	}
+	
 	@Override
 	public void addProgramReferer(ProgramReference reference){
 		this.refererPointList.add(reference);

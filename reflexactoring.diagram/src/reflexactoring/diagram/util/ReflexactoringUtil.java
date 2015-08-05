@@ -4,6 +4,7 @@
 package reflexactoring.diagram.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +19,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.gmf.runtime.emf.core.GMFEditingDomainFactory;
+import org.eclipse.team.core.ITeamStatus;
 import org.eclipse.ui.PartInitException;
 
 import reflexactoring.Activator;
@@ -758,6 +760,17 @@ public class ReflexactoringUtil {
 	}
 	
 	public static int computeDependenciesBetweenMembers(UnitMemberWrapper mem1, UnitMemberWrapper mem2){
+		
+//		if(mem1.toString().equals("Main.timesBoldUnderline") && mem2.toString().equals("Main.times")){
+//			System.currentTimeMillis();
+//			
+//		}
+//		
+//		if(mem2.toString().equals("Main.timesBoldUnderline") && mem1.toString().equals("Main.times")){
+//			System.currentTimeMillis();
+//			
+//		}
+		
 		int count = 0;
 		/**
 		 * check whether the element is called by this class
@@ -781,6 +794,55 @@ public class ReflexactoringUtil {
 			}
 		}
 		
+		/**
+		 * check whether they share same callers and callees
+		 */
+		ArrayList<UnitMemberWrapper> callersOfMem1 = mem1.getCallers();
+		ArrayList<UnitMemberWrapper> callersOfMem2 = mem2.getCallers();
+		int sharedCallersNum = countUnionNum(callersOfMem1, callersOfMem2);
+		count += sharedCallersNum;
+		
+		ArrayList<UnitMemberWrapper> calleesOfMem1 = mem1.getCallees();
+		ArrayList<UnitMemberWrapper> calleesOfMem2 = mem2.getCallees();		
+		int sharedCalleesNum = countUnionNum(calleesOfMem1, calleesOfMem2);
+		count += sharedCalleesNum;
+		
 		return count;
 	}
+
+	/**
+	 * @param calleesOfMem1
+	 * @param calleesOfMem2
+	 * @return
+	 */
+	private static int countUnionNum(
+			ArrayList<UnitMemberWrapper> set1, ArrayList<UnitMemberWrapper> set2) {
+		int count = 0;
+		
+		Iterator<UnitMemberWrapper> iter1 = set1.iterator();
+		while(iter1.hasNext()){
+			UnitMemberWrapper mem1 = iter1.next();
+			
+			Iterator<UnitMemberWrapper> iter2 = set2.iterator();
+			while(iter2.hasNext()){
+				UnitMemberWrapper mem2 = iter2.next();
+				
+				if(mem1.equals(mem2)){
+					iter1.remove();
+					iter2.remove();
+					
+					count++;
+					
+					break;
+				}
+			}
+		}
+		
+		
+		return count;
+	}
+	
+	
+	
+	
 }
