@@ -60,8 +60,9 @@ public class SearchRefactoringSolutionAcion implements
 					
 					monitor.worked(1);
 					
-					if(i==5){
+					if(i==9){
 						System.currentTimeMillis();
+						break;
 					}
 					
 					long t1 = System.currentTimeMillis();
